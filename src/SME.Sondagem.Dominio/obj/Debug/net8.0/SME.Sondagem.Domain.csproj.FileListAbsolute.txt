@@ -1,0 +1,12 @@
+C:\SME-Sondagem\src\SME-Sondagem.Domain\bin\Debug\net8.0\SME.Sondagem.Domain.deps.json
+C:\SME-Sondagem\src\SME-Sondagem.Domain\bin\Debug\net8.0\SME.Sondagem.Domain.dll
+C:\SME-Sondagem\src\SME-Sondagem.Domain\bin\Debug\net8.0\SME.Sondagem.Domain.pdb
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.csproj.AssemblyReference.cache
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.AssemblyInfoInputs.cache
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.AssemblyInfo.cs
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.csproj.CoreCompileInputs.cache
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.dll
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\refint\SME.Sondagem.Domain.dll
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\SME.Sondagem.Domain.pdb
+C:\SME-Sondagem\src\SME-Sondagem.Domain\obj\Debug\net8.0\ref\SME.Sondagem.Domain.dll

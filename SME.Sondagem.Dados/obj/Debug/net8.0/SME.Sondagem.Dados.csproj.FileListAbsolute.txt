@@ -1,0 +1,17 @@
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.csproj.AssemblyReference.cache
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.AssemblyInfoInputs.cache
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.AssemblyInfo.cs
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.csproj.CoreCompileInputs.cache
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Dados.deps.json
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Dados.dll
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Dados.pdb
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Dominio.dll
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Infra.dll
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Infra.pdb
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\bin\Debug\net8.0\SME.Sondagem.Dominio.pdb
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sond.7510BB36.Up2Date
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.dll
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\refint\SME.Sondagem.Dados.dll
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\SME.Sondagem.Dados.pdb
+C:\Projetos\SME-Sondagem\SME.Sondagem.Dados\obj\Debug\net8.0\ref\SME.Sondagem.Dados.dll

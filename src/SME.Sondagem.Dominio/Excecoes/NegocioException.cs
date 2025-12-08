@@ -1,0 +1,21 @@
+﻿using System.Net;
+
+namespace SME.Sondagem.Dominio;
+
+public class NegocioException : Exception
+{
+    public NegocioException(string mensagem, int statusCode = 601) : base(mensagem)
+    {
+        StatusCode = statusCode;
+    }
+
+    public NegocioException(string mensagem, HttpStatusCode statusCode) : base(mensagem)
+    {
+        StatusCode = (int)statusCode;
+    }
+
+    public NegocioException(string mensagem, Exception innerException) : base(mensagem, innerException)
+    { }
+
+    public int StatusCode { get; }
+}

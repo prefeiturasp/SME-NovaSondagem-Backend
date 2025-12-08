@@ -1,0 +1,11 @@
+C:\SME-Sondagem\src\SME-Sondagem.Application\bin\Debug\net8.0\SME-Sondagem.Application.deps.json
+C:\SME-Sondagem\src\SME-Sondagem.Application\bin\Debug\net8.0\SME-Sondagem.Application.dll
+C:\SME-Sondagem\src\SME-Sondagem.Application\bin\Debug\net8.0\SME-Sondagem.Application.pdb
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.AssemblyInfoInputs.cache
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.AssemblyInfo.cs
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.csproj.CoreCompileInputs.cache
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.dll
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\refint\SME-Sondagem.Application.dll
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\SME-Sondagem.Application.pdb
+C:\SME-Sondagem\src\SME-Sondagem.Application\obj\Debug\net8.0\ref\SME-Sondagem.Application.dll
