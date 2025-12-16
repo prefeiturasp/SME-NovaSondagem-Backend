@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/SME.Sondagem/FileContentIndex
+/.vs/SME.Sondagem/CopilotIndices/17.14.878.3237
+/.vs/SME.Sondagem/DesignTimeBuild
+/.vs/SME.Sondagem/v17
+/.vs
+/SME.Sondagem.Dados/bin/Debug/net10.0
