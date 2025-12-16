@@ -1,0 +1,765 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "SME.Sondagem.Aplicacao/1.0.0": {
+        "dependencies": {
+          "FluentValidation": "12.1.0",
+          "SME.Sondagem.Infra": "1.0.0"
+        },
+        "runtime": {
+          "SME.Sondagem.Aplicacao.dll": {}
+        }
+      },
+      "AWSSDK.Core/3.7.100.14": {
+        "runtime": {
+          "lib/netcoreapp3.1/AWSSDK.Core.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.100.14"
+          }
+        }
+      },
+      "AWSSDK.SecurityToken/3.7.100.14": {
+        "dependencies": {
+          "AWSSDK.Core": "3.7.100.14"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/AWSSDK.SecurityToken.dll": {
+            "assemblyVersion": "3.3.0.0",
+            "fileVersion": "3.7.100.14"
+          }
+        }
+      },
+      "DnsClient/1.6.1": {
+        "runtime": {
+          "lib/net5.0/DnsClient.dll": {
+            "assemblyVersion": "1.6.1.0",
+            "fileVersion": "1.6.1.0"
+          }
+        }
+      },
+      "Elastic.Apm/1.31.0": {
+        "dependencies": {
+          "System.Diagnostics.PerformanceCounter": "6.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.AspNetCore/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0",
+          "Elastic.Apm.Extensions.Hosting": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.AspNetCore.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Azure.CosmosDb/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Elastic.Apm.Azure.CosmosDb.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Azure.ServiceBus/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.Azure.ServiceBus.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Azure.Storage/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Elastic.Apm.Azure.Storage.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Elasticsearch/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0",
+          "Elasticsearch.Net": "7.17.5"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Elastic.Apm.Elasticsearch.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.EntityFrameworkCore/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.EntityFrameworkCore.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Extensions.Hosting/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0",
+          "Elastic.Apm.Extensions.Logging": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.Extensions.Hosting.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.Extensions.Logging/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.Extensions.Logging.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.GrpcClient/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Elastic.Apm.GrpcClient.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.MongoDb/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0",
+          "MongoDB.Driver.Core": "2.28.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Elastic.Apm.MongoDb.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elastic.Apm.NetCoreAll/1.31.0": {
+        "dependencies": {
+          "Elastic.Apm": "1.31.0",
+          "Elastic.Apm.AspNetCore": "1.31.0",
+          "Elastic.Apm.Azure.CosmosDb": "1.31.0",
+          "Elastic.Apm.Azure.ServiceBus": "1.31.0",
+          "Elastic.Apm.Azure.Storage": "1.31.0",
+          "Elastic.Apm.Elasticsearch": "1.31.0",
+          "Elastic.Apm.EntityFrameworkCore": "1.31.0",
+          "Elastic.Apm.GrpcClient": "1.31.0",
+          "Elastic.Apm.MongoDb": "1.31.0"
+        },
+        "runtime": {
+          "lib/net8.0/Elastic.Apm.NetCoreAll.dll": {
+            "assemblyVersion": "1.31.0.0",
+            "fileVersion": "1.31.0.0"
+          }
+        }
+      },
+      "Elasticsearch.Net/7.17.5": {
+        "runtime": {
+          "lib/netstandard2.1/Elasticsearch.Net.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.17.5.0"
+          }
+        }
+      },
+      "FluentValidation/12.1.0": {
+        "runtime": {
+          "lib/net8.0/FluentValidation.dll": {
+            "assemblyVersion": "12.0.0.0",
+            "fileVersion": "12.1.0.0"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/6.0.0": {
+        "runtime": {
+          "lib/net6.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "MongoDB.Bson/2.28.0": {
+        "runtime": {
+          "lib/netstandard2.1/MongoDB.Bson.dll": {
+            "assemblyVersion": "2.28.0.0",
+            "fileVersion": "2.28.0.0"
+          }
+        }
+      },
+      "MongoDB.Driver.Core/2.28.0": {
+        "dependencies": {
+          "AWSSDK.SecurityToken": "3.7.100.14",
+          "DnsClient": "1.6.1",
+          "MongoDB.Bson": "2.28.0",
+          "MongoDB.Libmongocrypt": "1.11.0",
+          "SharpCompress": "0.30.1",
+          "Snappier": "1.0.0",
+          "ZstdSharp.Port": "0.7.3"
+        },
+        "runtime": {
+          "lib/netstandard2.1/MongoDB.Driver.Core.dll": {
+            "assemblyVersion": "2.28.0.0",
+            "fileVersion": "2.28.0.0"
+          }
+        }
+      },
+      "MongoDB.Libmongocrypt/1.11.0": {
+        "runtime": {
+          "lib/netstandard2.1/MongoDB.Libmongocrypt.dll": {
+            "assemblyVersion": "1.11.0.0",
+            "fileVersion": "1.11.0.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux/native/libmongocrypt.so": {
+            "rid": "linux",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/osx/native/libmongocrypt.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win/native/mongocrypt.dll": {
+            "rid": "win",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Npgsql/9.0.4": {
+        "runtime": {
+          "lib/net8.0/Npgsql.dll": {
+            "assemblyVersion": "9.0.4.0",
+            "fileVersion": "9.0.4.0"
+          }
+        }
+      },
+      "Pipelines.Sockets.Unofficial/2.2.8": {
+        "runtime": {
+          "lib/net5.0/Pipelines.Sockets.Unofficial.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "2.2.8.1080"
+          }
+        }
+      },
+      "Polly/8.6.5": {
+        "dependencies": {
+          "Polly.Core": "8.6.5"
+        },
+        "runtime": {
+          "lib/net6.0/Polly.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.6.5.5194"
+          }
+        }
+      },
+      "Polly.Core/8.6.5": {
+        "runtime": {
+          "lib/net8.0/Polly.Core.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.6.5.5194"
+          }
+        }
+      },
+      "RabbitMQ.Client/7.2.0": {
+        "runtime": {
+          "lib/net8.0/RabbitMQ.Client.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.2.0.0"
+          }
+        }
+      },
+      "SharpCompress/0.30.1": {
+        "runtime": {
+          "lib/net5.0/SharpCompress.dll": {
+            "assemblyVersion": "0.30.1.0",
+            "fileVersion": "0.30.1.0"
+          }
+        }
+      },
+      "Snappier/1.0.0": {
+        "runtime": {
+          "lib/net5.0/Snappier.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "StackExchange.Redis/2.10.1": {
+        "dependencies": {
+          "Pipelines.Sockets.Unofficial": "2.2.8",
+          "System.IO.Hashing": "9.0.10"
+        },
+        "runtime": {
+          "lib/net8.0/StackExchange.Redis.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.10.1.65101"
+          }
+        }
+      },
+      "System.Configuration.ConfigurationManager/6.0.0": {
+        "dependencies": {
+          "System.Security.Cryptography.ProtectedData": "6.0.0",
+          "System.Security.Permissions": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Configuration.ConfigurationManager.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Diagnostics.PerformanceCounter/6.0.1": {
+        "dependencies": {
+          "System.Configuration.ConfigurationManager": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.422.16404"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Diagnostics.PerformanceCounter.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.422.16404"
+          }
+        }
+      },
+      "System.Drawing.Common/6.0.0": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/unix/lib/net6.0/System.Drawing.Common.dll": {
+            "rid": "unix",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          },
+          "runtimes/win/lib/net6.0/System.Drawing.Common.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.IO.Hashing/9.0.10": {
+        "runtime": {
+          "lib/net9.0/System.IO.Hashing.dll": {
+            "assemblyVersion": "9.0.0.10",
+            "fileVersion": "9.0.1025.47515"
+          }
+        }
+      },
+      "System.Security.Cryptography.ProtectedData/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Security.Permissions/6.0.0": {
+        "dependencies": {
+          "System.Windows.Extensions": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Security.Permissions.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Windows.Extensions/6.0.0": {
+        "dependencies": {
+          "System.Drawing.Common": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Windows.Extensions.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Windows.Extensions.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "ZstdSharp.Port/0.7.3": {
+        "runtime": {
+          "lib/net7.0/ZstdSharp.dll": {
+            "assemblyVersion": "0.7.3.0",
+            "fileVersion": "0.7.3.0"
+          }
+        }
+      },
+      "SME.Sondagem.Dominio/1.0.0": {
+        "dependencies": {
+          "FluentValidation": "12.1.0"
+        },
+        "runtime": {
+          "SME.Sondagem.Dominio.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "SME.Sondagem.Infra/1.0.0": {
+        "dependencies": {
+          "Elastic.Apm.NetCoreAll": "1.31.0",
+          "Npgsql": "9.0.4",
+          "Polly": "8.6.5",
+          "RabbitMQ.Client": "7.2.0",
+          "SME.Sondagem.Dominio": "1.0.0",
+          "StackExchange.Redis": "2.10.1"
+        },
+        "runtime": {
+          "SME.Sondagem.Infra.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SME.Sondagem.Aplicacao/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AWSSDK.Core/3.7.100.14": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gnEgxBlk4PFEfdPE8Lkf4+D16MZFYSaW7/o6Wwe5e035QWUkTJX0Dn4LfTCdV5QSEL/fOFxu+yCAm55eIIBgog==",
+      "path": "awssdk.core/3.7.100.14",
+      "hashPath": "awssdk.core.3.7.100.14.nupkg.sha512"
+    },
+    "AWSSDK.SecurityToken/3.7.100.14": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dGCVuVo0CFUKWW85W8YENO+aREf8sCBDjvGbnNvxJuNW4Ss+brEU9ltHhq2KfZze2VUNK1/wygbPG1bmbpyXEw==",
+      "path": "awssdk.securitytoken/3.7.100.14",
+      "hashPath": "awssdk.securitytoken.3.7.100.14.nupkg.sha512"
+    },
+    "DnsClient/1.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4H/f2uYJOZ+YObZjpY9ABrKZI+JNw3uizp6oMzTXwDw6F+2qIPhpRl/1t68O/6e98+vqNiYGu+lswmwdYUy3gg==",
+      "path": "dnsclient/1.6.1",
+      "hashPath": "dnsclient.1.6.1.nupkg.sha512"
+    },
+    "Elastic.Apm/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ocwv6k8GCRfezbSxX+O6vSqogmGA4cz2fbvxRaG/ugUQ5RXEriYKdPRLsQV4K/NnHMxm/NVF6/QuY+SQqeGifQ==",
+      "path": "elastic.apm/1.31.0",
+      "hashPath": "elastic.apm.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.AspNetCore/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/c01hkn63bixORK2PwW5WDZgZZN/9wHCQzqpQJtIp7xFxURrZKZl1C1MLW9bxY7gGIcf9RZaX2zCqRi9oxy0nA==",
+      "path": "elastic.apm.aspnetcore/1.31.0",
+      "hashPath": "elastic.apm.aspnetcore.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Azure.CosmosDb/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pBtlVT6au4ZWK85SBV8+mqhdLSOYyyMXpqQjxXjEH6f0QMOKXxIOuMsK/vvOsCsVrDWbFHiT2ZVYT3MXWmXdcg==",
+      "path": "elastic.apm.azure.cosmosdb/1.31.0",
+      "hashPath": "elastic.apm.azure.cosmosdb.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Azure.ServiceBus/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cb0NtMK5xjicwjZZ4/TC9QmK4lEkzwxbBjlHCG+Lll7288TenFfyk8BqxCCJ2OLidpnDQbjYpoPhwP/dD0mZTw==",
+      "path": "elastic.apm.azure.servicebus/1.31.0",
+      "hashPath": "elastic.apm.azure.servicebus.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Azure.Storage/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zfJEgFiivVr62lp5lH3xmRB+5qkQumVlEx1EHfSqlVw4OA5LdDDGqFSltHi55Do5EU1MSo1H2loiEhM6qlZ1Eg==",
+      "path": "elastic.apm.azure.storage/1.31.0",
+      "hashPath": "elastic.apm.azure.storage.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Elasticsearch/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-W08CCWDzJoO0Es7urdmFUXoasx1uhNA2V/7u5AEmBrJgHgXmbJkCjSiv92a0GLbdVYeFw4ZOkt3UwOQfuVlPMA==",
+      "path": "elastic.apm.elasticsearch/1.31.0",
+      "hashPath": "elastic.apm.elasticsearch.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.EntityFrameworkCore/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tFoZfQjyju9FYL/n6pindiWPlZwnLgD35nvHugsBWG3eMR09cqX6CGW+ZG4z4TzLc0FGpZw5cz36CqtEE2dQKA==",
+      "path": "elastic.apm.entityframeworkcore/1.31.0",
+      "hashPath": "elastic.apm.entityframeworkcore.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Extensions.Hosting/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-F0gYWb82Fvx/ffQroaOIbwjXoTBWA2jh/kgt2jv78kzaUANyBdR6S8aDUt0s7J5rdGv7meQbpHX+FxsrJ3B/1w==",
+      "path": "elastic.apm.extensions.hosting/1.31.0",
+      "hashPath": "elastic.apm.extensions.hosting.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.Extensions.Logging/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GP20POXaRSnRm5/lXGs8gcYB8ejWJ6wTRooYGV6aLME5qDP7FX59Pf8XtldXO7LFjbpvqfSYlQfnNBE4RofTlw==",
+      "path": "elastic.apm.extensions.logging/1.31.0",
+      "hashPath": "elastic.apm.extensions.logging.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.GrpcClient/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-tbl0uR0GXPnMK64fV4PCVlfP9DuBnEqM0lskzVoelhFhNcRRTasDTocuMiZsHrZHHZiPVnLI7M18O/i5OSAGJQ==",
+      "path": "elastic.apm.grpcclient/1.31.0",
+      "hashPath": "elastic.apm.grpcclient.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.MongoDb/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-xzdBgITdc+G485CEFUKNX+fre5gVcMGjzbOTK8hw4OjO+leAkmHsJeDCSYyGkdPxcxAkdXIYRIiulcP0tCWegA==",
+      "path": "elastic.apm.mongodb/1.31.0",
+      "hashPath": "elastic.apm.mongodb.1.31.0.nupkg.sha512"
+    },
+    "Elastic.Apm.NetCoreAll/1.31.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-R2lJr+VcZoY+QxByBlrNUfAyH0cYT/tN5Cd2G/IfVgToXshrP/CLSjNckBcaZDsbsJfzcIvxHyCZcGY3V1sW/A==",
+      "path": "elastic.apm.netcoreall/1.31.0",
+      "hashPath": "elastic.apm.netcoreall.1.31.0.nupkg.sha512"
+    },
+    "Elasticsearch.Net/7.17.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-orChsQi1Ceho/NyIylNOn6y4vuGcsbCfMZnCueNN0fzqYEGQmQdPfcVmsR5+3fwpXTgxCdjTUVmqOwvHpCSB+Q==",
+      "path": "elasticsearch.net/7.17.5",
+      "hashPath": "elasticsearch.net.7.17.5.nupkg.sha512"
+    },
+    "FluentValidation/12.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FqWEn8BdbbFEHGanj9K8SVo+LyBeFWy2rolaE+e1TNUbifr8M7Iss+I1AqTSc8kjKtvjl/WN4XIHiRpslh42bA==",
+      "path": "fluentvalidation/12.1.0",
+      "hashPath": "fluentvalidation.12.1.0.nupkg.sha512"
+    },
+    "Microsoft.Win32.SystemEvents/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hqTM5628jSsQiv+HGpiq3WKBl2c8v1KZfby2J6Pr7pEPlK9waPdgEO6b8A/+/xn/yZ9ulv8HuqK71ONy2tg67A==",
+      "path": "microsoft.win32.systemevents/6.0.0",
+      "hashPath": "microsoft.win32.systemevents.6.0.0.nupkg.sha512"
+    },
+    "MongoDB.Bson/2.28.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yiWN3scVV0lYpFXn1CL4PB0BK3KrHFC44qw72+/cBIDS9+r9MQYfxFMxM+pAvnSssAZtQ7ZabCu7z3UOXqKy4w==",
+      "path": "mongodb.bson/2.28.0",
+      "hashPath": "mongodb.bson.2.28.0.nupkg.sha512"
+    },
+    "MongoDB.Driver.Core/2.28.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ek5cjiN9FwBsTdJnLouOsKWjplr4D+8fs9urOhzBKZLygOsgIxTDLzpoHC3Mg4bJ1V/Mbz0/xXr0KqUXdmzqEg==",
+      "path": "mongodb.driver.core/2.28.0",
+      "hashPath": "mongodb.driver.core.2.28.0.nupkg.sha512"
+    },
+    "MongoDB.Libmongocrypt/1.11.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-x1Fm9b5/93k1l0FpbUxHrcFIm/6m/qXfmbQddtHILqltx2EVSkIAzzBMiCr4D/3IBXSEWzgXP73xFExIpXQ9lQ==",
+      "path": "mongodb.libmongocrypt/1.11.0",
+      "hashPath": "mongodb.libmongocrypt.1.11.0.nupkg.sha512"
+    },
+    "Npgsql/9.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-68BASXH0FAEuL/J4J0eRfYC8/3vzqQTmoW8zDzNf0JgaVxc7LZeEkS6jaG0ib3voFLxY5ZiCwJG+uQM+mzuu0Q==",
+      "path": "npgsql/9.0.4",
+      "hashPath": "npgsql.9.0.4.nupkg.sha512"
+    },
+    "Pipelines.Sockets.Unofficial/2.2.8": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zG2FApP5zxSx6OcdJQLbZDk2AVlN2BNQD6MorwIfV6gVj0RRxWPEp2LXAxqDGZqeNV1Zp0BNPcNaey/GXmTdvQ==",
+      "path": "pipelines.sockets.unofficial/2.2.8",
+      "hashPath": "pipelines.sockets.unofficial.2.2.8.nupkg.sha512"
+    },
+    "Polly/8.6.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VqtW2ZE/ALvQMAH1cQY3qZ2cF2OXa3oe/HKMdOv6Q02HCoEW0rsFNfcBONXlHBe1TnjWW1vdRxBEkPeq0/2FHA==",
+      "path": "polly/8.6.5",
+      "hashPath": "polly.8.6.5.nupkg.sha512"
+    },
+    "Polly.Core/8.6.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-t+sUVrIwvo7UmsgHGgOG9F0GDZSRIm47u2ylH17Gvcv1q5hNEwgD5GoBlFyc0kh/pebmPyrAgvGsR/65ZBaXlg==",
+      "path": "polly.core/8.6.5",
+      "hashPath": "polly.core.8.6.5.nupkg.sha512"
+    },
+    "RabbitMQ.Client/7.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PPQ7cF7lwbhqC4up6en1bTUZlz06YqQwJecOJzsguTtyhNA7oL5uNDZIx/h6ZfcyPZV4V3DYKSCxfm4RUFLcbA==",
+      "path": "rabbitmq.client/7.2.0",
+      "hashPath": "rabbitmq.client.7.2.0.nupkg.sha512"
+    },
+    "SharpCompress/0.30.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XqD4TpfyYGa7QTPzaGlMVbcecKnXy4YmYLDWrU+JIj7IuRNl7DH2END+Ll7ekWIY8o3dAMWLFDE1xdhfIWD1nw==",
+      "path": "sharpcompress/0.30.1",
+      "hashPath": "sharpcompress.0.30.1.nupkg.sha512"
+    },
+    "Snappier/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rFtK2KEI9hIe8gtx3a0YDXdHOpedIf9wYCEYtBEmtlyiWVX3XlCNV03JrmmAi/Cdfn7dxK+k0sjjcLv4fpHnqA==",
+      "path": "snappier/1.0.0",
+      "hashPath": "snappier.1.0.0.nupkg.sha512"
+    },
+    "StackExchange.Redis/2.10.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-se08WZvD42H3bV4XBW07pupTiE2/72qStKyi/lRqqcijksFWfRtwLTuhFtZ4OX19f4+we/2qruFZBXYJBFc8PQ==",
+      "path": "stackexchange.redis/2.10.1",
+      "hashPath": "stackexchange.redis.2.10.1.nupkg.sha512"
+    },
+    "System.Configuration.ConfigurationManager/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7T+m0kDSlIPTHIkPMIu6m6tV6qsMqJpvQWW2jIc2qi7sn40qxFo0q+7mEQAhMPXZHMKnWrnv47ntGlM/ejvw3g==",
+      "path": "system.configuration.configurationmanager/6.0.0",
+      "hashPath": "system.configuration.configurationmanager.6.0.0.nupkg.sha512"
+    },
+    "System.Diagnostics.PerformanceCounter/6.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dDl7Gx3bmSrM2k2ZIm+ucEJnLloZRyvfQF1DvfvATcGF3jtaUBiPvChma+6ZcZzxWMirN3kCywkW7PILphXyMQ==",
+      "path": "system.diagnostics.performancecounter/6.0.1",
+      "hashPath": "system.diagnostics.performancecounter.6.0.1.nupkg.sha512"
+    },
+    "System.Drawing.Common/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NfuoKUiP2nUWwKZN6twGqXioIe1zVD0RIj2t976A+czLHr2nY454RwwXs6JU9Htc6mwqL6Dn/nEL3dpVf2jOhg==",
+      "path": "system.drawing.common/6.0.0",
+      "hashPath": "system.drawing.common.6.0.0.nupkg.sha512"
+    },
+    "System.IO.Hashing/9.0.10": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-9gv5z71xaWWmcGEs4bXdreIhKp2kYLK2fvPK5gQkgnWMYvZ8ieaxKofDjxL3scZiEYfi/yW2nJTiKV2awcWEdA==",
+      "path": "system.io.hashing/9.0.10",
+      "hashPath": "system.io.hashing.9.0.10.nupkg.sha512"
+    },
+    "System.Security.Cryptography.ProtectedData/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rp1gMNEZpvx9vP0JW0oHLxlf8oSiQgtno77Y4PLUBjSiDYoD77Y8uXHr1Ea5XG4/pIKhqAdxZ8v8OTUtqo9PeQ==",
+      "path": "system.security.cryptography.protecteddata/6.0.0",
+      "hashPath": "system.security.cryptography.protecteddata.6.0.0.nupkg.sha512"
+    },
+    "System.Security.Permissions/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-T/uuc7AklkDoxmcJ7LGkyX1CcSviZuLCa4jg3PekfJ7SU0niF0IVTXwUiNVP9DSpzou2PpxJ+eNY2IfDM90ZCg==",
+      "path": "system.security.permissions/6.0.0",
+      "hashPath": "system.security.permissions.6.0.0.nupkg.sha512"
+    },
+    "System.Windows.Extensions/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IXoJOXIqc39AIe+CIR7koBtRGMiCt/LPM3lI+PELtDIy9XdyeSrwXFdWV9dzJ2Awl0paLWUaknLxFQ5HpHZUog==",
+      "path": "system.windows.extensions/6.0.0",
+      "hashPath": "system.windows.extensions.6.0.0.nupkg.sha512"
+    },
+    "ZstdSharp.Port/0.7.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-U9Ix4l4cl58Kzz1rJzj5hoVTjmbx1qGMwzAcbv1j/d3NzrFaESIurQyg+ow4mivCgkE3S413y+U9k4WdnEIkRA==",
+      "path": "zstdsharp.port/0.7.3",
+      "hashPath": "zstdsharp.port.0.7.3.nupkg.sha512"
+    },
+    "SME.Sondagem.Dominio/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SME.Sondagem.Infra/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

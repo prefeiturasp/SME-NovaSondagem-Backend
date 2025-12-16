@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>SME.Sondagem.IoC</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
     <ProjectReference Include="..\SME.Sondagem.Aplicacao\SME.Sondagem.Aplicacao.csproj" />
-    <ProjectReference Include="..\SME.Sondagem.Application\SME.Sondagem.Aplicacao.csproj" />
   </ItemGroup>
 
 </Project>

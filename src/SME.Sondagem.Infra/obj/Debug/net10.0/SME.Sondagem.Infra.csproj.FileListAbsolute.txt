@@ -1,0 +1,16 @@
+C:\Users\caique.siqueira\source\repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\bin\Debug\net10.0\SME.Sondagem.Infra.deps.json
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\bin\Debug\net10.0\SME.Sondagem.Infra.dll
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\bin\Debug\net10.0\SME.Sondagem.Infra.pdb
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\bin\Debug\net10.0\SME.Sondagem.Dominio.dll
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\bin\Debug\net10.0\SME.Sondagem.Dominio.pdb
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.csproj.AssemblyReference.cache
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.AssemblyInfoInputs.cache
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.AssemblyInfo.cs
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.csproj.CoreCompileInputs.cache
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.sourcelink.json
+C:\Users\caique.siqueira\source\repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sond.EEFADF20.Up2Date
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.dll
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\refint\SME.Sondagem.Infra.dll
+C:\Users\caique.siqueira\Source\Repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\SME.Sondagem.Infra.pdb
+C:\Users\caique.siqueira\source\repos\SME-NovaSondagem-Backend\src\SME.Sondagem.Infra\obj\Debug\net10.0\ref\SME.Sondagem.Infra.dll
