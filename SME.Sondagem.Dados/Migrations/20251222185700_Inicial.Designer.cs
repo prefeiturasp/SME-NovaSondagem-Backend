@@ -12,7 +12,7 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    [Migration("20251222175842_Inicial")]
+    [Migration("20251222185700_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
