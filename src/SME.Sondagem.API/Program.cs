@@ -1,4 +1,3 @@
-
 using Microsoft.ApplicationInsights;
 using RabbitMQ.Client;
 using SME.SME.Sondagem.Api.Configurations;
@@ -59,6 +58,7 @@ var redisConfigurationOptions = new ConfigurationOptions()
     SyncTimeout = redisOptions.SyncTimeout,
     EndPoints = { redisOptions.Endpoint }
 };
+
 var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
 builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
@@ -68,6 +68,8 @@ builder.Services.AddHttpContextAccessor();
 RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
 RegistraDependencias.Registrar(builder.Services);
+RegistraRepositorios.Registrar(builder.Services);
+RegistraUseCases.Registrar(builder.Services);
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
@@ -86,12 +88,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
 

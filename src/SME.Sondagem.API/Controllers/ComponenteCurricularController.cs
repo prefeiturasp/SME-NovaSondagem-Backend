@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SME.Sondagem.API.Constantes.Autenticacao;
 using SME.Sondagem.Application.Interfaces;
 
 namespace SME.Sondagem.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
     public class ComponenteCurricularController : ControllerBase
     {
         private readonly IComponenteCurricularUseCase componenteUseCase;
