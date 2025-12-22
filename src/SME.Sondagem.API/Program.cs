@@ -66,6 +66,8 @@ builder.Services.AddSwaggerGen();
 RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
 RegistraDependencias.Registrar(builder.Services);
+RegistraRepositorios.Registrar(builder.Services);
+RegistraUseCases.Registrar(builder.Services);
 
 builder.Services.AddCors(options =>
 {
@@ -76,6 +78,9 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -115,6 +120,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
 app.MapControllers();

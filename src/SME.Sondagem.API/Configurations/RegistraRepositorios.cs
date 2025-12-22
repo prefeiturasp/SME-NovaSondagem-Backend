@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SME.Sondagem.Infra.Repositories;
 using SME.Sondagem.Infra.Repositories.Postgres;
 

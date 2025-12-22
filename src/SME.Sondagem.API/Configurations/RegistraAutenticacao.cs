@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
+using SME.Sondagem.API.Constantes.Autenticacao;
+using System.Text;
 using static System.Text.Encoding;
 
 namespace SME.SME.Sondagem.Api.Configurations
@@ -13,21 +15,37 @@ namespace SME.SME.Sondagem.Api.Configurations
             {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+            })
+               .AddJwtBearer(AutenticacaoSettingsApi.BearerTokenSGP, o =>
+               {
+                   o.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateLifetime = true,
+                       ValidateAudience = true,
+                       ValidAudience = configuration.GetValue<string>("SGPApiTokenSettings:Audience"),
+                       ValidateIssuer = true,
+                       ValidIssuer = configuration.GetValue<string>("SGPApiTokenSettings:Issuer"),
+                       ValidateIssuerSigningKey = true,
+                       ClockSkew = TimeSpan.Zero,
+                       IssuerSigningKey = new SymmetricSecurityKey(UTF8
+                           .GetBytes(configuration.GetValue<string>("SGPApiTokenSettings:IssuerSigningKey")))
+                   };
+                   o.MapInboundClaims = false;
+               })
+           .AddJwtBearer(AutenticacaoSettingsApi.BearerTokenSondagem, options =>
             {
-                o.TokenValidationParameters = new TokenValidationParameters
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateLifetime = true,
-                    ValidateAudience = true,
-                    ValidAudience = configuration.GetValue<string>("JwtTokenSettings:Audience"),
                     ValidateIssuer = true,
-                    ValidIssuer = configuration.GetValue<string>("JwtTokenSettings:Issuer"),
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero,
-                    IssuerSigningKey = new SymmetricSecurityKey(UTF8
-                        .GetBytes(configuration.GetValue<string>("JwtTokenSettings:IssuerSigningKey")))
+                    ValidIssuer = configuration.GetValue<string>("SondagemTokenSettings:Issuer"),
+                    ValidAudience = configuration.GetValue<string>("SondagemTokenSettings:Audience"),
+                    IssuerSigningKey = new SymmetricSecurityKey(UTF8.GetBytes(configuration.GetValue<string>("SondagemTokenSettings:IssuerSigningKey")))
                 };
             });
+;
 
             services.AddAuthorization(auth =>
             {
