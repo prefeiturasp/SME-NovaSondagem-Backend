@@ -15,13 +15,13 @@ namespace SME.Sondagem.Dominio.Entities
             DataHora = DateTime.Now;
         }
 
-        public string Mensagem { get; set; }
-        public LogNivel Nivel { get; set; }
-        public string Observacao { get; set; }
-        public string Projeto { get; set; }
-        public string Rastreamento { get; set; }
-        public string ExcecaoInterna { get; set; }
-        public DateTime DataHora { get; set; }
+        public string Mensagem { get; private set; }
+        public LogNivel Nivel { get; private set; }
+        public string Observacao { get; private set; }
+        public string Projeto { get; private set; }
+        public string Rastreamento { get; private set; }
+        public string ExcecaoInterna { get; private set; }
+        public DateTime DataHora { get; private set; }
 
     }
 }

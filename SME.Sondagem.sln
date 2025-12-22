@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.Sondagem.API", "src\SME.Sondagem.API\SME.Sondagem.API.csproj", "{AC608E57-8E0B-B9D9-D8E1-6BD249D70AF3}"
 EndProject
