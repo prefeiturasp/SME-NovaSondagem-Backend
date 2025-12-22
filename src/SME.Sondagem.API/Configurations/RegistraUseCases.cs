@@ -1,4 +1,5 @@
-using Microsoft.Extensions.DependencyInjection;
+using SME.Sondagem.API.Application.Interfaces;
+using SME.Sondagem.API.Application.UseCases;
 using SME.Sondagem.Application.Interfaces;
 using SME.Sondagem.Application.UseCases;
 
@@ -16,6 +17,7 @@ namespace SME.SME.Sondagem.Api.Configurations
             services.AddScoped<IEstudantesUseCase, EstudantesUseCase>();
             services.AddScoped<IQuestaoUseCase, QuestaoUseCase>();
             services.AddScoped<IOpcaoRespostaUseCase, OpcaoRespostaUseCase>();
+            services.AddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
         }
     }
 }
