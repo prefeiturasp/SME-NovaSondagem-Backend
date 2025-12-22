@@ -59,9 +59,8 @@ var redisConfigurationOptions = new ConfigurationOptions()
     EndPoints = { redisOptions.Endpoint }
 };
 
-//comentado o uso do Redis temporariamente
-//var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
-//builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
+var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
+builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
