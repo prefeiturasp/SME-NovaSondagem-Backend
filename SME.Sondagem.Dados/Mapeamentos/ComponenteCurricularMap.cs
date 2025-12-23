@@ -1,9 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SME.Sondagem.Dominio.Entidades.Questionario;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SME.Sondagem.Dominio.Entidades.ComponenteCurricular;
 
 namespace SME.Sondagem.Dados.Mapeamentos
 {

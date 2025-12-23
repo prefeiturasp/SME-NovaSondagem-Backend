@@ -1,6 +1,4 @@
-﻿using SME.Sondagem.Dominio;
-
-namespace SME.Sondagem.Dominio.Entidades;
+﻿namespace SME.Sondagem.Dominio.Entidades;
 
 public abstract class EntidadeBase
 {
@@ -9,7 +7,7 @@ public abstract class EntidadeBase
         CriadoEm = DateTimeExtension.HorarioBrasilia();
     }
 
-    public int Id { get; private set; }
+    public int Id { get; set; }
     public DateTime? AlteradoEm { get; set; }
     public string? AlteradoPor { get; set; }
     public string? AlteradoRF { get; set; }

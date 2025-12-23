@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Content Update="@(Content)">
+	  <Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
+	</Content>
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.23.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.13" />

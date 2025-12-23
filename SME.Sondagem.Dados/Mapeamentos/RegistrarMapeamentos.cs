@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SME.Sondagem.Dominio.Entidades.Questionario;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 

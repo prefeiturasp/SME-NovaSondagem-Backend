@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<Content Update="@(Content)">
+		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
+	</Content>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -22,6 +25,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Interceptors\" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,6 @@
-﻿namespace SME.Sondagem.Dominio.Entidades.Questionario;
+﻿using SME.Sondagem.Dominio.Entidades.Sondagem;
+
+namespace SME.Sondagem.Dominio.Entidades.Questionario;
 
 public class OpcaoResposta : EntidadeBase
 {

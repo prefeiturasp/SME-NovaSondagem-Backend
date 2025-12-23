@@ -1,4 +1,5 @@
-﻿using SME.Sondagem.Dominio.Enums;
+﻿using SME.Sondagem.Dominio.Entidades.Sondagem;
+using SME.Sondagem.Dominio.Enums;
 
 namespace SME.Sondagem.Dominio.Entidades.Questionario;
 

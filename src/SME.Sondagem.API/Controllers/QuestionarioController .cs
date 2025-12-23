@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.API.Constantes.Autenticacao;
-using SME.Sondagem.Application.Interfaces.Questionario;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario;
+using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos;
 
 namespace SME.Sondagem.API.Controllers;
-
 
 [Route("api/[controller]")]
 [ApiController]

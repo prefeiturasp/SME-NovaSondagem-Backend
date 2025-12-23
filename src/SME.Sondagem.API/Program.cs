@@ -1,7 +1,8 @@
 using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
-using SME.SME.Sondagem.Api.Configurations;
+using SME.SME.Sondagem.Api.Configuracoes;
+using SME.Sondagem.API.Configuracoes;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
@@ -67,7 +68,6 @@ RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
 RegistraDependencias.Registrar(builder.Services);
 RegistraRepositorios.Registrar(builder.Services);
-RegistraUseCases.Registrar(builder.Services);
 
 builder.Services.AddCors(options =>
 {

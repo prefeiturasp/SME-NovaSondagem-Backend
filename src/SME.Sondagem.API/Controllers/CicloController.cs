@@ -1,27 +1,26 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.API.Constantes.Autenticacao;
-using SME.Sondagem.Application.Interfaces;
+using SME.Sondagem.Aplicacao.Interfaces.Ciclo;
+using SME.Sondagem.Infra.Constantes.Autenticacao;
 
-namespace SME.Sondagem.API.Controllers
+namespace SME.Sondagem.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+public class CicloController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
-    public class CicloController : ControllerBase
+    private readonly ICicloUseCase cicloUseCase;
+
+    public CicloController(ICicloUseCase cicloUseCase)
     {
-        private readonly ICicloUseCase cicloUseCase;
+        this.cicloUseCase = cicloUseCase;
+    }
 
-        public CicloController(ICicloUseCase cicloUseCase)
-        {
-            this.cicloUseCase = cicloUseCase;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
-            var resultado = await cicloUseCase.ObterCiclosAsync();
-            return Ok(resultado);
-        }
+    [HttpGet]
+    public async Task<IActionResult> Get()
+    {
+        var resultado = await cicloUseCase.ObterCiclosAsync();
+        return Ok(resultado);
     }
 }

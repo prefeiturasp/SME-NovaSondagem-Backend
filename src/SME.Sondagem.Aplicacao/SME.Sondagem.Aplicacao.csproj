@@ -9,9 +9,11 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="12.1.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
     <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
   </ItemGroup>
 
