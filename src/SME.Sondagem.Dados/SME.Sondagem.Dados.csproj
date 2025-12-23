@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interceptors\**" />
+    <EmbeddedResource Remove="Interceptors\**" />
+    <None Remove="Interceptors\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<Content Update="@(Content)">
 		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
 	</Content>
@@ -24,11 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Interceptors\" />
+    <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
   </ItemGroup>
 
 </Project>

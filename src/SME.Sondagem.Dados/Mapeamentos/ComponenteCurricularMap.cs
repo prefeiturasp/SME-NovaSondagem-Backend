@@ -25,6 +25,10 @@ namespace SME.Sondagem.Dados.Mapeamentos
                 .HasColumnName("modalidade")
                 .HasMaxLength(100);
 
+            builder.Property(x => x.CodigoEol)
+                .HasColumnName("codigo_eol")
+                .IsRequired();
+
             ConfigurarAuditoria(builder);
 
             builder.HasIndex(x => new { x.Nome, x.Ano, x.Modalidade })

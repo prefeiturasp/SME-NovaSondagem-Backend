@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
     <ProjectReference Include="..\SME.Sondagem.Aplicacao\SME.Sondagem.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
   </ItemGroup>
 
 </Project>
