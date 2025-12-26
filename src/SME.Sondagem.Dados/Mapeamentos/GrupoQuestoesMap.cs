@@ -22,6 +22,10 @@ public class GrupoQuestoesMap : IEntityTypeConfiguration<GrupoQuestoes>
             .HasColumnName("subtitulo")
             .HasColumnType("text");
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasMany(x => x.Questoes)

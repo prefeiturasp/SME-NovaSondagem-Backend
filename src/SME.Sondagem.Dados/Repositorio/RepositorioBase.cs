@@ -7,50 +7,117 @@ namespace SME.Sondagem.Dados.Repositorio;
 
 public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 {
-    private readonly SondagemDbContext _context;
+    protected readonly SondagemDbContext _context;
+    protected readonly DbSet<T> _dbSet;
 
     public RepositorioBase(SondagemDbContext context)
     {
         _context = context;
+        _dbSet = context.Set<T>();
     }
 
-    public Task<IEnumerable<T>> ListarAsync()
+    public virtual async Task<IEnumerable<T>> ListarAsync()
     {
-        throw new NotImplementedException();
+        return await _dbSet
+            .AsNoTracking()
+            .ToListAsync();
     }
 
-    public Task<T> ObterPorIdAsync(long id)
+    public virtual async Task<T?> ObterPorIdAsync(long id)
     {
-        throw new NotImplementedException();
+        return await _dbSet
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 
-    public Task RemoverAsync(long id)
+    public virtual async Task<long> SalvarAsync(T entidade)
     {
-        throw new NotImplementedException();
+        if (entidade.Id == 0)
+        {
+            await _dbSet.AddAsync(entidade);
+        }
+        else
+        {
+            _dbSet.Update(entidade);
+        }
+
+        await _context.SaveChangesAsync();
+        return entidade.Id;
     }
 
-    public async Task RemoverAsync(T entidade)
+    public virtual async Task RemoverAsync(long id)
     {
-        _context.Set<T>().Remove(entidade);
+        var entidade = await _dbSet.FindAsync((int)id);
+        if (entidade != null)
+        {
+            _dbSet.Remove(entidade);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public virtual async Task RemoverAsync(T entidade)
+    {
+        _dbSet.Remove(entidade);
         await _context.SaveChangesAsync();
     }
 
-    public Task<long> RemoverLogico(long id, string coluna = null)
+    public virtual async Task<long> RemoverLogico(long id, string coluna = null)
     {
-        throw new NotImplementedException();
+        // Adicione IgnoreQueryFilters para deixar explícito
+        var entidade = await _dbSet
+            .IgnoreQueryFilters() // Importante!
+            .FirstOrDefaultAsync(e => e.Id == (int)id);
+
+        if (entidade == null)
+            return 0;
+
+        entidade.Excluido = true;
+        await _context.SaveChangesAsync();
+
+        return entidade.Id;
     }
 
-    public Task<bool> RemoverLogico(long[] id, string coluna = null)
+    public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null)
     {
-        throw new NotImplementedException();
-    }
+        if (ids == null || ids.Length == 0)
+            return false;
 
-    public async Task<long> SalvarAsync(T entidade)
-    {
-        var entryTrack = await _context.Set<T>().AddAsync(entidade);
+        var entidades = await _dbSet
+            .Where(e => ids.Contains(e.Id))
+            .ToListAsync();
+
+        if (!entidades.Any())
+            return false;
+
+        foreach (var entidade in entidades)
+        {
+            entidade.Excluido = true;
+        }
 
         await _context.SaveChangesAsync();
-        entryTrack.State = EntityState.Detached;
-        return entryTrack.Entity.Id;
+        return true;
+    }
+
+    public virtual async Task<bool> RestaurarAsync(long id)
+    {
+        var entidade = await _dbSet
+            .IgnoreQueryFilters() // Importante!
+            .FirstOrDefaultAsync(e => e.Id == (int)id);
+
+        if (entidade == null)
+            return false;
+
+        entidade.Excluido = false;
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public virtual async Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync()
+    {
+        return await _dbSet
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

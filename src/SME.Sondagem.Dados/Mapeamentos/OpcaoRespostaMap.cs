@@ -30,6 +30,10 @@ public class OpcaoRespostaMap : IEntityTypeConfiguration<OpcaoResposta>
             .HasColumnName("cor_texto")
             .HasColumnType("text");
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => x.DescricaoOpcaoResposta)

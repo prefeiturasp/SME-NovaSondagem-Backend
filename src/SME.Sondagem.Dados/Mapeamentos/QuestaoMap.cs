@@ -69,6 +69,10 @@ public class QuestaoMap : IEntityTypeConfiguration<Questao>
             .HasColumnName("nome_componente")
             .HasMaxLength(200);
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         // Relacionamentos

@@ -14,4 +14,5 @@ public abstract class EntidadeBase
     public DateTime CriadoEm { get; set; }
     public string CriadoPor { get; set; } = string.Empty;
     public string CriadoRF { get; set; } = string.Empty;
+    public bool Excluido { get; set; } = false;
 }

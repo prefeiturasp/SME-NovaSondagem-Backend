@@ -21,6 +21,10 @@ public class AlunoMap : IEntityTypeConfiguration<Aluno>
             .HasColumnName("nome_aluno")
             .HasMaxLength(200);
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         builder.Property(x => x.IsPap)
             .HasColumnName("is_pap")
             .HasDefaultValue(false);

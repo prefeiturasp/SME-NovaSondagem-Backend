@@ -33,6 +33,10 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasColumnName("data_resposta")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId })

@@ -29,6 +29,10 @@ namespace SME.Sondagem.Dados.Mapeamentos
                 .HasColumnName("codigo_eol")
                 .IsRequired();
 
+            builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
             ConfigurarAuditoria(builder);
 
             builder.HasIndex(x => new { x.Nome, x.Ano, x.Modalidade })

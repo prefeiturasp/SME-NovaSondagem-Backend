@@ -22,6 +22,10 @@ public class CicloMap : IEntityTypeConfiguration<Ciclo>
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => x.CodCicloEnsinoEol)

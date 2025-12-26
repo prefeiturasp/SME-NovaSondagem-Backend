@@ -25,6 +25,10 @@ public class QuestaoOpcaoRespostaMap : IEntityTypeConfiguration<QuestaoOpcaoResp
             .HasColumnName("ordem")
             .IsRequired();
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => new { x.QuestaoId, x.OpcaoRespostaId })

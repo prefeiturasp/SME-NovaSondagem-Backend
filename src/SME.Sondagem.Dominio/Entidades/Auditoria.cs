@@ -13,6 +13,7 @@ public class Auditoria
         Usuario = usuario;
         Perfil = perfil;
         Administrador = administrador;
+        Detalhes = new List<AuditoriaDetalhe>();
     }
 
     public string? Acao { get; private set; }
@@ -24,4 +25,7 @@ public class Auditoria
     public string? Usuario { get; private set; }
     public Guid? Perfil { get; private set; }
     public string? Administrador { get; private set; }
+
+    // Navegação para detalhes
+    public ICollection<AuditoriaDetalhe> Detalhes { get; private set; }
 }

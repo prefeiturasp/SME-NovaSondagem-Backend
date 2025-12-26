@@ -4,11 +4,10 @@ namespace SME.Sondagem.Dominio.Entidades.Questionario;
 
 public class Questionario : EntidadeBase
 {
-    public Questionario(string nome, TipoQuestionario tipo, bool excluido, int anoLetivo, int? modalidadeId, string? modalidadeDesc, int? dreId, string? dreNome, int? ueId, string? ueNome, int? serieAno, string? serieAnoNome, int? turmaId, string? turmaNome, int componenteCurricularId, int proficienciaId, int cicloId)
+    public Questionario(string nome, TipoQuestionario tipo, int anoLetivo, int? modalidadeId, string? modalidadeDesc, int? dreId, string? dreNome, int? ueId, string? ueNome, int? serieAno, string? serieAnoNome, int? turmaId, string? turmaNome, int componenteCurricularId, int proficienciaId, int cicloId)
     {
         Nome = nome;
         Tipo = tipo;
-        Excluido = excluido;
         AnoLetivo = anoLetivo;
         ModalidadeId = modalidadeId;
         ModalidadeDesc = modalidadeDesc;
@@ -27,7 +26,6 @@ public class Questionario : EntidadeBase
 
     public string Nome { get; private set; } = string.Empty;
     public TipoQuestionario Tipo { get; private set; }
-    public bool Excluido { get; private set; }
     public int AnoLetivo { get; private set; }
     public int? ModalidadeId { get; private set; }
     public string? ModalidadeDesc { get; private set; }

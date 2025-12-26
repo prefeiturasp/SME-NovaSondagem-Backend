@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251226173259_AddExcluidoNaEntidadeBase")]
+    partial class AddExcluidoNaEntidadeBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,109 +24,6 @@ namespace SME.Sondagem.Dados.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Auditoria", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<string>("Acao")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("acao");
-
-                    b.Property<string>("Administrador")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("administrador");
-
-                    b.Property<long>("Chave")
-                        .HasColumnType("bigint")
-                        .HasColumnName("chave");
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("data");
-
-                    b.Property<string>("Entidade")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("entidade");
-
-                    b.Property<Guid?>("Perfil")
-                        .HasColumnType("uuid")
-                        .HasColumnName("perfil");
-
-                    b.Property<string>("RF")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("rf");
-
-                    b.Property<string>("Usuario")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("usuario");
-
-                    b.HasKey("Id")
-                        .HasName("pk_auditoria");
-
-                    b.HasIndex("Chave")
-                        .HasDatabaseName("ix_auditoria_chave");
-
-                    b.HasIndex("Data")
-                        .HasDatabaseName("ix_auditoria_data");
-
-                    b.HasIndex("Entidade")
-                        .HasDatabaseName("ix_auditoria_entidade");
-
-                    b.HasIndex("Entidade", "Chave")
-                        .HasDatabaseName("ix_auditoria_entidade_chave");
-
-                    b.ToTable("auditoria", (string)null);
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.AuditoriaDetalhe", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
-
-                    b.Property<Guid>("AuditoriaId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("auditoria_id");
-
-                    b.Property<string>("NomePropriedade")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("nome_propriedade");
-
-                    b.Property<string>("ValorAntigo")
-                        .HasColumnType("text")
-                        .HasColumnName("valor_antigo");
-
-                    b.Property<string>("ValorNovo")
-                        .HasColumnType("text")
-                        .HasColumnName("valor_novo");
-
-                    b.HasKey("Id")
-                        .HasName("pk_auditoria_detalhe");
-
-                    b.HasIndex("AuditoriaId")
-                        .HasDatabaseName("ix_auditoria_detalhe_auditoria_id");
-
-                    b.HasIndex("NomePropriedade")
-                        .HasDatabaseName("ix_auditoria_detalhe_nome_propriedade");
-
-                    b.ToTable("auditoria_detalhe", (string)null);
-                });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Ciclo.Ciclo", b =>
                 {
@@ -1046,18 +946,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.ToTable("sondagem", (string)null);
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.AuditoriaDetalhe", b =>
-                {
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.Auditoria", "Auditoria")
-                        .WithMany("Detalhes")
-                        .HasForeignKey("AuditoriaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_auditoria_detalhe_auditoria");
-
-                    b.Navigation("Auditoria");
-                });
-
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Proficiencia.Proficiencia", b =>
                 {
                     b.HasOne("SME.Sondagem.Dominio.Entidades.ComponenteCurricular.ComponenteCurricular", "ComponenteCurricular")
@@ -1189,11 +1077,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasConstraintName("fk_sondagem_questionario");
 
                     b.Navigation("Questionario");
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Auditoria", b =>
-                {
-                    b.Navigation("Detalhes");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Ciclo.Ciclo", b =>

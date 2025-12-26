@@ -20,6 +20,10 @@ public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.S
             .HasColumnName("data_aplicacao")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
+        builder.Property(x => x.Excluido)
+            .HasColumnName("excluido")
+            .HasDefaultValue(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasOne(x => x.Questionario)

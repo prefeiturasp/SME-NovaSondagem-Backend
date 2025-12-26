@@ -16,6 +16,8 @@ using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infra.Services;
+using SME.Sondagem.Infrastructure.Interfaces;
+using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 
 namespace SME.Sondagem.IoC;
@@ -42,7 +44,7 @@ public static class RegistraDependencias
     {
         services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         services.TryAddScoped<IServicoLog, ServicoLog>();
-
+        services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
