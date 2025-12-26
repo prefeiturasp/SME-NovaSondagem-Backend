@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
+[ExcludeFromCodeCoverage]
 public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.Sondagem>
 {
     public void Configure(EntityTypeBuilder<Dominio.Entidades.Sondagem.Sondagem> builder)

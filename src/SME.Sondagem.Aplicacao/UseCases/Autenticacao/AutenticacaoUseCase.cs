@@ -74,7 +74,7 @@ public class AutenticacaoUseCase : IAutenticacaoUseCase
 
         var rf = principal.FindFirst("rf")?.Value;
         var perfil = principal.FindFirst("perfil")?.Value;
-        var roles = principal.FindAll("roles").Select(c => c.Value).ToList();
+        var roles = principal.Claims.Where(c => c.Type == "roles").Select(c => c.Value).ToList();
 
         if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(nome))
         {

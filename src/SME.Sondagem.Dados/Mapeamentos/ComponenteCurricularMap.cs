@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SME.Sondagem.Dominio.Entidades.ComponenteCurricular;
+using SME.Sondagem.Dominio.Entidades;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos
 {
+    [ExcludeFromCodeCoverage]
     public class ComponenteCurricularMap : IEntityTypeConfiguration<ComponenteCurricular>
     {
         public void Configure(EntityTypeBuilder<ComponenteCurricular> builder)

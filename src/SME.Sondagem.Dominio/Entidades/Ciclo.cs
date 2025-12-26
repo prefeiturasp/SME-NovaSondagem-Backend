@@ -1,4 +1,4 @@
-﻿namespace SME.Sondagem.Dominio.Entidades.Ciclo;
+﻿namespace SME.Sondagem.Dominio.Entidades;
 
 public class Ciclo : EntidadeBase
 {

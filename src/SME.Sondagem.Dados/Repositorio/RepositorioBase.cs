@@ -2,9 +2,11 @@
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio;
 
+[ExcludeFromCodeCoverage]
 public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 {
     protected readonly SondagemDbContext _context;

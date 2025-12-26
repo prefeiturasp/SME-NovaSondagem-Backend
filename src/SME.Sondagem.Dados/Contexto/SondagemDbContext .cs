@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dominio.Entidades;
-using SME.Sondagem.Dominio.Entidades.Ciclo;
-using SME.Sondagem.Dominio.Entidades.ComponenteCurricular;
-using SME.Sondagem.Dominio.Entidades.Estudantes;
-using SME.Sondagem.Dominio.Entidades.Proficiencia;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Infrastructure.Interfaces;

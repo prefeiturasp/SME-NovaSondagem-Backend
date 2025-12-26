@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
+using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 
 namespace SME.Sondagem.API.Controllers;
@@ -8,19 +8,19 @@ namespace SME.Sondagem.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
-public class ProficienciaController : ControllerBase
+public class SondagensController : ControllerBase
 {
-    private readonly IProficienciaUseCase proficienciaUseCase;
+    private readonly ISondagemUseCase sondagemUseCase;
 
-    public ProficienciaController(IProficienciaUseCase proficienciaUseCase)
+    public SondagensController(ISondagemUseCase sondagemUseCase)
     {
-        this.proficienciaUseCase = proficienciaUseCase;
+        this.sondagemUseCase = sondagemUseCase;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var resultado = await proficienciaUseCase.ObterProficienciasAsync();
+        var resultado = await sondagemUseCase.ObterTodasSondagensAsync();
         return Ok(resultado);
     }
 }

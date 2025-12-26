@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
+[ExcludeFromCodeCoverage]
 public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
 {
     public void Configure(EntityTypeBuilder<RespostaAluno> builder)
