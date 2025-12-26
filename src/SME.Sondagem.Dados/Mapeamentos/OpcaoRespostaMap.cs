@@ -22,6 +22,14 @@ public class OpcaoRespostaMap : IEntityTypeConfiguration<OpcaoResposta>
             .HasColumnName("legenda")
             .HasColumnType("text");
 
+        builder.Property(x => x.CorFundo)
+            .HasColumnName("cor_fundo")
+            .HasColumnType("text");
+
+        builder.Property(x => x.CorTexto)
+            .HasColumnName("cor_texto")
+            .HasColumnType("text");
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => x.DescricaoOpcaoResposta)
