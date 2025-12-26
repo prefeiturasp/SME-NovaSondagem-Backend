@@ -1,5 +1,4 @@
 ﻿namespace SME.Sondagem.Dominio.Enums;
-
 public enum LogNivel
 {
     Informacao = 1,

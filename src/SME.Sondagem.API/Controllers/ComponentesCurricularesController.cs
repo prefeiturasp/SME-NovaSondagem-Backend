@@ -8,11 +8,11 @@ namespace SME.Sondagem.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
-public class ComponenteCurricularController : ControllerBase
+public class ComponentesCurricularesController : ControllerBase
 {
     private readonly IComponenteCurricularUseCase componenteUseCase;
 
-    public ComponenteCurricularController(IComponenteCurricularUseCase componenteUseCase)
+    public ComponentesCurricularesController(IComponenteCurricularUseCase componenteUseCase)
     {
         this.componenteUseCase = componenteUseCase;
     }

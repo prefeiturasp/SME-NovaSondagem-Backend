@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SME.Sondagem.Dominio.Entidades.Questionario;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
 public class GrupoQuestoesMap : IEntityTypeConfiguration<GrupoQuestoes>
 {
+    [ExcludeFromCodeCoverage]
     public void Configure(EntityTypeBuilder<GrupoQuestoes> builder)
     {
         builder.ToTable("grupo_questoes");

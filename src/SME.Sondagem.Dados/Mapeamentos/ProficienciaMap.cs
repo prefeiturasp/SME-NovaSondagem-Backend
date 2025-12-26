@@ -1,11 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SME.Sondagem.Dominio.Entidades.Proficiencia;
+using SME.Sondagem.Dominio.Entidades;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
 public class ProficienciaMap : IEntityTypeConfiguration<Proficiencia>
 {
+    [ExcludeFromCodeCoverage]
     public void Configure(EntityTypeBuilder<Proficiencia> builder)
     {
         builder.ToTable("proficiencia");

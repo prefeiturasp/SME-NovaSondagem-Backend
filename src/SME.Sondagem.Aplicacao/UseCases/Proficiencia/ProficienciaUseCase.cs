@@ -1,7 +1,7 @@
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Dados.Interfaces;
 
-namespace SME.Sondagem.Aplicacao.UseCases.Estudantes;
+namespace SME.Sondagem.Aplicacao.UseCases.Aluno;
 
 public class ProficienciaUseCase : IProficienciaUseCase
 {

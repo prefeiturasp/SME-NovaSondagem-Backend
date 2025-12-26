@@ -1,6 +1,6 @@
 ﻿using SME.Sondagem.Dominio.Entidades.Sondagem;
 
-namespace SME.Sondagem.Dominio.Entidades.Estudantes;
+namespace SME.Sondagem.Dominio.Entidades;
 
 public class Aluno : EntidadeBase
 {

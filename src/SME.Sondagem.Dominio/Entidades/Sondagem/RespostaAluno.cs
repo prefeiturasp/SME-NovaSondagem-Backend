@@ -1,5 +1,4 @@
-﻿using SME.Sondagem.Dominio.Entidades.Estudantes;
-using SME.Sondagem.Dominio.Entidades.Questionario;
+﻿using SME.Sondagem.Dominio.Entidades.Questionario;
 
 namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 

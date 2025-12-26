@@ -1,8 +1,10 @@
 ﻿using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Dtos.Questionario;
 
+[ExcludeFromCodeCoverage]
 public class QuestaoDto
 {
     public QuestaoDto()

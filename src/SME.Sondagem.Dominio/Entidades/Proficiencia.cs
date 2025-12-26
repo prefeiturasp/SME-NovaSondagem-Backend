@@ -1,4 +1,4 @@
-﻿namespace SME.Sondagem.Dominio.Entidades.Proficiencia;
+﻿namespace SME.Sondagem.Dominio.Entidades;
 
 public class Proficiencia : EntidadeBase
 {
@@ -12,6 +12,6 @@ public class Proficiencia : EntidadeBase
     public int ComponenteCurricularId { get; private set; }
 
     // Navegação
-    public virtual ComponenteCurricular.ComponenteCurricular ComponenteCurricular { get; private set; } = null!;
+    public virtual ComponenteCurricular ComponenteCurricular { get; private set; } = null!;
     public virtual ICollection<Questionario.Questionario> Questionarios { get; private set; } = new List<Questionario.Questionario>();
 }

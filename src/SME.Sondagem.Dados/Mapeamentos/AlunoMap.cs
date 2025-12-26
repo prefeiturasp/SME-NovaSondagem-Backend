@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SME.Sondagem.Dominio.Entidades.Estudantes;
+using SME.Sondagem.Dominio.Entidades;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
+[ExcludeFromCodeCoverage]
 public class AlunoMap : IEntityTypeConfiguration<Aluno>
 {
     public void Configure(EntityTypeBuilder<Aluno> builder)

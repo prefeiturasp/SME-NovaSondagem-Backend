@@ -12,7 +12,7 @@ public static class RegistraRepositorios
         services.AddScoped<ICicloRepository, CicloRepository>();
         services.AddScoped<IProficienciaRepository, ProficienciaRepository>();
         services.AddScoped<IComponenteCurricularRepository, ComponenteCurricularRepository>();
-        services.AddScoped<IEstudantesRepository, EstudantesRepository>();
+        services.AddScoped<IAlunoRepository, AlunoRepository>();
         services.AddScoped<IQuestaoRepository, QuestaoRepository>();
         services.AddScoped<IOpcaoRespostaRepository, OpcaoRespostaRepository>();
     }

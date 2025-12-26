@@ -44,9 +44,9 @@ public class Questionario : EntidadeBase
     public int CicloId { get; private set; }
 
     // Navegação
-    public virtual ComponenteCurricular.ComponenteCurricular ComponenteCurricular { get; private set; } = null!;
-    public virtual Proficiencia.Proficiencia Proficiencia { get; private set; } = null!;
-    public virtual Ciclo.Ciclo Ciclo { get; private set; } = null!;
+    public virtual ComponenteCurricular ComponenteCurricular { get; private set; } = null!;
+    public virtual Proficiencia Proficiencia { get; private set; } = null!;
+    public virtual Ciclo Ciclo { get; private set; } = null!;
     public virtual ICollection<Questao> Questoes { get; private set; } = new List<Questao>();
     public virtual ICollection<Sondagem.Sondagem> Sondagens { get; private set; } = new List<Sondagem.Sondagem>();
 }

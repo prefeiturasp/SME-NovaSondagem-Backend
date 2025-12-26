@@ -156,7 +156,7 @@ namespace SME.Sondagem.Dados.Migrations
                     b.ToTable("componente_curricular", (string)null);
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Estudantes.Aluno", b =>
+            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Aluno", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -962,7 +962,7 @@ namespace SME.Sondagem.Dados.Migrations
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.RespostaAluno", b =>
                 {
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.Estudantes.Aluno", "Aluno")
+                    b.HasOne("SME.Sondagem.Dominio.Entidades.Aluno", "Aluno")
                         .WithMany("Respostas")
                         .HasForeignKey("AlunoId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1023,7 +1023,7 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("Questionarios");
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Estudantes.Aluno", b =>
+            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Aluno", b =>
                 {
                     b.Navigation("Respostas");
                 });
