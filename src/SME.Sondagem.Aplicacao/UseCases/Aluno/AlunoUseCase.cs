@@ -5,9 +5,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Aluno;
 
 public class AlunoUseCase : IAlunoUseCase
 {
-    private readonly IAlunoRepository alunoRepository;
+    private readonly IRepositorioAluno alunoRepository;
 
-    public AlunoUseCase(IAlunoRepository alunoRepository)
+    public AlunoUseCase(IRepositorioAluno alunoRepository)
     {
         this.alunoRepository = alunoRepository;
     }

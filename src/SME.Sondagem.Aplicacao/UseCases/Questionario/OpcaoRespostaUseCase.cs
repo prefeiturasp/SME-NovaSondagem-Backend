@@ -5,9 +5,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
 public class OpcaoRespostaUseCase : IOpcaoRespostaUseCase
 {
-    private readonly IOpcaoRespostaRepository opcaoRespostaRepository;
+    private readonly IRepositorioOpcaoResposta opcaoRespostaRepository;
 
-    public OpcaoRespostaUseCase(IOpcaoRespostaRepository opcaoRespostaRepository)
+    public OpcaoRespostaUseCase(IRepositorioOpcaoResposta opcaoRespostaRepository)
     {
         this.opcaoRespostaRepository = opcaoRespostaRepository;
     }

@@ -7,12 +7,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Ciclo
 {
     public class CicloUseCaseTeste
     {
-        private readonly Mock<ICicloRepository> cicloRepositoryMock;
+        private readonly Mock<IRepositorioCiclo> cicloRepositoryMock;
         private readonly CicloUseCase useCase;
 
         public CicloUseCaseTeste()
         {
-            cicloRepositoryMock = new Mock<ICicloRepository>();
+            cicloRepositoryMock = new Mock<IRepositorioCiclo>();
             useCase = new CicloUseCase(cicloRepositoryMock.Object);
         }
 

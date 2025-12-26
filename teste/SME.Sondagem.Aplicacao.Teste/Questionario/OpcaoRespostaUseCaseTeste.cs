@@ -7,12 +7,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Questionario
 {
     public class OpcaoRespostaUseCaseTeste
     {
-        private readonly Mock<IOpcaoRespostaRepository> opcaoRespostaRepositoryMock;
+        private readonly Mock<IRepositorioOpcaoResposta> opcaoRespostaRepositoryMock;
         private readonly OpcaoRespostaUseCase useCase;
 
         public OpcaoRespostaUseCaseTeste()
         {
-            opcaoRespostaRepositoryMock = new Mock<IOpcaoRespostaRepository>();
+            opcaoRespostaRepositoryMock = new Mock<IRepositorioOpcaoResposta>();
             useCase = new OpcaoRespostaUseCase(opcaoRespostaRepositoryMock.Object);
         }
 

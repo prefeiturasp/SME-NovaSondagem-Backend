@@ -5,9 +5,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
 {
     public class SondagemUseCase : ISondagemUseCase
     {
-        private readonly ISondagemRepository sondagemRepository;
+        private readonly IRepositorioSondagem sondagemRepository;
 
-        public SondagemUseCase(ISondagemRepository sondagemRepository)
+        public SondagemUseCase(IRepositorioSondagem sondagemRepository)
         {
             this.sondagemRepository = sondagemRepository;
         }

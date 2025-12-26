@@ -1,21 +1,24 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.Sondagem.Aplicacao.Interfaces.Aluno;
 using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
 using SME.Sondagem.Aplicacao.Interfaces.Ciclo;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
-using SME.Sondagem.Aplicacao.Interfaces.Aluno;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
+using SME.Sondagem.Aplicacao.UseCases.Aluno;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Ciclo;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
-using SME.Sondagem.Aplicacao.UseCases.Aluno;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
+using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infra.Services;
+using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
@@ -31,6 +34,7 @@ public static class RegistraDependencias
         RegistrarRepositorios(services);
         RegistrarServicos(services);
         RegistrarCasosDeUso(services);
+        RegistrarValidadores(services);
         RegistrarContextos(services);
         //RegistraMapeamentos.Registrar();
     }
@@ -59,6 +63,12 @@ public static class RegistraDependencias
         services.TryAddScoped<IQuestaoUseCase, QuestaoUseCase>();
         services.TryAddScoped<IOpcaoRespostaUseCase, OpcaoRespostaUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
+    }
+
+    private static void RegistrarValidadores(IServiceCollection services)
+    {
+        services.TryAddScoped<IValidator<CriarComponenteCurricularDto>, CriarComponenteCurricularValidator>();
+        services.TryAddScoped<IValidator<AtualizarComponenteCurricularDto>, AtualizarComponenteCurricularValidator>();
     }
 
     private static void RegistrarContextos(IServiceCollection services)

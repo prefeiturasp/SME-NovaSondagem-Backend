@@ -5,15 +5,15 @@ namespace SME.Sondagem.Aplicacao.UseCases.Aluno;
 
 public class ProficienciaUseCase : IProficienciaUseCase
 {
-    private readonly IProficienciaRepository proficienciaRepository;
+    private readonly IRepositorioProficiencia repositorioProficiencia;
 
-    public ProficienciaUseCase(IProficienciaRepository proficienciaRepository)
+    public ProficienciaUseCase(IRepositorioProficiencia proficienciaRepository)
     {
-        this.proficienciaRepository = proficienciaRepository;
+        this.repositorioProficiencia = proficienciaRepository;
     }
 
     public async Task<IEnumerable<object>> ObterProficienciasAsync()
     {
-        return await proficienciaRepository.ObterTodosAsync();
+        return await repositorioProficiencia.ObterTodosAsync();
     }
 }

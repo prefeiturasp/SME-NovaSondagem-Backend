@@ -7,12 +7,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Questionario
 {
     public class QuestaoUseCaseTeste
     {
-        private readonly Mock<IQuestaoRepository> questaoRepositoryMock;
+        private readonly Mock<IRepositorioQuestao> questaoRepositoryMock;
         private readonly QuestaoUseCase useCase;
 
         public QuestaoUseCaseTeste()
         {
-            questaoRepositoryMock = new Mock<IQuestaoRepository>();
+            questaoRepositoryMock = new Mock<IRepositorioQuestao>();
             useCase = new QuestaoUseCase(questaoRepositoryMock.Object);
         }
 

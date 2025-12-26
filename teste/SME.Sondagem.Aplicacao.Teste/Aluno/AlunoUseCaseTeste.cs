@@ -7,12 +7,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Aluno
 {
     public class AlunoUseCaseTeste
     {
-        private readonly Mock<IAlunoRepository> alunoRepositoryMock;
+        private readonly Mock<IRepositorioAluno> alunoRepositoryMock;
         private readonly AlunoUseCase useCase;
 
         public AlunoUseCaseTeste()
         {
-            alunoRepositoryMock = new Mock<IAlunoRepository>();
+            alunoRepositoryMock = new Mock<IRepositorioAluno>();
             useCase = new AlunoUseCase(alunoRepositoryMock.Object);
         }
 

@@ -7,12 +7,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Sondagem
 {
     public class SondagemUseCaseTeste
     {
-        private readonly Mock<ISondagemRepository> sondagemRepositoryMock;
+        private readonly Mock<IRepositorioSondagem> sondagemRepositoryMock;
         private readonly SondagemUseCase useCase;
 
         public SondagemUseCaseTeste()
         {
-            sondagemRepositoryMock = new Mock<ISondagemRepository>();
+            sondagemRepositoryMock = new Mock<IRepositorioSondagem>();
             useCase = new SondagemUseCase(sondagemRepositoryMock.Object);
         }
 

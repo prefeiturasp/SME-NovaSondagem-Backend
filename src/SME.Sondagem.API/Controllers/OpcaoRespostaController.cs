@@ -1,28 +1,26 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.Aplicacao.Interfaces.Aluno;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.API.Controllers;
 
-[ExcludeFromCodeCoverage]
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
-public class AlunosController : ControllerBase
+public class OpcaoRespostaController : ControllerBase
 {
-    private readonly IAlunoUseCase alunosUseCase;
+    private readonly IOpcaoRespostaUseCase opcaoRespostaUseCase;
 
-    public AlunosController(IAlunoUseCase alunosUseCase)
+    public OpcaoRespostaController(IOpcaoRespostaUseCase opcaoRespostaUseCase)
     {
-        this.alunosUseCase = alunosUseCase;
+        this.opcaoRespostaUseCase = opcaoRespostaUseCase;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var resultado = await alunosUseCase.ObterAlunosAsync();
+        var resultado = await opcaoRespostaUseCase.ObterOpcoesRespostaAsync();
         return Ok(resultado);
     }
 }

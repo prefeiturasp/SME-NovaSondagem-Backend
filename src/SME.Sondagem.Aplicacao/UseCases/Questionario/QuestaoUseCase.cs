@@ -5,9 +5,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
 public class QuestaoUseCase : IQuestaoUseCase
 {
-    private readonly IQuestaoRepository questaoRepository;
+    private readonly IRepositorioQuestao questaoRepository;
 
-    public QuestaoUseCase(IQuestaoRepository questaoRepository)
+    public QuestaoUseCase(IRepositorioQuestao questaoRepository)
     {
         this.questaoRepository = questaoRepository;
     }

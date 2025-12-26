@@ -8,11 +8,11 @@ namespace SME.Sondagem.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
-public class CiclosController : ControllerBase
+public class CicloController : ControllerBase
 {
     private readonly ICicloUseCase cicloUseCase;
 
-    public CiclosController(ICicloUseCase cicloUseCase)
+    public CicloController(ICicloUseCase cicloUseCase)
     {
         this.cicloUseCase = cicloUseCase;
     }

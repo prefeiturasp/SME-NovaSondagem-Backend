@@ -5,9 +5,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Ciclo;
 
 public class CicloUseCase : ICicloUseCase
 {
-    private readonly ICicloRepository cicloRepository;
+    private readonly IRepositorioCiclo cicloRepository;
 
-    public CicloUseCase(ICicloRepository cicloRepository)
+    public CicloUseCase(IRepositorioCiclo cicloRepository)
     {
         this.cicloRepository = cicloRepository;
     }

@@ -1,6 +1,6 @@
 namespace SME.Sondagem.Dados.Interfaces;
 
-public interface IQuestionarioRepository
+public interface IRepositorioQuestao
 {
     Task<IEnumerable<object>> ObterTodosAsync();
     Task<object> ObterPorIdAsync(Guid id);

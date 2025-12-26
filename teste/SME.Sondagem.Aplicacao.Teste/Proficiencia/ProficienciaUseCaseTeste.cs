@@ -7,13 +7,13 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
 {
     public class ProficienciaUseCaseTeste
     {
-        private readonly Mock<IProficienciaRepository> proficienciaRepositoryMock;
+        private readonly Mock<IRepositorioProficiencia> repositorioProficienciaMock;
         private readonly ProficienciaUseCase useCase;
 
         public ProficienciaUseCaseTeste()
         {
-            proficienciaRepositoryMock = new Mock<IProficienciaRepository>();
-            useCase = new ProficienciaUseCase(proficienciaRepositoryMock.Object);
+            repositorioProficienciaMock = new Mock<IRepositorioProficiencia>();
+            useCase = new ProficienciaUseCase(repositorioProficienciaMock.Object);
         }
 
         [Fact]
@@ -25,7 +25,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
                 new { Id = 2, Descricao = "Adequado" }
             };
 
-            proficienciaRepositoryMock
+            repositorioProficienciaMock
                 .Setup(r => r.ObterTodosAsync())
                 .ReturnsAsync(proficiencias);
 
@@ -34,7 +34,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             Assert.NotNull(resultado);
             Assert.Equal(proficiencias, resultado);
 
-            proficienciaRepositoryMock.Verify(
+            repositorioProficienciaMock.Verify(
                 r => r.ObterTodosAsync(),
                 Times.Once);
         }
@@ -44,7 +44,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
         {
             var proficiencias = new List<object>();
 
-            proficienciaRepositoryMock
+            repositorioProficienciaMock
                 .Setup(r => r.ObterTodosAsync())
                 .ReturnsAsync(proficiencias);
 
@@ -53,7 +53,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
 
-            proficienciaRepositoryMock.Verify(
+            repositorioProficienciaMock.Verify(
                 r => r.ObterTodosAsync(),
                 Times.Once);
         }

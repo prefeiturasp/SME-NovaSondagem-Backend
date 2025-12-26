@@ -3,11 +3,11 @@ using SME.Sondagem.Dados.Interfaces;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
-public class OpcaoRespostaRepository : IOpcaoRespostaRepository
+public class RepositorioQuestionario : IRepositorioQuestionario
 {
     private readonly IConfiguration configuration;
 
-    public OpcaoRespostaRepository(IConfiguration configuration)
+    public RepositorioQuestionario(IConfiguration configuration)
     {
         this.configuration = configuration;
     }
