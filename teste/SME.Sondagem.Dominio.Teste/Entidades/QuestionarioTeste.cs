@@ -11,7 +11,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var nome = "Questionário Diagnóstico";
             var tipo = TipoQuestionario.SondagemEscrita;
-            var excluido = false;
             var anoLetivo = 2025;
             int? modalidadeId = 1;
             var modalidadeDesc = "Regular";
@@ -30,7 +29,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var questionario = new Questionario(
                 nome,
                 tipo,
-                excluido,
                 anoLetivo,
                 modalidadeId,
                 modalidadeDesc,
@@ -49,7 +47,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
 
             Assert.Equal(nome, questionario.Nome);
             Assert.Equal(tipo, questionario.Tipo);
-            Assert.Equal(excluido, questionario.Excluido);
             Assert.Equal(anoLetivo, questionario.AnoLetivo);
             Assert.Equal(modalidadeId, questionario.ModalidadeId);
             Assert.Equal(modalidadeDesc, questionario.ModalidadeDesc);
@@ -99,7 +96,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             return new Questionario(
                 nome: "Teste",
                 tipo: TipoQuestionario.SondagemEscrita,
-                excluido: false,
                 anoLetivo: 2024,
                 modalidadeId: null,
                 modalidadeDesc: null,
