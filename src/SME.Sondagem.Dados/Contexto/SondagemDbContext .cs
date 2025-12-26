@@ -66,17 +66,6 @@ public class SondagemDbContext : DbContext
         if (todasAuditorias.Any())
         {
             await Auditorias.AddRangeAsync(todasAuditorias, cancellationToken);
-
-            // Salva os detalhes também
-            var todosDetalhes = todasAuditorias
-                .SelectMany(a => a.Detalhes)
-                .ToList();
-
-            if (todosDetalhes.Any())
-            {
-                await AuditoriasDetalhes.AddRangeAsync(todosDetalhes, cancellationToken);
-            }
-
             await base.SaveChangesAsync(cancellationToken);
         }
 
@@ -97,16 +86,6 @@ public class SondagemDbContext : DbContext
         if (todasAuditorias.Any())
         {
             Auditorias.AddRange(todasAuditorias);
-
-            var todosDetalhes = todasAuditorias
-                .SelectMany(a => a.Detalhes)
-                .ToList();
-
-            if (todosDetalhes.Any())
-            {
-                AuditoriasDetalhes.AddRange(todosDetalhes);
-            }
-
             base.SaveChanges();
         }
 

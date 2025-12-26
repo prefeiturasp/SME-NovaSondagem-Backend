@@ -2,11 +2,9 @@
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
-using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio;
 
-[ExcludeFromCodeCoverage]
 public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 {
     protected readonly SondagemDbContext _context;
@@ -40,7 +38,16 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         }
         else
         {
-            _dbSet.Update(entidade);
+            var entidadeExistente = await _dbSet.FindAsync(entidade.Id);
+
+            if (entidadeExistente != null)
+            {
+                _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
+            }
+            else
+            {
+                _dbSet.Update(entidade);
+            }
         }
 
         await _context.SaveChangesAsync();
@@ -65,9 +72,8 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 
     public virtual async Task<long> RemoverLogico(long id, string coluna = null)
     {
-        // Adicione IgnoreQueryFilters para deixar explícito
         var entidade = await _dbSet
-            .IgnoreQueryFilters() // Importante!
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(e => e.Id == (int)id);
 
         if (entidade == null)
@@ -85,6 +91,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             return false;
 
         var entidades = await _dbSet
+            .IgnoreQueryFilters()
             .Where(e => ids.Contains(e.Id))
             .ToListAsync();
 
@@ -103,7 +110,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     public virtual async Task<bool> RestaurarAsync(long id)
     {
         var entidade = await _dbSet
-            .IgnoreQueryFilters() // Importante!
+            .IgnoreQueryFilters()
             .FirstOrDefaultAsync(e => e.Id == (int)id);
 
         if (entidade == null)
