@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.Dados.Interceptors;
+using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.IoC;
 
@@ -11,8 +13,10 @@ public static class RegistraEntityFramework
     {
         var connectionString = configuration.GetConnectionString("SondagemConnection");
 
-        services.AddDbContext<SondagemDbContext>(options =>
+        services.AddDbContext<SondagemDbContext>((serviceProvider, options) =>
         {
+            var servicoUsuario = serviceProvider.GetService<IServicoUsuario>();
+
             options.UseNpgsql(
                 connectionString,
                 npgsqlOptions =>
@@ -26,17 +30,15 @@ public static class RegistraEntityFramework
                     npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
                 });
 
-            // Configurações de desenvolvimento
+            options.AddInterceptors(new AuditoriaSaveChangesInterceptor(servicoUsuario));
+
 #if DEBUG
             options.EnableSensitiveDataLogging();
             options.EnableDetailedErrors();
 #endif
-
-            // Configurações de log
             options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
         });
 
-        // Registrar o DbContext como Scoped (padrão do EF Core)
         services.AddScoped<DbContext>(provider => provider.GetRequiredService<SondagemDbContext>());
     }
 }

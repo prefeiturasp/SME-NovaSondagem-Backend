@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Interceptors\**" />
-    <EmbeddedResource Remove="Interceptors\**" />
-    <None Remove="Interceptors\**" />
-  </ItemGroup>
-
-  <ItemGroup>
 	<Content Update="@(Content)">
 		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
 	</Content>
