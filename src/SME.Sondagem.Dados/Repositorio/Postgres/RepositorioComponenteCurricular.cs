@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
-using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
@@ -11,29 +10,29 @@ public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricu
     {
     }
 
-    public async Task<ComponenteCurricular?> ObterPorCodigoEolAsync(int codigoEol)
+    public async Task<ComponenteCurricular?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.CodigoEol == codigoEol);
+            .FirstOrDefaultAsync(c => c.CodigoEol == codigoEol, cancellationToken);
     }
 
-    public async Task<IEnumerable<ComponenteCurricular>> ObterPorAnoAsync(int ano)
+    public async Task<IEnumerable<ComponenteCurricular>> ObterPorAnoAsync(int ano, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .AsNoTracking()
             .Where(c => c.Ano == ano)
             .OrderBy(c => c.Nome)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> ExisteComCodigoEolAsync(int codigoEol, int? idIgnorar = null)
+    public async Task<bool> ExisteComCodigoEolAsync(int codigoEol, int? idIgnorar = null, CancellationToken cancellationToken = default)
     {
         var query = _dbSet.AsNoTracking();
 
         if (idIgnorar.HasValue)
             query = query.Where(c => c.Id != idIgnorar.Value);
 
-        return await query.AnyAsync(c => c.CodigoEol == codigoEol);
+        return await query.AnyAsync(c => c.CodigoEol == codigoEol, cancellationToken);
     }
 }

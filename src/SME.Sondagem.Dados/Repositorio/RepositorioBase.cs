@@ -16,29 +16,29 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         _dbSet = context.Set<T>();
     }
 
-    public virtual async Task<IEnumerable<T>> ListarAsync()
+    public virtual async Task<IEnumerable<T>> ListarAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public virtual async Task<T?> ObterPorIdAsync(long id)
+    public virtual async Task<T?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Id == id);
+            .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
-    public virtual async Task<long> SalvarAsync(T entidade)
+    public virtual async Task<long> SalvarAsync(T entidade, CancellationToken cancellationToken = default)
     {
         if (entidade.Id == 0)
         {
-            await _dbSet.AddAsync(entidade);
+            await _dbSet.AddAsync(entidade, cancellationToken);
         }
         else
         {
-            var entidadeExistente = await _dbSet.FindAsync(entidade.Id);
+            var entidadeExistente = await _dbSet.FindAsync(new object[] { entidade.Id }, cancellationToken);
 
             if (entidadeExistente != null)
             {
@@ -50,42 +50,42 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             }
         }
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return entidade.Id;
     }
 
-    public virtual async Task RemoverAsync(long id)
+    public virtual async Task RemoverAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entidade = await _dbSet.FindAsync((int)id);
+        var entidade = await _dbSet.FindAsync(new object[] { (int)id }, cancellationToken);
         if (entidade != null)
         {
             _dbSet.Remove(entidade);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 
-    public virtual async Task RemoverAsync(T entidade)
+    public virtual async Task RemoverAsync(T entidade, CancellationToken cancellationToken = default)
     {
         _dbSet.Remove(entidade);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public virtual async Task<long> RemoverLogico(long id, string coluna = null)
+    public virtual async Task<long> RemoverLogico(long id, string coluna = null, CancellationToken cancellationToken = default)
     {
         var entidade = await _dbSet
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(e => e.Id == (int)id);
+            .FirstOrDefaultAsync(e => e.Id == (int)id, cancellationToken);
 
         if (entidade == null)
             return 0;
 
         entidade.Excluido = true;
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return entidade.Id;
     }
 
-    public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null)
+    public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null, CancellationToken cancellationToken = default)
     {
         if (ids == null || ids.Length == 0)
             return false;
@@ -93,7 +93,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         var entidades = await _dbSet
             .IgnoreQueryFilters()
             .Where(e => ids.Contains(e.Id))
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (!entidades.Any())
             return false;
@@ -103,30 +103,30 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             entidade.Excluido = true;
         }
 
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public virtual async Task<bool> RestaurarAsync(long id)
+    public virtual async Task<bool> RestaurarAsync(long id, CancellationToken cancellationToken = default)
     {
         var entidade = await _dbSet
             .IgnoreQueryFilters()
-            .FirstOrDefaultAsync(e => e.Id == (int)id);
+            .FirstOrDefaultAsync(e => e.Id == (int)id, cancellationToken);
 
         if (entidade == null)
             return false;
 
         entidade.Excluido = false;
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }
 
-    public virtual async Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync()
+    public virtual async Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync(CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 }

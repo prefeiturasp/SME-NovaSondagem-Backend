@@ -4,13 +4,13 @@ namespace SME.Sondagem.Dados.Interfaces;
 
 public interface IRepositorioBase<T> where T : EntidadeBase
 {
-    Task<IEnumerable<T>> ListarAsync();
-    Task<T?> ObterPorIdAsync(long id);
-    Task RemoverAsync(long id);
-    Task RemoverAsync(T entidade);
-    Task<long> RemoverLogico(long id, string coluna = null);
-    Task<bool> RemoverLogico(long[] ids, string coluna = null);
-    Task<long> SalvarAsync(T entidade);
-    Task<bool> RestaurarAsync(long id);
-    Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync();
+    Task<IEnumerable<T>> ListarAsync(CancellationToken cancellationToken = default);
+    Task<T?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default);
+    Task RemoverAsync(long id, CancellationToken cancellationToken = default);
+    Task RemoverAsync(T entidade, CancellationToken cancellationToken = default);
+    Task<long> RemoverLogico(long id, string coluna = null, CancellationToken cancellationToken = default);
+    Task<bool> RemoverLogico(long[] ids, string coluna = null, CancellationToken cancellationToken = default);
+    Task<long> SalvarAsync(T entidade, CancellationToken cancellationToken = default);
+    Task<bool> RestaurarAsync(long id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync(CancellationToken cancellationToken = default);
 }

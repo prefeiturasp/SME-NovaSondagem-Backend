@@ -4,10 +4,10 @@ namespace SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 
 public interface IComponenteCurricularUseCase
 {
-    Task<ComponenteCurricularDto> CriarAsync(CriarComponenteCurricularDto dto);
-    Task<ComponenteCurricularDto> AtualizarAsync(int id, AtualizarComponenteCurricularDto dto);
-    Task<ComponenteCurricularDto?> ObterPorIdAsync(int id);
-    Task<IEnumerable<ComponenteCurricularDto>> ListarAsync();
-    Task<bool> ExcluirAsync(int id);
-    Task<ComponenteCurricularDto?> ObterPorCodigoEolAsync(int codigoEol);
+    Task<ComponenteCurricularDto> CriarAsync(CriarComponenteCurricularDto dto, CancellationToken cancellationToken = default);
+    Task<ComponenteCurricularDto> AtualizarAsync(int id, AtualizarComponenteCurricularDto dto, CancellationToken cancellationToken = default);
+    Task<ComponenteCurricularDto?> ObterPorIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ComponenteCurricularDto>> ListarAsync(CancellationToken cancellationToken = default);
+    Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default);
+    Task<ComponenteCurricularDto?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default);
 }

@@ -1,6 +1,5 @@
 using FluentValidation;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
-using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using System.Net;
@@ -23,20 +22,20 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         _validatorAtualizar = validatorAtualizar;
     }
 
-    public async Task<ComponenteCurricularDto> CriarAsync(CriarComponenteCurricularDto dto)
+    public async Task<ComponenteCurricularDto> CriarAsync(CriarComponenteCurricularDto dto, CancellationToken cancellationToken = default)
     {
-        var validationResult = await _validatorCriar.ValidateAsync(dto);
+        var validationResult = await _validatorCriar.ValidateAsync(dto, cancellationToken);
         if (!validationResult.IsValid)
         {
             throw new ValidationException(validationResult.Errors);
         }
 
-        var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol);
+        var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol, cancellationToken: cancellationToken);
         if (existe)
         {
             throw new NegocioException(
                 $"Já existe um componente curricular com o código EOL {dto.CodigoEol}",
-                HttpStatusCode.Conflict // 409
+                HttpStatusCode.Conflict
             );
         }
 
@@ -47,21 +46,21 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
             codigoEol: dto.CodigoEol
         );
 
-        var id = await _repositorio.SalvarAsync(entidade);
+        var id = await _repositorio.SalvarAsync(entidade, cancellationToken);
 
-        var entidadeSalva = await _repositorio.ObterPorIdAsync(id);
+        var entidadeSalva = await _repositorio.ObterPorIdAsync(id, cancellationToken);
         return MapearParaDto(entidadeSalva!);
     }
 
-    public async Task<ComponenteCurricularDto> AtualizarAsync(int id, AtualizarComponenteCurricularDto dto)
+    public async Task<ComponenteCurricularDto> AtualizarAsync(int id, AtualizarComponenteCurricularDto dto, CancellationToken cancellationToken = default)
     {
-        var validationResult = await _validatorAtualizar.ValidateAsync(dto);
+        var validationResult = await _validatorAtualizar.ValidateAsync(dto, cancellationToken);
         if (!validationResult.IsValid)
         {
             throw new ValidationException(validationResult.Errors);
         }
 
-        var entidade = await _repositorio.ObterPorIdAsync(id);
+        var entidade = await _repositorio.ObterPorIdAsync(id, cancellationToken);
         if (entidade == null)
         {
             throw new NegocioException(
@@ -70,7 +69,7 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
             );
         }
 
-        var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol, id);
+        var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol, id, cancellationToken);
         if (existe)
         {
             throw new NegocioException(
@@ -90,33 +89,33 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
             .GetProperty("Id")!
             .SetValue(entidadeAtualizada, id);
 
-        await _repositorio.SalvarAsync(entidadeAtualizada);
+        await _repositorio.SalvarAsync(entidadeAtualizada, cancellationToken);
 
-        var entidadeSalva = await _repositorio.ObterPorIdAsync(id);
+        var entidadeSalva = await _repositorio.ObterPorIdAsync(id, cancellationToken);
         return MapearParaDto(entidadeSalva!);
     }
 
-    public async Task<ComponenteCurricularDto?> ObterPorIdAsync(int id)
+    public async Task<ComponenteCurricularDto?> ObterPorIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var entidade = await _repositorio.ObterPorIdAsync(id);
+        var entidade = await _repositorio.ObterPorIdAsync(id, cancellationToken);
         return entidade != null ? MapearParaDto(entidade) : null;
     }
 
-    public async Task<IEnumerable<ComponenteCurricularDto>> ListarAsync()
+    public async Task<IEnumerable<ComponenteCurricularDto>> ListarAsync(CancellationToken cancellationToken = default)
     {
-        var entidades = await _repositorio.ListarAsync();
+        var entidades = await _repositorio.ListarAsync(cancellationToken);
         return entidades.Select(MapearParaDto);
     }
 
-    public async Task<bool> ExcluirAsync(int id)
+    public async Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default)
     {
-        var resultado = await _repositorio.RemoverLogico(id);
+        var resultado = await _repositorio.RemoverLogico(id, cancellationToken: cancellationToken);
         return resultado > 0;
     }
 
-    public async Task<ComponenteCurricularDto?> ObterPorCodigoEolAsync(int codigoEol)
+    public async Task<ComponenteCurricularDto?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default)
     {
-        var entidade = await _repositorio.ObterPorCodigoEolAsync(codigoEol);
+        var entidade = await _repositorio.ObterPorCodigoEolAsync(codigoEol, cancellationToken);
         return entidade != null ? MapearParaDto(entidade) : null;
     }
 
