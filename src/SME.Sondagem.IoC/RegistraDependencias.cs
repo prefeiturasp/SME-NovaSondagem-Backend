@@ -12,10 +12,15 @@ using SME.Sondagem.Aplicacao.UseCases.Aluno;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Ciclo;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
+using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
+using SME.Sondagem.Aplicacao.Validators.Proficiencia;
+using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Infra.Contexto;
+using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
@@ -42,6 +47,7 @@ public static class RegistraDependencias
     private static void RegistrarRepositorios(IServiceCollection services)
     {
         //services.TryAddScoped<IRepositorioCache, RepositorioCache>();
+        services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
     }
 
     private static void RegistrarServicos(IServiceCollection services)
@@ -57,7 +63,11 @@ public static class RegistraDependencias
         services.TryAddScoped<ISondagemUseCase, SondagemUseCase>();
         services.TryAddScoped<IQuestionarioUseCase, QuestionarioUseCase>();
         services.TryAddScoped<ICicloUseCase, CicloUseCase>();
-        services.TryAddScoped<IProficienciaUseCase, ProficienciaUseCase>();
+        services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
+        services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
+        services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
+        services.TryAddScoped<IObterProficienciasUseCase, ObterProficienciasUseCase>();
+        services.TryAddScoped<IObterProficienciaPorIdUseCase, ObterProficienciaPorIdUseCase>();
         services.TryAddScoped<IComponenteCurricularUseCase, ComponenteCurricularUseCase>();
         services.TryAddScoped<IAlunoUseCase, AlunoUseCase>();
         services.TryAddScoped<IQuestaoUseCase, QuestaoUseCase>();
@@ -69,6 +79,8 @@ public static class RegistraDependencias
     {
         services.TryAddScoped<IValidator<CriarComponenteCurricularDto>, CriarComponenteCurricularValidator>();
         services.TryAddScoped<IValidator<AtualizarComponenteCurricularDto>, AtualizarComponenteCurricularValidator>();
+        services.TryAddScoped<IValidator<ProficienciaDto>, CriarProficienciaValidator>();
+        services.TryAddScoped<IValidator<ProficienciaDto>, AtualizarProficienciaValidator>();
     }
 
     private static void RegistrarContextos(IServiceCollection services)

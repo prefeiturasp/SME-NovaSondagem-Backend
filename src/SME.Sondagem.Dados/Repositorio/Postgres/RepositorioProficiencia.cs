@@ -1,29 +1,67 @@
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Entidades;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioProficiencia : IRepositorioProficiencia
 {
-    private readonly IConfiguration configuration;
+    private readonly SondagemDbContext context;
 
-    public RepositorioProficiencia(IConfiguration configuration)
+    public RepositorioProficiencia(SondagemDbContext context)
     {
-        this.configuration = configuration;
+        this.context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public Task InserirAsync(object entidade)
+    public async Task<IEnumerable<Proficiencia>> ObterTodosAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await context.Proficiencias
+            .AsNoTracking()
+            .Where(p => !p.Excluido)
+            .OrderBy(p => p.Nome)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<object> ObterPorIdAsync(Guid id)
+    public async Task<Proficiencia?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await context.Proficiencias
+            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
     }
 
-    public Task<IEnumerable<object>> ObterTodosAsync()
+    public async Task<long> CriarAsync(Proficiencia proficiencia, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await context.Proficiencias.AddAsync(proficiencia, cancellationToken);
+        await context.SaveChangesAsync();
+        return proficiencia.Id;
+    }
+
+    public async Task<bool> AtualizarAsync(Proficiencia proficiencia, CancellationToken cancellationToken = default)
+    {
+        var proficienciaExistente = await context.Proficiencias
+            .FirstOrDefaultAsync(p => p.Id == proficiencia.Id && !p.Excluido, cancellationToken);
+
+        if (proficienciaExistente == null)
+            return false;
+
+        proficienciaExistente.AlteradoEm = proficiencia.AlteradoEm;
+        proficienciaExistente.AlteradoPor = proficiencia.AlteradoPor;
+        proficienciaExistente.AlteradoRF = proficiencia.AlteradoRF;
+
+        await context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var proficiencia = await context.Proficiencias
+            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
+
+        if (proficiencia == null)
+            return false;
+
+        proficiencia.Excluido = true;
+        await context.SaveChangesAsync();
+        return true;
     }
 }
