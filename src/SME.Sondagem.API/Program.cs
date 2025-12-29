@@ -1,6 +1,9 @@
 using Microsoft.ApplicationInsights;
+using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
-using SME.SME.Sondagem.Api.Configurations;
+using SME.SME.Sondagem.Api.Configuracoes;
+using SME.Sondagem.API.Configuracoes;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
@@ -8,20 +11,15 @@ using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 var conexaoDadosVariaveis = new ConnectionStringOptions();
 builder.Configuration.GetSection("ConnectionStrings").Bind(conexaoDadosVariaveis, c => c.BindNonPublicProperties = true);
 builder.Services.AddSingleton(conexaoDadosVariaveis);
 
+RegistraEntityFramework.Registrar(builder.Services, builder.Configuration);
+
 var telemetriaOptions = new TelemetriaOptions();
 builder.Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
 builder.Services.AddSingleton(telemetriaOptions);
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var serviceProvider = builder.Services.BuildServiceProvider();
 var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
@@ -41,7 +39,6 @@ builder.Services.AddSingleton(_ =>
         Password = rabbitOptions.Password,
         VirtualHost = rabbitOptions.VirtualHost
     };
-
     return factory.CreateConnectionAsync().Result;
 });
 
@@ -63,20 +60,14 @@ var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
 builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddApplicationInsightsTelemetry(builder.Configuration);
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
 RegistraDependencias.Registrar(builder.Services);
 RegistraRepositorios.Registrar(builder.Services);
-RegistraUseCases.Registrar(builder.Services);
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
 
 builder.Services.AddCors(options =>
 {
@@ -93,14 +84,50 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<SondagemDbContext>();
+
+    try
+    {
+        Console.WriteLine("?? Verificando migrations pendentes...");
+        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+
+        if (pendingMigrations.Any())
+        {
+            Console.WriteLine($"?? Aplicando {pendingMigrations.Count()} migration(s)...");
+            await dbContext.Database.MigrateAsync();
+            Console.WriteLine("? Migrations aplicadas com sucesso!");
+        }
+        else
+        {
+            Console.WriteLine("? Banco de dados está atualizado!");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"? Erro ao aplicar migrations: {ex.Message}");
+        Console.WriteLine($"   Stack: {ex.StackTrace}");
+    }
+}
+
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SME Sondagem API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseCors("AllowAllOrigins");
 app.UseAuthorization();
-
 app.MapControllers();
+
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("?? SME Sondagem API iniciada com sucesso!");
+logger.LogInformation($"?? Ambiente: {app.Environment.EnvironmentName}");
+logger.LogInformation($"?? Connection String configurada: {!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("SondagemConnection"))}");
 
 app.Run();

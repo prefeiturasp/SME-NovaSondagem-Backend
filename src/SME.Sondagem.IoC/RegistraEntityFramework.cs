@@ -1,0 +1,44 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.Dados.Interceptors;
+using SME.Sondagem.Infrastructure.Interfaces;
+
+namespace SME.Sondagem.IoC;
+
+public static class RegistraEntityFramework
+{
+    public static void Registrar(IServiceCollection services, IConfiguration configuration)
+    {
+        var connectionString = configuration.GetConnectionString("SondagemConnection");
+
+        services.AddDbContext<SondagemDbContext>((serviceProvider, options) =>
+        {
+            var servicoUsuario = serviceProvider.GetService<IServicoUsuario>();
+
+            options.UseNpgsql(
+                connectionString,
+                npgsqlOptions =>
+                {
+                    npgsqlOptions.MigrationsAssembly("SME.Sondagem.Dados");
+                    npgsqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 3,
+                        maxRetryDelay: TimeSpan.FromSeconds(5),
+                        errorCodesToAdd: null);
+                    npgsqlOptions.CommandTimeout(60);
+                    npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
+                });
+
+            options.AddInterceptors(new AuditoriaSaveChangesInterceptor(servicoUsuario));
+
+#if DEBUG
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+#endif
+            options.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+        });
+
+        services.AddScoped<DbContext>(provider => provider.GetRequiredService<SondagemDbContext>());
+    }
+}

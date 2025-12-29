@@ -1,18 +1,24 @@
-﻿namespace SME.Sondagem.Dominio.Entidades.Questionario;
+﻿using SME.Sondagem.Dominio.Entidades.Sondagem;
+
+namespace SME.Sondagem.Dominio.Entidades.Questionario;
 
 public class OpcaoResposta : EntidadeBase
 {
-    public OpcaoResposta()
+    public OpcaoResposta(string descricaoOpcaoResposta, string? legenda, string? corFundo, string? corTexto)
     {
-        QuestoesComplementares = new List<OpcaoQuestaoComplementar>();
+        DescricaoOpcaoResposta = descricaoOpcaoResposta;
+        Legenda = legenda;
+        CorFundo = corFundo;
+        CorTexto = corTexto;
     }
 
-    public Questao Questao { get; set; }
-    public long QuestaoId { get; set; }
-    public int Ordem { get; set; }
-    public string Nome { get; set; }
+    public string DescricaoOpcaoResposta { get; private set; } = string.Empty;
+    public string? Legenda { get; private set; }
+    public string? CorFundo { get; private set; }
+    public string? CorTexto { get; private set; }
 
-    public string Observacao { get; set; }
-    public bool Excluido { get; set; }
-    public List<OpcaoQuestaoComplementar> QuestoesComplementares { get; set; }
+
+    // Navegação
+    public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
+    public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
 }

@@ -1,7 +1,9 @@
 ﻿using FluentValidation.Results;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Dtos;
 
+[ExcludeFromCodeCoverage]
 public class RetornoBaseDto
 {
     public RetornoBaseDto(IEnumerable<ValidationFailure> validationFailures)

@@ -1,6 +1,6 @@
-﻿using SME.Sondagem.Application.Interfaces.Questionario;
+﻿using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 
-namespace SME.Sondagem.Application.UseCases.Questionario;
+namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
 public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCase
 {

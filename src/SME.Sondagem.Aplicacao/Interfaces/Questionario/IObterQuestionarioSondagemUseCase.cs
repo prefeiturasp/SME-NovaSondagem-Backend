@@ -1,4 +1,4 @@
-﻿namespace SME.Sondagem.Application.Interfaces.Questionario;
+﻿namespace SME.Sondagem.Aplicacao.Interfaces.Questionario;
 
 public interface IObterQuestionarioSondagemUseCase
 {

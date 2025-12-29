@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
-using SME.Sondagem.Dominio.Entities;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Extensions;

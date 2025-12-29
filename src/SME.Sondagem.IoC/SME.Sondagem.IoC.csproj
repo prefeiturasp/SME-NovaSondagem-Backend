@@ -8,13 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="12.1.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageReference Include="FluentValidation" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
     <ProjectReference Include="..\SME.Sondagem.Aplicacao\SME.Sondagem.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
   </ItemGroup>
 
 </Project>

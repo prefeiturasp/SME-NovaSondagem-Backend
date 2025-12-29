@@ -1,7 +1,9 @@
 ﻿using StackExchange.Redis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.EnvironmentVariables;
 
+[ExcludeFromCodeCoverage]
 public class RedisOptions
 {
     public static string Secao => "Redis";
