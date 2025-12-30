@@ -24,8 +24,10 @@ public class ObterCiclosUseCase : IObterCiclosUseCase
             DescCiclo = p.DescCiclo,
             CriadoEm = p.CriadoEm,
             CriadoPor = p.CriadoPor,
+            CriadoRF = p.CriadoRF,
             AlteradoEm = p.AlteradoEm,
-            AlteradoPor = p.AlteradoPor
+            AlteradoPor = p.AlteradoPor,
+            AlteradoRF = p.AlteradoRF
         });
     }
 }
