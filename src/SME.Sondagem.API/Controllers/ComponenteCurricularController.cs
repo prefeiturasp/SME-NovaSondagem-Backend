@@ -9,7 +9,7 @@ namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+//[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class ComponenteCurricularController : ControllerBase
 {
     private readonly IComponenteCurricularUseCase _useCase;

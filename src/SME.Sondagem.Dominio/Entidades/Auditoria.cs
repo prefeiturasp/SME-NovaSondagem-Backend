@@ -2,30 +2,16 @@
 
 public class Auditoria
 {
-    public Auditoria(string? acao, long chave, DateTime data, string? entidade, Guid? id, string? rF, string? usuario, Guid? perfil, string? administrador)
-    {
-        Acao = acao;
-        Chave = chave;
-        Data = data;
-        Entidade = entidade;
-        Id = id;
-        RF = rF;
-        Usuario = usuario;
-        Perfil = perfil;
-        Administrador = administrador;
-        Detalhes = new List<AuditoriaDetalhe>();
-    }
-
-    public string? Acao { get; private set; }
-    public long Chave { get; private set; }
-    public DateTime Data { get; private set; }
-    public string? Entidade { get; private set; }
-    public Guid? Id { get; private set; }
-    public string? RF { get; private set; }
-    public string? Usuario { get; private set; }
-    public Guid? Perfil { get; private set; }
-    public string? Administrador { get; private set; }
+    public required long Chave { get; init; }
+    public required DateTime Data { get; init; }
+    public string? Acao { get; init; }
+    public string? Entidade { get; init; }
+    public Guid? Id { get; init; }
+    public string? RF { get; init; }
+    public string? Usuario { get; init; }
+    public Guid? Perfil { get; init; }
+    public string? Administrador { get; init; }
 
     // Navegação para detalhes
-    public ICollection<AuditoriaDetalhe> Detalhes { get; private set; }
+    public ICollection<AuditoriaDetalhe> Detalhes { get; private set; } = new List<AuditoriaDetalhe>();
 }

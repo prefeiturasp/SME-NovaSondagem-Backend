@@ -6,6 +6,10 @@ namespace SME.Sondagem.Dados.Contexto;
 
 public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbContext>
 {
+    private const string ConfigKeyConnectionStrings = "ConnectionStrings";
+    private const string ConfigKeyDatabase = "SondagemConnection";
+    private const string ConfigKeySeparator = ":";
+
     public SondagemDbContext CreateDbContext(string[] args)
     {
         var currentDirectory = Directory.GetCurrentDirectory();
@@ -45,31 +49,34 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
 
         if (!File.Exists(secretsPath))
         {
+            var connectionStringKey = $"{ConfigKeyConnectionStrings}{ConfigKeySeparator}{ConfigKeyDatabase}";
             throw new InvalidOperationException(
                 $"❌ Arquivo secrets.json não encontrado em: {secretsPath}\n\n" +
                 "Execute no diretório do projeto API (SME.Sondagem.API):\n" +
-                "dotnet user-secrets set \"ConnectionStrings:SondagemConnection\" \"sua-connection-string\"");
+                $"dotnet user-secrets set \"{connectionStringKey}\" \"sua-connection-string\"");
         }
 
         var configuration = new ConfigurationBuilder()
             .AddJsonFile(secretsPath, optional: false, reloadOnChange: false)
             .Build();
 
-        var connectionString = configuration.GetConnectionString("SondagemConnection");
+        var connectionString = configuration.GetConnectionString(ConfigKeyDatabase);
 
         if (string.IsNullOrEmpty(connectionString))
         {
-            Console.WriteLine("\n❌ Connection string 'SondagemConnection' não encontrada!");
+            Console.WriteLine($"\n❌ Connection string '{ConfigKeyDatabase}' não encontrada!");
             Console.WriteLine("\nChaves disponíveis:");
             foreach (var item in configuration.AsEnumerable())
             {
                 Console.WriteLine($"  - {item.Key}");
             }
 
+            var connectionStringKey = $"{ConfigKeyConnectionStrings}{ConfigKeySeparator}{ConfigKeyDatabase}";
+            var exampleConnectionString = "Host=localhost;Port=5432;Database=sondagemmigration;Username=postgres;Pwd=SuaSenha;";
             throw new InvalidOperationException(
-                "Connection string 'SondagemConnection' não encontrada nas user secrets.\n\n" +
+                $"Connection string '{ConfigKeyDatabase}' não encontrada nas user secrets.\n\n" +
                 "Execute no diretório do projeto API:\n" +
-                "dotnet user-secrets set \"ConnectionStrings:SondagemConnection\" \"Host=localhost;Port=5432;Database=sondagemmigration;Username=postgres;Password=SuaSenha;\"");
+                $"dotnet user-secrets set \"{connectionStringKey}\" \"{exampleConnectionString}\"");
         }
 
         Console.WriteLine("✅ Connection string encontrada com sucesso!");
@@ -85,7 +92,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         return new SondagemDbContext(optionsBuilder.Options);
     }
 
-    private string FindApiProjectPath(string startDirectory)
+    private string? FindApiProjectPath(string startDirectory)
     {
         var currentDir = new DirectoryInfo(startDirectory);
 
@@ -114,7 +121,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         return null;
     }
 
-    private string GetUserSecretsIdFromCsproj(string csprojPath)
+    private string? GetUserSecretsIdFromCsproj(string csprojPath)
     {
         try
         {

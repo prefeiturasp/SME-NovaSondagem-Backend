@@ -20,19 +20,20 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var corId = 3;
             var corNome = "Parda";
 
-            var aluno = new Aluno(
-                ra,
-                nome,
-                isPap,
-                isAee,
-                isPcd,
-                deficienciaId,
-                deficienciaNome,
-                racaId,
-                racaNome,
-                corId,
-                corNome
-            );
+            var aluno = new Aluno
+            {
+                RaAluno = ra,
+                NomeAluno = nome,
+                IsPap = isPap,
+                IsAee = isAee,
+                IsPcd = isPcd,
+                DeficienciaId = deficienciaId,
+                DeficienciaNome = deficienciaNome,
+                RacaId = racaId,
+                RacaNome = racaNome,
+                CorId = corId,
+                CorNome = corNome
+            };
 
             Assert.Equal(ra, aluno.RaAluno);
             Assert.Equal(nome, aluno.NomeAluno);
@@ -50,19 +51,20 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_permitir_campos_nulos()
         {
-            var aluno = new Aluno(
-                null,
-                null,
-                false,
-                false,
-                false,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
+            var aluno = new Aluno
+            {
+                RaAluno = null,
+                NomeAluno = null,
+                IsPap = false,
+                IsAee = false,
+                IsPcd = false,
+                DeficienciaId = null,
+                DeficienciaNome = null,
+                RacaId = null,
+                RacaNome = null,
+                CorId = null,
+                CorNome = null
+            };
 
             Assert.Null(aluno.RaAluno);
             Assert.Null(aluno.NomeAluno);
@@ -80,19 +82,14 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_inicializar_colecao_de_respostas()
         {
-            var aluno = new Aluno(
-                "123",
-                "Aluno",
-                false,
-                false,
-                false,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-            );
+            var aluno = new Aluno
+            {
+                RaAluno = "123",
+                NomeAluno = "Aluno",
+                IsPap = false,
+                IsAee = false,
+                IsPcd = false
+            };
 
             Assert.NotNull(aluno.Respostas);
             Assert.Empty(aluno.Respostas);

@@ -155,17 +155,18 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
             var nomeEntidade = entry.Entity.GetType().Name;
             var acao = entry.State == EntityState.Modified ? "UPDATE" : "DELETE";
 
-            var auditoria = new Auditoria(
-                acao: acao,
-                chave: entidade.Id,
-                data: DateTime.UtcNow,
-                entidade: nomeEntidade,
-                id: Guid.NewGuid(),
-                rF: rfUsuarioLogado,
-                usuario: usuarioLogado,
-                perfil: null,
-                administrador: usuarioLogado
-            );
+            var auditoria = new Auditoria
+            {
+                Acao = acao,
+                Chave = entidade.Id,
+                Data = DateTime.UtcNow,
+                Entidade = nomeEntidade,
+                Id = Guid.NewGuid(),
+                RF = rfUsuarioLogado,
+                Usuario = usuarioLogado,
+                Perfil = null,
+                Administrador = usuarioLogado
+            };
 
             if (entry.State == EntityState.Modified)
             {
@@ -212,17 +213,18 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
 
         foreach (var (entidade, nomeEntidade) in entidades)
         {
-            auditorias.Add(new Auditoria(
-                acao: "INSERT",
-                chave: entidade.Id,
-                data: DateTime.UtcNow,
-                entidade: nomeEntidade,
-                id: Guid.NewGuid(),
-                rF: rfUsuarioLogado,
-                usuario: usuarioLogado,
-                perfil: null,
-                administrador: usuarioLogado
-            ));
+            auditorias.Add(new Auditoria
+            {
+                Acao = "INSERT",
+                Chave = entidade.Id,
+                Data = DateTime.UtcNow,
+                Entidade = nomeEntidade,
+                Id = Guid.NewGuid(),
+                RF = rfUsuarioLogado,
+                Usuario = usuarioLogado,
+                Perfil = null,
+                Administrador = usuarioLogado
+            });
         }
 
         return auditorias;
