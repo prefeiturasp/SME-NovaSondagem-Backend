@@ -5,20 +5,104 @@ namespace SME.Sondagem.Dominio.Entidades.Questionario;
 
 public class Questao : EntidadeBase
 {
-    public required int QuestionarioId { get; init; }
-    public required int Ordem { get; init; }
-    public required string Nome { get; init; }
-    public required string Observacao { get; init; }
-    public required bool Obrigatorio { get; init; }
-    public required TipoQuestao Tipo { get; init; }
-    public required string Opcionais { get; init; }
-    public required bool SomenteLeitura { get; init; }
-    public required int Dimensao { get; init; }
-    public int? GrupoQuestoesId { get; init; }
-    public int? Tamanho { get; init; }
-    public string? Mascara { get; init; }
-    public string? PlaceHolder { get; init; }
-    public string? NomeComponente { get; init; }
+    private int _questionarioId;
+    private int? _grupoQuestoesId;
+    private int _ordem;
+    private string _nome = string.Empty;
+    private string _observacao = string.Empty;
+    private bool _obrigatorio;
+    private TipoQuestao _tipo;
+    private string _opcionais = string.Empty;
+    private bool _somenteLeitura;
+    private int _dimensao;
+    private int? _tamanho;
+    private string? _mascara;
+    private string? _placeHolder;
+    private string? _nomeComponente;
+
+    public required int QuestionarioId
+    {
+        get => _questionarioId;
+        init => _questionarioId = value;
+    }
+
+    public int? GrupoQuestoesId
+    {
+        get => _grupoQuestoesId;
+        init => _grupoQuestoesId = value;
+    }
+
+    public required int Ordem
+    {
+        get => _ordem;
+        init => _ordem = value;
+    }
+
+    public required string Nome
+    {
+        get => _nome;
+        init => _nome = value;
+    }
+
+    public required string Observacao
+    {
+        get => _observacao;
+        init => _observacao = value;
+    }
+
+    public required bool Obrigatorio
+    {
+        get => _obrigatorio;
+        init => _obrigatorio = value;
+    }
+
+    public required TipoQuestao Tipo
+    {
+        get => _tipo;
+        init => _tipo = value;
+    }
+
+    public required string Opcionais
+    {
+        get => _opcionais;
+        init => _opcionais = value;
+    }
+
+    public required bool SomenteLeitura
+    {
+        get => _somenteLeitura;
+        init => _somenteLeitura = value;
+    }
+
+    public required int Dimensao
+    {
+        get => _dimensao;
+        init => _dimensao = value;
+    }
+
+    public int? Tamanho
+    {
+        get => _tamanho;
+        init => _tamanho = value;
+    }
+
+    public string? Mascara
+    {
+        get => _mascara;
+        init => _mascara = value;
+    }
+
+    public string? PlaceHolder
+    {
+        get => _placeHolder;
+        init => _placeHolder = value;
+    }
+
+    public string? NomeComponente
+    {
+        get => _nomeComponente;
+        init => _nomeComponente = value;
+    }
 
     // Navegação
     public virtual Questionario Questionario { get; private set; } = null!;
@@ -26,21 +110,35 @@ public class Questao : EntidadeBase
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
 
-    public void Atualizar(int questionarioId, int? grupoQuestoesId, int ordem, string nome, string observacao, bool obrigatorio, TipoQuestao tipo, string opcionais, bool somenteLeitura, int dimensao, int? tamanho, string? mascara, string? placeHolder, string? nomeComponente)
+    public void Atualizar(
+        int questionarioId,
+        int? grupoQuestoesId,
+        int ordem,
+        string nome,
+        string observacao,
+        bool obrigatorio,
+        TipoQuestao tipo,
+        string opcionais,
+        bool somenteLeitura,
+        int dimensao,
+        int? tamanho,
+        string? mascara,
+        string? placeHolder,
+        string? nomeComponente)
     {
-        QuestionarioId = questionarioId;
-        GrupoQuestoesId = grupoQuestoesId;
-        Ordem = ordem;
-        Nome = nome;
-        Observacao = observacao;
-        Obrigatorio = obrigatorio;
-        Tipo = tipo;
-        Opcionais = opcionais;
-        SomenteLeitura = somenteLeitura;
-        Dimensao = dimensao;
-        Tamanho = tamanho;
-        Mascara = mascara;
-        PlaceHolder = placeHolder;
-        NomeComponente = nomeComponente;
+        _questionarioId = questionarioId;
+        _grupoQuestoesId = grupoQuestoesId;
+        _ordem = ordem;
+        _nome = nome;
+        _observacao = observacao;
+        _obrigatorio = obrigatorio;
+        _tipo = tipo;
+        _opcionais = opcionais;
+        _somenteLeitura = somenteLeitura;
+        _dimensao = dimensao;
+        _tamanho = tamanho;
+        _mascara = mascara;
+        _placeHolder = placeHolder;
+        _nomeComponente = nomeComponente;
     }
 }

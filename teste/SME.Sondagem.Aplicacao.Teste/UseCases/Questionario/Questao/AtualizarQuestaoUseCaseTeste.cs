@@ -77,9 +77,19 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF456"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            1, 1, 1, "Nome Original", "Obs Original", true, TipoQuestao.Texto, "{}", false, 100, 50, null, null, null)
+        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            GrupoQuestoesId = 1,
+            Ordem = 1,
+            Nome = "Nome Original",
+            Observacao = "Obs Original",
+            Obrigatorio = true,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = false,
+            Dimensao = 100,
+            Tamanho = 50,
             Id = (int)id,
             CriadoEm = DateTime.Now.AddDays(-5),
             CriadoPor = "Usuario Criador",
@@ -106,7 +116,7 @@ public class AtualizarQuestaoUseCaseTeste
     {
         const long id = 1;
         var dataAntes = DateTime.Now;
-        
+
         var questaoDto = new QuestaoDto
         {
             QuestionarioId = 3,
@@ -127,9 +137,21 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF789"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            1, 1, 1, "Nome Original", "Obs Original", false, TipoQuestao.Texto, "{}", true, 100, 50, null, "Place Original", "componente-original")
+        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            GrupoQuestoesId = 1,
+            Ordem = 1,
+            Nome = "Nome Original",
+            Observacao = "Obs Original",
+            Obrigatorio = false,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = true,
+            Dimensao = 100,
+            Tamanho = 50,
+            PlaceHolder = "Place Original",
+            NomeComponente = "componente-original",
             Id = (int)id,
             CriadoEm = new DateTime(2024, 1, 1, 10, 0, 0),
             CriadoPor = "Usuario Criador",
@@ -166,11 +188,11 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.Equal("(##) #####-####", resultado.Mascara);
         Assert.Equal("Telefone", resultado.PlaceHolder);
         Assert.Equal("input-telefone", resultado.NomeComponente);
-        
+
         Assert.Equal(new DateTime(2024, 1, 1, 10, 0, 0), resultado.CriadoEm);
         Assert.Equal("Usuario Criador", resultado.CriadoPor);
         Assert.Equal("RF001", resultado.CriadoRF);
-        
+
         Assert.NotNull(resultado.AlteradoEm);
         Assert.True(resultado.AlteradoEm >= dataAntes && resultado.AlteradoEm <= dataDepois);
         Assert.Equal("Usuario Alterador", resultado.AlteradoPor);
@@ -191,10 +213,9 @@ public class AtualizarQuestaoUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_ComCancellationToken_DevePropagaCancellationToken()
     {
-
         const long id = 1;
         var cancellationToken = new CancellationToken();
-        
+
         var questaoDto = new QuestaoDto
         {
             QuestionarioId = 1,
@@ -207,9 +228,17 @@ public class AtualizarQuestaoUseCaseTeste
             Dimensao = 100
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            1, null, 1, "Nome", "Obs", false, TipoQuestao.Texto, "{}", false, 100, null, null, null, null)
+        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            Ordem = 1,
+            Nome = "Nome",
+            Observacao = "Obs",
+            Obrigatorio = false,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = false,
+            Dimensao = 100,
             Id = (int)id
         };
 
@@ -232,7 +261,7 @@ public class AtualizarQuestaoUseCaseTeste
     public async Task ExecutarAsync_ComGrupoQuestoesIdNulo_DeveAtualizarCorretamente()
     {
         const long id = 1;
-        
+
         var questaoDto = new QuestaoDto
         {
             QuestionarioId = 1,
@@ -251,9 +280,22 @@ public class AtualizarQuestaoUseCaseTeste
             NomeComponente = null
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            1, 2, 1, "Nome", "Obs", false, TipoQuestao.Texto, "{}", false, 100, 50, "mask", "place", "comp")
+        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            GrupoQuestoesId = 2,
+            Ordem = 1,
+            Nome = "Nome",
+            Observacao = "Obs",
+            Obrigatorio = false,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = false,
+            Dimensao = 100,
+            Tamanho = 50,
+            Mascara = "mask",
+            PlaceHolder = "place",
+            NomeComponente = "comp",
             Id = (int)id,
             CriadoEm = DateTime.Now,
             CriadoPor = "Usuario",
@@ -300,9 +342,17 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF123"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            1, null, 1, "Nome", "Obs", false, TipoQuestao.Texto, "{}", false, 100, null, null, null, null)
+        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            Ordem = 1,
+            Nome = "Nome",
+            Observacao = "Obs",
+            Obrigatorio = false,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = false,
+            Dimensao = 100,
             Id = (int)id,
             AlteradoEm = null
         };

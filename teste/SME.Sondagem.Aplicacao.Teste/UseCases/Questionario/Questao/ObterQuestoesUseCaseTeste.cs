@@ -21,18 +21,38 @@ public class ObterQuestoesUseCaseTeste
 
     [Fact]
     public async Task ExecutarAsync_DeveRetornarListaDeQuestoesDto()
-    { 
+    {
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>
         {
-            new(1, null, 1, "Questao 1", "Observacao 1", true, TipoQuestao.Texto, "", false, 1, null, null, null, null)
+            new()
             {
+                QuestionarioId = 1,
+                GrupoQuestoesId = null,
+                Ordem = 1,
+                Nome = "Questao 1",
+                Observacao = "Observacao 1",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                Opcionais = "",
+                SomenteLeitura = false,
+                Dimensao = 1,
                 Id = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Usuario1",
                 CriadoRF = "RF001"
             },
-            new(2, null, 2, "Questao 2", "Observacao 2", false, TipoQuestao.Radio, "", false, 1, null, null, null, null)
+            new()
             {
+                QuestionarioId = 2,
+                GrupoQuestoesId = null,
+                Ordem = 2,
+                Nome = "Questao 2",
+                Observacao = "Observacao 2",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Radio,
+                Opcionais = "",
+                SomenteLeitura = false,
+                Dimensao = 1,
                 Id = 2,
                 CriadoEm = DateTime.Now.AddDays(-1),
                 CriadoPor = "Usuario2",
@@ -140,11 +160,25 @@ public class ObterQuestoesUseCaseTeste
     {
         var dataEspecifica = new DateTime(2023, 10, 15, 14, 30, 0);
         var dataAlteracao = new DateTime(2023, 10, 16, 10, 15, 0);
-        
+
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>
         {
-            new(100, 1, 3, "Matemática Básica", "Observação detalhada", true, TipoQuestao.Numerico, "opcionais", false, 2, 50, "###.###", "Digite aqui", "ComponenteX")
+            new()
             {
+                QuestionarioId = 100,
+                GrupoQuestoesId = 1,
+                Ordem = 3,
+                Nome = "Matemática Básica",
+                Observacao = "Observação detalhada",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Numerico,
+                Opcionais = "opcionais",
+                SomenteLeitura = false,
+                Dimensao = 2,
+                Tamanho = 50,
+                Mascara = "###.###",
+                PlaceHolder = "Digite aqui",
+                NomeComponente = "ComponenteX",
                 Id = 100,
                 CriadoEm = dataEspecifica,
                 CriadoPor = "Sistema",
@@ -189,25 +223,21 @@ public class ObterQuestoesUseCaseTeste
     public async Task ExecutarAsync_ComMuitasQuestoes_DeveMantarPerformance()
     {
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>();
-        
+
         for (int i = 1; i <= 1000; i++)
         {
-            questoes.Add(new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-                i % 5 + 1, 
-                null, 
-                i, 
-                $"Questao {i}", 
-                $"Observacao {i}", 
-                i % 2 == 0, 
-                TipoQuestao.Texto, 
-                "", 
-                false, 
-                1, 
-                null, 
-                null, 
-                null, 
-                null)
+            questoes.Add(new SME.Sondagem.Dominio.Entidades.Questionario.Questao
             {
+                QuestionarioId = i % 5 + 1,
+                GrupoQuestoesId = null,
+                Ordem = i,
+                Nome = $"Questao {i}",
+                Observacao = $"Observacao {i}",
+                Obrigatorio = i % 2 == 0,
+                Tipo = TipoQuestao.Texto,
+                Opcionais = "",
+                SomenteLeitura = false,
+                Dimensao = 1,
                 Id = i,
                 CriadoEm = DateTime.Now.AddDays(-i),
                 CriadoPor = $"Usuario{i}",

@@ -23,22 +23,22 @@ public class ObterQuestaoPorIdUseCaseTeste
     public async Task ExecutarAsync_QuestaoExiste_DeveRetornarQuestaoDto()
     {
         const long id = 1;
-        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
-            questionarioId: 1,
-            grupoQuestoesId: 2,
-            ordem: 1,
-            nome: "Questao Teste",
-            observacao: "Observacao teste",
-            obrigatorio: true,
-            tipo: TipoQuestao.Texto,
-            opcionais: "{}",
-            somenteLeitura: false,
-            dimensao: 100,
-            tamanho: 50,
-            mascara: null,
-            placeHolder: "Digite aqui",
-            nomeComponente: "input-text")
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
         {
+            QuestionarioId = 1,
+            GrupoQuestoesId = 2,
+            Ordem = 1,
+            Nome = "Questao Teste",
+            Observacao = "Observacao teste",
+            Obrigatorio = true,
+            Tipo = TipoQuestao.Texto,
+            Opcionais = "{}",
+            SomenteLeitura = false,
+            Dimensao = 100,
+            Tamanho = 50,
+            Mascara = null,
+            PlaceHolder = "Digite aqui",
+            NomeComponente = "input-text",
             Id = (int)id,
             CriadoEm = DateTime.Now,
             CriadoPor = "Usuario1",
