@@ -127,6 +127,10 @@ public class ProficienciaController : ControllerBase
         try
         {
             var proficiencia = await atualizarProficienciaUseCase.ExecutarAsync(id, dto, cancellationToken);
+            
+            if (proficiencia == null)
+                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
+                
             return Ok(proficiencia);
         }
         catch (OperationCanceledException)

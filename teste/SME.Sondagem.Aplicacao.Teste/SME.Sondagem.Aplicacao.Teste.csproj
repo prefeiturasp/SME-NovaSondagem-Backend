@@ -30,8 +30,4 @@
     <ProjectReference Include="..\..\src\SME.Sondagem.Aplicacao\SME.Sondagem.Aplicacao.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Proficiencia\" />
-  </ItemGroup>
-
 </Project>

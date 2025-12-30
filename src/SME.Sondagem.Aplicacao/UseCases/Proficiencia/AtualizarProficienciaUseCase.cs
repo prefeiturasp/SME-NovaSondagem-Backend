@@ -13,18 +13,34 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
         this.proficienciaRepositorio = proficienciaRepositorio;
     }
 
-    public async Task<bool> ExecutarAsync(long id, ProficienciaDto proficienciaDto, CancellationToken cancellationToken = default)
+    public async Task<ProficienciaDto?> ExecutarAsync(long id, ProficienciaDto proficienciaDto, CancellationToken cancellationToken = default)
     {
-        var proficienciaExistente = await proficienciaRepositorio.ObterPorIdAsync(id);
+        var proficienciaExistente = await proficienciaRepositorio.ObterPorIdAsync(id, cancellationToken: cancellationToken);
 
         if (proficienciaExistente == null)
-            return false;
+            return null;
 
         proficienciaExistente.Atualizar(proficienciaDto.Nome, proficienciaDto.ComponenteCurricularId);
         proficienciaExistente.AlteradoEm = DateTime.Now;
         proficienciaExistente.AlteradoPor = proficienciaDto.AlteradoPor;
         proficienciaExistente.AlteradoRF = proficienciaDto.AlteradoRF;
 
-        return await proficienciaRepositorio.AtualizarAsync(proficienciaExistente, cancellationToken: cancellationToken);
+        var sucesso = await proficienciaRepositorio.AtualizarAsync(proficienciaExistente, cancellationToken: cancellationToken);
+        
+        if (!sucesso)
+            return null;
+
+        return new ProficienciaDto
+        {
+            Id = proficienciaExistente.Id,
+            Nome = proficienciaExistente.Nome,
+            ComponenteCurricularId = proficienciaExistente.ComponenteCurricularId,
+            CriadoEm = proficienciaExistente.CriadoEm,
+            CriadoPor = proficienciaExistente.CriadoPor,
+            CriadoRF = proficienciaExistente.CriadoRF,
+            AlteradoEm = proficienciaExistente.AlteradoEm,
+            AlteradoPor = proficienciaExistente.AlteradoPor,
+            AlteradoRF = proficienciaExistente.AlteradoRF
+        };
     }
 }

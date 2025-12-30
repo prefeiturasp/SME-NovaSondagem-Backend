@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 
 public interface IAtualizarProficienciaUseCase
 {
-    Task<bool> ExecutarAsync(long id, ProficienciaDto proficienciaDto, CancellationToken cancellationToken = default);
+    Task<ProficienciaDto?> ExecutarAsync(long id, ProficienciaDto proficienciaDto, CancellationToken cancellationToken = default);
 }
