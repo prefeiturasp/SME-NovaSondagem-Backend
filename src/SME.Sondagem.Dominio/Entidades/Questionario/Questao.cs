@@ -43,4 +43,22 @@ public class Questao : EntidadeBase
     public virtual GrupoQuestoes? GrupoQuestoes { get; private set; }
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
+
+    public void Atualizar(int questionarioId, int? grupoQuestoesId, int ordem, string nome, string observacao, bool obrigatorio, TipoQuestao tipo, string opcionais, bool somenteLeitura, int dimensao, int? tamanho, string? mascara, string? placeHolder, string? nomeComponente)
+    {
+        QuestionarioId = questionarioId;
+        GrupoQuestoesId = grupoQuestoesId;
+        Ordem = ordem;
+        Nome = nome;
+        Observacao = observacao;
+        Obrigatorio = obrigatorio;
+        Tipo = tipo;
+        Opcionais = opcionais;
+        SomenteLeitura = somenteLeitura;
+        Dimensao = dimensao;
+        Tamanho = tamanho;
+        Mascara = mascara;
+        PlaceHolder = placeHolder;
+        NomeComponente = nomeComponente;
+    }
 }
