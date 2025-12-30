@@ -1,13 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 
 namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class ProficienciaController : ControllerBase
 {
     private readonly IObterProficienciasUseCase obterProficienciasUseCase;

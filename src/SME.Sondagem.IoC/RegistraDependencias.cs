@@ -47,6 +47,7 @@ public static class RegistraDependencias
     private static void RegistrarRepositorios(IServiceCollection services)
     {
         //services.TryAddScoped<IRepositorioCache, RepositorioCache>();
+        services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
     }
 
@@ -59,10 +60,14 @@ public static class RegistraDependencias
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
     {
+        services.TryAddScoped<ICriarCicloUseCase, CriarCicloUseCase>();
+        services.TryAddScoped<IAtualizarCicloUseCase, AtualizarCicloUseCase>();
+        services.TryAddScoped<IExcluirCicloUseCase, ExcluirCicloUseCase>();
+        services.TryAddScoped<IObterCiclosUseCase, ObterCiclosUseCase>();
+        services.TryAddScoped<IObterCicloPorIdUseCase, ObterCicloPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
         services.TryAddScoped<ISondagemUseCase, SondagemUseCase>();
         services.TryAddScoped<IQuestionarioUseCase, QuestionarioUseCase>();
-        services.TryAddScoped<ICicloUseCase, CicloUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();

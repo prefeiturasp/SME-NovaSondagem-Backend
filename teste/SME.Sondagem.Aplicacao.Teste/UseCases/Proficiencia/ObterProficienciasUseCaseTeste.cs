@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Dados.Interfaces;
 using Xunit;
