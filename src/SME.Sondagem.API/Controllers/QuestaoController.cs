@@ -46,13 +46,13 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de listagem foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de listagem foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar questıes");
-            return StatusCode(500, new { mensagem = "Erro ao listar questıes" });
+            _logger.LogError(ex, "Erro ao listar quest√µes");
+            return StatusCode(500, new { mensagem = "Erro ao listar quest√µes" });
         }
     }
 
@@ -65,19 +65,19 @@ public class QuestaoController : ControllerBase
         {
             var questao = await _obterQuestaoPorIdUseCase.ExecutarAsync(id, cancellationToken);
             if (questao == null)
-                return NotFound(new { mensagem = $"Quest„o com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Quest√£o com ID {id} n√£o encontrada" });
 
             return Ok(questao);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de obtenÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de obten√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter quest„o {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao obter quest„o" });
+            _logger.LogError(ex, "Erro ao obter quest√£o {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao obter quest√£o" });
         }
     }   
 
@@ -100,13 +100,13 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de criaÁ„o foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de cria√ß√£o foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -114,8 +114,8 @@ public class QuestaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar quest„o");
-            return StatusCode(500, new { mensagem = "Erro ao criar quest„o" });
+            _logger.LogError(ex, "Erro ao criar quest√£o");
+            return StatusCode(500, new { mensagem = "Erro ao criar quest√£o" });
         }
     }
 
@@ -130,19 +130,19 @@ public class QuestaoController : ControllerBase
         {
             var questao = await _atualizarQuestaoUseCase.ExecutarAsync(id, dto, cancellationToken);
             if (questao == null)
-                return NotFound(new { mensagem = $"Quest„o com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Quest√£o com ID {id} n√£o encontrada" });
 
             return Ok(questao);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de atualizaÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de atualiza√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -150,8 +150,8 @@ public class QuestaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar quest„o {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao atualizar quest„o" });
+            _logger.LogError(ex, "Erro ao atualizar quest√£o {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao atualizar quest√£o" });
         }
     }
 
@@ -164,19 +164,19 @@ public class QuestaoController : ControllerBase
         {
             var resultado = await _excluirQuestaoUseCase.ExecutarAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"Quest„o com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Quest√£o com ID {id} n√£o encontrada" });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de exclus„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de exclus√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir quest„o {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao excluir quest„o" });
+            _logger.LogError(ex, "Erro ao excluir quest√£o {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao excluir quest√£o" });
         }
     }
 }
