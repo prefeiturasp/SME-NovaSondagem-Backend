@@ -52,8 +52,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar proficiãncias");
-            return StatusCode(500, new { mensagem = "Erro ao listar proficiãncias" });
+            _logger.LogError(ex, "Erro ao listar Proficiências");
+            return StatusCode(500, new { mensagem = "Erro ao listar Proficiências" });
         }
     }
 
@@ -67,7 +67,7 @@ public class ProficienciaController : ControllerBase
             var resultado = await obterProficienciaPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
             if (resultado == null)
-                return NotFound(new { mensagem = $"Proficiãncia com ID {id} não encontrada" });
+                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
 
             return Ok(resultado);
         }
@@ -78,8 +78,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter proficiãncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao obter proficiãncia" });
+            _logger.LogError(ex, "Erro ao obter Proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao obter Proficiência" });
         }
     }
 
@@ -114,8 +114,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar proficiãncia");
-            return StatusCode(500, new { mensagem = "Erro ao criar proficiãncia" });
+            _logger.LogError(ex, "Erro ao criar Proficiência");
+            return StatusCode(500, new { mensagem = "Erro ao criar Proficiência" });
         }
     }
 
@@ -131,7 +131,7 @@ public class ProficienciaController : ControllerBase
             var proficiencia = await atualizarProficienciaUseCase.ExecutarAsync(id, dto, cancellationToken);
             
             if (proficiencia == null)
-                return NotFound(new { mensagem = $"Proficiãncia com ID {id} não encontrada" });
+                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
                 
             return Ok(proficiencia);
         }
@@ -151,8 +151,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar proficiãncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao atualizar proficiãncia" });
+            _logger.LogError(ex, "Erro ao atualizar Proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao atualizar Proficiência" });
         }
     }
 
@@ -165,7 +165,7 @@ public class ProficienciaController : ControllerBase
         {
             var resultado = await excluirProficienciaUseCase.ExecutarAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"Proficiãncia com ID {id} não encontrada" });
+                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
 
             return NoContent();
         }
@@ -176,8 +176,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir proficiãncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao excluir proficiãncia" });
+            _logger.LogError(ex, "Erro ao excluir Proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao excluir Proficiência" });
         }
     }
 }
