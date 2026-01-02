@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
