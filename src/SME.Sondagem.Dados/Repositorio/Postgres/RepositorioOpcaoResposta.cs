@@ -1,29 +1,67 @@
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Entidades.Questionario;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioOpcaoResposta : IRepositorioOpcaoResposta
 {
-    private readonly IConfiguration configuration;
+    private readonly SondagemDbContext context;
 
-    public RepositorioOpcaoResposta(IConfiguration configuration)
+    public RepositorioOpcaoResposta(SondagemDbContext context)
     {
-        this.configuration = configuration;
+        this.context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public Task InserirAsync(object entidade)
+    public async Task<IEnumerable<OpcaoResposta>> ObterTodosAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await context.OpcoesResposta
+            .AsNoTracking()
+            .Where(p => !p.Excluido)
+            .OrderBy(p => p.DescricaoOpcaoResposta)
+            .ToListAsync(cancellationToken);
     }
 
-    public Task<object> ObterPorIdAsync(Guid id)
+    public async Task<OpcaoResposta?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        return await context.OpcoesResposta
+            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
     }
 
-    public Task<IEnumerable<object>> ObterTodosAsync()
+    public async Task<long> CriarAsync(OpcaoResposta opcaoResposta, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        await context.OpcoesResposta.AddAsync(opcaoResposta, cancellationToken);
+        await context.SaveChangesAsync();
+        return opcaoResposta.Id;
+    }
+
+    public async Task<bool> AtualizarAsync(OpcaoResposta opcaoResposta, CancellationToken cancellationToken = default)
+    {
+        var opcaoRespostaExistente = await context.OpcoesResposta
+            .FirstOrDefaultAsync(p => p.Id == opcaoResposta.Id && !p.Excluido, cancellationToken);
+
+        if (opcaoRespostaExistente == null)
+            return false;
+
+        opcaoRespostaExistente.AlteradoEm = opcaoResposta.AlteradoEm;
+        opcaoRespostaExistente.AlteradoPor = opcaoResposta.AlteradoPor;
+        opcaoRespostaExistente.AlteradoRF = opcaoResposta.AlteradoRF;
+
+        await context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var opcaoResposta = await context.OpcoesResposta
+            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
+
+        if (opcaoResposta == null)
+            return false;
+
+        opcaoResposta.Excluido = true;
+        await context.SaveChangesAsync();
+        return true;
     }
 }
