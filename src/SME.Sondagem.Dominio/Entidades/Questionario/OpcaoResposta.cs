@@ -21,4 +21,12 @@ public class OpcaoResposta : EntidadeBase
     // Navegação
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
+
+    public void Atualizar(string descricaoOpcaoResposta, string? legenda, string? corFundo, string? corTexto)
+    {
+        DescricaoOpcaoResposta = descricaoOpcaoResposta;
+        Legenda = legenda;
+        CorFundo = corFundo;
+        CorTexto = corTexto;
+    }
 }
