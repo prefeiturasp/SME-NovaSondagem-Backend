@@ -7,14 +7,14 @@
             return enumerable != null && enumerable.Any();
         }
 
-        public static bool NaoPossuiRegistros<T>(this IEnumerable<T> enumerable)
-        {
-            return !enumerable.PossuiRegistros();
-        }
-
         public static bool PossuiRegistros<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
         {
             return enumerable != null && enumerable.Any(predicate);
+        }
+
+        public static bool NaoPossuiRegistros<T>(this IEnumerable<T> enumerable)
+        {
+            return !enumerable.PossuiRegistros();
         }
 
         public static bool NaoPossuiRegistros<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
