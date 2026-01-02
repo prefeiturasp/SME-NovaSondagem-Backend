@@ -47,13 +47,13 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de listagem foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de listagem foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar proficiÍncias");
-            return StatusCode(500, new { mensagem = "Erro ao listar proficiÍncias" });
+            _logger.LogError(ex, "Erro ao listar profici√£ncias");
+            return StatusCode(500, new { mensagem = "Erro ao listar profici√£ncias" });
         }
     }
 
@@ -67,19 +67,19 @@ public class ProficienciaController : ControllerBase
             var resultado = await obterProficienciaPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
             if (resultado == null)
-                return NotFound(new { mensagem = $"ProficiÍncia com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Profici√£ncia com ID {id} n√£o encontrada" });
 
             return Ok(resultado);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de obtenÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de obten√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter proficiÍncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao obter proficiÍncia" });
+            _logger.LogError(ex, "Erro ao obter profici√£ncia {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao obter profici√£ncia" });
         }
     }
 
@@ -100,13 +100,13 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de criaÁ„o foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de cria√ß√£o foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -114,8 +114,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar proficiÍncia");
-            return StatusCode(500, new { mensagem = "Erro ao criar proficiÍncia" });
+            _logger.LogError(ex, "Erro ao criar profici√£ncia");
+            return StatusCode(500, new { mensagem = "Erro ao criar profici√£ncia" });
         }
     }
 
@@ -131,19 +131,19 @@ public class ProficienciaController : ControllerBase
             var proficiencia = await atualizarProficienciaUseCase.ExecutarAsync(id, dto, cancellationToken);
             
             if (proficiencia == null)
-                return NotFound(new { mensagem = $"ProficiÍncia com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Profici√£ncia com ID {id} n√£o encontrada" });
                 
             return Ok(proficiencia);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de atualizaÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de atualiza√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -151,8 +151,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar proficiÍncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao atualizar proficiÍncia" });
+            _logger.LogError(ex, "Erro ao atualizar profici√£ncia {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao atualizar profici√£ncia" });
         }
     }
 
@@ -165,19 +165,19 @@ public class ProficienciaController : ControllerBase
         {
             var resultado = await excluirProficienciaUseCase.ExecutarAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"ProficiÍncia com ID {id} n„o encontrada" });
+                return NotFound(new { mensagem = $"Profici√£ncia com ID {id} n√£o encontrada" });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de exclus„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de exclus√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir proficiÍncia {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao excluir proficiÍncia" });
+            _logger.LogError(ex, "Erro ao excluir profici√£ncia {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao excluir profici√£ncia" });
         }
     }
 }

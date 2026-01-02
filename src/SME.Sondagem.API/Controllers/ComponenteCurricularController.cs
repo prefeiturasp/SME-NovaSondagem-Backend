@@ -34,8 +34,8 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de listagem foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de listagem foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
@@ -53,14 +53,14 @@ public class ComponenteCurricularController : ControllerBase
         {
             var componente = await _useCase.ObterPorIdAsync(id, cancellationToken);
             if (componente == null)
-                return NotFound(new { mensagem = $"Componente curricular com ID {id} n„o encontrado" });
+                return NotFound(new { mensagem = $"Componente curricular com ID {id} n√£o encontrado" });
 
             return Ok(componente);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de obtenÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de obten√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
@@ -78,18 +78,18 @@ public class ComponenteCurricularController : ControllerBase
         {
             var componente = await _useCase.ObterPorCodigoEolAsync(codigoEol, cancellationToken);
             if (componente == null)
-                return NotFound(new { mensagem = $"Componente curricular com cÛdigo EOL {codigoEol} n„o encontrado" });
+                return NotFound(new { mensagem = $"Componente curricular com c√£digo EOL {codigoEol} n√£o encontrado" });
 
             return Ok(componente);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o foi cancelada para cÛdigo EOL {CodigoEol}", codigoEol);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o foi cancelada para c√£digo EOL {CodigoEol}", codigoEol);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter componente curricular por cÛdigo EOL {CodigoEol}", codigoEol);
+            _logger.LogError(ex, "Erro ao obter componente curricular por c√£digo EOL {CodigoEol}", codigoEol);
             return StatusCode(500, new { mensagem = "Erro ao obter componente curricular" });
         }
     }
@@ -111,13 +111,13 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de criaÁ„o foi cancelada");
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de cria√ß√£o foi cancelada");
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -144,13 +144,13 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de atualizaÁ„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de atualiza√ß√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
         {
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
-            return BadRequest(new { mensagem = "Erro de validaÁ„o", erros });
+            return BadRequest(new { mensagem = "Erro de valida√ß√£o", erros });
         }
         catch (NegocioException ex)
         {
@@ -172,14 +172,14 @@ public class ComponenteCurricularController : ControllerBase
         {
             var resultado = await _useCase.ExcluirAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"Componente curricular com ID {id} n„o encontrado" });
+                return NotFound(new { mensagem = $"Componente curricular com ID {id} n√£o encontrado" });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("RequisiÁ„o de exclus„o foi cancelada para ID {Id}", id);
-            return StatusCode(499, new { mensagem = "RequisiÁ„o cancelada pelo cliente" });
+            _logger.LogInformation("Requisi√ß√£o de exclus√£o foi cancelada para ID {Id}", id);
+            return StatusCode(499, new { mensagem = "Requisi√ß√£o cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
