@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  sme.sondagem.api:
+    image: ${DOCKER_REGISTRY-}smesondagemapi
+    build:
+      context: .
+      dockerfile: SME.Sondagem.Api/Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+
+    networks:
+      - sme-network
+
+networks:
+  sme-network:
+    external:
+      name: sme-network
+    driver: bridge
