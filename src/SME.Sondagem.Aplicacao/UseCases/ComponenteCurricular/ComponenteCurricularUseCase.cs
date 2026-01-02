@@ -1,5 +1,6 @@
 using FluentValidation;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using System.Net;
