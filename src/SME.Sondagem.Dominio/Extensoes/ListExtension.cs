@@ -25,7 +25,7 @@
         public static void LancarExcecaoNegocioSeNaoPossuiRegistros<T>(this IEnumerable<T> enumerable, string msgErro)
         {
             if (enumerable.NaoPossuiRegistros())
-                throw new NegocioException(msgErro);
+                throw new RegraNegocioException(msgErro);
         }
     }
 }

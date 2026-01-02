@@ -8,7 +8,7 @@ public static class ObjectExtension
     public static void LancarExcecaoNegocioSeEhNulo(this object objeto, string msgErro)
     {
         if (objeto == null)
-            throw new NegocioException(msgErro);
+            throw new RegraNegocioException(msgErro);
     }
 
     public static string RemoverAcentuacao(this string valor)

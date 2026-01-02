@@ -269,7 +269,7 @@ public class QuestaoControllerTeste
     public async Task Criar_NegocioException_DeveRetornarStatusDaExcecao()
     {
         var questaoDto = new QuestaoDto { Nome = "Questao Duplicado" };
-        var negocioException = new NegocioException("Questao já existe", StatusCodes.Status409Conflict);
+        var negocioException = new RegraNegocioException("Questao já existe", StatusCodes.Status409Conflict);
 
         _criarQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
@@ -403,7 +403,7 @@ public class QuestaoControllerTeste
     {
         const int id = 1;
         var questaoDto = new QuestaoDto { Id = id, Nome = "Questao" };
-        var negocioException = new NegocioException("Questao não encontrado", StatusCodes.Status404NotFound);
+        var negocioException = new RegraNegocioException("Questao não encontrado", StatusCodes.Status404NotFound);
 
         _atualizarQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))

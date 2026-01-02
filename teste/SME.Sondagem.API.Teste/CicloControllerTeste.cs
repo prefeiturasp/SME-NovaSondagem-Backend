@@ -264,7 +264,7 @@ public class CicloControllerTeste
     public async Task Criar_NegocioException_DeveRetornarStatusDaExcecao()
     {
         var cicloDto = new CicloDto { DescCiclo = "Ciclo Duplicado" };
-        var negocioException = new NegocioException("Ciclo já existe", StatusCodes.Status409Conflict);
+        var negocioException = new RegraNegocioException("Ciclo já existe", StatusCodes.Status409Conflict);
 
         _criarCicloUseCaseMock
             .Setup(x => x.ExecutarAsync(cicloDto, _cancellationToken))
@@ -398,7 +398,7 @@ public class CicloControllerTeste
     {
         const int id = 1;
         var cicloDto = new CicloDto { Id = id, DescCiclo = "Ciclo" };
-        var negocioException = new NegocioException("Ciclo não encontrado", StatusCodes.Status404NotFound);
+        var negocioException = new RegraNegocioException("Ciclo não encontrado", StatusCodes.Status404NotFound);
 
         _atualizarCicloUseCaseMock
             .Setup(x => x.ExecutarAsync(id, cicloDto, _cancellationToken))
