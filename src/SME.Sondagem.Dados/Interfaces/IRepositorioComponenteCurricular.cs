@@ -1,5 +1,6 @@
-using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
+
+namespace SME.Sondagem.Dados.Interfaces;
 
 public interface IRepositorioComponenteCurricular : IRepositorioBase<ComponenteCurricular>
 {

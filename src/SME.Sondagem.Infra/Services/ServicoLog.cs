@@ -44,10 +44,10 @@ public class ServicoLog : IServicoLog
     private void Registrar(LogMensagem log)
     {
         var body = Encoding.UTF8.GetBytes(log.ConverterObjectParaJson());
-        servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbit.RotaLogs);
+        servicoTelemetria.Registrar(async () => await PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbit.RotaLogs);
     }
 
-    private async void PublicarMensagem(byte[] body)
+    private async Task PublicarMensagem(byte[] body)
     {
         try
         {
