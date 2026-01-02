@@ -9,12 +9,12 @@ WORKDIR /src
 
 RUN if ! dotnet nuget list source | grep -q "https://api.nuget.org/v3/index.json"; then dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org; fi
 
-COPY ["SME.Sondagem.API/SME.Sondagem.API.csproj", "SME.Sondagem.API/"]
-COPY ["SME.Sondagem.Aplicacao/SME.Sondagem.Aplicacao.csproj", "SME.Sondagem.Aplicacao/"]
-COPY ["SME.Sondagem.Dados/SME.Sondagem.Dados.csproj", "SME.Sondagem.Dados/"]
-COPY ["SME.Sondagem.Dominio/SME.Sondagem.Dominio.csproj", "SME.Sondagem.Dominio/"]
-COPY ["SME.Sondagem.Infra/SME.Sondagem.Infra.csproj", "SME.Sondagem.Infra/"]
-COPY ["SME.Sondagem.IoC/SME.Sondagem.IoC.csproj", "SME.Sondagem.IoC/"]
+COPY ["src/SME.Sondagem.API/SME.Sondagem.API.csproj", "SME.Sondagem.API/"]
+COPY ["src/SME.Sondagem.Aplicacao/SME.Sondagem.Aplicacao.csproj", "SME.Sondagem.Aplicacao/"]
+COPY ["src/SME.Sondagem.Dados/SME.Sondagem.Dados.csproj", "SME.Sondagem.Dados/"]
+COPY ["src/SME.Sondagem.Dominio/SME.Sondagem.Dominio.csproj", "SME.Sondagem.Dominio/"]
+COPY ["src/SME.Sondagem.Infra/SME.Sondagem.Infra.csproj", "SME.Sondagem.Infra/"]
+COPY ["src/SME.Sondagem.IoC/SME.Sondagem.IoC.csproj", "SME.Sondagem.IoC/"]
 
 RUN dotnet restore "SME.Sondagem.API/SME.Sondagem.API.csproj"
 COPY . .
