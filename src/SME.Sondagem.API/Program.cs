@@ -71,14 +71,40 @@ RegistraRepositorios.Registrar(builder.Services);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    if (builder.Environment.IsDevelopment())
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
+        options.AddPolicy("CorsPolicy", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    }
+    else
+    {
+        var allowedOriginsString = builder.Configuration["Cors:AllowedOrigins"];
+        var allowedOrigins = string.IsNullOrWhiteSpace(allowedOriginsString)
+            ? Array.Empty<string>()
+            : allowedOriginsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
+        options.AddPolicy("CorsPolicy", policy =>
+        {
+            if (allowedOrigins.Length > 0)
+            {
+                policy.WithOrigins(allowedOrigins)
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            }
+            else
+            {
+                policy.WithOrigins("https://localhost")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader();
+            }
+        });
+    }
+});
 
 builder.Services.AddAuthorization();
 
@@ -121,7 +147,7 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-app.UseCors("AllowAllOrigins");
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
 app.MapControllers();
 

@@ -26,24 +26,25 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var proficienciaId = 7;
             var cicloId = 2;
 
-            var questionario = new Questionario(
-                nome,
-                tipo,
-                anoLetivo,
-                modalidadeId,
-                modalidadeDesc,
-                dreId,
-                dreNome,
-                ueId,
-                ueNome,
-                serieAno,
-                serieAnoNome,
-                turmaId,
-                turmaNome,
-                componenteCurricularId,
-                proficienciaId,
-                cicloId
-            );
+            var questionario = new Questionario
+            {
+                Nome = nome,
+                Tipo = tipo,
+                AnoLetivo = anoLetivo,
+                ModalidadeId = modalidadeId,
+                ModalidadeDesc = modalidadeDesc,
+                DreId = dreId,
+                DreNome = dreNome,
+                UeId = ueId,
+                UeNome = ueNome,
+                SerieAno = serieAno,
+                SerieAnoNome = serieAnoNome,
+                TurmaId = turmaId,
+                TurmaNome = turmaNome,
+                ComponenteCurricularId = componenteCurricularId,
+                ProficienciaId = proficienciaId,
+                CicloId = cicloId
+            };
 
             Assert.Equal(nome, questionario.Nome);
             Assert.Equal(tipo, questionario.Tipo);
@@ -86,6 +87,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var questionario = CriarQuestionarioPadrao();
 
+            // Navegações são null até serem carregadas pelo EF
             Assert.Null(questionario.ComponenteCurricular);
             Assert.Null(questionario.Proficiencia);
             Assert.Null(questionario.Ciclo);
@@ -93,24 +95,15 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
 
         private static Questionario CriarQuestionarioPadrao()
         {
-            return new Questionario(
-                nome: "Teste",
-                tipo: TipoQuestionario.SondagemEscrita,
-                anoLetivo: 2024,
-                modalidadeId: null,
-                modalidadeDesc: null,
-                dreId: null,
-                dreNome: null,
-                ueId: null,
-                ueNome: null,
-                serieAno: null,
-                serieAnoNome: null,
-                turmaId: null,
-                turmaNome: null,
-                componenteCurricularId: 1,
-                proficienciaId: 1,
-                cicloId: 1
-            );
+            return new Questionario
+            {
+                Nome = "Teste",
+                Tipo = TipoQuestionario.SondagemEscrita,
+                AnoLetivo = 2024,
+                ComponenteCurricularId = 1,
+                ProficienciaId = 1,
+                CicloId = 1
+            };
         }
     }
 }
