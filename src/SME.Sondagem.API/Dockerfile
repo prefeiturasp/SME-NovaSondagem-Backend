@@ -18,10 +18,13 @@ COPY ["src/SME.Sondagem.IoC/SME.Sondagem.IoC.csproj", "SME.Sondagem.IoC/"]
 
 RUN dotnet restore "SME.Sondagem.API/SME.Sondagem.API.csproj"
 COPY . .
-WORKDIR "/src/SME.Sondagem.API"
+
+WORKDIR /src/src/SME.Sondagem.API
 RUN dotnet build "SME.Sondagem.API.csproj" -c Release -o /app/build
 
+
 FROM build AS publish
+WORKDIR /src/src/SME.Sondagem.API
 RUN dotnet publish "SME.Sondagem.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
