@@ -33,7 +33,7 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol, cancellationToken: cancellationToken);
         if (existe)
         {
-            throw new NegocioException(
+            throw new RegraNegocioException(
                 $"Já existe um componente curricular com o código EOL {dto.CodigoEol}",
                 HttpStatusCode.Conflict
             );
@@ -63,7 +63,7 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         var entidade = await _repositorio.ObterPorIdAsync(id, cancellationToken);
         if (entidade == null)
         {
-            throw new NegocioException(
+            throw new RegraNegocioException(
                 $"Componente curricular com ID {id} não encontrado",
                 HttpStatusCode.NotFound
             );
@@ -72,7 +72,7 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         var existe = await _repositorio.ExisteComCodigoEolAsync(dto.CodigoEol, id, cancellationToken);
         if (existe)
         {
-            throw new NegocioException(
+            throw new RegraNegocioException(
                 $"Já existe outro componente curricular com o código EOL {dto.CodigoEol}",
                 HttpStatusCode.Conflict
             );

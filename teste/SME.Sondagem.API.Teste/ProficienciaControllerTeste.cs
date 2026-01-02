@@ -260,7 +260,7 @@ public class ProficienciaControllerTeste
     public async Task Create_NegocioException_DeveRetornarStatusDaExcecao()
     {
         var proficienciaDto = new ProficienciaDto { Nome = "Proficiência Duplicada" };
-        var negocioException = new NegocioException("Proficiência já existe", StatusCodes.Status409Conflict);
+        var negocioException = new RegraNegocioException("Proficiência já existe", StatusCodes.Status409Conflict);
 
         _criarProficienciaUseCaseMock
             .Setup(x => x.ExecutarAsync(proficienciaDto, _cancellationToken))
@@ -394,7 +394,7 @@ public class ProficienciaControllerTeste
     {
         const int id = 1;
         var proficienciaDto = new ProficienciaDto { Id = id, Nome = "Proficiência" };
-        var negocioException = new NegocioException("Proficiência não encontrada", StatusCodes.Status404NotFound);
+        var negocioException = new RegraNegocioException("Proficiência não encontrada", StatusCodes.Status404NotFound);
 
         _atualizarProficienciaUseCaseMock
             .Setup(x => x.ExecutarAsync(id, proficienciaDto, _cancellationToken))

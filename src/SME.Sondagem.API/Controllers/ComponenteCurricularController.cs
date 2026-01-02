@@ -119,7 +119,7 @@ public class ComponenteCurricularController : ControllerBase
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
             return BadRequest(new { mensagem = "Erro de validação", erros });
         }
-        catch (NegocioException ex)
+        catch (RegraNegocioException ex)
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
@@ -152,7 +152,7 @@ public class ComponenteCurricularController : ControllerBase
             var erros = ex.Errors.Select(e => new { campo = e.PropertyName, mensagem = e.ErrorMessage });
             return BadRequest(new { mensagem = "Erro de validação", erros });
         }
-        catch (NegocioException ex)
+        catch (RegraNegocioException ex)
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
