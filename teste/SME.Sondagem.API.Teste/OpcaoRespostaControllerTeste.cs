@@ -59,7 +59,7 @@ namespace SME.Sondagem.API.Teste
             var result = await _controller.Listar(_cancellationToken);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsAssignableFrom<IEnumerable<OpcaoRespostaDto>>(okResult.Value);
+            var returnValue = Assert.IsType<IEnumerable<OpcaoRespostaDto>>(okResult.Value, exactMatch: false);
             Assert.Equal(2, returnValue.Count());
             _mockObterUseCase.Verify(x => x.ExecutarAsync(_cancellationToken), Times.Once);
         }

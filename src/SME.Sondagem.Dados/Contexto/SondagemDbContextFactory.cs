@@ -64,19 +64,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
 
         if (string.IsNullOrEmpty(connectionString))
         {
-            Console.WriteLine($"\n❌ Connection string '{ConfigKeyDatabase}' não encontrada!");
-            Console.WriteLine("\nChaves disponíveis:");
-            foreach (var item in configuration.AsEnumerable())
-            {
-                Console.WriteLine($"  - {item.Key}");
-            }
-
-            var connectionStringKey = $"{ConfigKeyConnectionStrings}{ConfigKeySeparator}{ConfigKeyDatabase}";
-            var exampleConnectionString = "Host=localhost;Port=5432;Database=sondagemmigration;Username=postgres;Pwd=SuaSenha;";
-            throw new InvalidOperationException(
-                $"Connection string '{ConfigKeyDatabase}' não encontrada nas user secrets.\n\n" +
-                "Execute no diretório do projeto API:\n" +
-                $"dotnet user-secrets set \"{connectionStringKey}\" \"{exampleConnectionString}\"");
+            throw new InvalidOperationException($"Connection string '{ConfigKeyDatabase}' não encontrada nas user secrets.\n\n");
         }
 
         Console.WriteLine("✅ Connection string encontrada com sucesso!");
