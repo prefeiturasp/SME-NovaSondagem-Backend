@@ -8,7 +8,7 @@ public class GrupoQuestoes : EntidadeBase
         Subtitulo = subtitulo;
     }
 
-    public string Titulo { get; private set; } = string.Empty;
+    public string Titulo { get; private set; }
     public string? Subtitulo { get; private set; }
 
     // Navegação

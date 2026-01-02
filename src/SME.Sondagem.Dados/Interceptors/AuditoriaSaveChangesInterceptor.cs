@@ -185,23 +185,13 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
 
     private List<(EntidadeBase Entidade, string NomeEntidade)> CapturarEntidadesInsert(ChangeTracker changeTracker)
     {
-        var entidades = new List<(EntidadeBase, string)>();
-
-        var entries = changeTracker.Entries()
+        return changeTracker.Entries()
             .Where(e => e.Entity is EntidadeBase &&
                        e.State == EntityState.Added &&
                        e.Entity.GetType() != typeof(Auditoria) &&
                        e.Entity.GetType() != typeof(AuditoriaDetalhe))
+            .Select(entry => ((EntidadeBase)entry.Entity, entry.Entity.GetType().Name))
             .ToList();
-
-        foreach (var entry in entries)
-        {
-            var entidade = (EntidadeBase)entry.Entity;
-            var nomeEntidade = entry.Entity.GetType().Name;
-            entidades.Add((entidade, nomeEntidade));
-        }
-
-        return entidades;
     }
 
     private List<Auditoria> CriarAuditoriasInsert(

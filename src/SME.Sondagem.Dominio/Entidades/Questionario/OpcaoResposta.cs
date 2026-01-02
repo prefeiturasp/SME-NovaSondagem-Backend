@@ -12,7 +12,7 @@ public class OpcaoResposta : EntidadeBase
         CorTexto = corTexto;
     }
 
-    public string DescricaoOpcaoResposta { get; private set; } = string.Empty;
+    public string DescricaoOpcaoResposta { get; private set; }
     public string? Legenda { get; private set; }
     public string? CorFundo { get; private set; }
     public string? CorTexto { get; private set; }
