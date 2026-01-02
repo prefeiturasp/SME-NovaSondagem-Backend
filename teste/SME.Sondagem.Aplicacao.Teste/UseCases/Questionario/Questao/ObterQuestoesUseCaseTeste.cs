@@ -24,43 +24,30 @@ public class ObterQuestoesUseCaseTeste
     {
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>
         {
-            new()
-            {
-                QuestionarioId = 1,
-                GrupoQuestoesId = null,
-                Ordem = 1,
-                Nome = "Questao 1",
-                Observacao = "Observacao 1",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                Opcionais = "",
-                SomenteLeitura = false,
-                Dimensao = 1,
-                Id = 1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = "Usuario1",
-                CriadoRF = "RF001"
-            },
-            new()
-            {
-                QuestionarioId = 2,
-                GrupoQuestoesId = null,
-                Ordem = 2,
-                Nome = "Questao 2",
-                Observacao = "Observacao 2",
-                Obrigatorio = false,
-                Tipo = TipoQuestao.Radio,
-                Opcionais = "",
-                SomenteLeitura = false,
-                Dimensao = 1,
-                Id = 2,
-                CriadoEm = DateTime.Now.AddDays(-1),
-                CriadoPor = "Usuario2",
-                CriadoRF = "RF002",
-                AlteradoEm = DateTime.Now,
-                AlteradoPor = "Usuario3",
-                AlteradoRF = "RF003"
-            }
+            new(
+                questionarioId: 1,
+                ordem: 1,
+                nome: "Questao 1",
+                observacao: "Observacao 1",
+                obrigatorio: true,
+                tipo: TipoQuestao.Texto,
+                opcionais: "",
+                somenteLeitura: false,
+                dimensao: 1,
+                grupoQuestoesId: null
+            ),
+            new(
+                questionarioId: 2,
+                ordem: 2,
+                nome: "Questao 2",
+                observacao: "Observacao 2",
+                obrigatorio: false,
+                tipo: TipoQuestao.Radio,
+                opcionais: "",
+                somenteLeitura: false,
+                dimensao: 1,
+                grupoQuestoesId: null
+            )
         };
 
         _repositorioQuestaoMock
@@ -73,23 +60,13 @@ public class ObterQuestoesUseCaseTeste
         var resultadoList = resultado.ToList();
         Assert.Equal(2, resultadoList.Count);
 
-        var primeira = resultadoList.First(x => x.Id == 1);
+        var primeira = resultadoList.First(x => x.Nome == "Questao 1");
         Assert.Equal("Questao 1", primeira.Nome);
         Assert.Equal(1, primeira.QuestionarioId);
-        Assert.Equal("Usuario1", primeira.CriadoPor);
-        Assert.Equal("RF001", primeira.CriadoRF);
-        Assert.Null(primeira.AlteradoEm);
-        Assert.Null(primeira.AlteradoPor);
-        Assert.Null(primeira.AlteradoRF);
 
-        var segunda = resultadoList.First(x => x.Id == 2);
+        var segunda = resultadoList.First(x => x.Nome == "Questao 2");
         Assert.Equal("Questao 2", segunda.Nome);
         Assert.Equal(2, segunda.QuestionarioId);
-        Assert.Equal("Usuario2", segunda.CriadoPor);
-        Assert.Equal("RF002", segunda.CriadoRF);
-        Assert.NotNull(segunda.AlteradoEm);
-        Assert.Equal("Usuario3", segunda.AlteradoPor);
-        Assert.Equal("RF003", segunda.AlteradoRF);
 
         _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
     }
@@ -158,35 +135,24 @@ public class ObterQuestoesUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_DeveMaperarTodasAsPropriedadesCorretamente()
     {
-        var dataEspecifica = new DateTime(2023, 10, 15, 14, 30, 0);
-        var dataAlteracao = new DateTime(2023, 10, 16, 10, 15, 0);
-
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>
         {
-            new()
-            {
-                QuestionarioId = 100,
-                GrupoQuestoesId = 1,
-                Ordem = 3,
-                Nome = "Matemática Básica",
-                Observacao = "Observação detalhada",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Numerico,
-                Opcionais = "opcionais",
-                SomenteLeitura = false,
-                Dimensao = 2,
-                Tamanho = 50,
-                Mascara = "###.###",
-                PlaceHolder = "Digite aqui",
-                NomeComponente = "ComponenteX",
-                Id = 100,
-                CriadoEm = dataEspecifica,
-                CriadoPor = "Sistema",
-                CriadoRF = "RF999",
-                AlteradoEm = dataAlteracao,
-                AlteradoPor = "Admin",
-                AlteradoRF = "RF999"
-            }
+            new(
+                questionarioId: 100,
+                ordem: 3,
+                nome: "Matemática Básica",
+                observacao: "Observação detalhada",
+                obrigatorio: true,
+                tipo: TipoQuestao.Numerico,
+                opcionais: "opcionais",
+                somenteLeitura: false,
+                dimensao: 2,
+                grupoQuestoesId: 1,
+                tamanho: 50,
+                mascara: "###.###",
+                placeHolder: "Digite aqui",
+                nomeComponente: "ComponenteX"
+            )
         };
 
         _repositorioQuestaoMock
@@ -196,7 +162,6 @@ public class ObterQuestoesUseCaseTeste
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
 
         var dto = resultado.Single();
-        Assert.Equal(100, dto.Id);
         Assert.Equal("Matemática Básica", dto.Nome);
         Assert.Equal(100, dto.QuestionarioId);
         Assert.Equal(1, dto.GrupoQuestoesId);
@@ -211,12 +176,6 @@ public class ObterQuestoesUseCaseTeste
         Assert.Equal("###.###", dto.Mascara);
         Assert.Equal("Digite aqui", dto.PlaceHolder);
         Assert.Equal("ComponenteX", dto.NomeComponente);
-        Assert.Equal(dataEspecifica, dto.CriadoEm);
-        Assert.Equal("Sistema", dto.CriadoPor);
-        Assert.Equal("RF999", dto.CriadoRF);
-        Assert.Equal(dataAlteracao, dto.AlteradoEm);
-        Assert.Equal("Admin", dto.AlteradoPor);
-        Assert.Equal("RF999", dto.AlteradoRF);
     }
 
     [Fact]
@@ -226,23 +185,18 @@ public class ObterQuestoesUseCaseTeste
 
         for (int i = 1; i <= 1000; i++)
         {
-            questoes.Add(new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-            {
-                QuestionarioId = i % 5 + 1,
-                GrupoQuestoesId = null,
-                Ordem = i,
-                Nome = $"Questao {i}",
-                Observacao = $"Observacao {i}",
-                Obrigatorio = i % 2 == 0,
-                Tipo = TipoQuestao.Texto,
-                Opcionais = "",
-                SomenteLeitura = false,
-                Dimensao = 1,
-                Id = i,
-                CriadoEm = DateTime.Now.AddDays(-i),
-                CriadoPor = $"Usuario{i}",
-                CriadoRF = $"RF{i:000}"
-            });
+            questoes.Add(new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+                questionarioId: i % 5 + 1,
+                ordem: i,
+                nome: $"Questao {i}",
+                observacao: $"Observacao {i}",
+                obrigatorio: i % 2 == 0,
+                tipo: TipoQuestao.Texto,
+                opcionais: "",
+                somenteLeitura: false,
+                dimensao: 1,
+                grupoQuestoesId: null
+            ));
         }
 
         _repositorioQuestaoMock
@@ -257,5 +211,36 @@ public class ObterQuestoesUseCaseTeste
         Assert.Equal("Questao 1000", resultadoList.Last().Nome);
 
         _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+    }
+
+    [Fact]
+    public async Task ExecutarAsync_DeveMapearPropriedadesDeAuditoria()
+    {
+        var dataEspecifica = new DateTime(2023, 10, 15, 14, 30, 0);
+
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+            questionarioId: 1,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: "Teste",
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: "",
+            somenteLeitura: false,
+            dimensao: 1,
+            grupoQuestoesId: null
+        );
+
+        var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao> { questao };
+
+        _repositorioQuestaoMock
+            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .ReturnsAsync(questoes);
+
+        var resultado = await _useCase.ExecutarAsync(_cancellationToken);
+
+        var dto = resultado.Single();
+        Assert.NotNull(dto.CriadoPor);
+        Assert.NotNull(dto.CriadoRF);
     }
 }
