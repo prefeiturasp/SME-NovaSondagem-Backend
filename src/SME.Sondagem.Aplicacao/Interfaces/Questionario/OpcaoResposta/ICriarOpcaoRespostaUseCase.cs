@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 
 public interface ICriarOpcaoRespostaUseCase
 {
-    Task<long> ExecutarAsync(OpcaoRespostaDto proficienciaDto, CancellationToken cancellationToken = default);
+    Task<long> ExecutarAsync(OpcaoRespostaDto opcaoRespostaDto, CancellationToken cancellationToken = default);
 }

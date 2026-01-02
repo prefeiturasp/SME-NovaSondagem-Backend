@@ -21,9 +21,6 @@ public class AtualizarOpcaoRespostaUseCase : IAtualizarOpcaoRespostaUseCase
             return null;
 
         opcaoRespostaExistente.Atualizar(opcaoRespostaDto.DescricaoOpcaoResposta, opcaoRespostaDto.Legenda, opcaoRespostaDto.CorFundo, opcaoRespostaDto.CorTexto);
-        opcaoRespostaExistente.AlteradoEm = DateTime.Now;
-        opcaoRespostaExistente.AlteradoPor = opcaoRespostaDto.AlteradoPor;
-        opcaoRespostaExistente.AlteradoRF = opcaoRespostaDto.AlteradoRF;
 
         var sucesso = await opcaoRespostaRepositorio.AtualizarAsync(opcaoRespostaExistente, cancellationToken: cancellationToken);
         

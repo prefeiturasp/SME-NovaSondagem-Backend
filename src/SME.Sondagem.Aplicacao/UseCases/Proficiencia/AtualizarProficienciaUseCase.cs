@@ -21,9 +21,6 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
             return null;
 
         proficienciaExistente.Atualizar(proficienciaDto.Nome, proficienciaDto.ComponenteCurricularId);
-        proficienciaExistente.AlteradoEm = DateTime.Now;
-        proficienciaExistente.AlteradoPor = proficienciaDto.AlteradoPor;
-        proficienciaExistente.AlteradoRF = proficienciaDto.AlteradoRF;
 
         var sucesso = await proficienciaRepositorio.AtualizarAsync(proficienciaExistente, cancellationToken: cancellationToken);
         

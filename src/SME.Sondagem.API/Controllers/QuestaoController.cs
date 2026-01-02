@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.API.Controllers;
 
