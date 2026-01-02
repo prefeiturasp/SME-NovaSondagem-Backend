@@ -1,6 +1,6 @@
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questao;
 

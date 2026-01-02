@@ -21,9 +21,6 @@ public class AtualizarCicloUseCase : IAtualizarCicloUseCase
             return null;
 
         cicloExistente.Atualizar(cicloDto.DescCiclo, cicloDto.CodCicloEnsinoEol);
-        cicloExistente.AlteradoEm = DateTime.Now;
-        cicloExistente.AlteradoPor = cicloDto.AlteradoPor;
-        cicloExistente.AlteradoRF = cicloDto.AlteradoRF;
 
         var sucesso = await cicloRepositorio.AtualizarAsync(cicloExistente, cancellationToken: cancellationToken);
         
@@ -34,13 +31,7 @@ public class AtualizarCicloUseCase : IAtualizarCicloUseCase
         {
             Id = cicloExistente.Id,
             DescCiclo = cicloExistente.DescCiclo,
-            CodCicloEnsinoEol = cicloExistente.CodCicloEnsinoEol,
-            CriadoEm = cicloExistente.CriadoEm,
-            CriadoPor = cicloExistente.CriadoPor,
-            CriadoRF = cicloExistente.CriadoRF,
-            AlteradoEm = cicloExistente.AlteradoEm,
-            AlteradoPor = cicloExistente.AlteradoPor,
-            AlteradoRF = cicloExistente.AlteradoRF
+            CodCicloEnsinoEol = cicloExistente.CodCicloEnsinoEol
         };
     }
 }

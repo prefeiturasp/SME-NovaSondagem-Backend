@@ -1,15 +1,12 @@
-using Microsoft.Extensions.Configuration;
 using SME.Sondagem.Dados.Interfaces;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioQuestionario : IRepositorioQuestionario
 {
-    private readonly IConfiguration configuration;
-
-    public RepositorioQuestionario(IConfiguration configuration)
+    public RepositorioQuestionario()
     {
-        this.configuration = configuration;
+        
     }
 
     public Task InserirAsync(object entidade)

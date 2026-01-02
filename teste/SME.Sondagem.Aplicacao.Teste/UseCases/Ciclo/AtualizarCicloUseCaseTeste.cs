@@ -27,9 +27,7 @@ public class AtualizarCicloUseCaseTeste
         {
             Id = 1,
             DescCiclo = "Ciclo Atualizado",
-            CodCicloEnsinoEol = 3,
-            AlteradoPor = "Usuario Alterador",
-            AlteradoRF = "RF999"
+            CodCicloEnsinoEol = 3
         };
 
         var cicloExistente = new SME.Sondagem.Dominio.Entidades.Ciclo(1, "Nome Original")
@@ -54,15 +52,9 @@ public class AtualizarCicloUseCaseTeste
         Assert.Equal(id, resultado.Id);
         Assert.Equal("Ciclo Atualizado", resultado.DescCiclo);
         Assert.Equal(3, resultado.CodCicloEnsinoEol);
-        Assert.Equal("Usuario Alterador", resultado.AlteradoPor);
-        Assert.Equal("RF999", resultado.AlteradoRF);
-        Assert.NotNull(resultado.AlteradoEm);
 
         Assert.Equal("Ciclo Atualizado", cicloExistente.DescCiclo);
         Assert.Equal(3, cicloExistente.CodCicloEnsinoEol);
-        Assert.Equal("Usuario Alterador", cicloExistente.AlteradoPor);
-        Assert.Equal("RF999", cicloExistente.AlteradoRF);
-        Assert.NotNull(cicloExistente.AlteradoEm);
 
         _repositorioCicloMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
         _repositorioCicloMock.Verify(x => x.AtualizarAsync(cicloExistente, _cancellationToken), Times.Once);
@@ -130,9 +122,7 @@ public class AtualizarCicloUseCaseTeste
         var cicloDto = new CicloDto
         {
             DescCiclo = "Ciclo Atualizado",
-            CodCicloEnsinoEol = 2,
-            AlteradoPor = "Usuario",
-            AlteradoRF = "RF001"
+            CodCicloEnsinoEol = 2
         };
 
         var cicloExistente = new SME.Sondagem.Dominio.Entidades.Ciclo(1, "Nome Original")
@@ -140,8 +130,6 @@ public class AtualizarCicloUseCaseTeste
             Id = id,
             AlteradoEm = null
         };
-
-        var dataAntesExecucao = DateTime.Now;
 
         _repositorioCicloMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -151,13 +139,14 @@ public class AtualizarCicloUseCaseTeste
             .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Ciclo>(), _cancellationToken))
             .ReturnsAsync(true);
 
-        await _useCase.ExecutarAsync(id, cicloDto, _cancellationToken);
+        var resultado = await _useCase.ExecutarAsync(id, cicloDto, _cancellationToken);
 
-        var dataAposExecucao = DateTime.Now;
-
-        Assert.NotNull(cicloExistente.AlteradoEm);
-        Assert.True(cicloExistente.AlteradoEm >= dataAntesExecucao);
-        Assert.True(cicloExistente.AlteradoEm <= dataAposExecucao);
+        // Verifica se a atualização foi bem-sucedida
+        Assert.NotNull(resultado);
+        Assert.Equal("Ciclo Atualizado", cicloExistente.DescCiclo);
+        Assert.Equal(2, cicloExistente.CodCicloEnsinoEol);
+        
+        _repositorioCicloMock.Verify(x => x.AtualizarAsync(cicloExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -217,9 +206,7 @@ public class AtualizarCicloUseCaseTeste
         var cicloDto = new CicloDto
         {
             DescCiclo = "Ciclo Teste",
-            CodCicloEnsinoEol = 2,
-            AlteradoPor = "Usuario Teste",
-            AlteradoRF = "RF123"
+            CodCicloEnsinoEol = 2
         };
 
         var cicloExistente = new SME.Sondagem.Dominio.Entidades.Ciclo(1, "Nome Original")
@@ -244,13 +231,6 @@ public class AtualizarCicloUseCaseTeste
         Assert.Equal(id, resultado.Id);
         Assert.Equal("Ciclo Teste", resultado.DescCiclo);
         Assert.Equal(2, resultado.CodCicloEnsinoEol);
-        Assert.Equal("Usuario Teste", resultado.AlteradoPor);
-        Assert.Equal("RF123", resultado.AlteradoRF);
-        Assert.NotNull(resultado.AlteradoEm);
-
-        Assert.Equal(cicloExistente.CriadoEm, resultado.CriadoEm);
-        Assert.Equal("Usuario Criador", resultado.CriadoPor);
-        Assert.Equal("RF456", resultado.CriadoRF);
     }
 
     [Fact]

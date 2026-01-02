@@ -12,7 +12,6 @@ public class SondagemDbContext : DbContext
     {
     }
 
-    // DbSets
     public DbSet<ComponenteCurricular> ComponentesCurriculares { get; set; }
     public DbSet<Proficiencia> Proficiencias { get; set; }
     public DbSet<Ciclo> Ciclos { get; set; }
@@ -32,16 +31,16 @@ public class SondagemDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SondagemDbContext).Assembly);
 
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            if (typeof(EntidadeBase).IsAssignableFrom(entityType.ClrType))
+        modelBuilder.Model.GetEntityTypes()
+            .Where(entityType => typeof(EntidadeBase).IsAssignableFrom(entityType.ClrType))
+            .ToList()
+            .ForEach(entityType =>
             {
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
                 var property = Expression.Property(parameter, nameof(EntidadeBase.Excluido));
                 var filter = Expression.Lambda(Expression.Not(property), parameter);
 
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
-            }
-        }
+            });
     }
 }

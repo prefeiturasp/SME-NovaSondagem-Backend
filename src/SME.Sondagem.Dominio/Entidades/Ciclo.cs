@@ -9,7 +9,7 @@ public class Ciclo : EntidadeBase
     }
 
     public int CodCicloEnsinoEol { get; private set; }
-    public string DescCiclo { get; private set; } = string.Empty;
+    public string DescCiclo { get; private set; }
 
     // Navegação
     public virtual ICollection<Questionario.Questionario> Questionarios { get; private set; } = new List<Questionario.Questionario>();

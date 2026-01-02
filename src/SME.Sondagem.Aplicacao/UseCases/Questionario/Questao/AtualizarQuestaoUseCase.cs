@@ -1,6 +1,6 @@
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questao;
 
@@ -35,9 +35,6 @@ public class AtualizarQuestaoUseCase : IAtualizarQuestaoUseCase
             questaoDto.Mascara,
             questaoDto.PlaceHolder,
             questaoDto.NomeComponente);
-        questaoExistente.AlteradoEm = DateTime.Now;
-        questaoExistente.AlteradoPor = questaoDto.AlteradoPor;
-        questaoExistente.AlteradoRF = questaoDto.AlteradoRF;
 
         var sucesso = await questaoRepositorio.AtualizarAsync(questaoExistente, cancellationToken: cancellationToken);
         

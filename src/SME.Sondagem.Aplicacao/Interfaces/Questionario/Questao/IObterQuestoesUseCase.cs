@@ -1,4 +1,4 @@
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 

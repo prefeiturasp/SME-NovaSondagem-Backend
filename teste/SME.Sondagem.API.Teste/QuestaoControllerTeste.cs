@@ -6,7 +6,7 @@ using Moq;
 using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dominio;
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
 namespace SME.Sondagem.API.Teste;

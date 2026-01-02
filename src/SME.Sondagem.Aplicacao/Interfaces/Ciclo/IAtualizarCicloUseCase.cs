@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Ciclo;
 
 public interface IAtualizarCicloUseCase
 {
-    Task<CicloDto?> ExecutarAsync(long id, CicloDto proficienciaDto, CancellationToken cancellationToken = default);
+    Task<CicloDto?> ExecutarAsync(long id, CicloDto cicloDto, CancellationToken cancellationToken = default);
 }

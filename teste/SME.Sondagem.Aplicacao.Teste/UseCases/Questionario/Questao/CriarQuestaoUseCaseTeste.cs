@@ -2,7 +2,7 @@ using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Enums;
-using SME.Sondagem.Infrastructure.Dtos.Questao;
+using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questao;
