@@ -52,8 +52,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar Proficiências");
-            return StatusCode(500, new { mensagem = "Erro ao listar Proficiências" });
+            _logger.LogError(ex, "Erro ao listar proficiências");
+            return StatusCode(500, new { mensagem = "Erro ao listar proficiências" });
         }
     }
 
@@ -78,8 +78,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter Proficiência {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao obter Proficiência" });
+            _logger.LogError(ex, "Erro ao obter proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao obter proficiência" });
         }
     }
 
@@ -114,8 +114,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar Proficiência");
-            return StatusCode(500, new { mensagem = "Erro ao criar Proficiência" });
+            _logger.LogError(ex, "Erro ao criar proficiência");
+            return StatusCode(500, new { mensagem = "Erro ao criar proficiência" });
         }
     }
 
@@ -151,8 +151,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar Proficiência {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao atualizar Proficiência" });
+            _logger.LogError(ex, "Erro ao atualizar proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao atualizar proficiência" });
         }
     }
 
@@ -176,8 +176,8 @@ public class ProficienciaController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir Proficiência {Id}", id);
-            return StatusCode(500, new { mensagem = "Erro ao excluir Proficiência" });
+            _logger.LogError(ex, "Erro ao excluir proficiência {Id}", id);
+            return StatusCode(500, new { mensagem = "Erro ao excluir proficiência" });
         }
     }
 }
