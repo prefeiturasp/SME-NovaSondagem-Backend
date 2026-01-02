@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 
 public interface IAtualizarQuestaoUseCase
 {
-    Task<QuestaoDto?> ExecutarAsync(long id, QuestaoDto proficienciaDto, CancellationToken cancellationToken = default);
+    Task<QuestaoDto?> ExecutarAsync(long id, QuestaoDto questaoDto, CancellationToken cancellationToken = default);
 }
