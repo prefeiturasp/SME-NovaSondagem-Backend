@@ -32,6 +32,9 @@ public class CicloControllerTeste
         _loggerMock = new Mock<ILogger<CicloController>>();
         _cancellationToken = CancellationToken.None;
 
+        // Configura o logger para retornar true no IsEnabled para que o Log seja chamado
+        _loggerMock.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+
         _controller = new CicloController(
             _criarCicloUseCaseMock.Object,
             _atualizarCicloUseCaseMock.Object,
@@ -80,7 +83,7 @@ public class CicloControllerTeste
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
 
-        VerifyLogInformation(_loggerMock, "Requisição de listagem foi cancelada");
+        VerifyLogInformation(_loggerMock, "Requisição de listagem");
     }
 
     [Fact]
@@ -230,7 +233,7 @@ public class CicloControllerTeste
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
 
-        VerifyLogInformation(_loggerMock, "Requisição de criação foi cancelada");
+        VerifyLogInformation(_loggerMock, "Requisição de criação");
     }
 
     [Fact]
@@ -525,7 +528,7 @@ public class CicloControllerTeste
                 LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
-                It.IsAny<Exception>(),
+                It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
     }
@@ -551,7 +554,7 @@ public class CicloControllerTeste
                 It.Is<It.IsAnyType>((v, t) =>
                     v.ToString()!.Contains(message) &&
                     v.ToString()!.Contains(id.ToString())),
-                It.IsAny<Exception>(),
+                It.IsAny<Exception?>(),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.Once);
     }

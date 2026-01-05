@@ -4,11 +4,17 @@ namespace SME.Sondagem.API.Configuracoes;
 
 public static class RegistraDocumentacaoSwagger
 {
+    private static readonly string[] BearerSecurityRequirement = ["Bearer"];
+
     public static void Registrar(IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Sondagem API", Version = "1.0" });
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Sondagem API",
+                Version = "1.0"
+            });
 
             var securitySchema = new OpenApiSecurityScheme
             {
@@ -28,7 +34,7 @@ public static class RegistraDocumentacaoSwagger
 
             var securityRequirement = new OpenApiSecurityRequirement
             {
-                { securitySchema, new[] { "Bearer" } }
+                { securitySchema, BearerSecurityRequirement }
             };
 
             c.AddSecurityRequirement(securityRequirement);
