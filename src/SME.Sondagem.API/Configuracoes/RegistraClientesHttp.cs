@@ -10,10 +10,11 @@ public static class RegistraClientesHttp
     public static void Registrar(IServiceCollection services, GithubOptions githubOptions)
     {
         var policy = ObterPolicyBaseHttp();
+        var githubUrl = githubOptions?.Url ?? string.Empty;
 
         services.AddHttpClient(name: "githubApi", c =>
         {
-            c.BaseAddress = new Uri(githubOptions.Url);
+            c.BaseAddress = new Uri(githubUrl);
             c.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
             c.DefaultRequestHeaders.Add("User-Agent", "SGP");
 

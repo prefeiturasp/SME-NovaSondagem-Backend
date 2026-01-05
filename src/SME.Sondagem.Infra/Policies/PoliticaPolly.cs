@@ -2,5 +2,6 @@
 
 public class PoliticaPolly
 {
+    protected PoliticaPolly() { }
     public static string PublicaFila => "RetryPolicyFilasRabbit";
 }

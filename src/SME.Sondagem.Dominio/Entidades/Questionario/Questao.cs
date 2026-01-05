@@ -22,7 +22,7 @@ public class Questao : EntidadeBase
 
     // Navegação
     public virtual Questionario Questionario { get; private set; } = null!;
-    public virtual GrupoQuestoes? GrupoQuestoes { get; private set; }
+    public virtual GrupoQuestoes? GrupoQuestoes { get; private set; } = null!;
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
 

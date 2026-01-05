@@ -50,12 +50,10 @@ public static class RegistraAutenticacao
             };
         });
 
-        services.AddAuthorization(auth =>
-        {
-            auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+        services.AddAuthorizationBuilder()
+            .AddPolicy("Bearer", new AuthorizationPolicyBuilder()
                 .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
                 .Build());
-        });
     }
 }

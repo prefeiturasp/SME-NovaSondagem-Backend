@@ -24,7 +24,7 @@ public class ServicoLog : IServicoLog
 
     public void Registrar(Exception ex)
     {
-        LogMensagem logMensagem = new LogMensagem("Exception --- ", LogNivel.Critico, ex.Message, ex.StackTrace);
+        LogMensagem logMensagem = new LogMensagem("Exception --- ", LogNivel.Critico, ex?.Message ?? string.Empty, ex?.StackTrace);
         Registrar(logMensagem);
     }
 
@@ -37,10 +37,11 @@ public class ServicoLog : IServicoLog
 
     public void Registrar(string mensagem, Exception ex)
     {
-        LogMensagem logMensagem = new LogMensagem(mensagem, LogNivel.Critico, ex.Message, ex.StackTrace);
+        LogMensagem logMensagem = new LogMensagem(mensagem, LogNivel.Critico, ex?.Message ?? string.Empty, ex?.StackTrace);
 
         Registrar(logMensagem);
     }
+
     private void Registrar(LogMensagem log)
     {
         var body = Encoding.UTF8.GetBytes(log.ConverterObjectParaJson());
@@ -51,13 +52,12 @@ public class ServicoLog : IServicoLog
     {
         try
         {
-            string? userName = configuracaoRabbitOptions.UserName;
             var factory = new ConnectionFactory
             {
-                HostName = configuracaoRabbitOptions?.HostName,
-                UserName = userName,
-                Password = configuracaoRabbitOptions.Password,
-                VirtualHost = configuracaoRabbitOptions.VirtualHost
+                HostName = configuracaoRabbitOptions?.HostName ?? string.Empty,
+                UserName = configuracaoRabbitOptions?.UserName ?? string.Empty,
+                Password = configuracaoRabbitOptions?.Password ?? string.Empty,
+                VirtualHost = configuracaoRabbitOptions?.VirtualHost ?? string.Empty
             };
 
             using var conexaoRabbit = await factory.CreateConnectionAsync();

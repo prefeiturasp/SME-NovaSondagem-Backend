@@ -22,9 +22,9 @@ public abstract class ContextoBase : IContextoAplicacao
     public T ObterVariavel<T>(string nome)
     {
 
-        if (Variaveis.TryGetValue(nome, out object valor))
+        if (Variaveis.TryGetValue(nome, out var valor))
             return (T)valor;
 
-        return default;
+        return default!;
     }
 }

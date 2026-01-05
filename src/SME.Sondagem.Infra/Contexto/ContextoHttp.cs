@@ -43,7 +43,7 @@ public class ContextoHttp : ContextoBase
         else
         {
             Variaveis.Add("TemAuthorizationHeader", true);
-            Variaveis.Add("TokenAtual", authorizationHeader.Value.Single().Split(' ').Last());
+            Variaveis.Add("TokenAtual", authorizationHeader.Value.Single()?.Split(' ')?.Last() ?? string.Empty);
         }
     }
 
@@ -54,7 +54,7 @@ public class ContextoHttp : ContextoBase
 
     private string ObterPerfilAtual()
     {
-        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value;
+        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value ?? string.Empty;
     }
 
     public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)

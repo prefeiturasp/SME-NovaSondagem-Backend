@@ -10,15 +10,11 @@ public class MensagemRabbit
         CodigoCorrelacao = codigoCorrelacao;
     }
 
-    protected MensagemRabbit()
-    {
-    }
-
     public object Mensagem { get; set; }
     public Guid CodigoCorrelacao { get; set; }
 
     public T ObterObjetoMensagem<T>() where T : class
     {
-        return Mensagem?.ToString().ConverterObjectStringPraObjeto<T>();
+        return Mensagem?.ToString()?.ConverterObjectStringPraObjeto<T>()!;
     }
 }

@@ -11,15 +11,15 @@ public static class EnumExtension
     }
     public static string ObterNomeCurto(this Enum enumValue)
     {
-        return enumValue.ObterAtributo<DisplayAttribute>().ShortName;
+        return enumValue.ObterAtributo<DisplayAttribute>()?.ShortName ?? string.Empty;
     }
     public static string ObterNome(this Enum enumValue)
     {
-        return enumValue.ObterAtributo<DisplayAttribute>().Name;
+        return enumValue.ObterAtributo<DisplayAttribute>()?.Name ?? string.Empty;
     }
     public static string ObterNomeGrupo(this Enum enumValue)
     {
-        return enumValue.ObterAtributo<DisplayAttribute>().GroupName;
+        return enumValue.ObterAtributo<DisplayAttribute>()?.GroupName ?? string.Empty;
     }
     public static TAttribute ObterAtributo<TAttribute>(this Enum enumValue)
     where TAttribute : Attribute
@@ -27,6 +27,6 @@ public static class EnumExtension
         return enumValue.GetType()
                         .GetMember(enumValue.ToString())
                         .First()
-                        .GetCustomAttribute<TAttribute>();
+                        .GetCustomAttribute<TAttribute>()!;
     }
 }
