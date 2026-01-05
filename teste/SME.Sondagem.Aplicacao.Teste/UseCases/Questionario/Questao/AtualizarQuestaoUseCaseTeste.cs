@@ -18,6 +18,93 @@ public class AtualizarQuestaoUseCaseTeste
         _useCase = new AtualizarQuestaoUseCase(_repositorioQuestaoMock.Object);
     }
 
+    // Método auxiliar para criar instâncias de Questao nos testes
+    private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
+        int questionarioId = 1,
+        int ordem = 1,
+        string nome = "Nome Teste",
+        string observacao = "Observacao Teste",
+        bool obrigatorio = false,
+        TipoQuestao tipo = TipoQuestao.Texto,
+        string opcionais = "{}",
+        bool somenteLeitura = false,
+        int dimensao = 100,
+        int? grupoQuestoesId = null,
+        int? tamanho = null,
+        string? mascara = null,
+        string? placeHolder = null,
+        string? nomeComponente = null,
+        int? id = null,
+        DateTime? criadoEm = null,
+        string? criadoPor = null,
+        string? criadoRF = null,
+        DateTime? alteradoEm = null,
+        string? alteradoPor = null,
+        string? alteradoRF = null)
+    {
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+            questionarioId: questionarioId,
+            ordem: ordem,
+            nome: nome,
+            observacao: observacao,
+            obrigatorio: obrigatorio,
+            tipo: tipo,
+            opcionais: opcionais,
+            somenteLeitura: somenteLeitura,
+            dimensao: dimensao,
+            grupoQuestoesId: grupoQuestoesId,
+            tamanho: tamanho,
+            mascara: mascara,
+            placeHolder: placeHolder,
+            nomeComponente: nomeComponente
+        );
+
+        // Usa reflexão para definir propriedades da classe base
+        if (id.HasValue)
+        {
+            var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
+            idProp?.SetValue(questao, id.Value);
+        }
+
+        if (criadoEm.HasValue)
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoEm");
+            prop?.SetValue(questao, criadoEm.Value);
+        }
+
+        if (!string.IsNullOrEmpty(criadoPor))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoPor");
+            prop?.SetValue(questao, criadoPor);
+        }
+
+        if (!string.IsNullOrEmpty(criadoRF))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoRF");
+            prop?.SetValue(questao, criadoRF);
+        }
+
+        if (alteradoEm.HasValue)
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoEm");
+            prop?.SetValue(questao, alteradoEm);
+        }
+
+        if (!string.IsNullOrEmpty(alteradoPor))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoPor");
+            prop?.SetValue(questao, alteradoPor);
+        }
+
+        if (!string.IsNullOrEmpty(alteradoRF))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoRF");
+            prop?.SetValue(questao, alteradoRF);
+        }
+
+        return questao;
+    }
+
     [Fact]
     public async Task ExecutarAsync_QuestaoNaoExiste_DeveRetornarNull()
     {
@@ -77,24 +164,23 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF456"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = 1,
-            Ordem = 1,
-            Nome = "Nome Original",
-            Observacao = "Obs Original",
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = false,
-            Dimensao = 100,
-            Tamanho = 50,
-            Id = (int)id,
-            CriadoEm = DateTime.Now.AddDays(-5),
-            CriadoPor = "Usuario Criador",
-            CriadoRF = "RF001"
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: 1,
+            ordem: 1,
+            nome: "Nome Original",
+            observacao: "Obs Original",
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: false,
+            dimensao: 100,
+            tamanho: 50,
+            id: (int)id,
+            criadoEm: DateTime.Now.AddDays(-5),
+            criadoPor: "Usuario Criador",
+            criadoRF: "RF001"
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()))
@@ -136,29 +222,25 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF789"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = 1,
-            Ordem = 1,
-            Nome = "Nome Original",
-            Observacao = "Obs Original",
-            Obrigatorio = false,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = true,
-            Dimensao = 100,
-            Tamanho = 50,
-            PlaceHolder = "Place Original",
-            NomeComponente = "componente-original",
-            Id = (int)id,
-            CriadoEm = new DateTime(2024, 1, 1, 10, 0, 0),
-            CriadoPor = "Usuario Criador",
-            CriadoRF = "RF001",
-            AlteradoEm = null,
-            AlteradoPor = null,
-            AlteradoRF = null
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: 1,
+            ordem: 1,
+            nome: "Nome Original",
+            observacao: "Obs Original",
+            obrigatorio: false,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: true,
+            dimensao: 100,
+            tamanho: 50,
+            placeHolder: "Place Original",
+            nomeComponente: "componente-original",
+            id: (int)id,
+            criadoEm: new DateTime(2024, 1, 1, 10, 0, 0),
+            criadoPor: "Usuario Criador",
+            criadoRF: "RF001"
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()))
@@ -197,7 +279,7 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.Null(resultado.AlteradoRF);
 
         // Verifica se os dados foram atualizados na entidade
-        Assert.Equal(3, questaoExistente.QuestionarioId);   
+        Assert.Equal(3, questaoExistente.QuestionarioId);
         Assert.Equal(3, questaoExistente.GrupoQuestoesId);
         Assert.Equal(5, questaoExistente.Ordem);
         Assert.Equal("Questao Atualizada", questaoExistente.Nome);
@@ -224,19 +306,18 @@ public class AtualizarQuestaoUseCaseTeste
             Dimensao = 100
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            Ordem = 1,
-            Nome = "Nome",
-            Observacao = "Obs",
-            Obrigatorio = false,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = false,
-            Dimensao = 100,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            ordem: 1,
+            nome: "Nome",
+            observacao: "Obs",
+            obrigatorio: false,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: false,
+            dimensao: 100,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: cancellationToken))
@@ -276,27 +357,26 @@ public class AtualizarQuestaoUseCaseTeste
             NomeComponente = null
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = 2,
-            Ordem = 1,
-            Nome = "Nome",
-            Observacao = "Obs",
-            Obrigatorio = false,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = false,
-            Dimensao = 100,
-            Tamanho = 50,
-            Mascara = "mask",
-            PlaceHolder = "place",
-            NomeComponente = "comp",
-            Id = (int)id,
-            CriadoEm = DateTime.Now,
-            CriadoPor = "Usuario",
-            CriadoRF = "RF001"
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: 2,
+            ordem: 1,
+            nome: "Nome",
+            observacao: "Obs",
+            obrigatorio: false,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: false,
+            dimensao: 100,
+            tamanho: 50,
+            mascara: "mask",
+            placeHolder: "place",
+            nomeComponente: "comp",
+            id: (int)id,
+            criadoEm: DateTime.Now,
+            criadoPor: "Usuario",
+            criadoRF: "RF001"
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()))
@@ -337,20 +417,18 @@ public class AtualizarQuestaoUseCaseTeste
             AlteradoRF = "RF123"
         };
 
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            Ordem = 1,
-            Nome = "Nome Original",
-            Observacao = "Obs Original",
-            Obrigatorio = false,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = false,
-            Dimensao = 100,
-            Id = (int)id,
-            AlteradoEm = null
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            ordem: 1,
+            nome: "Nome Original",
+            observacao: "Obs Original",
+            obrigatorio: false,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: false,
+            dimensao: 100,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()))
@@ -366,7 +444,7 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.NotNull(resultado);
         Assert.Equal("Questao Atualizada", questaoExistente.Nome);
         Assert.Equal("Observacao Atualizada", questaoExistente.Observacao);
-        
+
         // Verifica que as propriedades de auditoria permanecem como estavam
         // pois o use case atual não as define automaticamente
         Assert.Null(questaoExistente.AlteradoEm);

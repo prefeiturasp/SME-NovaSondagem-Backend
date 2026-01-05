@@ -15,23 +15,22 @@ public class CriarQuestaoUseCase : ICriarQuestaoUseCase
 
     public async Task<long> ExecutarAsync(QuestaoDto questaoDto, CancellationToken cancellationToken = default)
     {
-        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = questaoDto.QuestionarioId,
-            GrupoQuestoesId = questaoDto.GrupoQuestoesId,
-            Ordem = questaoDto.Ordem,
-            Nome = questaoDto.Nome,
-            Observacao = questaoDto.Observacao,
-            Obrigatorio = questaoDto.Obrigatorio,
-            Tipo = questaoDto.Tipo,
-            Opcionais = questaoDto.Opcionais,
-            SomenteLeitura = questaoDto.SomenteLeitura,
-            Dimensao = questaoDto.Dimensao,
-            Tamanho = questaoDto.Tamanho,
-            Mascara = questaoDto.Mascara,
-            PlaceHolder = questaoDto.PlaceHolder,
-            NomeComponente = questaoDto.NomeComponente
-        };
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+            questionarioId: questaoDto.QuestionarioId,
+            ordem: questaoDto.Ordem,
+            nome: questaoDto.Nome,
+            observacao: questaoDto.Observacao,
+            obrigatorio: questaoDto.Obrigatorio,
+            tipo: questaoDto.Tipo,
+            opcionais: questaoDto.Opcionais,
+            somenteLeitura: questaoDto.SomenteLeitura,
+            dimensao: questaoDto.Dimensao,
+            grupoQuestoesId: questaoDto.GrupoQuestoesId,
+            tamanho: questaoDto.Tamanho,
+            mascara: questaoDto.Mascara,
+            placeHolder: questaoDto.PlaceHolder,
+            nomeComponente: questaoDto.NomeComponente
+        );
 
         return await questaoRepositorio.CriarAsync(questao, cancellationToken: cancellationToken);
     }

@@ -19,28 +19,72 @@ public class ExcluirQuestaoUseCaseTeste
         _cancellationToken = CancellationToken.None;
     }
 
+    // Método auxiliar para criar instâncias de Questao nos testes
+    private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
+        int questionarioId = 1,
+        int ordem = 1,
+        string nome = "Questao Teste",
+        string observacao = "",
+        bool obrigatorio = true,
+        TipoQuestao tipo = TipoQuestao.Texto,
+        string opcionais = "",
+        bool somenteLeitura = false,
+        int dimensao = 1,
+        int? grupoQuestoesId = null,
+        int? tamanho = null,
+        string? mascara = null,
+        string? placeHolder = null,
+        string? nomeComponente = null,
+        int? id = null)
+    {
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+            questionarioId: questionarioId,
+            ordem: ordem,
+            nome: nome,
+            observacao: observacao,
+            obrigatorio: obrigatorio,
+            tipo: tipo,
+            opcionais: opcionais,
+            somenteLeitura: somenteLeitura,
+            dimensao: dimensao,
+            grupoQuestoesId: grupoQuestoesId,
+            tamanho: tamanho,
+            mascara: mascara,
+            placeHolder: placeHolder,
+            nomeComponente: nomeComponente
+        );
+
+        // Usa reflexão para definir o Id se fornecido
+        if (id.HasValue)
+        {
+            var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
+            idProp?.SetValue(questao, id.Value);
+        }
+
+        return questao;
+    }
+
     [Fact]
     public async Task ExecutarAsync_QuestaoExiste_DeveExcluirERetornarTrue()
     {
         const long id = 1;
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -95,24 +139,23 @@ public class ExcluirQuestaoUseCaseTeste
     {
         const long id = 1;
         var cancellationTokenCancelado = new CancellationToken(true);
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationTokenCancelado))
@@ -150,24 +193,23 @@ public class ExcluirQuestaoUseCaseTeste
     public async Task ExecutarAsync_QuandoRepositorioFalhaAoExcluir_DevePropararExcecao()
     {
         const long id = 1;
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -191,24 +233,23 @@ public class ExcluirQuestaoUseCaseTeste
     [InlineData(999)]
     public async Task ExecutarAsync_ComDiferentesIds_DeveChamarRepositorioComIdCorreto(long id)
     {
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -228,24 +269,23 @@ public class ExcluirQuestaoUseCaseTeste
     public async Task ExecutarAsync_DeveDelegarExclusaoParaRepositorio()
     {
         const long id = 5;
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -267,24 +307,23 @@ public class ExcluirQuestaoUseCaseTeste
     public async Task ExecutarAsync_RepositorioExcluirRetornaFalse_DeveRetornarFalse()
     {
         const long id = 1;
-        var questaoExistente = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = null,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = string.Empty,
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = string.Empty,
-            SomenteLeitura = false,
-            Dimensao = 1,
-            Tamanho = null,
-            Mascara = null,
-            PlaceHolder = null,
-            NomeComponente = null,
-            Id = (int)id
-        };
+        var questaoExistente = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: null,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 1,
+            tamanho: null,
+            mascara: null,
+            placeHolder: null,
+            nomeComponente: null,
+            id: (int)id
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))

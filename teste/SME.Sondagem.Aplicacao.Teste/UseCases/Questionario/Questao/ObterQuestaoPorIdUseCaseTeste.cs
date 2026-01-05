@@ -19,34 +19,123 @@ public class ObterQuestaoPorIdUseCaseTeste
         _cancellationToken = CancellationToken.None;
     }
 
+    // Método auxiliar para criar instâncias de Questao nos testes
+    private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
+        int questionarioId = 1,
+        int ordem = 1,
+        string nome = "Questao Teste",
+        string observacao = "Observacao teste",
+        bool obrigatorio = true,
+        TipoQuestao tipo = TipoQuestao.Texto,
+        string opcionais = "{}",
+        bool somenteLeitura = false,
+        int dimensao = 100,
+        int? grupoQuestoesId = null,
+        int? tamanho = null,
+        string? mascara = null,
+        string? placeHolder = null,
+        string? nomeComponente = null,
+        int? id = null,
+        DateTime? criadoEm = null,
+        string? criadoPor = null,
+        string? criadoRF = null,
+        DateTime? alteradoEm = null,
+        string? alteradoPor = null,
+        string? alteradoRF = null)
+    {
+        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+            questionarioId: questionarioId,
+            ordem: ordem,
+            nome: nome,
+            observacao: observacao,
+            obrigatorio: obrigatorio,
+            tipo: tipo,
+            opcionais: opcionais,
+            somenteLeitura: somenteLeitura,
+            dimensao: dimensao,
+            grupoQuestoesId: grupoQuestoesId,
+            tamanho: tamanho,
+            mascara: mascara,
+            placeHolder: placeHolder,
+            nomeComponente: nomeComponente
+        );
+
+        // Usa reflexão para definir propriedades da classe base
+        if (id.HasValue)
+        {
+            var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
+            idProp?.SetValue(questao, id.Value);
+        }
+
+        if (criadoEm.HasValue)
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoEm");
+            prop?.SetValue(questao, criadoEm.Value);
+        }
+
+        if (!string.IsNullOrEmpty(criadoPor))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoPor");
+            prop?.SetValue(questao, criadoPor);
+        }
+
+        if (!string.IsNullOrEmpty(criadoRF))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("CriadoRF");
+            prop?.SetValue(questao, criadoRF);
+        }
+
+        if (alteradoEm.HasValue)
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoEm");
+            prop?.SetValue(questao, alteradoEm);
+        }
+
+        if (!string.IsNullOrEmpty(alteradoPor))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoPor");
+            prop?.SetValue(questao, alteradoPor);
+        }
+
+        if (!string.IsNullOrEmpty(alteradoRF))
+        {
+            var prop = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("AlteradoRF");
+            prop?.SetValue(questao, alteradoRF);
+        }
+
+        return questao;
+    }
+
     [Fact]
     public async Task ExecutarAsync_QuestaoExiste_DeveRetornarQuestaoDto()
     {
         const long id = 1;
-        var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao
-        {
-            QuestionarioId = 1,
-            GrupoQuestoesId = 2,
-            Ordem = 1,
-            Nome = "Questao Teste",
-            Observacao = "Observacao teste",
-            Obrigatorio = true,
-            Tipo = TipoQuestao.Texto,
-            Opcionais = "{}",
-            SomenteLeitura = false,
-            Dimensao = 100,
-            Tamanho = 50,
-            Mascara = null,
-            PlaceHolder = "Digite aqui",
-            NomeComponente = "input-text",
-            Id = (int)id,
-            CriadoEm = DateTime.Now,
-            CriadoPor = "Usuario1",
-            CriadoRF = "RF001",
-            AlteradoEm = DateTime.Now.AddHours(1),
-            AlteradoPor = "Usuario2",
-            AlteradoRF = "RF002"
-        };
+        var agora = DateTime.Now;
+        var agoraAlterado = agora.AddHours(1);
+
+        var questao = CriarQuestao(
+            questionarioId: 1,
+            grupoQuestoesId: 2,
+            ordem: 1,
+            nome: "Questao Teste",
+            observacao: "Observacao teste",
+            obrigatorio: true,
+            tipo: TipoQuestao.Texto,
+            opcionais: "{}",
+            somenteLeitura: false,
+            dimensao: 100,
+            tamanho: 50,
+            mascara: null,
+            placeHolder: "Digite aqui",
+            nomeComponente: "input-text",
+            id: (int)id,
+            criadoEm: agora,
+            criadoPor: "Usuario1",
+            criadoRF: "RF001",
+            alteradoEm: agoraAlterado,
+            alteradoPor: "Usuario2",
+            alteradoRF: "RF002"
+        );
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
