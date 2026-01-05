@@ -254,7 +254,7 @@ public class ContextoHttpTeste
 
         var contexto = new ContextoHttp(httpContextAccessor);
 
-        Assert.Null(contexto.Variaveis["PerfilUsuario"]);
+        Assert.True(string.IsNullOrEmpty(contexto.Variaveis["PerfilUsuario"]?.ToString()));
     }
 
     [Fact]

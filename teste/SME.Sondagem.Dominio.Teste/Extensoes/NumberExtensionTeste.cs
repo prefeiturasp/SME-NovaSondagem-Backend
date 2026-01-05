@@ -9,7 +9,7 @@ public class NumberExtensionTeste
     {
         long numero = 42;
 
-        var resultado = numero.ToArray<long>();
+        var resultado = numero.ToArray();
 
         Assert.NotNull(resultado);
         Assert.Single(resultado);
@@ -21,7 +21,7 @@ public class NumberExtensionTeste
     {
         long numero = 0;
 
-        var resultado = numero.ToArray<long>();
+        var resultado = numero.ToArray();
 
         Assert.NotNull(resultado);
         Assert.Single(resultado);
@@ -33,7 +33,7 @@ public class NumberExtensionTeste
     {
         long numero = -100;
 
-        var resultado = numero.ToArray<long>();
+        var resultado = numero.ToArray();
 
         Assert.NotNull(resultado);
         Assert.Single(resultado);
@@ -45,7 +45,7 @@ public class NumberExtensionTeste
     {
         long numero = long.MaxValue;
 
-        var resultado = numero.ToArray<long>();
+        var resultado = numero.ToArray();
 
         Assert.NotNull(resultado);
         Assert.Single(resultado);
@@ -57,7 +57,7 @@ public class NumberExtensionTeste
     {
         long numero = long.MinValue;
 
-        var resultado = numero.ToArray<long>();
+        var resultado = numero.ToArray();
 
         Assert.NotNull(resultado);
         Assert.Single(resultado);

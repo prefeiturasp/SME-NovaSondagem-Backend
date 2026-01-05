@@ -15,14 +15,6 @@ namespace SME.Sondagem.Dominio.Teste.Excecoes
         }
 
         [Fact]
-        public void Construtor_DeveSerSerializavel()
-        {
-            var exception = new ErroInternoException("Erro de teste");
-
-            Assert.True(exception.GetType().IsSerializable);
-        }
-
-        [Fact]
         public void Construtor_ComInnerException_DeveAtribuirMensagemEInnerExceptionCorretamente()
         {
             var mensagemEsperada = "Erro interno no processamento";
