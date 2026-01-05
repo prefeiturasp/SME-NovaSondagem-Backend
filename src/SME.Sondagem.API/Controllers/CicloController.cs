@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SME.Sondagem.Aplicacao.Interfaces.Ciclo;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
@@ -18,6 +19,70 @@ public class CicloController : ControllerBase
     private readonly IObterCicloPorIdUseCase _obterCicloPorIdUseCase;
     private readonly IObterCiclosUseCase _obterCicloUseCase;
     private readonly ILogger<CicloController> _logger;
+
+    #region LoggerMessage delegates
+
+    private static readonly Action<ILogger, Exception?> LogListagemCancelada =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(2001, nameof(LogListagemCancelada)),
+            "Requisição de listagem de ciclos foi cancelada");
+
+    private static readonly Action<ILogger, Exception?> LogErroListagem =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(2002, nameof(LogErroListagem)),
+            "Erro ao listar ciclos");
+
+    private static readonly Action<ILogger, long, Exception?> LogObtencaoCancelada =
+        LoggerMessage.Define<long>(
+            LogLevel.Information,
+            new EventId(2003, nameof(LogObtencaoCancelada)),
+            "Requisição de obtenção foi cancelada para ID {Id}");
+
+    private static readonly Action<ILogger, long, Exception?> LogErroObtencao =
+        LoggerMessage.Define<long>(
+            LogLevel.Error,
+            new EventId(2004, nameof(LogErroObtencao)),
+            "Erro ao obter ciclo {Id}");
+
+    private static readonly Action<ILogger, Exception?> LogCriacaoCancelada =
+        LoggerMessage.Define(
+            LogLevel.Information,
+            new EventId(2005, nameof(LogCriacaoCancelada)),
+            "Requisição de criação de ciclo foi cancelada");
+
+    private static readonly Action<ILogger, Exception?> LogErroCriacao =
+        LoggerMessage.Define(
+            LogLevel.Error,
+            new EventId(2006, nameof(LogErroCriacao)),
+            "Erro ao criar ciclo");
+
+    private static readonly Action<ILogger, long, Exception?> LogAtualizacaoCancelada =
+        LoggerMessage.Define<long>(
+            LogLevel.Information,
+            new EventId(2007, nameof(LogAtualizacaoCancelada)),
+            "Requisição de atualização foi cancelada para ID {Id}");
+
+    private static readonly Action<ILogger, long, Exception?> LogErroAtualizacao =
+        LoggerMessage.Define<long>(
+            LogLevel.Error,
+            new EventId(2008, nameof(LogErroAtualizacao)),
+            "Erro ao atualizar ciclo {Id}");
+
+    private static readonly Action<ILogger, long, Exception?> LogExclusaoCancelada =
+        LoggerMessage.Define<long>(
+            LogLevel.Information,
+            new EventId(2009, nameof(LogExclusaoCancelada)),
+            "Requisição de exclusão foi cancelada para ID {Id}");
+
+    private static readonly Action<ILogger, long, Exception?> LogErroExclusao =
+        LoggerMessage.Define<long>(
+            LogLevel.Error,
+            new EventId(2010, nameof(LogErroExclusao)),
+            "Erro ao excluir ciclo {Id}");
+
+    #endregion
 
     public CicloController(
         ICriarCicloUseCase criarCicloUseCase,
@@ -46,12 +111,12 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de listagem foi cancelada");
+            LogListagemCancelada(_logger, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar ciclos");
+            LogErroListagem(_logger, ex);
             return StatusCode(500, new { mensagem = "Erro ao listar ciclos" });
         }
     }
@@ -64,6 +129,7 @@ public class CicloController : ControllerBase
         try
         {
             var ciclo = await _obterCicloPorIdUseCase.ExecutarAsync(id, cancellationToken);
+
             if (ciclo == null)
                 return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
 
@@ -71,34 +137,32 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de obtenção foi cancelada para ID {Id}", id);
+            LogObtencaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter ciclo {Id}", id);
+            LogErroObtencao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao obter ciclo" });
         }
     }
 
     [HttpPost]
     [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Criar([FromBody] CicloDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var id = await _criarCicloUseCase.ExecutarAsync(dto, cancellationToken);
+
             return CreatedAtAction(
                 nameof(ObterPorId),
                 new { id },
-                new { id }
-            );
+                new { id });
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de criação foi cancelada");
+            LogCriacaoCancelada(_logger, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -112,21 +176,18 @@ public class CicloController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao criar ciclo");
+            LogErroCriacao(_logger, ex);
             return StatusCode(500, new { mensagem = "Erro ao criar ciclo" });
         }
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(CicloDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Atualizar(long id, [FromBody] CicloDto dto, CancellationToken cancellationToken)
     {
         try
         {
             var ciclo = await _atualizarCicloUseCase.ExecutarAsync(id, dto, cancellationToken);
+
             if (ciclo == null)
                 return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
 
@@ -134,7 +195,7 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de atualização foi cancelada para ID {Id}", id);
+            LogAtualizacaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -148,19 +209,18 @@ public class CicloController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao atualizar ciclo {Id}", id);
+            LogErroAtualizacao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao atualizar ciclo" });
         }
     }
 
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Excluir(long id, CancellationToken cancellationToken)
     {
         try
         {
             var resultado = await _excluirCicloUseCase.ExecutarAsync(id, cancellationToken);
+
             if (!resultado)
                 return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
 
@@ -168,12 +228,12 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de exclusão foi cancelada para ID {Id}", id);
+            LogExclusaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir ciclo {Id}", id);
+            LogErroExclusao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao excluir ciclo" });
         }
     }

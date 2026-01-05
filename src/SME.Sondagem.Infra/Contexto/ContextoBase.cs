@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Contexto;
 
-[ExcludeFromCodeCoverage]
 public abstract class ContextoBase : IContextoAplicacao
 {
     protected ContextoBase()

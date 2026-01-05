@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using SME.Sondagem.Infra.Interfaces;
-using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace SME.Sondagem.Infra.Contexto;
 
-[ExcludeFromCodeCoverage]
 public class ContextoHttp : ContextoBase
 {
     readonly IHttpContextAccessor httpContextAccessor;
