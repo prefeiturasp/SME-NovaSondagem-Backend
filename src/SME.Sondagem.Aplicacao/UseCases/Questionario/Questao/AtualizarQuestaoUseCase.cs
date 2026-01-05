@@ -20,21 +20,20 @@ public class AtualizarQuestaoUseCase : IAtualizarQuestaoUseCase
         if (questaoExistente == null)
             return null;
 
-        questaoExistente.Atualizar(
-            questaoDto.QuestionarioId,
-            questaoDto.GrupoQuestoesId,
-            questaoDto.Ordem,
-            questaoDto.Nome,
-            questaoDto.Observacao,
-            questaoDto.Obrigatorio,
-            questaoDto.Tipo,
-            questaoDto.Opcionais,
-            questaoDto.SomenteLeitura,
-            questaoDto.Dimensao,
-            questaoDto.Tamanho,
-            questaoDto.Mascara,
-            questaoDto.PlaceHolder,
-            questaoDto.NomeComponente);
+        questaoExistente.AtualizarQuestionarioId(questaoDto.QuestionarioId);
+        questaoExistente.AtualizarGrupoQuestoesId(questaoDto.GrupoQuestoesId);
+        questaoExistente.AtualizarOrdem(questaoDto.Ordem);
+        questaoExistente.AtualizarNome(questaoDto.Nome);
+        questaoExistente.AtualizarObservacao(questaoDto.Observacao);
+        questaoExistente.AtualizarObrigatorio(questaoDto.Obrigatorio);
+        questaoExistente.AtualizarTipo(questaoDto.Tipo);
+        questaoExistente.AtualizarOpcionais(questaoDto.Opcionais);
+        questaoExistente.AtualizarSomenteLeitura(questaoDto.SomenteLeitura);
+        questaoExistente.AtualizarDimensao(questaoDto.Dimensao);
+        questaoExistente.AtualizarTamanho(questaoDto.Tamanho);
+        questaoExistente.AtualizarMascara(questaoDto.Mascara);
+        questaoExistente.AtualizarPlaceHolder(questaoDto.PlaceHolder);
+        questaoExistente.AtualizarNomeComponente(questaoDto.NomeComponente);
 
         var sucesso = await questaoRepositorio.AtualizarAsync(questaoExistente, cancellationToken: cancellationToken);
         
