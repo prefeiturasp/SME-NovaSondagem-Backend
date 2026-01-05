@@ -57,9 +57,9 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [InlineData("abc")]
         [InlineData("")]
         [InlineData(null)]
-        public void ObterTipoResponsavel_Deve_retornar_filiacao1_toString_quando_tipo_for_invalido(string tipoResponsavel)
+        public void ObterTipoResponsavel_Deve_retornar_filiacao1_toString_quando_tipo_for_invalido(string? tipoResponsavel)
         {
-            var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
+            var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel!);
 
             Assert.Equal(TipoResponsavel.Filiacao1.ToString(), resultado);
         }

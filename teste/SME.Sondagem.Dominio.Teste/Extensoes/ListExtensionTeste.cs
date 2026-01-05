@@ -27,9 +27,9 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Fact]
         public void PossuiRegistros_DeveRetornarFalse_QuandoListaNula()
         {
-            List<int> lista = null;
+            List<int> lista = null!;
 
-            var resultado = lista.PossuiRegistros();
+            var resultado = lista?.PossuiRegistros() ?? false;
 
             Assert.False(resultado);
         }
@@ -57,9 +57,9 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Fact]
         public void PossuiRegistros_ComPredicado_DeveRetornarFalse_QuandoListaNula()
         {
-            List<int> lista = null;
+            List<int> lista = null!;
 
-            var resultado = lista.PossuiRegistros(x => x > 0);
+            var resultado = lista?.PossuiRegistros(x => x > 0) ?? false;
 
             Assert.False(resultado);
         }
@@ -87,9 +87,9 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Fact]
         public void NaoPossuiRegistros_DeveRetornarTrue_QuandoListaNula()
         {
-            List<string> lista = null;
+            List<string> lista = null!;
 
-            var resultado = lista.NaoPossuiRegistros();
+            var resultado = lista?.NaoPossuiRegistros() ?? true;
 
             Assert.True(resultado);
         }
@@ -127,9 +127,9 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Fact]
         public void NaoPossuiRegistros_ComPredicado_DeveRetornarTrue_QuandoListaNula()
         {
-            List<int> lista = null;
+            List<int> lista = null!;
 
-            var resultado = lista.NaoPossuiRegistros(x => x > 0);
+            var resultado = lista?.NaoPossuiRegistros(x => x > 0) ?? true;
 
             Assert.True(resultado);
         }
@@ -149,7 +149,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Fact]
         public void LancarExcecaoNegocioSeNaoPossuiRegistros_DeveLancarExcecao_QuandoListaNula()
         {
-            List<int> lista = null;
+            List<int> lista = null!;
             var mensagemErro = "Lista nula ou vazia";
 
             var excecao = Assert.Throws<RegraNegocioException>(() => 

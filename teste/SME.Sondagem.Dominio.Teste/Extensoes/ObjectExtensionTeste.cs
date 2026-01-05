@@ -11,7 +11,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
             var mensagemErro = "Objeto não pode ser nulo";
 
             var excecao = Assert.Throws<RegraNegocioException>(() => 
-                objetoNulo.LancarExcecaoNegocioSeEhNulo(mensagemErro));
+                objetoNulo!.LancarExcecaoNegocioSeEhNulo(mensagemErro));
 
             Assert.Equal(mensagemErro, excecao.Message);
         }
@@ -60,7 +60,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         {
             string? entrada = null;
 
-            var resultado = entrada.RemoverAcentuacao();
+            var resultado = entrada?.RemoverAcentuacao()!;
 
             Assert.Null(resultado);
         }

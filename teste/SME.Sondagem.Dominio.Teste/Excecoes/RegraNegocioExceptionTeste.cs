@@ -51,7 +51,7 @@ public class RegraNegocioExceptionTeste
 
         Assert.Equal(mensagemEsperada, excecao.Message);
         Assert.Equal(innerException, excecao.InnerException);
-        Assert.Equal("Erro interno", excecao.InnerException.Message);
+        Assert.Equal("Erro interno", excecao?.InnerException?.Message ?? string.Empty);
     }
 
     [Theory]

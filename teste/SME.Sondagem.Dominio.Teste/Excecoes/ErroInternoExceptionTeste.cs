@@ -24,7 +24,7 @@ namespace SME.Sondagem.Dominio.Teste.Excecoes
 
             Assert.Equal(mensagemEsperada, exception.Message);
             Assert.Equal(innerException, exception.InnerException);
-            Assert.Equal("Operação inválida", exception.InnerException.Message);
+            Assert.Equal("Operação inválida", exception?.InnerException?.Message ?? string.Empty);
         }
 
         [Fact]
