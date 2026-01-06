@@ -23,5 +23,5 @@ public class RetornoBaseDto
     }
 
     public List<string>? Mensagens { get; set; }
-    public bool ExistemErros => Mensagens?.Any() ?? false;
+    public bool ExistemErros => Mensagens?.Count > 0;
 }

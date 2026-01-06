@@ -17,22 +17,19 @@ public class OpcaoRespostaController : ControllerBase
     private readonly IExcluirOpcaoRespostaUseCase _excluirOpcaoRespostaUseCase;
     private readonly IObterOpcaoRespostaPorIdUseCase _obterOpcaoRespostaPorIdUseCase;
     private readonly IObterOpcaoRespostaUseCase _obterOpcaoRespostaUseCase;
-    private readonly ILogger<OpcaoRespostaController> _logger;
 
     public OpcaoRespostaController(
         ICriarOpcaoRespostaUseCase criarOpcaoRespostaUseCase,
         IAtualizarOpcaoRespostaUseCase atualizarOpcaoRespostaUseCase,
         IExcluirOpcaoRespostaUseCase excluirOpcaoRespostaUseCase,
         IObterOpcaoRespostaPorIdUseCase obterOpcaoRespostaPorIdUseCase,
-        IObterOpcaoRespostaUseCase obterOpcaoRespostaUseCase,
-        ILogger<OpcaoRespostaController> logger)
+        IObterOpcaoRespostaUseCase obterOpcaoRespostaUseCase)
     {
         _criarOpcaoRespostaUseCase = criarOpcaoRespostaUseCase;
         _atualizarOpcaoRespostaUseCase = atualizarOpcaoRespostaUseCase;
         _excluirOpcaoRespostaUseCase = excluirOpcaoRespostaUseCase;
         _obterOpcaoRespostaPorIdUseCase = obterOpcaoRespostaPorIdUseCase;
         _obterOpcaoRespostaUseCase = obterOpcaoRespostaUseCase;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -46,12 +43,10 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de listagem foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao listar opção resposta");
             return StatusCode(500, new { mensagem = "Erro ao listar opção resposta" });
         }
     }
@@ -71,12 +66,10 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de obtenção foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao obter opção resposta {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao obter opção resposta" });
         }
     }
@@ -98,7 +91,6 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de criação foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -110,9 +102,8 @@ public class OpcaoRespostaController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao criar opção resposta");
             return StatusCode(500, new { mensagem = "Erro ao criar opção resposta" });
         }
     }
@@ -134,7 +125,6 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de atualização foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -146,9 +136,8 @@ public class OpcaoRespostaController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao atualizar opção resposta {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao atualizar opção resposta" });
         }
     }
@@ -168,12 +157,10 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de exclusão foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao excluir opção resposta {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao excluir opção resposta" });
         }
     }

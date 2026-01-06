@@ -21,7 +21,7 @@ public static class RegistraClientesHttp
         }).AddPolicyHandler(policy);
     }
 
-    static IAsyncPolicy<HttpResponseMessage> ObterPolicyBaseHttp()
+    static Polly.Retry.AsyncRetryPolicy <HttpResponseMessage> ObterPolicyBaseHttp()
     {
         return HttpPolicyExtensions
              .HandleTransientHttpError()

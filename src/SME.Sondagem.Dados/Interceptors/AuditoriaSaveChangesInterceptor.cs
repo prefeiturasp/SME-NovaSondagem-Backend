@@ -76,7 +76,7 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
             .Concat(auditoriasInsert)
             .ToList();
 
-        if (todasAuditorias.Any())
+        if (todasAuditorias.Count > 0)
         {
             context.Set<Auditoria>().AddRange(todasAuditorias);
             context.SaveChanges();
@@ -97,7 +97,7 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
             .Concat(auditoriasInsert)
             .ToList();
 
-        if (todasAuditorias.Any())
+        if (todasAuditorias.Count > 0)
         {
             await context.Set<Auditoria>().AddRangeAsync(todasAuditorias, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
@@ -183,7 +183,7 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
         return auditorias;
     }
 
-    private List<(EntidadeBase Entidade, string NomeEntidade)> CapturarEntidadesInsert(ChangeTracker changeTracker)
+    private static List<(EntidadeBase Entidade, string NomeEntidade)> CapturarEntidadesInsert(ChangeTracker changeTracker)
     {
         return changeTracker.Entries()
             .Where(e => e.Entity is EntidadeBase &&
@@ -220,7 +220,7 @@ public class AuditoriaSaveChangesInterceptor : SaveChangesInterceptor
         return auditorias;
     }
 
-    private List<AuditoriaDetalhe> CapturarDetalhesAlteracao(
+    private static List<AuditoriaDetalhe> CapturarDetalhesAlteracao(
         EntityEntry entry,
         Guid auditoriaId)
     {

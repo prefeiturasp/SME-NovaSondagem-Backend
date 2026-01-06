@@ -73,7 +73,7 @@ public class RegraNegocioExceptionTeste
     {
         var excecao = new RegraNegocioException("Erro");
 
-        Assert.IsAssignableFrom<Exception>(excecao);
+        Assert.IsType<Exception>(excecao, exactMatch: false);
     }
 
     [Fact]

@@ -31,7 +31,7 @@ public class ContextoHttp : ContextoBase
         Variaveis.Add("NomeAdministrador", httpContextAccessor.HttpContext?.User?.FindFirst("nome_adm_suporte")?.Value ?? string.Empty);
         Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
 
-        var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
+        var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers?.Authorization;
 
         if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
         {
@@ -45,14 +45,14 @@ public class ContextoHttp : ContextoBase
         }
     }
 
-    private IEnumerable<InternalClaim> GetInternalClaim()
+    private List<InternalClaim> GetInternalClaim()
     {
-        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
+        return (httpContextAccessor.HttpContext?.User?.Claims ?? []).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
     }
 
     private string ObterPerfilAtual()
     {
-        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value ?? string.Empty;
+        return (httpContextAccessor.HttpContext?.User?.Claims ?? []).FirstOrDefault(x => x.Type.Equals("perfil", StringComparison.CurrentCultureIgnoreCase))?.Value ?? string.Empty;
     }
 
     public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)

@@ -14,90 +14,12 @@ namespace SME.Sondagem.API.Controllers;
 public class ComponenteCurricularController : ControllerBase
 {
     private readonly IComponenteCurricularUseCase _useCase;
-    private readonly ILogger<ComponenteCurricularController> _logger;
 
-    #region LoggerMessage delegates
-
-    private static readonly Action<ILogger, Exception?> LogListagemCancelada =
-        LoggerMessage.Define(
-            LogLevel.Information,
-            new EventId(3001, nameof(LogListagemCancelada)),
-            "Requisição de listagem de componentes curriculares foi cancelada");
-
-    private static readonly Action<ILogger, Exception?> LogErroListagem =
-        LoggerMessage.Define(
-            LogLevel.Error,
-            new EventId(3002, nameof(LogErroListagem)),
-            "Erro ao listar componentes curriculares");
-
-    private static readonly Action<ILogger, int, Exception?> LogObtencaoCancelada =
-        LoggerMessage.Define<int>(
-            LogLevel.Information,
-            new EventId(3003, nameof(LogObtencaoCancelada)),
-            "Requisição de obtenção foi cancelada para ID {Id}");
-
-    private static readonly Action<ILogger, int, Exception?> LogErroObtencao =
-        LoggerMessage.Define<int>(
-            LogLevel.Error,
-            new EventId(3004, nameof(LogErroObtencao)),
-            "Erro ao obter componente curricular {Id}");
-
-    private static readonly Action<ILogger, int, Exception?> LogObtencaoCodigoEolCancelada =
-        LoggerMessage.Define<int>(
-            LogLevel.Information,
-            new EventId(3005, nameof(LogObtencaoCodigoEolCancelada)),
-            "Requisição foi cancelada para código EOL {CodigoEol}");
-
-    private static readonly Action<ILogger, int, Exception?> LogErroObtencaoCodigoEol =
-        LoggerMessage.Define<int>(
-            LogLevel.Error,
-            new EventId(3006, nameof(LogErroObtencaoCodigoEol)),
-            "Erro ao obter componente curricular por código EOL {CodigoEol}");
-
-    private static readonly Action<ILogger, Exception?> LogCriacaoCancelada =
-        LoggerMessage.Define(
-            LogLevel.Information,
-            new EventId(3007, nameof(LogCriacaoCancelada)),
-            "Requisição de criação de componente curricular foi cancelada");
-
-    private static readonly Action<ILogger, Exception?> LogErroCriacao =
-        LoggerMessage.Define(
-            LogLevel.Error,
-            new EventId(3008, nameof(LogErroCriacao)),
-            "Erro ao criar componente curricular");
-
-    private static readonly Action<ILogger, int, Exception?> LogAtualizacaoCancelada =
-        LoggerMessage.Define<int>(
-            LogLevel.Information,
-            new EventId(3009, nameof(LogAtualizacaoCancelada)),
-            "Requisição de atualização foi cancelada para ID {Id}");
-
-    private static readonly Action<ILogger, int, Exception?> LogErroAtualizacao =
-        LoggerMessage.Define<int>(
-            LogLevel.Error,
-            new EventId(3010, nameof(LogErroAtualizacao)),
-            "Erro ao atualizar componente curricular {Id}");
-
-    private static readonly Action<ILogger, int, Exception?> LogExclusaoCancelada =
-        LoggerMessage.Define<int>(
-            LogLevel.Information,
-            new EventId(3011, nameof(LogExclusaoCancelada)),
-            "Requisição de exclusão foi cancelada para ID {Id}");
-
-    private static readonly Action<ILogger, int, Exception?> LogErroExclusao =
-        LoggerMessage.Define<int>(
-            LogLevel.Error,
-            new EventId(3012, nameof(LogErroExclusao)),
-            "Erro ao excluir componente curricular {Id}");
-
-    #endregion
 
     public ComponenteCurricularController(
-        IComponenteCurricularUseCase useCase,
-        ILogger<ComponenteCurricularController> logger)
+        IComponenteCurricularUseCase useCase)
     {
         _useCase = useCase;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -111,12 +33,10 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogListagemCancelada(_logger, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroListagem(_logger, ex);
             return StatusCode(500, new { mensagem = "Erro ao listar componentes curriculares" });
         }
     }
@@ -137,12 +57,10 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogObtencaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroObtencao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao obter componente curricular" });
         }
     }
@@ -163,12 +81,10 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogObtencaoCodigoEolCancelada(_logger, codigoEol, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroObtencaoCodigoEol(_logger, codigoEol, ex);
             return StatusCode(500, new { mensagem = "Erro ao obter componente curricular" });
         }
     }
@@ -188,7 +104,6 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogCriacaoCancelada(_logger, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -200,9 +115,8 @@ public class ComponenteCurricularController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroCriacao(_logger, ex);
             return StatusCode(500, new { mensagem = "Erro ao criar componente curricular" });
         }
     }
@@ -218,7 +132,6 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogAtualizacaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -230,9 +143,8 @@ public class ComponenteCurricularController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroAtualizacao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao atualizar componente curricular" });
         }
     }
@@ -253,12 +165,10 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            LogExclusaoCancelada(_logger, id, null);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            LogErroExclusao(_logger, id, ex);
             return StatusCode(500, new { mensagem = "Erro ao excluir componente curricular" });
         }
     }

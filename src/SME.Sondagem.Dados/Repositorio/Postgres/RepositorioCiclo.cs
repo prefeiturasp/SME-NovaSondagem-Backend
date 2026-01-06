@@ -32,7 +32,7 @@ public class RepositorioCiclo : IRepositorioCiclo
     public async Task<long> CriarAsync(Ciclo ciclo, CancellationToken cancellationToken = default)
     {
         await context.Ciclos.AddAsync(ciclo, cancellationToken);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return ciclo.Id;
     }
 
@@ -48,7 +48,7 @@ public class RepositorioCiclo : IRepositorioCiclo
         cicloExistente.AlteradoPor = ciclo.AlteradoPor;
         cicloExistente.AlteradoRF = ciclo.AlteradoRF;
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class RepositorioCiclo : IRepositorioCiclo
             return false;
 
         ciclo.Excluido = true;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 }

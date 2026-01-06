@@ -32,7 +32,7 @@ public class RepositorioProficiencia : IRepositorioProficiencia
     public async Task<long> CriarAsync(Proficiencia proficiencia, CancellationToken cancellationToken = default)
     {
         await context.Proficiencias.AddAsync(proficiencia, cancellationToken);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return proficiencia.Id;
     }
 
@@ -48,7 +48,7 @@ public class RepositorioProficiencia : IRepositorioProficiencia
         proficienciaExistente.AlteradoPor = proficiencia.AlteradoPor;
         proficienciaExistente.AlteradoRF = proficiencia.AlteradoRF;
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class RepositorioProficiencia : IRepositorioProficiencia
             return false;
 
         proficiencia.Excluido = true;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 }

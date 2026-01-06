@@ -32,7 +32,7 @@ public class RepositorioQuestao : IRepositorioQuestao
     public async Task<long> CriarAsync(Questao questao, CancellationToken cancellationToken = default)
     {
         await context.Questoes.AddAsync(questao, cancellationToken);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return questao.Id;
     }
 
@@ -48,7 +48,7 @@ public class RepositorioQuestao : IRepositorioQuestao
         questaoExistente.AlteradoPor = questao.AlteradoPor;
         questaoExistente.AlteradoRF = questao.AlteradoRF;
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class RepositorioQuestao : IRepositorioQuestao
             return false;
 
         questao.Excluido = true;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 }

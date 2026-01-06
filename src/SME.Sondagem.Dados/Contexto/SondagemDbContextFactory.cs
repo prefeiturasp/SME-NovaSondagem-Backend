@@ -80,7 +80,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         return new SondagemDbContext(optionsBuilder.Options);
     }
 
-    private string? FindApiProjectPath(string startDirectory)
+    private static string? FindApiProjectPath(string startDirectory)
     {
         var currentDir = new DirectoryInfo(startDirectory);
 
@@ -109,7 +109,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         return null;
     }
 
-    private string? GetUserSecretsIdFromCsproj(string csprojPath)
+    private static string? GetUserSecretsIdFromCsproj(string csprojPath)
     {
         try
         {
@@ -133,7 +133,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         }
     }
 
-    private string GetUserSecretsPath(string userSecretsId)
+    private static string GetUserSecretsPath(string userSecretsId)
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         var secretsPath = Path.Combine(appData, "Microsoft", "UserSecrets", userSecretsId, "secrets.json");

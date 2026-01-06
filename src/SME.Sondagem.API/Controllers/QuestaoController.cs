@@ -17,22 +17,19 @@ public class QuestaoController : ControllerBase
     private readonly ICriarQuestaoUseCase _criarQuestaoUseCase;
     private readonly IAtualizarQuestaoUseCase _atualizarQuestaoUseCase;
     private readonly IExcluirQuestaoUseCase _excluirQuestaoUseCase;
-    private readonly ILogger<QuestaoController> _logger;
 
     public QuestaoController(
         IObterQuestoesUseCase obterQuestoesUseCase,
         IObterQuestaoPorIdUseCase obterQuestaoPorIdUseCase,
         ICriarQuestaoUseCase criarQuestaoUseCase,
         IAtualizarQuestaoUseCase atualizarQuestaoUseCase,
-        IExcluirQuestaoUseCase excluirQuestaoUseCase,
-        ILogger<QuestaoController> logger)
+        IExcluirQuestaoUseCase excluirQuestaoUseCase)
     {
         _obterQuestoesUseCase = obterQuestoesUseCase;
         _obterQuestaoPorIdUseCase = obterQuestaoPorIdUseCase;
         _criarQuestaoUseCase = criarQuestaoUseCase;
         _atualizarQuestaoUseCase = atualizarQuestaoUseCase;
         _excluirQuestaoUseCase = excluirQuestaoUseCase;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -46,12 +43,10 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de listagem foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao listar questões");
             return StatusCode(500, new { mensagem = "Erro ao listar questões" });
         }
     }
@@ -71,12 +66,10 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de obtenção foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao obter questão {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao obter questão" });
         }
     }   
@@ -100,7 +93,6 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de criação foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -112,9 +104,8 @@ public class QuestaoController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao criar questão");
             return StatusCode(500, new { mensagem = "Erro ao criar questão" });
         }
     }
@@ -136,7 +127,6 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de atualização foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -148,9 +138,8 @@ public class QuestaoController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao atualizar questão {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao atualizar questão" });
         }
     }
@@ -170,12 +159,10 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de exclusão foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao excluir questão {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao excluir questão" });
         }
     }

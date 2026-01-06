@@ -95,7 +95,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             .Where(e => ids.Contains(e.Id))
             .ToListAsync(cancellationToken);
 
-        if (!entidades.Any())
+        if (entidades.Count == 0)
             return false;
 
         foreach (var entidade in entidades)

@@ -18,22 +18,18 @@ public class ProficienciaController : ControllerBase
     private readonly IAtualizarProficienciaUseCase atualizarProficienciaUseCase;
     private readonly IExcluirProficienciaUseCase excluirProficienciaUseCase;
 
-    private readonly ILogger<ComponenteCurricularController> _logger;
-
     public ProficienciaController(
         IObterProficienciasUseCase obterProficienciasUseCase,
         IObterProficienciaPorIdUseCase obterProficienciaPorIdUseCase,
         ICriarProficienciaUseCase criarProficienciaUseCase,
         IAtualizarProficienciaUseCase atualizarProficienciaUseCase,
-        IExcluirProficienciaUseCase excluirProficienciaUseCase,
-        ILogger<ComponenteCurricularController> logger)
+        IExcluirProficienciaUseCase excluirProficienciaUseCase)
     {
         this.obterProficienciasUseCase = obterProficienciasUseCase;
         this.obterProficienciaPorIdUseCase = obterProficienciaPorIdUseCase;
         this.criarProficienciaUseCase = criarProficienciaUseCase;
         this.atualizarProficienciaUseCase = atualizarProficienciaUseCase;
         this.excluirProficienciaUseCase = excluirProficienciaUseCase;
-        _logger = logger;
     }
 
     [HttpGet]
@@ -47,12 +43,10 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de listagem foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao listar proficiências");
             return StatusCode(500, new { mensagem = "Erro ao listar proficiências" });
         }
     }
@@ -73,12 +67,10 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de obtenção foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao obter proficiência {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao obter proficiência" });
         }
     }
@@ -100,7 +92,6 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de criação foi cancelada");
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -112,9 +103,8 @@ public class ProficienciaController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao criar proficiência");
             return StatusCode(500, new { mensagem = "Erro ao criar proficiência" });
         }
     }
@@ -137,7 +127,6 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de atualização foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
         catch (FluentValidation.ValidationException ex)
@@ -149,9 +138,8 @@ public class ProficienciaController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao atualizar proficiência {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao atualizar proficiência" });
         }
     }
@@ -171,12 +159,10 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Requisição de exclusão foi cancelada para ID {Id}", id);
             return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Erro ao excluir proficiência {Id}", id);
             return StatusCode(500, new { mensagem = "Erro ao excluir proficiência" });
         }
     }

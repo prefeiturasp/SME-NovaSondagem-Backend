@@ -77,7 +77,7 @@ public class ServicoLog : IServicoLog
         }
         catch (Exception ex)
         {
-            logger.LogError(ex.Message);
+            logger.LogError(ex, "Erro ao publicar mensagem no RabbitMQ");
         }
     }
 }

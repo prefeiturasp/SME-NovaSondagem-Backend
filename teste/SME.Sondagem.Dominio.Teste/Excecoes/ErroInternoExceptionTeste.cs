@@ -44,7 +44,7 @@ namespace SME.Sondagem.Dominio.Teste.Excecoes
         {
             var exception = new ErroInternoException("Teste");
 
-            Assert.IsAssignableFrom<Exception>(exception);
+            Assert.IsType<Exception>(exception, exactMatch: false);
         }
 
         [Fact]
