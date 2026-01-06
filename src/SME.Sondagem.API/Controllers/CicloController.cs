@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using SME.Sondagem.Aplicacao.Interfaces.Ciclo;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos.Ciclo;
 
@@ -18,7 +18,6 @@ public class CicloController : ControllerBase
     private readonly IExcluirCicloUseCase _excluirCicloUseCase;
     private readonly IObterCicloPorIdUseCase _obterCicloPorIdUseCase;
     private readonly IObterCiclosUseCase _obterCicloUseCase;
-
     public CicloController(
         ICriarCicloUseCase criarCicloUseCase,
         IAtualizarCicloUseCase atualizarCicloUseCase,
@@ -44,7 +43,7 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -62,13 +61,13 @@ public class CicloController : ControllerBase
             var ciclo = await _obterCicloPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
             if (ciclo == null)
-                return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.CICLO_NAO_ENCONTRADO, id) });
 
             return Ok(ciclo);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -91,7 +90,7 @@ public class CicloController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -116,13 +115,13 @@ public class CicloController : ControllerBase
             var ciclo = await _atualizarCicloUseCase.ExecutarAsync(id, dto, cancellationToken);
 
             if (ciclo == null)
-                return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.CICLO_NAO_ENCONTRADO, id)});
 
             return Ok(ciclo);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -147,13 +146,13 @@ public class CicloController : ControllerBase
             var resultado = await _excluirCicloUseCase.ExecutarAsync(id, cancellationToken);
 
             if (!resultado)
-                return NotFound(new { mensagem = $"Ciclo com ID {id} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.CICLO_NAO_ENCONTRADO, id) });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
