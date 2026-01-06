@@ -55,6 +55,11 @@ builder.Services.AddSingleton(configuracaoRabbitLogOptions);
 var redisOptions = new RedisOptions();
 builder.Configuration.GetSection(RedisOptions.Secao).Bind(redisOptions, c => c.BindNonPublicProperties = true);
 
+if (string.IsNullOrWhiteSpace(redisOptions.Endpoint))
+{
+    throw new InvalidOperationException("Configuração do Redis está incompleta. O Endpoint não pode ser nulo ou vazio. Verifique o appsettings.json");
+}
+
 var redisConfigurationOptions = new ConfigurationOptions()
 {
     Proxy = redisOptions.Proxy,
