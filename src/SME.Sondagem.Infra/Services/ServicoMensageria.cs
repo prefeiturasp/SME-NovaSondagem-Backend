@@ -16,12 +16,12 @@ public class ServicoMensageria : IServicoMensageria
     private readonly RabbitOptions rabbitOptions;
     private readonly IServicoTelemetria servicoTelemetria;
     private readonly IAsyncPolicy policy;
-    private readonly ILogger<ServicoLog> logger;
+    private readonly ILogger<ServicoMensageria> logger;
 
     public ServicoMensageria(RabbitOptions rabbitOptions,
         IServicoTelemetria servicoTelemetria,
         IReadOnlyPolicyRegistry<string> registry,
-        ILogger<ServicoLog> logger)
+        ILogger<ServicoMensageria> logger)
     {
         this.rabbitOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
         this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
