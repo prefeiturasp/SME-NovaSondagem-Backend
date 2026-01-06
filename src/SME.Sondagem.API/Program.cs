@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 using SME.SME.Sondagem.Api.Configuracoes;
@@ -21,8 +20,6 @@ var telemetriaOptions = new TelemetriaOptions();
 builder.Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
 builder.Services.AddSingleton(telemetriaOptions);
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
 var servicoTelemetria = new ServicoTelemetria(telemetriaOptions);
 builder.Services.AddSingleton(servicoTelemetria);
 
@@ -32,6 +29,14 @@ builder.Services.AddSingleton(rabbitOptions);
 
 builder.Services.AddSingleton(_ =>
 {
+    if (string.IsNullOrEmpty(rabbitOptions.HostName) ||
+        string.IsNullOrEmpty(rabbitOptions.UserName) ||
+        string.IsNullOrEmpty(rabbitOptions.Password) ||
+        string.IsNullOrEmpty(rabbitOptions.VirtualHost))
+    {
+        throw new InvalidOperationException("Configurações do RabbitMQ estão incompletas. Verifique o appsettings.json");
+    }
+
     var factory = new ConnectionFactory
     {
         HostName = rabbitOptions.HostName,
@@ -49,6 +54,11 @@ builder.Services.AddSingleton(configuracaoRabbitLogOptions);
 var redisOptions = new RedisOptions();
 builder.Configuration.GetSection(RedisOptions.Secao).Bind(redisOptions, c => c.BindNonPublicProperties = true);
 
+if (string.IsNullOrWhiteSpace(redisOptions.Endpoint))
+{
+    throw new InvalidOperationException("Configuração do Redis está incompleta. O Endpoint não pode ser nulo ou vazio. Verifique o appsettings.json");
+}
+
 var redisConfigurationOptions = new ConfigurationOptions()
 {
     Proxy = redisOptions.Proxy,
@@ -56,7 +66,7 @@ var redisConfigurationOptions = new ConfigurationOptions()
     EndPoints = { redisOptions.Endpoint }
 };
 
-var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
+var muxer = await ConnectionMultiplexer.ConnectAsync(redisConfigurationOptions);
 builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
 builder.Services.AddHttpContextAccessor();
@@ -84,7 +94,7 @@ builder.Services.AddCors(options =>
     {
         var allowedOriginsString = builder.Configuration["Cors:AllowedOrigins"];
         var allowedOrigins = string.IsNullOrWhiteSpace(allowedOriginsString)
-            ? Array.Empty<string>()
+            ? []
             : allowedOriginsString.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         options.AddPolicy("CorsPolicy", policy =>
@@ -117,23 +127,23 @@ if (app.Environment.IsDevelopment())
 
     try
     {
-        Console.WriteLine("?? Verificando migrations pendentes...");
+        Console.WriteLine("  Verificando migrations pendentes...");
         var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
 
         if (pendingMigrations.Any())
         {
-            Console.WriteLine($"?? Aplicando {pendingMigrations.Count()} migration(s)...");
+            Console.WriteLine($" Aplicando {pendingMigrations.Count()} migration(s)...");
             await dbContext.Database.MigrateAsync();
-            Console.WriteLine("? Migrations aplicadas com sucesso!");
+            Console.WriteLine(" Migrations aplicadas com sucesso!");
         }
         else
         {
-            Console.WriteLine("? Banco de dados est� atualizado!");
+            Console.WriteLine(" Banco de dados está atualizado!");
         }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"? Erro ao aplicar migrations: {ex.Message}");
+        Console.WriteLine($" Erro ao aplicar migrations: {ex.Message}");
         Console.WriteLine($"   Stack: {ex.StackTrace}");
     }
 }
@@ -152,8 +162,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("?? SME Sondagem API iniciada com sucesso!");
-logger.LogInformation($"?? Ambiente: {app.Environment.EnvironmentName}");
-logger.LogInformation($"?? Connection String configurada: {!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("SondagemConnection"))}");
+logger.LogInformation(" SME Sondagem API iniciada com sucesso!");
 
-app.Run();
+logger.LogInformation(" Ambiente: {EnvironmentName}", app.Environment.EnvironmentName);
+logger.LogInformation(" Connection String configurada: {ConnectionStringConfigured}",
+    !string.IsNullOrEmpty(builder.Configuration.GetConnectionString("SondagemConnection")));
+
+await app.RunAsync();
