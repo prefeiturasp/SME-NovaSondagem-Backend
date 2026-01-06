@@ -21,8 +21,6 @@ var telemetriaOptions = new TelemetriaOptions();
 builder.Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
 builder.Services.AddSingleton(telemetriaOptions);
 
-var serviceProvider = builder.Services.BuildServiceProvider();
-var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
 var servicoTelemetria = new ServicoTelemetria(telemetriaOptions);
 builder.Services.AddSingleton(servicoTelemetria);
 
@@ -128,7 +126,7 @@ if (app.Environment.IsDevelopment())
         }
         else
         {
-            Console.WriteLine("? Banco de dados está atualizado!");
+            Console.WriteLine("? Banco de dados estï¿½ atualizado!");
         }
     }
     catch (Exception ex)
