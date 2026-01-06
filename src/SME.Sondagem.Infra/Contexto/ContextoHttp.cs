@@ -41,7 +41,10 @@ public class ContextoHttp : ContextoBase
         else
         {
             Variaveis.Add("TemAuthorizationHeader", true);
-            Variaveis.Add("TokenAtual", authorizationHeader.Value.Single()?.Split(' ')?.Last() ?? string.Empty);
+
+            var partes = authorizationHeader.Value.Single()?.Split(' ');
+            var token = partes != null && partes.Length > 0 ? partes[partes.Length - 1] : string.Empty;
+            Variaveis.Add("TokenAtual", token);
         }
     }
 
