@@ -30,6 +30,14 @@ builder.Services.AddSingleton(rabbitOptions);
 
 builder.Services.AddSingleton(_ =>
 {
+    if (string.IsNullOrEmpty(rabbitOptions.HostName) ||
+        string.IsNullOrEmpty(rabbitOptions.UserName) ||
+        string.IsNullOrEmpty(rabbitOptions.Password) ||
+        string.IsNullOrEmpty(rabbitOptions.VirtualHost))
+    {
+        throw new InvalidOperationException("Configurações do RabbitMQ estão incompletas. Verifique o appsettings.json");
+    }
+
     var factory = new ConnectionFactory
     {
         HostName = rabbitOptions.HostName,
