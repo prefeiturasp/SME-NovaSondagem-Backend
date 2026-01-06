@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 
@@ -33,7 +33,7 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -51,13 +51,13 @@ public class ComponenteCurricularController : ControllerBase
             var componente = await _useCase.ObterPorIdAsync(id, cancellationToken);
 
             if (componente == null)
-                return NotFound(new { mensagem = $"Componente curricular com ID {id} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_NAO_ENCONTRADO, id) });
 
             return Ok(componente);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -75,13 +75,13 @@ public class ComponenteCurricularController : ControllerBase
             var componente = await _useCase.ObterPorCodigoEolAsync(codigoEol, cancellationToken);
 
             if (componente == null)
-                return NotFound(new { mensagem = $"Componente curricular com código EOL {codigoEol} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_EOL_NAO_ENCONTRADO, codigoEol)  });
 
             return Ok(componente);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -104,7 +104,7 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -132,7 +132,7 @@ public class ComponenteCurricularController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -159,13 +159,13 @@ public class ComponenteCurricularController : ControllerBase
             var resultado = await _useCase.ExcluirAsync(id, cancellationToken);
 
             if (!resultado)
-                return NotFound(new { mensagem = $"Componente curricular com ID {id} não encontrado" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_NAO_ENCONTRADO, id) });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
