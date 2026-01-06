@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 
@@ -43,7 +44,7 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -61,13 +62,13 @@ public class ProficienciaController : ControllerBase
             var resultado = await obterProficienciaPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
             if (resultado == null)
-                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.PROEFICIENCIA_NAO_ENCONTRADA, id) });
 
             return Ok(resultado);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -92,7 +93,7 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -121,13 +122,13 @@ public class ProficienciaController : ControllerBase
             var proficiencia = await atualizarProficienciaUseCase.ExecutarAsync(id, dto, cancellationToken);
             
             if (proficiencia == null)
-                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.PROEFICIENCIA_NAO_ENCONTRADA, id) });
                 
             return Ok(proficiencia);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -153,13 +154,13 @@ public class ProficienciaController : ControllerBase
         {
             var resultado = await excluirProficienciaUseCase.ExecutarAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"Proficiência com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.PROEFICIENCIA_NAO_ENCONTRADA, id) });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
