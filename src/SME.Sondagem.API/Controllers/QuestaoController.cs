@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -43,7 +44,7 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -60,13 +61,13 @@ public class QuestaoController : ControllerBase
         {
             var questao = await _obterQuestaoPorIdUseCase.ExecutarAsync(id, cancellationToken);
             if (questao == null)
-                return NotFound(new { mensagem = $"Questão com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA, id) });
 
             return Ok(questao);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -93,7 +94,7 @@ public class QuestaoController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -121,13 +122,13 @@ public class QuestaoController : ControllerBase
         {
             var questao = await _atualizarQuestaoUseCase.ExecutarAsync(id, dto, cancellationToken);
             if (questao == null)
-                return NotFound(new { mensagem = $"Questão com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA, id) });
 
             return Ok(questao);
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -153,13 +154,13 @@ public class QuestaoController : ControllerBase
         {
             var resultado = await _excluirQuestaoUseCase.ExecutarAsync(id, cancellationToken);
             if (!resultado)
-                return NotFound(new { mensagem = $"Questão com ID {id} não encontrada" });
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA, id) });
 
             return NoContent();
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
