@@ -9,6 +9,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
     private const string ConfigKeyConnectionStrings = "ConnectionStrings";
     private const string ConfigKeyDatabase = "SondagemConnection";
     private const string ConfigKeySeparator = ":";
+    private const string NameSpaceApi = "SME.Sondagem.API.csproj";
 
     public SondagemDbContext CreateDbContext(string[] args)
     {
@@ -25,11 +26,11 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
                 $"Diretório atual: {currentDirectory}");
         }
 
-        var apiCsprojPath = Path.Combine(apiProjectPath, "SME.Sondagem.API.csproj");
+        var apiCsprojPath = Path.Combine(apiProjectPath, NameSpaceApi);
         if (!File.Exists(apiCsprojPath))
         {
             throw new InvalidOperationException(
-                $"❌ Arquivo SME.Sondagem.API.csproj não encontrado em: {apiProjectPath}");
+                $"❌ Arquivo NameSpaceApi não encontrado em: {apiProjectPath}");
         }
 
         var userSecretsId = GetUserSecretsIdFromCsproj(apiCsprojPath);
@@ -84,7 +85,7 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
     {
         var currentDir = new DirectoryInfo(startDirectory);
 
-        if (File.Exists(Path.Combine(currentDir.FullName, "SME.Sondagem.API.csproj")))
+        if (File.Exists(Path.Combine(currentDir.FullName, NameSpaceApi)))
         {
             return currentDir.FullName;
         }
@@ -92,13 +93,13 @@ public class SondagemDbContextFactory : IDesignTimeDbContextFactory<SondagemDbCo
         while (currentDir != null)
         {
             var apiPath = Path.Combine(currentDir.FullName, "SME.Sondagem.API");
-            if (Directory.Exists(apiPath) && File.Exists(Path.Combine(apiPath, "SME.Sondagem.API.csproj")))
+            if (Directory.Exists(apiPath) && File.Exists(Path.Combine(apiPath, NameSpaceApi)))
             {
                 return apiPath;
             }
 
             var srcApiPath = Path.Combine(currentDir.FullName, "src", "SME.Sondagem.API");
-            if (Directory.Exists(srcApiPath) && File.Exists(Path.Combine(srcApiPath, "SME.Sondagem.API.csproj")))
+            if (Directory.Exists(srcApiPath) && File.Exists(Path.Combine(srcApiPath, NameSpaceApi)))
             {
                 return srcApiPath;
             }
