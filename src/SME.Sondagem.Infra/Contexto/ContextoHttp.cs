@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using SME.Sondagem.Infra.Interfaces;
-using System.Security.Claims;
 
 namespace SME.Sondagem.Infra.Contexto;
 
