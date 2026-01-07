@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
+using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 
 namespace SME.Sondagem.API.Controllers;
 
@@ -23,4 +24,12 @@ public class SondagemController : ControllerBase
         var resultado = await sondagemUseCase.ObterTodasSondagensAsync();
         return Ok(resultado);
     }
+
+    [HttpPost("salvar")]
+    public async Task<IActionResult> SalvarSondagem([FromBody] SondagemSalvarDto dto)
+    {
+        var resultado = await sondagemUseCase.SalvarOuAtualizarSondagemAsync(dto);
+        return Ok(resultado);
+    }
+
 }
