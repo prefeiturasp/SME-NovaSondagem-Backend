@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -43,7 +44,7 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -66,7 +67,7 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
@@ -91,7 +92,7 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -125,7 +126,7 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (FluentValidation.ValidationException ex)
         {
@@ -157,7 +158,7 @@ public class OpcaoRespostaController : ControllerBase
         }
         catch (OperationCanceledException)
         {
-            return StatusCode(499, new { mensagem = "Requisição cancelada pelo cliente" });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {
