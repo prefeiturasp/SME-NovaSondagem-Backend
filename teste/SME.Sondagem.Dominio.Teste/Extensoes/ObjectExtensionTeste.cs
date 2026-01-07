@@ -1,4 +1,4 @@
-using Xunit;
+Ôªøusing Xunit;
 
 namespace SME.Sondagem.Dominio.Teste.Extensoes
 {
@@ -8,7 +8,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         public void LancarExcecaoNegocioSeEhNulo_Deve_lancar_excecao_quando_objeto_eh_nulo()
         {
             object? objetoNulo = null;
-            var mensagemErro = "Objeto n„o pode ser nulo";
+            var mensagemErro = "Objeto n√£o pode ser nulo";
 
             var excecao = Assert.Throws<RegraNegocioException>(() => 
                 objetoNulo!.LancarExcecaoNegocioSeEhNulo(mensagemErro));
@@ -20,7 +20,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         public void LancarExcecaoNegocioSeEhNulo_Nao_deve_lancar_excecao_quando_objeto_nao_eh_nulo()
         {
             var objeto = new object();
-            var mensagemErro = "Objeto n„o pode ser nulo";
+            var mensagemErro = "Objeto n√£o pode ser nulo";
 
             var exception = Record.Exception(() => 
                 objeto.LancarExcecaoNegocioSeEhNulo(mensagemErro));
@@ -29,15 +29,15 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         }
 
         [Theory]
-        [InlineData("Ol·", "Ola")]
-        [InlineData("S„o Paulo", "Sao Paulo")]
-        [InlineData("JosÈ", "Jose")]
-        [InlineData("AÁ˙car", "Acucar")]
-        [InlineData("AÁ„o", "Acao")]
-        [InlineData("CoraÁ„o", "Coracao")]
-        [InlineData("PÍssego", "Pessego")]
-        [InlineData("¡gua", "Agua")]
-        [InlineData("Avi„o", "Aviao")]
+        [InlineData("Ol√°", "Ola")]
+        [InlineData("S√£o Paulo", "Sao Paulo")]
+        [InlineData("Jos√©", "Jose")]
+        [InlineData("A√ßucar", "Acucar")]
+        [InlineData("A√ß√£o", "Acao")]
+        [InlineData("Cora√ß√£o", "Coracao")]
+        [InlineData("P√™ssego", "Pessego")]
+        [InlineData("√Ågua", "Agua")]
+        [InlineData("Avi√£o", "Aviao")]
         public void RemoverAcentuacao_Deve_remover_acentos_corretamente(string entrada, string esperado)
         {
             var resultado = entrada.RemoverAcentuacao();
@@ -94,7 +94,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [InlineData("Teste", "Teste", false)]
         [InlineData("Teste", "Outro", true)]
         [InlineData("ABC", "XYZ", true)]
-        [InlineData("S„o Paulo", "s„o paulo", false)]
+        [InlineData("S√£o Paulo", "s√£o paulo", false)]
         public void SaoDiferentes_Deve_comparar_strings_ignorando_case(string valor, string valorAComparar, bool esperado)
         {
             var resultado = valor.SaoDiferentes(valorAComparar);
