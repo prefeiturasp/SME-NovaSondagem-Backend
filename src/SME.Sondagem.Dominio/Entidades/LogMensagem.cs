@@ -4,14 +4,14 @@ namespace SME.Sondagem.Dominio.Entidades;
 
 public class LogMensagem
 {
-    public LogMensagem(string mensagem, LogNivel nivel, string observacao, string rastreamento = null, string excecaoInterna = null, string projeto = "Serap-Prova-Worker")
+    public LogMensagem(string mensagem, LogNivel nivel, string observacao, string? rastreamento = null, string? excecaoInterna = null, string projeto = "Serap-Prova-Worker")
     {
         Mensagem = mensagem;
         Nivel = nivel;
         Observacao = observacao;
         Projeto = projeto;
-        Rastreamento = rastreamento;
-        ExcecaoInterna = excecaoInterna;
+        Rastreamento = rastreamento ?? string.Empty;
+        ExcecaoInterna = excecaoInterna ?? string.Empty;
         DataHora = DateTime.Now;
     }
 

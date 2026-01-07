@@ -70,7 +70,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public virtual async Task<long> RemoverLogico(long id, string coluna = null, CancellationToken cancellationToken = default)
+    public virtual async Task<long> RemoverLogico(long id, string? coluna = null, CancellationToken cancellationToken = default)
     {
         var entidade = await _dbSet
             .IgnoreQueryFilters()
@@ -85,7 +85,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         return entidade.Id;
     }
 
-    public virtual async Task<bool> RemoverLogico(long[] ids, string coluna = null, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> RemoverLogico(long[] ids, string? coluna = null, CancellationToken cancellationToken = default)
     {
         if (ids == null || ids.Length == 0)
             return false;
@@ -95,7 +95,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             .Where(e => ids.Contains(e.Id))
             .ToListAsync(cancellationToken);
 
-        if (!entidades.Any())
+        if (entidades.Count == 0)
             return false;
 
         foreach (var entidade in entidades)

@@ -92,7 +92,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Autenticacao
         [Fact]
         public async Task Autenticar_DeveLancarErro_QuandoHttpContextForNulo()
         {
-            httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null);
+            HttpContext? httpContext = null;
+            httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
 
             var novoUseCase = new AutenticacaoUseCase(
                 configurationMock.Object,
@@ -144,8 +145,9 @@ namespace SME.Sondagem.Aplicacao.Teste.Autenticacao
         [Fact]
         public async Task Autenticar_DeveLancarErro_QuandoSigningKeyNaoConfigurada()
         {
+            string? issuerSigningKey = null;
             configurationMock.Setup(c => c["SondagemTokenSettings:IssuerSigningKey"])
-                             .Returns((string)null);
+                             .Returns(issuerSigningKey);
 
             var principal = CriarPrincipalValido();
 

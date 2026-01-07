@@ -22,7 +22,7 @@ public class Questao : EntidadeBase
 
     // Navegação
     public virtual Questionario Questionario { get; private set; } = null!;
-    public virtual GrupoQuestoes? GrupoQuestoes { get; private set; }
+    public virtual GrupoQuestoes? GrupoQuestoes { get; private set; } = null!;
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
 
@@ -65,35 +65,73 @@ public class Questao : EntidadeBase
         NomeComponente = nomeComponente;
     }
 
-    public void Atualizar(
-        int questionarioId,
-        int? grupoQuestoesId,
-        int ordem,
-        string nome,
-        string observacao,
-        bool obrigatorio,
-        TipoQuestao tipo,
-        string opcionais,
-        bool somenteLeitura,
-        int dimensao,
-        int? tamanho,
-        string? mascara,
-        string? placeHolder,
-        string? nomeComponente)
+    public void AtualizarQuestionarioId(int questionarioId)
     {
         QuestionarioId = questionarioId;
+    }
+
+    public void AtualizarGrupoQuestoesId(int? grupoQuestoesId)
+    {
         GrupoQuestoesId = grupoQuestoesId;
+    }
+
+    public void AtualizarOrdem(int ordem)
+    {
         Ordem = ordem;
+    }
+
+    public void AtualizarNome(string nome)
+    {
         Nome = nome;
+    }
+
+    public void AtualizarObservacao(string observacao)
+    {
         Observacao = observacao;
+    }
+
+    public void AtualizarObrigatorio(bool obrigatorio)
+    {
         Obrigatorio = obrigatorio;
+    }
+
+    public void AtualizarTipo(TipoQuestao tipo)
+    {
         Tipo = tipo;
+    }
+
+    public void AtualizarOpcionais(string opcionais)
+    {
         Opcionais = opcionais;
+    }
+
+    public void AtualizarSomenteLeitura(bool somenteLeitura)
+    {
         SomenteLeitura = somenteLeitura;
+    }
+
+    public void AtualizarDimensao(int dimensao)
+    {
         Dimensao = dimensao;
+    }
+
+    public void AtualizarTamanho(int? tamanho)
+    {
         Tamanho = tamanho;
+    }
+
+    public void AtualizarMascara(string? mascara)
+    {
         Mascara = mascara;
+    }
+
+    public void AtualizarPlaceHolder(string? placeHolder)
+    {
         PlaceHolder = placeHolder;
+    }
+
+    public void AtualizarNomeComponente(string? nomeComponente)
+    {
         NomeComponente = nomeComponente;
     }
 }

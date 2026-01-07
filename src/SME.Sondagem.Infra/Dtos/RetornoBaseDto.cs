@@ -11,16 +11,17 @@ public class RetornoBaseDto
         if (validationFailures != null && validationFailures.Any())
             Mensagens = validationFailures.Select(c => c.ErrorMessage).ToList();
     }
+
     public RetornoBaseDto()
     {
-        Mensagens = new List<string>();
+        Mensagens = [];
     }
 
     public RetornoBaseDto(string mensagem)
     {
-        Mensagens = new List<string>() { mensagem };
+        Mensagens = [mensagem];
     }
 
-    public List<string> Mensagens { get; set; }
-    public bool ExistemErros => Mensagens?.Any() ?? false;
+    public List<string>? Mensagens { get; set; }
+    public bool ExistemErros => Mensagens?.Count > 0;
 }

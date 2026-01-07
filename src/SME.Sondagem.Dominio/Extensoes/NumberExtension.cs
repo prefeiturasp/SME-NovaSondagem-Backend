@@ -2,6 +2,6 @@
 
 public static class NumberExtension
 {
-    public static long[] ToArray<T>(this long source)
-    => new long[] { source };
+    public static long[] ToArray(this long source)
+    => [source];
 }

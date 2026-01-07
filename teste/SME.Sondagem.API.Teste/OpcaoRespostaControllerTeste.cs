@@ -18,7 +18,6 @@ namespace SME.Sondagem.API.Teste
         private readonly Mock<IExcluirOpcaoRespostaUseCase> _mockExcluirUseCase;
         private readonly Mock<IObterOpcaoRespostaPorIdUseCase> _mockObterPorIdUseCase;
         private readonly Mock<IObterOpcaoRespostaUseCase> _mockObterUseCase;
-        private readonly Mock<ILogger<OpcaoRespostaController>> _mockLogger;
         private readonly OpcaoRespostaController _controller;
         private readonly CancellationToken _cancellationToken;
 
@@ -29,15 +28,13 @@ namespace SME.Sondagem.API.Teste
             _mockExcluirUseCase = new Mock<IExcluirOpcaoRespostaUseCase>();
             _mockObterPorIdUseCase = new Mock<IObterOpcaoRespostaPorIdUseCase>();
             _mockObterUseCase = new Mock<IObterOpcaoRespostaUseCase>();
-            _mockLogger = new Mock<ILogger<OpcaoRespostaController>>();
 
             _controller = new OpcaoRespostaController(
                 _mockCriarUseCase.Object,
                 _mockAtualizarUseCase.Object,
                 _mockExcluirUseCase.Object,
                 _mockObterPorIdUseCase.Object,
-                _mockObterUseCase.Object,
-                _mockLogger.Object
+                _mockObterUseCase.Object
             );
 
             _cancellationToken = CancellationToken.None;

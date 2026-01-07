@@ -36,9 +36,8 @@ RUN apt-get update \
     && apt-get install -yq tzdata locales \
     && dpkg-reconfigure --frontend noninteractive tzdata \
     && locale-gen en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf || true
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf || true
 
 COPY --from=publish /app/publish .
 

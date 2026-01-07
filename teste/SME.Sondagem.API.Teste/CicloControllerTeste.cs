@@ -18,7 +18,6 @@ public class CicloControllerTeste
     private readonly Mock<ICriarCicloUseCase> _criarCicloUseCaseMock;
     private readonly Mock<IAtualizarCicloUseCase> _atualizarCicloUseCaseMock;
     private readonly Mock<IExcluirCicloUseCase> _excluirCicloUseCaseMock;
-    private readonly Mock<ILogger<CicloController>> _loggerMock;
     private readonly CicloController _controller;
     private readonly CancellationToken _cancellationToken;
 
@@ -29,16 +28,15 @@ public class CicloControllerTeste
         _criarCicloUseCaseMock = new Mock<ICriarCicloUseCase>();
         _atualizarCicloUseCaseMock = new Mock<IAtualizarCicloUseCase>();
         _excluirCicloUseCaseMock = new Mock<IExcluirCicloUseCase>();
-        _loggerMock = new Mock<ILogger<CicloController>>();
         _cancellationToken = CancellationToken.None;
+
 
         _controller = new CicloController(
             _criarCicloUseCaseMock.Object,
             _atualizarCicloUseCaseMock.Object,
             _excluirCicloUseCaseMock.Object,
             _obterCicloPorIdUseCaseMock.Object,
-            _obterCiclosUseCaseMock.Object,
-            _loggerMock.Object
+            _obterCiclosUseCaseMock.Object
         );
     }
 
@@ -79,8 +77,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformation(_loggerMock, "Requisição de listagem foi cancelada");
     }
 
     [Fact]
@@ -99,8 +95,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao listar ciclos", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogError(_loggerMock, "Erro ao listar ciclos", exception);
     }
 
     #endregion
@@ -158,8 +152,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de obtenção foi cancelada para ID", id);
     }
 
     [Fact]
@@ -179,8 +171,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao obter ciclo", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao obter ciclo", exception, id);
     }
 
     #endregion
@@ -229,8 +219,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformation(_loggerMock, "Requisição de criação foi cancelada");
     }
 
     [Fact]
@@ -298,8 +286,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao criar ciclo", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogError(_loggerMock, "Erro ao criar ciclo", exception);
     }
 
     #endregion
@@ -361,8 +347,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de atualização foi cancelada para ID", id);
     }
 
     [Fact]
@@ -433,8 +417,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao atualizar ciclo", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao atualizar ciclo", exception, id);
     }
 
     #endregion
@@ -489,8 +471,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de exclusão foi cancelada para ID", id);
     }
 
     [Fact]
@@ -510,64 +490,6 @@ public class CicloControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao excluir ciclo", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao excluir ciclo", exception, id);
-    }
-
-    #endregion
-
-    #region Helper Methods
-
-    private static void VerifyLogInformation(Mock<ILogger<CicloController>> loggerMock, string message)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogError(Mock<ILogger<CicloController>> loggerMock, string message, Exception exception)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
-                exception,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogInformationWithId(Mock<ILogger<CicloController>> loggerMock, string message, long id)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString()!.Contains(message) &&
-                    v.ToString()!.Contains(id.ToString())),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogErrorWithId(Mock<ILogger<CicloController>> loggerMock, string message, Exception exception, long id)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString()!.Contains(message) &&
-                    v.ToString()!.Contains(id.ToString())),
-                exception,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
     }
 
     #endregion

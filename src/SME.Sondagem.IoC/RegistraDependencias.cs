@@ -49,12 +49,10 @@ public static class RegistraDependencias
         RegistrarCasosDeUso(services);
         RegistrarValidadores(services);
         RegistrarContextos(services);
-        //RegistraMapeamentos.Registrar();
     }
 
     private static void RegistrarRepositorios(IServiceCollection services)
     {
-        //services.TryAddScoped<IRepositorioCache, RepositorioCache>();
         services.TryAddScoped<IRepositorioCiclo, RepositorioCiclo>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();

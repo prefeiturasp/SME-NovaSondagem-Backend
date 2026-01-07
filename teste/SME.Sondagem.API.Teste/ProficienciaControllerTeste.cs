@@ -18,7 +18,6 @@ public class ProficienciaControllerTeste
     private readonly Mock<ICriarProficienciaUseCase> _criarProficienciaUseCaseMock;
     private readonly Mock<IAtualizarProficienciaUseCase> _atualizarProficienciaUseCaseMock;
     private readonly Mock<IExcluirProficienciaUseCase> _excluirProficienciaUseCaseMock;
-    private readonly Mock<ILogger<ComponenteCurricularController>> _loggerMock;
     private readonly ProficienciaController _controller;
     private readonly CancellationToken _cancellationToken;
 
@@ -29,7 +28,6 @@ public class ProficienciaControllerTeste
         _criarProficienciaUseCaseMock = new Mock<ICriarProficienciaUseCase>();
         _atualizarProficienciaUseCaseMock = new Mock<IAtualizarProficienciaUseCase>();
         _excluirProficienciaUseCaseMock = new Mock<IExcluirProficienciaUseCase>();
-        _loggerMock = new Mock<ILogger<ComponenteCurricularController>>();
         _cancellationToken = CancellationToken.None;
 
         _controller = new ProficienciaController(
@@ -37,8 +35,7 @@ public class ProficienciaControllerTeste
             _obterProficienciaPorIdUseCaseMock.Object,
             _criarProficienciaUseCaseMock.Object,
             _atualizarProficienciaUseCaseMock.Object,
-            _excluirProficienciaUseCaseMock.Object,
-            _loggerMock.Object
+            _excluirProficienciaUseCaseMock.Object
         );
     }
 
@@ -79,8 +76,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Information, "Requisição de listagem foi cancelada");
     }
 
     [Fact]
@@ -99,8 +94,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao listar proficiências", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Error, "Erro ao listar proficiências", exception);
     }
 
     #endregion
@@ -158,8 +151,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Information, "Requisição de obtenção foi cancelada para ID", additionalInfo: id.ToString());
     }
 
     [Fact]
@@ -179,8 +170,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao obter proficiência", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Error, "Erro ao obter proficiência", exception, id.ToString());
     }
 
     #endregion
@@ -225,8 +214,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Information, "Requisição de criação foi cancelada");
     }
 
     [Fact]
@@ -294,8 +281,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao criar proficiência", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Error, "Erro ao criar proficiência", exception);
     }
 
     #endregion
@@ -357,8 +342,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Information, "Requisição de atualização foi cancelada para ID", additionalInfo: id.ToString());
     }
 
     [Fact]
@@ -429,8 +412,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao atualizar proficiência", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Error, "Erro ao atualizar proficiência", exception, id.ToString());
     }
 
     #endregion
@@ -485,8 +466,6 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Information, "Requisição de exclusão foi cancelada para ID", additionalInfo: id.ToString());
     }
 
     [Fact]
@@ -506,26 +485,7 @@ public class ProficienciaControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao excluir proficiência", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        _loggerMock.VerifyLog(LogLevel.Error, "Erro ao excluir proficiência", exception, id.ToString());
     }
 
     #endregion
-}
-
-public static class LoggerMockExtensions
-{
-    public static void VerifyLog<T>(this Mock<ILogger<T>> loggerMock, LogLevel logLevel, string message, Exception? exception = null, string? additionalInfo = null)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                logLevel,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString()!.Contains(message) &&
-                    (additionalInfo == null || v.ToString()!.Contains(additionalInfo))),
-                exception,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
 }

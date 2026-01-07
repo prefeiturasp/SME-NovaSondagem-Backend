@@ -18,7 +18,6 @@ public class QuestaoControllerTeste
     private readonly Mock<ICriarQuestaoUseCase> _criarQuestaoUseCaseMock;
     private readonly Mock<IAtualizarQuestaoUseCase> _atualizarQuestaoUseCaseMock;
     private readonly Mock<IExcluirQuestaoUseCase> _excluirQuestaoUseCaseMock;
-    private readonly Mock<ILogger<QuestaoController>> _loggerMock;
     private readonly QuestaoController _controller;
     private readonly CancellationToken _cancellationToken;
 
@@ -29,7 +28,6 @@ public class QuestaoControllerTeste
         _criarQuestaoUseCaseMock = new Mock<ICriarQuestaoUseCase>();
         _atualizarQuestaoUseCaseMock = new Mock<IAtualizarQuestaoUseCase>();
         _excluirQuestaoUseCaseMock = new Mock<IExcluirQuestaoUseCase>();
-        _loggerMock = new Mock<ILogger<QuestaoController>>();
         _cancellationToken = CancellationToken.None;
 
         _controller = new QuestaoController(
@@ -37,8 +35,7 @@ public class QuestaoControllerTeste
             _obterQuestaoPorIdUseCaseMock.Object,
             _criarQuestaoUseCaseMock.Object,
             _atualizarQuestaoUseCaseMock.Object,
-            _excluirQuestaoUseCaseMock.Object,
-            _loggerMock.Object
+            _excluirQuestaoUseCaseMock.Object
         );
     }
 
@@ -79,8 +76,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformation(_loggerMock, "Requisição de listagem foi cancelada");
     }
 
     [Fact]
@@ -99,8 +94,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao listar questões", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogError(_loggerMock, "Erro ao listar questões", exception);
     }
 
     #endregion
@@ -158,8 +151,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de obtenção foi cancelada para ID", id);
     }
 
     [Fact]
@@ -179,8 +170,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao obter questão", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao obter questão", exception, id);
     }
 
     #endregion
@@ -234,8 +223,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformation(_loggerMock, "Requisição de criação foi cancelada");
     }
 
     [Fact]
@@ -303,8 +290,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao criar questão", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogError(_loggerMock, "Erro ao criar questão", exception);
     }
 
     #endregion
@@ -366,8 +351,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de atualização foi cancelada para ID", id);
     }
 
     [Fact]
@@ -438,8 +421,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao atualizar questão", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao atualizar questão", exception, id);
     }
 
     #endregion
@@ -494,8 +475,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogInformationWithId(_loggerMock, "Requisição de exclusão foi cancelada para ID", id);
     }
 
     [Fact]
@@ -515,64 +494,6 @@ public class QuestaoControllerTeste
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
         Assert.Equal("Erro ao excluir questão", mensagemProperty?.GetValue(statusCodeResult.Value));
-
-        VerifyLogErrorWithId(_loggerMock, "Erro ao excluir questão", exception, id);
-    }
-
-    #endregion
-
-    #region Helper Methods
-
-    private static void VerifyLogInformation(Mock<ILogger<QuestaoController>> loggerMock, string message)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogError(Mock<ILogger<QuestaoController>> loggerMock, string message, Exception exception)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains(message)),
-                exception,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogInformationWithId(Mock<ILogger<QuestaoController>> loggerMock, string message, int id)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString()!.Contains(message) &&
-                    v.ToString()!.Contains(id.ToString())),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
-    }
-
-    private static void VerifyLogErrorWithId(Mock<ILogger<QuestaoController>> loggerMock, string message, Exception exception, int id)
-    {
-        loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) =>
-                    v.ToString()!.Contains(message) &&
-                    v.ToString()!.Contains(id.ToString())),
-                exception,
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once);
     }
 
     #endregion

@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using SME.Sondagem.Infra.Interfaces;
-using System.Diagnostics.CodeAnalysis;
-using System.Security.Claims;
 
 namespace SME.Sondagem.Infra.Contexto;
 
-[ExcludeFromCodeCoverage]
 public class ContextoHttp : ContextoBase
 {
     readonly IHttpContextAccessor httpContextAccessor;
@@ -33,7 +30,7 @@ public class ContextoHttp : ContextoBase
         Variaveis.Add("NomeAdministrador", httpContextAccessor.HttpContext?.User?.FindFirst("nome_adm_suporte")?.Value ?? string.Empty);
         Variaveis.Add("PerfilUsuario", ObterPerfilAtual());
 
-        var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers["authorization"];
+        var authorizationHeader = httpContextAccessor.HttpContext?.Request?.Headers?.Authorization;
 
         if (!authorizationHeader.HasValue || authorizationHeader.Value == StringValues.Empty)
         {
@@ -43,18 +40,21 @@ public class ContextoHttp : ContextoBase
         else
         {
             Variaveis.Add("TemAuthorizationHeader", true);
-            Variaveis.Add("TokenAtual", authorizationHeader.Value.Single().Split(' ').Last());
+
+            var partes = authorizationHeader.Value.Single()?.Split(' ');
+            var token = partes != null && partes.Length > 0 ? partes[partes.Length - 1] : string.Empty;
+            Variaveis.Add("TokenAtual", token);
         }
     }
 
-    private IEnumerable<InternalClaim> GetInternalClaim()
+    private List<InternalClaim> GetInternalClaim()
     {
-        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
+        return (httpContextAccessor.HttpContext?.User?.Claims ?? []).Select(x => new InternalClaim() { Type = x.Type, Value = x.Value }).ToList();
     }
 
     private string ObterPerfilAtual()
     {
-        return (httpContextAccessor.HttpContext?.User?.Claims ?? Enumerable.Empty<Claim>()).FirstOrDefault(x => x.Type.ToLower() == "perfil")?.Value;
+        return (httpContextAccessor.HttpContext?.User?.Claims ?? []).FirstOrDefault(x => x.Type.Equals("perfil", StringComparison.CurrentCultureIgnoreCase))?.Value ?? string.Empty;
     }
 
     public override IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto)
