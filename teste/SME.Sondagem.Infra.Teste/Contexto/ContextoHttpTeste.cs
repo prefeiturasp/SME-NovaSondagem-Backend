@@ -268,8 +268,10 @@ public class ContextoHttpTeste
 
         var contexto = new ContextoHttp(httpContextAccessor);
 
-        Assert.Equal(true, contexto.Variaveis["TemAuthorizationHeader"]);
-        Assert.Equal("abc123xyz456", contexto.Variaveis["TokenAtual"]);
+        var temAuthorizationHeader = bool.Parse(contexto.Variaveis["TemAuthorizationHeader"]?.ToString() ?? string.Empty);
+        var tokenAtual = contexto.Variaveis["TokenAtual"]?.ToString() ?? string.Empty;
+        Assert.True(temAuthorizationHeader);
+        Assert.Equal("abc123xyz456", tokenAtual);
     }
 
     [Fact]
@@ -279,8 +281,10 @@ public class ContextoHttpTeste
 
         var contexto = new ContextoHttp(httpContextAccessor);
 
-        Assert.Equal(false, contexto.Variaveis["TemAuthorizationHeader"]);
-        Assert.Equal(string.Empty, contexto.Variaveis["TokenAtual"]);
+        var temAuthorizationHeader = bool.Parse(contexto.Variaveis["TemAuthorizationHeader"]?.ToString() ?? string.Empty);
+        var tokenAtual = contexto.Variaveis["TokenAtual"]?.ToString() ?? string.Empty;
+        Assert.False(temAuthorizationHeader);
+        Assert.Equal(string.Empty, tokenAtual);
     }
 
     [Fact]
@@ -294,8 +298,10 @@ public class ContextoHttpTeste
 
         var contexto = new ContextoHttp(httpContextAccessor);
 
-        Assert.Equal(false, contexto.Variaveis["TemAuthorizationHeader"]);
-        Assert.Equal(string.Empty, contexto.Variaveis["TokenAtual"]);
+        var temAuthorizationHeader = bool.Parse(contexto.Variaveis["TemAuthorizationHeader"]?.ToString() ?? string.Empty);
+        var tokenAtual = contexto.Variaveis["TokenAtual"]?.ToString() ?? string.Empty;
+        Assert.False(temAuthorizationHeader);
+        Assert.Equal(string.Empty, tokenAtual);
     }
 
     [Fact]
@@ -384,6 +390,7 @@ public class ContextoHttpTeste
         var httpContextAccessor = CriarHttpContextAccessor(claims, "professor.teste", query, headers);
 
         var contexto = new ContextoHttp(httpContextAccessor);
+        var temAuthorizationHeader = bool.Parse(contexto.Variaveis["TemAuthorizationHeader"]?.ToString() ?? string.Empty);
 
         Assert.Equal("9876543", contexto.Variaveis["RF"]);
         Assert.Equal("professor.teste", contexto.Variaveis["login"]);
@@ -394,7 +401,7 @@ public class ContextoHttpTeste
         Assert.Equal("admin.teste", contexto.Variaveis["Administrador"]);
         Assert.Equal("Admin Teste", contexto.Variaveis["NomeAdministrador"]);
         Assert.Equal("Professor", contexto.Variaveis["PerfilUsuario"]);
-        Assert.Equal(true, contexto.Variaveis["TemAuthorizationHeader"]);
+        Assert.True(temAuthorizationHeader);
         Assert.Equal("token123456", contexto.Variaveis["TokenAtual"]);
 
         var internalClaims = contexto.Variaveis["Claims"] as IEnumerable<InternalClaim>;
@@ -402,7 +409,7 @@ public class ContextoHttpTeste
         Assert.Equal(7, internalClaims.Count());
     }
 
-    private IHttpContextAccessor CriarHttpContextAccessor(
+    private static HttpContextAccessor CriarHttpContextAccessor(
         List<Claim>? claims = null,
         string? identityName = null,
         Dictionary<string, StringValues>? queryString = null,
