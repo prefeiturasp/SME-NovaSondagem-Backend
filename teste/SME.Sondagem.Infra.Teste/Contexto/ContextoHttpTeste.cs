@@ -339,7 +339,7 @@ public class ContextoHttpTeste
         var novoContexto = new ContextoHttp(httpContextAccessor);
 
         var exception = Assert.Throws<NotImplementedException>(() => contexto.AtribuirContexto(novoContexto));
-        Assert.Equal("Este tipo de conexto n�o permite atribui��o", exception.Message);
+        Assert.Equal("Este tipo de conexto não permite atribuição", exception.Message);
     }
 
     [Fact]
