@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Xunit;
 
 namespace SME.Sondagem.Dominio.Teste.Extensoes
@@ -13,10 +13,10 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
             [Display(Name = "Inativo", ShortName = "IN", GroupName = "Status Principal")]
             Inativo = 2,
 
-            [Display(Name = "Pendente", ShortName = "PD", GroupName = "Status Secund�rio")]
+            [Display(Name = "Pendente", ShortName = "PD", GroupName = "Status Secundário")]
             Pendente = 3,
 
-            [Display(Name = "Cancelado", ShortName = "CA", GroupName = "Status Secund�rio")]
+            [Display(Name = "Cancelado", ShortName = "CA", GroupName = "Status Secundário")]
             Cancelado = 4
         }
 
@@ -91,8 +91,8 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         [Theory]
         [InlineData(StatusTeste.Ativo, "Status Principal")]
         [InlineData(StatusTeste.Inativo, "Status Principal")]
-        [InlineData(StatusTeste.Pendente, "Status Secund�rio")]
-        [InlineData(StatusTeste.Cancelado, "Status Secund�rio")]
+        [InlineData(StatusTeste.Pendente, "Status Secundário")]
+        [InlineData(StatusTeste.Cancelado, "Status Secundário")]
         public void ObterNomeGrupo_Deve_retornar_nome_do_grupo_do_enum(StatusTeste status, string grupoEsperado)
         {
             var resultado = status.ObterNomeGrupo();
@@ -123,7 +123,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
             Assert.NotNull(atributo);
             Assert.Equal("Cancelado", atributo.Name);
             Assert.Equal("CA", atributo.ShortName);
-            Assert.Equal("Status Secund�rio", atributo.GroupName);
+            Assert.Equal("Status Secundário", atributo.GroupName);
         }
     }
 }

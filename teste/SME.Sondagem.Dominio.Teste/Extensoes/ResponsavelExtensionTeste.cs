@@ -1,4 +1,4 @@
-using SME.Sondagem.Dominio.Enums;
+﻿using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
 namespace SME.Sondagem.Dominio.Teste.Extensoes
@@ -6,7 +6,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
     public class ResponsavelExtensionTeste
     {
         [Theory]
-        [InlineData("1", "Filia��o 1")]
+        [InlineData("1", "Filiação 1")]
         public void ObterTipoResponsavel_Deve_retornar_filiacao1_quando_tipo_for_1(string tipoResponsavel, string nomeEsperado)
         {
             var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
@@ -15,7 +15,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         }
 
         [Theory]
-        [InlineData("2", "Filia��o 2")]
+        [InlineData("2", "Filiação 2")]
         public void ObterTipoResponsavel_Deve_retornar_filiacao2_quando_tipo_for_2(string tipoResponsavel, string nomeEsperado)
         {
             var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
@@ -24,7 +24,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         }
 
         [Theory]
-        [InlineData("3", "Respons�vel Legal")]
+        [InlineData("3", "Responsável Legal")]
         public void ObterTipoResponsavel_Deve_retornar_responsavel_legal_quando_tipo_for_3(string tipoResponsavel, string nomeEsperado)
         {
             var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
@@ -33,7 +33,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         }
 
         [Theory]
-        [InlineData("4", "Pr�prio estudante")]
+        [InlineData("4", "Próprio estudante")]
         public void ObterTipoResponsavel_Deve_retornar_proprio_estudante_quando_tipo_for_4(string tipoResponsavel, string nomeEsperado)
         {
             var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
@@ -42,7 +42,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         }
 
         [Theory]
-        [InlineData("5", "Respons�vel Estrangeiro ou Naturalizado")]
+        [InlineData("5", "Responsável Estrangeiro ou Naturalizado")]
         public void ObterTipoResponsavel_Deve_retornar_responsavel_estrangeiro_quando_tipo_for_5(string tipoResponsavel, string nomeEsperado)
         {
             var resultado = ResponsavelExtension.ObterTipoResponsavel(tipoResponsavel);
@@ -69,11 +69,11 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         {
             var tipos = new Dictionary<string, string>
             {
-                { "1", "Filia��o 1" },
-                { "2", "Filia��o 2" },
-                { "3", "Respons�vel Legal" },
-                { "4", "Pr�prio estudante" },
-                { "5", "Respons�vel Estrangeiro ou Naturalizado" }
+                { "1", "Filiação 1" },
+                { "2", "Filiação 2" },
+                { "3", "Responsável Legal" },
+                { "4", "Próprio estudante" },
+                { "5", "Responsável Estrangeiro ou Naturalizado" }
             };
 
             foreach (var tipo in tipos)

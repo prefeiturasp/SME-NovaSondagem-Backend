@@ -1,4 +1,4 @@
-using Xunit;
+Ôªøusing Xunit;
 
 namespace SME.Sondagem.Dominio.Teste.Extensoes
 {
@@ -138,7 +138,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         public void LancarExcecaoNegocioSeNaoPossuiRegistros_DeveLancarExcecao_QuandoListaVazia()
         {
             var lista = new List<int>();
-            var mensagemErro = "A lista n„o possui registros";
+            var mensagemErro = "A lista n√£o possui registros";
 
             var excecao = Assert.Throws<RegraNegocioException>(() => 
                 lista.LancarExcecaoNegocioSeNaoPossuiRegistros(mensagemErro));
@@ -162,7 +162,7 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         public void LancarExcecaoNegocioSeNaoPossuiRegistros_NaoDeveLancarExcecao_QuandoListaPossuiElementos()
         {
             var lista = new List<int> { 1, 2, 3 };
-            var mensagemErro = "A lista n„o possui registros";
+            var mensagemErro = "A lista n√£o possui registros";
 
             var exception = Record.Exception(() => 
                 lista.LancarExcecaoNegocioSeNaoPossuiRegistros(mensagemErro));
