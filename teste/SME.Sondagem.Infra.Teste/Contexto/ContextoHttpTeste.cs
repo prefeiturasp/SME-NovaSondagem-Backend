@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+ï»¿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using SME.Sondagem.Infra.Contexto;
 using System.Security.Claims;
@@ -152,13 +152,13 @@ public class ContextoHttpTeste
     {
         var claims = new List<Claim>
         {
-            new Claim("Nome", "Usuário Teste")
+            new Claim("Nome", "Usuï¿½rio Teste")
         };
         var httpContextAccessor = CriarHttpContextAccessor(claims);
 
         var contexto = new ContextoHttp(httpContextAccessor);
 
-        Assert.Equal("Usuário Teste", contexto.Variaveis["NomeUsuario"]);
+        Assert.Equal("Usuï¿½rio Teste", contexto.Variaveis["NomeUsuario"]);
     }
 
     [Fact]
@@ -304,7 +304,7 @@ public class ContextoHttpTeste
         var claims = new List<Claim>
         {
             new Claim("RF", "1234567"),
-            new Claim("Nome", "Usuário Teste"),
+            new Claim("Nome", "Usuï¿½rio Teste"),
             new Claim("perfil", "Professor")
         };
         var httpContextAccessor = CriarHttpContextAccessor(claims);
@@ -315,7 +315,7 @@ public class ContextoHttpTeste
         Assert.NotNull(internalClaims);
         Assert.Equal(3, internalClaims.Count());
         Assert.Contains(internalClaims, c => c.Type == "RF" && c.Value == "1234567");
-        Assert.Contains(internalClaims, c => c.Type == "Nome" && c.Value == "Usuário Teste");
+        Assert.Contains(internalClaims, c => c.Type == "Nome" && c.Value == "Usuï¿½rio Teste");
         Assert.Contains(internalClaims, c => c.Type == "perfil" && c.Value == "Professor");
     }
 
@@ -339,7 +339,7 @@ public class ContextoHttpTeste
         var novoContexto = new ContextoHttp(httpContextAccessor);
 
         var exception = Assert.Throws<NotImplementedException>(() => contexto.AtribuirContexto(novoContexto));
-        Assert.Equal("Este tipo de conexto não permite atribuição", exception.Message);
+        Assert.Equal("Este tipo de conexto nï¿½o permite atribuiï¿½ï¿½o", exception.Message);
     }
 
     [Fact]
