@@ -1,13 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using RabbitMQ.Client;
+using System.Diagnostics.CodeAnalysis;
 using SME.SME.Sondagem.Api.Configuracoes;
 using SME.Sondagem.API.Configuracoes;
-using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
-using StackExchange.Redis;
 
+
+[assembly: ExcludeFromCodeCoverage]
 var builder = WebApplication.CreateBuilder(args);
 
 var conexaoDadosVariaveis = new ConnectionStringOptions();
