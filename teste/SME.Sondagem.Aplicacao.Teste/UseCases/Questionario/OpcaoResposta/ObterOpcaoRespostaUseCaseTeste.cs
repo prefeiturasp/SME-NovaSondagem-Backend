@@ -23,14 +23,14 @@ public class ObterOpcoesRespostaUseCaseTeste
     {
         var opcoesResposta = new List<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>
         {
-            new("Opção A", "Legenda A", "#FF0000", "#FFFFFF")
+            new(1, "Opção A", "Legenda A", "#FF0000", "#FFFFFF")
             {
                 Id = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Usuario1",
                 CriadoRF = "RF001"
             },
-            new("Opção B", "Legenda B", "#00FF00", "#000000")
+            new(2, "Opção B", "Legenda B", "#00FF00", "#000000")
             {
                 Id = 2,
                 CriadoEm = DateTime.Now.AddDays(-1),
@@ -146,7 +146,7 @@ public class ObterOpcoesRespostaUseCaseTeste
 
         var opcoesResposta = new List<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>
         {
-            new("Opção Completa", "Legenda detalhada", "#0000FF", "#FFFF00")
+            new(1, "Opção Completa", "Legenda detalhada", "#0000FF", "#FFFF00")
             {
                 Id = 100,
                 CriadoEm = dataEspecifica,
@@ -185,6 +185,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         for (int i = 1; i <= 1000; i++)
         {
             opcoesResposta.Add(new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+                1,
                 $"Opção {i}",
                 $"Legenda {i}",
                 $"#FF{i:X4}",
@@ -216,7 +217,7 @@ public class ObterOpcoesRespostaUseCaseTeste
     {
         var opcoesResposta = new List<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>
         {
-            new("Opção sem campos opcionais", null, null, null)
+            new(1, "Opção sem campos opcionais", null, null, null)
             {
                 Id = 1,
                 CriadoEm = DateTime.Now,

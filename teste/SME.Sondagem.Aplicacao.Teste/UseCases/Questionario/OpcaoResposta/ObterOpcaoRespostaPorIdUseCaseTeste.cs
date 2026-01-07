@@ -26,6 +26,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         var dataAlteracao = DateTime.Now.AddHours(1);
 
         var opcaoResposta = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A - Resposta correta",
             "Legenda explicativa",
             "#00FF00",
@@ -115,6 +116,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         var dataCriacao = DateTime.Now;
 
         var opcaoResposta = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção B",
             null,
             null,
@@ -164,6 +166,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
     public async Task ExecutarAsync_ComDiferentesIds_DeveChamarRepositorioComIdCorreto(long id)
     {
         var opcaoResposta = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção Teste",
             "Legenda",
             "#FFFFFF",
