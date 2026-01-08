@@ -54,6 +54,36 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         return entidade.Id;
     }
 
+    public virtual async Task<bool> SalvarAsync(List<T> entidades, CancellationToken cancellationToken = default)
+    {
+        if (entidades.Count == 0)
+            return false;
+
+        foreach (var entidade in entidades)
+        {
+            if (entidade.Id == 0)
+            {
+                await _dbSet.AddAsync(entidade, cancellationToken);
+            }
+            else
+            {
+                var entidadeExistente = await _dbSet.FindAsync(new object[] { entidade.Id }, cancellationToken);
+
+                if (entidadeExistente != null)
+                {
+                    _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
+                }
+                else
+                {
+                    _dbSet.Update(entidade);
+                }
+            }
+        }
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     public virtual async Task RemoverAsync(long id, CancellationToken cancellationToken = default)
     {
         var entidade = await _dbSet.FindAsync(new object[] { (int)id }, cancellationToken);

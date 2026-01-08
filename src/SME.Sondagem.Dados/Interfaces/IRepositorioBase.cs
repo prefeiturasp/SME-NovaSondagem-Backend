@@ -11,6 +11,7 @@ public interface IRepositorioBase<T> where T : EntidadeBase
     Task<long> RemoverLogico(long id, string coluna = null, CancellationToken cancellationToken = default);
     Task<bool> RemoverLogico(long[] ids, string coluna = null, CancellationToken cancellationToken = default);
     Task<long> SalvarAsync(T entidade, CancellationToken cancellationToken = default);
+    Task<bool> SalvarAsync(List<T> entidades, CancellationToken cancellationToken = default);
     Task<bool> RestaurarAsync(long id, CancellationToken cancellationToken = default);
     Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync(CancellationToken cancellationToken = default);
 }

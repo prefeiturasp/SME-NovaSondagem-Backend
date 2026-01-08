@@ -12,10 +12,12 @@ namespace SME.Sondagem.API.Controllers;
 public class SondagemController : ControllerBase
 {
     private readonly ISondagemUseCase sondagemUseCase;
+    private readonly ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase;
 
-    public SondagemController(ISondagemUseCase sondagemUseCase)
+    public SondagemController(ISondagemUseCase sondagemUseCase, ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase)
     {
         this.sondagemUseCase = sondagemUseCase;
+        this.sondagemSalvarRespostasUseCase = sondagemSalvarRespostasUseCase;
     }
 
     [HttpGet]
@@ -28,7 +30,7 @@ public class SondagemController : ControllerBase
     [HttpPost("salvar")]
     public async Task<IActionResult> SalvarSondagem([FromBody] SondagemSalvarDto dto)
     {
-        var resultado = await sondagemUseCase.SalvarOuAtualizarSondagemAsync(dto);
+        var resultado = await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto);
         return Ok(resultado);
     }
 
