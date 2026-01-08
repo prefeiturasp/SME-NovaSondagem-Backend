@@ -14,4 +14,5 @@ public class Sondagem : EntidadeBase
     // Navegação
     public virtual Questionario.Questionario Questionario { get; private set; } = null!;
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
+    public virtual ICollection<SondagemPeriodoBimestre> PeriodosBimestre { get; private set; } = new List<SondagemPeriodoBimestre>();
 }

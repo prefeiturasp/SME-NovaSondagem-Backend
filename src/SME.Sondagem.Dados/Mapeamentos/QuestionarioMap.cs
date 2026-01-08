@@ -35,37 +35,8 @@ public class QuestionarioMap : IEntityTypeConfiguration<Questionario>
         builder.Property(x => x.ModalidadeId)
             .HasColumnName("modalidade_id");
 
-        builder.Property(x => x.ModalidadeDesc)
-            .HasColumnName("modalidade_desc")
-            .HasMaxLength(100);
-
-        builder.Property(x => x.DreId)
-            .HasColumnName("dre_id");
-
-        builder.Property(x => x.DreNome)
-            .HasColumnName("dre_nome")
-            .HasMaxLength(100);
-
-        builder.Property(x => x.UeId)
-            .HasColumnName("ue_id");
-
-        builder.Property(x => x.UeNome)
-            .HasColumnName("ue_nome")
-            .HasMaxLength(200);
-
         builder.Property(x => x.SerieAno)
             .HasColumnName("serie_ano");
-
-        builder.Property(x => x.SerieAnoNome)
-            .HasColumnName("serie_ano_nome")
-            .HasMaxLength(50);
-
-        builder.Property(x => x.TurmaId)
-            .HasColumnName("turma_id");
-
-        builder.Property(x => x.TurmaNome)
-            .HasColumnName("turma_nome")
-            .HasMaxLength(50);
 
         builder.Property(x => x.ComponenteCurricularId)
             .HasColumnName("componente_curricular_id")
@@ -73,10 +44,6 @@ public class QuestionarioMap : IEntityTypeConfiguration<Questionario>
 
         builder.Property(x => x.ProficienciaId)
             .HasColumnName("proficiencia_id")
-            .IsRequired();
-
-        builder.Property(x => x.CicloId)
-            .HasColumnName("ciclo_id")
             .IsRequired();
 
         ConfigurarAuditoria(builder);
@@ -90,11 +57,6 @@ public class QuestionarioMap : IEntityTypeConfiguration<Questionario>
             .WithMany(x => x.Questionarios)
             .HasForeignKey(x => x.ProficienciaId)
             .HasConstraintName("fk_questionario_proficiencia");
-
-        builder.HasOne(x => x.Ciclo)
-            .WithMany(x => x.Questionarios)
-            .HasForeignKey(x => x.CicloId)
-            .HasConstraintName("fk_questionario_ciclo");
 
         builder.HasMany(x => x.Questoes)
             .WithOne(x => x.Questionario)
