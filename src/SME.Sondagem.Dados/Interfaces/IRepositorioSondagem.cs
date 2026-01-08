@@ -2,7 +2,7 @@ namespace SME.Sondagem.Dados.Interfaces;
 
 public interface IRepositorioSondagem
 {
-    Task<IEnumerable<object>> ObterTodosAsync();
-    Task<object> ObterPorIdAsync(Guid id);
-    Task InserirAsync(object entidade);
+    Task<IEnumerable<Dominio.Entidades.Sondagem.Sondagem>> ObterTodosAsync(CancellationToken cancellationToken = default);
+    Task<Dominio.Entidades.Sondagem.Sondagem> ObterPorIdAsync(int id, CancellationToken cancellationToken = default);
+    Task InserirAsync(Dominio.Entidades.Sondagem.Sondagem entidade, CancellationToken cancellationToken = default);
 }

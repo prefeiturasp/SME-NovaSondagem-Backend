@@ -19,10 +19,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Sondagem
         [Fact]
         public async Task ObterTodasSondagensAsync_DeveRetornarDadosDoRepositorio()
         {
-            var sondagens = new List<object>
+            var sondagens = new List<Dominio.Entidades.Sondagem.Sondagem>
             {
-                new { Id = 1, Nome = "Sondagem Inicial" },
-                new { Id = 2, Nome = "Sondagem Final" }
+                new Dominio.Entidades.Sondagem.Sondagem(1, DateTime.Now) { Id = 1},
+                new Dominio.Entidades.Sondagem.Sondagem(1, DateTime.Now) { Id = 2}
             };
 
             sondagemRepositoryMock
@@ -42,7 +42,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Sondagem
         [Fact]
         public async Task ObterTodasSondagensAsync_DeveRetornarListaVazia_QuandoRepositorioNaoPossuirDados()
         {
-            var sondagens = new List<object>();
+            var sondagens = new List<Dominio.Entidades.Sondagem.Sondagem>();
 
             sondagemRepositoryMock
                 .Setup(r => r.ObterTodosAsync())

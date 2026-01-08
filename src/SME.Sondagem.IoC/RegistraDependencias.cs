@@ -56,6 +56,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+        services.TryAddScoped<IRepositorioSondagem, RepositorioSondagem>();
     }
 
     private static void RegistrarServicos(IServiceCollection services)
