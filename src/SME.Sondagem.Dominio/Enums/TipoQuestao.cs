@@ -28,4 +28,5 @@ public enum TipoQuestao
     ComboDinamico = 24,
     ComboMultiplaEscolhaDinamico = 25,
     AvaliacoesExternasProvaSP = 26,
+    LinguaPortuguesaSegundaLingua = 27
 }

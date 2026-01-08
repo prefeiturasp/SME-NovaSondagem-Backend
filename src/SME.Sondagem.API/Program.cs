@@ -1,9 +1,12 @@
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using SME.SME.Sondagem.Api.Configuracoes;
 using SME.Sondagem.API.Configuracoes;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
+using StackExchange.Redis;
+using System.Diagnostics.CodeAnalysis;
 
 
 [assembly: ExcludeFromCodeCoverage]
@@ -33,6 +36,21 @@ builder.Services.AddSingleton(configuracaoRabbitLogOptions);
 var redisOptions = new RedisOptions();
 builder.Configuration.GetSection(RedisOptions.Secao).Bind(redisOptions, c => c.BindNonPublicProperties = true);
 
+var redisConfigurationOptions = new ConfigurationOptions()
+{
+    Proxy = redisOptions.Proxy,
+    SyncTimeout = redisOptions.SyncTimeout,
+    EndPoints = { redisOptions.Endpoint }
+};
+
+var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
+builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
+
+// Registra o Elasticsearch
+// SME.Sondagem.IoC.Extensions.ElasticSearchExtensions.AdicionarElasticSearch(builder.Services, builder.Configuration);
+
+builder.Services.AddHttpClient();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,7 +60,7 @@ RegistraCache.Registrar(builder.Services, redisOptions);
 RegistraMensageria.Registrar(builder.Services, rabbitOptions);
 RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
-RegistraDependencias.Registrar(builder.Services);
+RegistraDependencias.Registrar(builder.Services, builder.Configuration);
 RegistraRepositorios.Registrar(builder.Services);
 RegistraConfiguracaoCors.Registrar(builder);
 
@@ -51,6 +69,33 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 await RegistraDatabaseMigrations.Registrar(app);
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<SondagemDbContext>();
+
+    try
+    {
+        Console.WriteLine("Verificando migrations pendentes...");
+        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+
+        if (pendingMigrations.Any())
+        {
+            Console.WriteLine($"Aplicando {pendingMigrations.Count()} migration(s)...");
+            await dbContext.Database.MigrateAsync();
+            Console.WriteLine("Migrations aplicadas com sucesso!");
+        }
+        else
+        {
+            Console.WriteLine("Banco de dados está atualizado!");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro ao aplicar migrations: {ex.Message}");
+        Console.WriteLine($"   Stack: {ex.StackTrace}");
+    }
+}
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -66,3 +111,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("SME Sondagem API iniciada com sucesso!");
+logger.LogInformation($"Ambiente: {app.Environment.EnvironmentName}");
+logger.LogInformation($"Connection String configurada: {!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("SondagemConnection"))}");
+
+app.Run();
