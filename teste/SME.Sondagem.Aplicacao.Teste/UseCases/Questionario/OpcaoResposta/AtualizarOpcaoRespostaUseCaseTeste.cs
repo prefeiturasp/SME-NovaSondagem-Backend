@@ -53,6 +53,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         };
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção B Original",
             "Legenda Original",
             "#000000",
@@ -88,6 +89,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         };
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção C Original",
             "Legenda Original",
             "#0000FF",
@@ -135,6 +137,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         };
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção D Original",
             "Legenda Original",
             "#000000",
@@ -170,6 +173,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         };
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção E Original",
             "Legenda Original",
             "#000000",
@@ -213,6 +217,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         };
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção F Original",
             "Legenda F Original",
             "#123456",
