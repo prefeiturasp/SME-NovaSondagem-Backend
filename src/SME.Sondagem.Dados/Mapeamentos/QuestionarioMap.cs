@@ -46,6 +46,10 @@ public class QuestionarioMap : IEntityTypeConfiguration<Questionario>
             .HasColumnName("proficiencia_id")
             .IsRequired();
 
+        builder.Property(x => x.SondagemId)
+            .HasColumnName("sondagem_id")
+            .IsRequired();
+
         ConfigurarAuditoria(builder);
 
         builder.HasOne(x => x.ComponenteCurricular)
@@ -64,9 +68,9 @@ public class QuestionarioMap : IEntityTypeConfiguration<Questionario>
             .HasConstraintName("fk_questao_questionario")
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(x => x.Sondagens)
-            .WithOne(x => x.Questionario)
-            .HasForeignKey(x => x.QuestionarioId)
+        builder.HasOne(x => x.Sondagem)
+            .WithMany(x => x.Questionarios)
+            .HasForeignKey(x => x.SondagemId)
             .HasConstraintName("fk_sondagem_questionario");
     }
 
