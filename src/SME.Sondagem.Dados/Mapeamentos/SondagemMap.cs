@@ -14,8 +14,9 @@ public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.S
         builder.HasKey(x => x.Id).HasName("pk_sondagem");
         builder.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
-        builder.Property(x => x.QuestionarioId)
-            .HasColumnName("questionario_id")
+        builder.Property(x => x.Descricao)
+            .HasColumnName("descricao")
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(x => x.DataAplicacao)
@@ -27,11 +28,6 @@ public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.S
             .HasDefaultValue(false);
 
         ConfigurarAuditoria(builder);
-
-        builder.HasOne(x => x.Questionario)
-            .WithMany(x => x.Sondagens)
-            .HasForeignKey(x => x.QuestionarioId)
-            .HasConstraintName("fk_sondagem_questionario");
 
         builder.HasMany(x => x.Respostas)
             .WithOne(x => x.Sondagem)

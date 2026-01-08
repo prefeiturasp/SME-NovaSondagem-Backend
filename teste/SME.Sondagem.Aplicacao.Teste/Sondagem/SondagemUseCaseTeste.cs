@@ -21,8 +21,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Sondagem
         {
             var sondagens = new List<Dominio.Entidades.Sondagem.Sondagem>
             {
-                new Dominio.Entidades.Sondagem.Sondagem(1, DateTime.Now) { Id = 1},
-                new Dominio.Entidades.Sondagem.Sondagem(1, DateTime.Now) { Id = 2}
+                new Dominio.Entidades.Sondagem.Sondagem("Teste", DateTime.Now) { Id = 1},
+                new Dominio.Entidades.Sondagem.Sondagem("Teste", DateTime.Now) { Id = 2}
             };
 
             sondagemRepositoryMock
