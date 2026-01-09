@@ -1,7 +1,9 @@
 ﻿using SME.Sondagem.Dominio.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infrastructure.Dtos.Questionario
 {
+    [ExcludeFromCodeCoverage]
     public class DadosMatriculaAlunoTipoPapDto
     {
         public int AnoLetivo { get; set; }

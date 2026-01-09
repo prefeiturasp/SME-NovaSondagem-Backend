@@ -3,7 +3,7 @@ using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Enums;
 
-namespace SME.Sondagem.Dados.Repositorios;
+namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioRespostaAluno : IRepositorioRespostaAluno
 {

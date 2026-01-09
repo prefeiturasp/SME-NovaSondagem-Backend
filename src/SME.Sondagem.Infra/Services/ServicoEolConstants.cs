@@ -1,5 +1,8 @@
-﻿namespace SME.Sondagem.Infra.Services
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.Sondagem.Infra.Services
 {
+    [ExcludeFromCodeCoverage]
     public class ServicoEolConstants
     {
         protected ServicoEolConstants() { }

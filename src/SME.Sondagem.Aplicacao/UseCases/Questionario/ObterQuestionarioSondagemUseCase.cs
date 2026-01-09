@@ -17,6 +17,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private readonly IRepositorioCiclo _repositorioCiclo;
     private readonly IRepositorioOpcaoResposta _repositorioOpcaoResposta;
     private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
+    private readonly IRepositorioSondagem _repositorioSondagem;
     private readonly IAlunoPapService _alunoPapService;
 
     public ObterQuestionarioSondagemUseCase(

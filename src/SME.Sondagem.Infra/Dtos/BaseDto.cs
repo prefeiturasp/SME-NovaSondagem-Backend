@@ -1,5 +1,8 @@
-﻿namespace SME.Sondagem.Infrastructure.Dtos
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.Sondagem.Infrastructure.Dtos
 {
+    [ExcludeFromCodeCoverage]
     public class BaseDto
     {
         public DateTime CriadoEm { get; set; }

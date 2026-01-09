@@ -4,7 +4,7 @@ using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using System.Net;
 
-namespace SME.Sondagem.Aplicacao.Services
+namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class AlunoPapService : IAlunoPapService
     {

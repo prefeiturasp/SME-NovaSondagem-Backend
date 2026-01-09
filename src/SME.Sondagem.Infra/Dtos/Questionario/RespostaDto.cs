@@ -1,5 +1,4 @@
-﻿using SME.Sondagem.Infrastructure.Dtos;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Dtos.Questionario;
 

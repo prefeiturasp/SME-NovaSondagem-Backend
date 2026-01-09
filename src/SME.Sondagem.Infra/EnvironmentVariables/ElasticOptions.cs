@@ -1,5 +1,8 @@
-﻿namespace SME.Sondagem.Infra.EnvironmentVariables
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SME.Sondagem.Infra.EnvironmentVariables
 {
+    [ExcludeFromCodeCoverage]
     public class ElasticOptions
     {
         public static string Secao => "ElasticSearch";

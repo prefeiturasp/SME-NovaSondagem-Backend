@@ -16,7 +16,7 @@ namespace SME.Sondagem.IoC.Extensions
             configuration.GetSection(ElasticOptions.Secao).Bind(elasticOptions, c => c.BindNonPublicProperties = true);
             services.AddSingleton(elasticOptions);
 
-            if (elasticOptions == null) return;
+            if (string.IsNullOrWhiteSpace(elasticOptions.Urls)) return;
 
             var uri = new Uri(elasticOptions.Urls.Split(',')[0].Trim());
 
