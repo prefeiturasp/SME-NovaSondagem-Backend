@@ -1,27 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SME.Sondagem.Dominio.Entidades;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Mapeamentos;
 
 [ExcludeFromCodeCoverage]
-public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.Sondagem>
+public class BimestreMap : IEntityTypeConfiguration<Bimestre>
 {
-    public void Configure(EntityTypeBuilder<Dominio.Entidades.Sondagem.Sondagem> builder)
+    public void Configure(EntityTypeBuilder<Bimestre> builder)
     {
-        builder.ToTable("sondagem");
+        builder.ToTable("bimestre");
 
-        builder.HasKey(x => x.Id).HasName("pk_sondagem");
+        builder.HasKey(x => x.Id).HasName("pk_bimestre");
         builder.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+
+        builder.Property(x => x.CodBimestreEnsinoEol)
+            .HasColumnName("cod_bimestre_ensino_eol")
+            .IsRequired();
 
         builder.Property(x => x.Descricao)
             .HasColumnName("descricao")
             .HasMaxLength(50)
             .IsRequired();
-
-        builder.Property(x => x.DataAplicacao)
-            .HasColumnName("data_aplicacao")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(x => x.Excluido)
             .HasColumnName("excluido")
@@ -29,14 +30,16 @@ public class SondagemMap : IEntityTypeConfiguration<Dominio.Entidades.Sondagem.S
 
         ConfigurarAuditoria(builder);
 
-        builder.HasMany(x => x.Respostas)
-            .WithOne(x => x.Sondagem)
-            .HasForeignKey(x => x.SondagemId)
-            .HasConstraintName("fk_resposta_sondagem")
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(x => x.CodBimestreEnsinoEol)
+            .HasDatabaseName("uk_bimestre_cod_eol")
+            .IsUnique();
+
+        builder.HasIndex(x => x.Descricao)
+            .HasDatabaseName("uk_bimestre_desc")
+            .IsUnique();
     }
 
-    private static void ConfigurarAuditoria(EntityTypeBuilder<Dominio.Entidades.Sondagem.Sondagem> builder)
+    private static void ConfigurarAuditoria(EntityTypeBuilder<Bimestre> builder)
     {
         builder.Property(x => x.CriadoEm).HasColumnName("criado_em").IsRequired();
         builder.Property(x => x.CriadoPor).HasColumnName("criado_por").HasMaxLength(200).IsRequired();

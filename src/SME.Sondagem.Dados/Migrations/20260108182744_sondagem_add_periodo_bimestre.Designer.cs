@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260108182744_sondagem_add_periodo_bimestre")]
+    partial class sondagem_add_periodo_bimestre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -850,10 +853,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("serie_ano");
 
-                    b.Property<int>("SondagemId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sondagem_id");
-
                     b.Property<int>("Tipo")
                         .HasColumnType("integer")
                         .HasColumnName("tipo");
@@ -866,8 +865,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.HasIndex("ComponenteCurricularId");
 
                     b.HasIndex("ProficienciaId");
-
-                    b.HasIndex("SondagemId");
 
                     b.ToTable("questionario", (string)null);
                 });
@@ -1006,20 +1003,20 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("data_aplicacao")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("descricao");
-
                     b.Property<bool>("Excluido")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
+                    b.Property<int>("QuestionarioId")
+                        .HasColumnType("integer")
+                        .HasColumnName("questionario_id");
+
                     b.HasKey("Id")
                         .HasName("pk_sondagem");
+
+                    b.HasIndex("QuestionarioId");
 
                     b.ToTable("sondagem", (string)null);
                 });
@@ -1179,18 +1176,9 @@ namespace SME.Sondagem.Dados.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_questionario_proficiencia");
 
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem", "Sondagem")
-                        .WithMany("Questionarios")
-                        .HasForeignKey("SondagemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_sondagem_questionario");
-
                     b.Navigation("ComponenteCurricular");
 
                     b.Navigation("Proficiencia");
-
-                    b.Navigation("Sondagem");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.RespostaAluno", b =>
@@ -1237,6 +1225,18 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("Questao");
 
                     b.Navigation("Sondagem");
+                });
+
+            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem", b =>
+                {
+                    b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.Questionario", "Questionario")
+                        .WithMany("Sondagens")
+                        .HasForeignKey("QuestionarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_sondagem_questionario");
+
+                    b.Navigation("Questionario");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.SondagemPeriodoBimestre", b =>
@@ -1313,13 +1313,13 @@ namespace SME.Sondagem.Dados.Migrations
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Questionario.Questionario", b =>
                 {
                     b.Navigation("Questoes");
+
+                    b.Navigation("Sondagens");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem", b =>
                 {
                     b.Navigation("PeriodosBimestre");
-
-                    b.Navigation("Questionarios");
 
                     b.Navigation("Respostas");
                 });

@@ -39,9 +39,13 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasColumnName("excluido")
             .HasDefaultValue(false);
 
+        builder.Property(x => x.BimestreId)
+            .HasColumnName("bimestre_id")
+            .IsRequired(false);
+
         ConfigurarAuditoria(builder);
 
-        builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId })
+        builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId, x.BimestreId })
             .HasDatabaseName("uk_resposta_sondagem_aluno_questao")
             .IsUnique();
 
@@ -65,6 +69,11 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .WithMany(x => x.Respostas)
             .HasForeignKey(x => x.OpcaoRespostaId)
             .HasConstraintName("fk_resposta_opcao");
+
+        builder.HasOne(x => x.Bimestre)
+            .WithMany(x => x.RespostaAlunos)
+            .HasForeignKey(x => x.BimestreId)
+            .HasConstraintName("fk_bimestre_resposta_aluno");
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<RespostaAluno> builder)
