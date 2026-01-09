@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Net;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -6,7 +7,9 @@ using Moq;
 using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
+using SME.Sondagem.Infra.Exceptions;
 using Xunit;
 
 namespace SME.Sondagem.API.Teste;
@@ -18,6 +21,7 @@ public class ProficienciaControllerTeste
     private readonly Mock<ICriarProficienciaUseCase> _criarProficienciaUseCaseMock;
     private readonly Mock<IAtualizarProficienciaUseCase> _atualizarProficienciaUseCaseMock;
     private readonly Mock<IExcluirProficienciaUseCase> _excluirProficienciaUseCaseMock;
+    private readonly Mock<IObterProficienciasPorComponenteCurricularUseCase> _obterProficienciasPorComponenteCurricularUseCaseMock;
     private readonly ProficienciaController _controller;
     private readonly CancellationToken _cancellationToken;
 
@@ -28,6 +32,7 @@ public class ProficienciaControllerTeste
         _criarProficienciaUseCaseMock = new Mock<ICriarProficienciaUseCase>();
         _atualizarProficienciaUseCaseMock = new Mock<IAtualizarProficienciaUseCase>();
         _excluirProficienciaUseCaseMock = new Mock<IExcluirProficienciaUseCase>();
+        _obterProficienciasPorComponenteCurricularUseCaseMock =  new Mock<IObterProficienciasPorComponenteCurricularUseCase>();
         _cancellationToken = CancellationToken.None;
 
         _controller = new ProficienciaController(
@@ -35,7 +40,8 @@ public class ProficienciaControllerTeste
             _obterProficienciaPorIdUseCaseMock.Object,
             _criarProficienciaUseCaseMock.Object,
             _atualizarProficienciaUseCaseMock.Object,
-            _excluirProficienciaUseCaseMock.Object
+            _excluirProficienciaUseCaseMock.Object,
+            _obterProficienciasPorComponenteCurricularUseCaseMock.Object
         );
     }
 
@@ -487,5 +493,157 @@ public class ProficienciaControllerTeste
         Assert.Equal("Erro ao excluir proficiência", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
+    #endregion
+
+    #region Obter Por Componente Curricular
+
+    [Fact(DisplayName = "Deve retornar lista de proficiências quando o componenteCurricularId for válido")]
+    public async Task ObterProeficienciaPorComponenteCurricular_DeveRetornarListaDeProficiencias_QuandoComponenteCurricularIdForValido()
+    {
+        // Arrange
+        var componenteCurricularId = 1;
+        var cancellationToken = CancellationToken.None;
+
+        var proficienciasEsperadas = new List<ProficienciaDto>
+        {
+            new ProficienciaDto
+            {
+                Id = 1,
+                Nome = "Proficiência Matemática - Nível 1",
+                ComponenteCurricularId = componenteCurricularId,
+                CriadoEm = DateTime.Now.AddMonths(-2),
+                CriadoPor = "Usuario Teste",
+                CriadoRF = "1234567"
+            },
+            new ProficienciaDto
+            {
+                Id = 2,
+                Nome = "Proficiência Matemática - Nível 2",
+                ComponenteCurricularId = componenteCurricularId,
+                CriadoEm = DateTime.Now.AddMonths(-1),
+                CriadoPor = "Usuario Teste",
+                CriadoRF = "1234567"
+            },
+            new ProficienciaDto
+            {
+                Id = 3,
+                Nome = "Proficiência Matemática - Nível 3",
+                ComponenteCurricularId = componenteCurricularId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Usuario Teste",
+                CriadoRF = "1234567",
+                AlteradoEm = DateTime.Now,
+                AlteradoPor = "Usuario Alteracao",
+                AlteradoRF = "7654321"
+            }
+        };
+
+        _obterProficienciasPorComponenteCurricularUseCaseMock
+            .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+            .ReturnsAsync(proficienciasEsperadas);
+
+        // Act
+        var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
+            componenteCurricularId, 
+            cancellationToken);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(resultado);
+        Assert.Equal(200, okResult.StatusCode);
+
+        var proficienciasRetornadas = Assert.IsAssignableFrom<IEnumerable<ProficienciaDto>>(okResult.Value);
+        var listaProficiencias = proficienciasRetornadas.ToList();
+
+        Assert.NotNull(listaProficiencias);
+        Assert.Equal(3, listaProficiencias.Count);
+
+        Assert.Equal(1, listaProficiencias[0].Id);
+        Assert.Equal("Proficiência Matemática - Nível 1", listaProficiencias[0].Nome);
+        Assert.Equal(componenteCurricularId, listaProficiencias[0].ComponenteCurricularId);
+        Assert.Equal("Usuario Teste", listaProficiencias[0].CriadoPor);
+        Assert.Equal("1234567", listaProficiencias[0].CriadoRF);
+
+        Assert.Equal(2, listaProficiencias[1].Id);
+        Assert.Equal("Proficiência Matemática - Nível 2", listaProficiencias[1].Nome);
+
+        Assert.Equal(3, listaProficiencias[2].Id);
+        Assert.Equal("Proficiência Matemática - Nível 3", listaProficiencias[2].Nome);
+        Assert.NotNull(listaProficiencias[2].AlteradoEm);
+        Assert.Equal("Usuario Alteracao", listaProficiencias[2].AlteradoPor);
+        Assert.Equal("7654321", listaProficiencias[2].AlteradoRF);
+
+        Assert.All(listaProficiencias, p => Assert.Equal(componenteCurricularId, p.ComponenteCurricularId));
+
+        _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
+            x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+            Times.Once);
+    }
+
+    
+    [Fact(DisplayName = "Deve retornar NotFound quando componenteCurricularId for zero")]
+    public async Task ObterProeficienciaPorComponenteCurricular_DeveRetornarNotFound_QuandoComponenteCurricularIdForZero()
+    {
+            // Arrange
+            var componenteCurricularId = 0L;
+            var cancellationToken = CancellationToken.None;
+
+            _obterProficienciasPorComponenteCurricularUseCaseMock
+                .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+                .ThrowsAsync(new NegocioException(
+                    MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO, 
+                    HttpStatusCode.NotFound));
+
+            // Act
+            var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
+                componenteCurricularId, 
+                cancellationToken);
+
+            // Assert
+            var notFoundResult = Assert.IsType<ObjectResult>(resultado);
+            Assert.Equal(404, notFoundResult.StatusCode);
+
+            var response = notFoundResult.Value;
+            var mensagemProperty = response?.GetType().GetProperty("mensagem");
+            var mensagem = mensagemProperty?.GetValue(response)?.ToString();
+
+            Assert.Equal(MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO, mensagem);
+
+            _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
+                x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+                Times.Once);
+    }
+
+    [Fact(DisplayName = "Deve retornar NotFound quando nenhum registro for encontrado")]
+    public async Task ObterProeficienciaPorComponenteCurricular_DeveRetornarNotFound_QuandoNenhumRegistroForEncontrado()
+    {
+            // Arrange
+            var componenteCurricularId = 999L;
+            var cancellationToken = CancellationToken.None;
+
+            _obterProficienciasPorComponenteCurricularUseCaseMock
+                .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+                .ThrowsAsync(new NegocioException(
+                    MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO, 
+                    HttpStatusCode.NotFound));
+
+            // Act
+            var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
+                componenteCurricularId, 
+                cancellationToken);
+
+            // Assert
+            var notFoundResult = Assert.IsType<ObjectResult>(resultado);
+            Assert.Equal(404, notFoundResult.StatusCode);
+
+            var response = notFoundResult.Value;
+            var mensagemProperty = response?.GetType().GetProperty("mensagem");
+            var mensagem = mensagemProperty?.GetValue(response)?.ToString();
+
+            Assert.Equal(MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO, mensagem);
+
+            _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
+                x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+                Times.Once);
+    }
     #endregion
 }

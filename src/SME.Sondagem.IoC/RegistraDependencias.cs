@@ -95,6 +95,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestaoPorIdUseCase, ObterQuestaoPorIdUseCase>();
         services.TryAddScoped<IOpcaoRespostaUseCase, OpcaoRespostaUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
+        services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase, ObterProficienciasPorComponenteCurricularUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
