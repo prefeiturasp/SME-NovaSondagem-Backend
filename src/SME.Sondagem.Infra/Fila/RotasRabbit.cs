@@ -2,6 +2,8 @@
 
 public class RotasRabbit
 {
+    protected RotasRabbit() { }
+
     public static string RotaLogs => "ApplicationLog";
     public static string Log => "ApplicationLog";
 

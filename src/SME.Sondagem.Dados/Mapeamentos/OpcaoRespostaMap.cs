@@ -15,6 +15,9 @@ public class OpcaoRespostaMap : IEntityTypeConfiguration<OpcaoResposta>
         builder.HasKey(x => x.Id).HasName("pk_opcao_resposta");
         builder.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
 
+        builder.Property(x => x.Ordem)
+            .HasColumnName("ordem");
+
         builder.Property(x => x.DescricaoOpcaoResposta)
             .HasColumnName("descricao_opcao_resposta")
             .HasMaxLength(100)

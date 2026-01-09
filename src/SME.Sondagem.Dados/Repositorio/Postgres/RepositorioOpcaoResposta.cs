@@ -32,7 +32,7 @@ public class RepositorioOpcaoResposta : IRepositorioOpcaoResposta
     public async Task<long> CriarAsync(OpcaoResposta opcaoResposta, CancellationToken cancellationToken = default)
     {
         await context.OpcoesResposta.AddAsync(opcaoResposta, cancellationToken);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return opcaoResposta.Id;
     }
 
@@ -48,7 +48,7 @@ public class RepositorioOpcaoResposta : IRepositorioOpcaoResposta
         opcaoRespostaExistente.AlteradoPor = opcaoResposta.AlteradoPor;
         opcaoRespostaExistente.AlteradoRF = opcaoResposta.AlteradoRF;
 
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class RepositorioOpcaoResposta : IRepositorioOpcaoResposta
             return false;
 
         opcaoResposta.Excluido = true;
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return true;
     }
 }

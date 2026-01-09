@@ -47,12 +47,10 @@ public class ServicoTelemetria : IServicoTelemetria
     {
         dynamic result;
 
-        DateTime inicioOperacao = default;
-        Stopwatch temporizador = default;
+        Stopwatch? temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
-            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
@@ -78,26 +76,24 @@ public class ServicoTelemetria : IServicoTelemetria
         if (!telemetriaOptions.ApplicationInsights || temporizador == null)
             return result;
 
-        temporizador.Stop();
+        temporizador?.Stop();
 
         return result;
     }
 
     public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
     {
-        return await RegistrarComRetornoAsync<T>(acao, acaoNome, telemetriaNome, telemetriaValor, null);
+        return await RegistrarComRetornoAsync<T>(acao, acaoNome, telemetriaNome, telemetriaValor, string.Empty);
     }
 
     public dynamic RegistrarComRetorno<T>(Func<object> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
     {
         dynamic result;
 
-        DateTime inicioOperacao = default;
-        Stopwatch temporizador = default;
+        Stopwatch? temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
-            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
@@ -119,19 +115,17 @@ public class ServicoTelemetria : IServicoTelemetria
         if (!telemetriaOptions.ApplicationInsights || temporizador == null)
             return result;
 
-        temporizador.Stop();
+        temporizador?.Stop();
 
         return result;
     }
 
     public void Registrar(Action acao, string acaoNome, string telemetriaNome, string telemetriaValor)
     {
-        DateTime inicioOperacao = default;
-        Stopwatch temporizador = default;
+        Stopwatch? temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
-            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
@@ -153,17 +147,15 @@ public class ServicoTelemetria : IServicoTelemetria
         if (!telemetriaOptions.ApplicationInsights || temporizador == null)
             return;
 
-        temporizador.Stop();
+        temporizador?.Stop();
     }
 
     public async Task RegistrarAsync(Func<Task> acao, string acaoNome, string telemetriaNome, string telemetriaValor)
     {
-        DateTime inicioOperacao = default;
-        Stopwatch temporizador = default;
+        Stopwatch? temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
-            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
@@ -185,7 +177,7 @@ public class ServicoTelemetria : IServicoTelemetria
 
         if (telemetriaOptions.ApplicationInsights && temporizador != null)
         {
-            temporizador.Stop();
+            temporizador?.Stop();
         }
     }
 
@@ -198,9 +190,9 @@ public class ServicoTelemetria : IServicoTelemetria
         }
 
         public string Nome { get; set; }
-        public Elastic.Apm.Api.ITransaction TransacaoApm { get; set; }
+        public Elastic.Apm.Api.ITransaction? TransacaoApm { get; set; }
         public DateTime InicioOperacao { get; set; }
-        public Stopwatch Temporizador { get; set; }
+        public Stopwatch? Temporizador { get; set; }
         public bool Sucesso { get; set; }
     }
 }

@@ -16,6 +16,7 @@ public class CriarOpcaoRespostaUseCase : ICriarOpcaoRespostaUseCase
     public async Task<long> ExecutarAsync(OpcaoRespostaDto opcaoRespostaDto, CancellationToken cancellationToken = default)
     {
         var opcaoResposta = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            opcaoRespostaDto.Ordem,
             opcaoRespostaDto.DescricaoOpcaoResposta,
             opcaoRespostaDto.Legenda,
             opcaoRespostaDto.CorFundo,

@@ -16,12 +16,12 @@ public class ServicoMensageria : IServicoMensageria
     private readonly RabbitOptions rabbitOptions;
     private readonly IServicoTelemetria servicoTelemetria;
     private readonly IAsyncPolicy policy;
-    private readonly ILogger<ServicoLog> logger;
+    private readonly ILogger<ServicoMensageria> logger;
 
     public ServicoMensageria(RabbitOptions rabbitOptions,
         IServicoTelemetria servicoTelemetria,
         IReadOnlyPolicyRegistry<string> registry,
-        ILogger<ServicoLog> logger)
+        ILogger<ServicoMensageria> logger)
     {
         this.rabbitOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
         this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
@@ -40,16 +40,16 @@ public class ServicoMensageria : IServicoMensageria
         return true;
     }
 
-    private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
+    private async Task PublicarMensagem(string rota, byte[] body, string? exchange = null)
     {
         try
         {
             var factory = new ConnectionFactory
             {
-                HostName = rabbitOptions.HostName,
-                UserName = rabbitOptions.UserName,
-                Password = rabbitOptions.Password,
-                VirtualHost = rabbitOptions.VirtualHost
+                HostName = rabbitOptions?.HostName ?? string.Empty,
+                UserName = rabbitOptions?.UserName ?? string.Empty,
+                Password = rabbitOptions?.Password ?? string.Empty,
+                VirtualHost = rabbitOptions?.VirtualHost ?? string.Empty
             };
 
             using var conexaoRabbit = await factory.CreateConnectionAsync();
@@ -60,8 +60,8 @@ public class ServicoMensageria : IServicoMensageria
             };
 
             await channel.BasicPublishAsync(
-                ExchangeRabbit.Logs,
-                RotasRabbit.RotaLogs,
+                exchange ?? string.Empty,
+                rota,
                 true,
                 props,
                 body

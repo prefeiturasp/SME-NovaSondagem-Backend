@@ -9,7 +9,7 @@ public static class RegistraRepositorios
     {
         services.AddScoped<IRepositorioSondagem, RepositorioSondagem>();
         services.AddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
-        services.AddScoped<IRepositorioCiclo, RepositorioCiclo>();
+        services.AddScoped<IRepositorioBimestre, RepositorioBimestre>();
         services.AddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.AddScoped<IRepositorioComponenteCurricular, RepositorioComponenteCurricular>();
         services.AddScoped<IRepositorioAluno, RepositorioAluno>();

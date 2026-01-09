@@ -8,7 +8,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     {
     }
 
-    public async Task<Infra.Dtos.Questionario.QuestionarioDto> ObterQuestionarioSondagem()
+    public Task<Infra.Dtos.Questionario.QuestionarioDto> ObterQuestionarioSondagem()
     {
         throw new NotImplementedException();
     }

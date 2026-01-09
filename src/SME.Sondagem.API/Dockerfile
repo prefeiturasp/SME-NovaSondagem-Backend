@@ -2,7 +2,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-ENV ASPNETCORE_URLS=http://+:80;https://+:443
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
@@ -36,9 +35,8 @@ RUN apt-get update \
     && apt-get install -yq tzdata locales \
     && dpkg-reconfigure --frontend noninteractive tzdata \
     && locale-gen en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf || true
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i 's/DEFAULT@SECLEVEL=2/DEFAULT@SECLEVEL=1/g' /etc/ssl/openssl.cnf || true
 
 COPY --from=publish /app/publish .
 

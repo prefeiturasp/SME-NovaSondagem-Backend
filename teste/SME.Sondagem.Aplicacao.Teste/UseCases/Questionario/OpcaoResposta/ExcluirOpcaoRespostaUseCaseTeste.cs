@@ -23,6 +23,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
     {
         const long id = 1;
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",
@@ -85,6 +86,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
         const long id = 1;
         var cancellationTokenCancelado = new CancellationToken(true);
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",
@@ -130,6 +132,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
     {
         const long id = 1;
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",
@@ -161,6 +164,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
     public async Task ExecutarAsync_ComDiferentesIds_DeveChamarRepositorioComIdCorreto(long id)
     {
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",
@@ -188,6 +192,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
     {
         const long id = 5;
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",
@@ -217,6 +222,7 @@ public class ExcluirOpcaoRespostaUseCaseTeste
     {
         const long id = 1;
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
+            1,
             "Opção A",
             "Legenda A",
             "#FFFFFF",

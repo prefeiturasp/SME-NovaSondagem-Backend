@@ -22,16 +22,16 @@ public class AutenticacaoControllerTeste
     [Fact]
     public void Construtor_DeveLancarExcecao_QuandoAuthUseCaseForNulo()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => new AutenticacaoController(null));
+        var exception = Assert.Throws<ArgumentNullException>(() => new AutenticacaoController(null!));
         Assert.Equal("authUseCase", exception.ParamName);
     }
 
     [Fact]
     public async Task Autenticar_DeveRetornarBadRequest_QuandoTokenForNulo()
     {
-        string tokenNulo = null;
+        string? tokenNulo = null;
 
-        var resultado = await controller.Autenticar(tokenNulo);
+        var resultado = await controller.Autenticar(tokenNulo!);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(resultado);
         Assert.Equal("Token da API A é obrigatório.", badRequestResult.Value);

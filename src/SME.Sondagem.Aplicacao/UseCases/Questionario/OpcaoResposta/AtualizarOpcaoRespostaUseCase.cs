@@ -20,7 +20,7 @@ public class AtualizarOpcaoRespostaUseCase : IAtualizarOpcaoRespostaUseCase
         if (opcaoRespostaExistente == null)
             return null;
 
-        opcaoRespostaExistente.Atualizar(opcaoRespostaDto.DescricaoOpcaoResposta, opcaoRespostaDto.Legenda, opcaoRespostaDto.CorFundo, opcaoRespostaDto.CorTexto);
+        opcaoRespostaExistente.Atualizar(opcaoRespostaDto.Ordem, opcaoRespostaDto.DescricaoOpcaoResposta, opcaoRespostaDto.Legenda, opcaoRespostaDto.CorFundo, opcaoRespostaDto.CorTexto);
 
         var sucesso = await opcaoRespostaRepositorio.AtualizarAsync(opcaoRespostaExistente, cancellationToken: cancellationToken);
         
