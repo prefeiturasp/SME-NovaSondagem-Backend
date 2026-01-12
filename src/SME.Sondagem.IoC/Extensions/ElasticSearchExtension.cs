@@ -10,12 +10,37 @@ namespace SME.Sondagem.IoC.Extensions
 {
     internal static class ElasticSearchExtension
     {
-        internal static Func<Uri, ElasticsearchClientSettings> CriarSettings = CriarSettingsPadrao;
-        internal static Func<ElasticsearchClientSettings, ElasticsearchClient> CriarClient =
-            settings => new ElasticsearchClient(settings);
-        internal static Func<ElasticsearchClient, Task> MapearIndices = MapearIndicesAsync;
+        internal static readonly Func<Uri, ElasticsearchClientSettings> CriarSettingsPadraoFunc =
+            CriarSettingsPadrao;
 
-        internal static void AdicionarElasticSearch(this IServiceCollection services, IConfiguration configuration)
+        internal static readonly Func<ElasticsearchClientSettings, ElasticsearchClient> CriarClientPadraoFunc =
+            settings => new ElasticsearchClient(settings);
+
+        internal static readonly Func<ElasticsearchClient, Task> MapearIndicesPadraoFunc =
+            MapearIndicesAsync;
+
+        internal static Func<Uri, ElasticsearchClientSettings> CriarSettings { get; private set; }
+            = CriarSettingsPadraoFunc;
+
+        internal static Func<ElasticsearchClientSettings, ElasticsearchClient> CriarClient { get; private set; }
+            = CriarClientPadraoFunc;
+
+        internal static Func<ElasticsearchClient, Task> MapearIndices { get; private set; }
+            = MapearIndicesPadraoFunc;
+
+        internal static void OverrideForTests(
+            Func<Uri, ElasticsearchClientSettings>? criarSettings = null,
+            Func<ElasticsearchClientSettings, ElasticsearchClient>? criarClient = null,
+            Func<ElasticsearchClient, Task>? mapearIndices = null)
+        {
+            CriarSettings = criarSettings ?? CriarSettingsPadraoFunc;
+            CriarClient = criarClient ?? CriarClientPadraoFunc;
+            MapearIndices = mapearIndices ?? MapearIndicesPadraoFunc;
+        }
+
+        internal static void AdicionarElasticSearch(
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
             var elasticOptions = new ElasticOptions();
             configuration
@@ -32,9 +57,7 @@ namespace SME.Sondagem.IoC.Extensions
             var settings = CriarSettings(uri);
 
             if (!string.IsNullOrEmpty(elasticOptions.DefaultIndex))
-            {
                 settings.DefaultIndex(elasticOptions.DefaultIndex);
-            }
 
             if (!string.IsNullOrEmpty(elasticOptions.Username) &&
                 !string.IsNullOrEmpty(elasticOptions.Password))
@@ -49,14 +72,18 @@ namespace SME.Sondagem.IoC.Extensions
 
             services.AddSingleton(client);
         }
-        private static ElasticsearchClientSettings CriarSettingsPadrao(Uri uri)
+
+        internal static ElasticsearchClientSettings CriarSettingsPadrao(Uri uri)
         {
             return new ElasticsearchClientSettings(uri)
                 .DefaultFieldNameInferrer(f => f.ToLowerInvariant())
                 .ServerCertificateValidationCallback((_, _, _, _) => true);
         }
-        private static async Task MapearIndicesAsync(ElasticsearchClient elasticClient)
+
+        internal static async Task MapearIndicesAsync(ElasticsearchClient elasticClient)
         {
+            ArgumentNullException.ThrowIfNull(elasticClient);
+
             const string indiceAlunoMatriculaTurmaDre = IndicesElastic.INDICE_ALUNO_MATRICULA_TURMA_DRE;
             const string indiceTurma = IndicesElastic.INDICE_TURMA;
 

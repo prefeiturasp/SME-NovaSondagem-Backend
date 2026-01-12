@@ -19,6 +19,24 @@ namespace SME.Sondagem.IoC.Teste
         }
 
         [Fact]
+        public void CriarSettingsPadrao_DeveExecutarDelegates()
+        {
+            var uri = new Uri("http://localhost:9200");
+
+            var settings = ElasticSearchExtension.CriarSettingsPadrao(uri);
+
+            Assert.NotNull(settings);
+        }
+
+        [Fact]
+        public async Task MapearIndicesAsync_QuandoClientNulo_DeveLancarArgumentNullException()
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(() =>
+                ElasticSearchExtension.MapearIndicesAsync(null!));
+        }
+
+
+        [Fact]
         public void AdicionarElasticSearch_DeveRegistrarElasticOptionsNoContainer()
         {
             var configValues = new Dictionary<string, string>
