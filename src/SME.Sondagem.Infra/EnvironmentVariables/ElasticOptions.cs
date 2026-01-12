@@ -6,10 +6,10 @@ namespace SME.Sondagem.Infra.EnvironmentVariables
     public class ElasticOptions
     {
         public static string Secao => "ElasticSearch";
-        public string Urls { get; set; }
-        public string DefaultIndex { get; set; }
-        public string PrefixIndex { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Urls { get; set; } = string.Empty;
+        public string DefaultIndex { get; set; } = string.Empty;
+        public string PrefixIndex { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 }
