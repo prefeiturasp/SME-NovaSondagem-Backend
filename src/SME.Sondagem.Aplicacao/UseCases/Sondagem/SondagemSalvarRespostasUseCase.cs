@@ -68,7 +68,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
             return respostas;
         }
 
-        private RespostaAluno? ProcessarRespostaIndividual(
+        private static RespostaAluno? ProcessarRespostaIndividual(
             int sondagemId,
             int alunoId,
             RespostaSondagemDto respostaDto,
