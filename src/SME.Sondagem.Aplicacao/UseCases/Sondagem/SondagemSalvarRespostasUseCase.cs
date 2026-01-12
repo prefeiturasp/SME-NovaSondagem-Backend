@@ -91,7 +91,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
                 respostaExistente);
         }
 
-        private bool ValidarPeriodoBimestre(SondagemPeriodoBimestre periodoBimestreAtivo)
+        private static bool ValidarPeriodoBimestre(SondagemPeriodoBimestre? periodoBimestreAtivo)
         {
             if (periodoBimestreAtivo == null)
                 return false;
@@ -100,11 +100,11 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
                    periodoBimestreAtivo.DataFim <= DateTime.Now;
         }
 
-        private RespostaAluno CriarOuAtualizarResposta(
+        private static RespostaAluno CriarOuAtualizarResposta(
             int sondagemId,
             int alunoId,
             RespostaSondagemDto respostaDto,
-            RespostaAluno respostaExistente)
+            RespostaAluno? respostaExistente)
         {
             if (respostaExistente == null)
                 return new RespostaAluno(
