@@ -38,7 +38,7 @@ public class SondagemControllerTeste
             .ReturnsAsync(resultadoEsperado);
 
         // Act
-        var resultado = await _controller.SalvarSondagem(dto);
+        var resultado = await _controller.Post(dto);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(resultado);
@@ -68,7 +68,7 @@ public class SondagemControllerTeste
             .ThrowsAsync(negocioException);
 
         // Act
-        var resultado = await _controller.SalvarSondagem(dto);
+        var resultado = await _controller.Post(dto);
 
         // Assert
         var objectResult = Assert.IsType<ObjectResult>(resultado);
@@ -97,7 +97,7 @@ public class SondagemControllerTeste
             .ThrowsAsync(negocioException);
 
         // Act
-        var resultado = await _controller.SalvarSondagem(dto);
+        var resultado = await _controller.Post(dto);
 
         // Assert
         var objectResult = Assert.IsType<ObjectResult>(resultado);

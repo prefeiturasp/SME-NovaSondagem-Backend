@@ -29,10 +29,10 @@ public class SondagemController : ControllerBase
         return Ok(resultado);
     }
 
-    [HttpPost("salvar")]
+    [HttpPost]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SalvarSondagem([FromBody] SondagemSalvarDto dto)
+    public async Task<IActionResult> Post([FromBody] SondagemSalvarDto dto)
     {
         try
         {
