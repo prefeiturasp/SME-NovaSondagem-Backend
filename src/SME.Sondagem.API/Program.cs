@@ -46,9 +46,6 @@ var redisConfigurationOptions = new ConfigurationOptions()
 var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
 builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
-// Registra o Elasticsearch
-// SME.Sondagem.IoC.Extensions.ElasticSearchExtensions.AdicionarElasticSearch(builder.Services, builder.Configuration);
-
 builder.Services.AddHttpClient();
 
 builder.Services.AddHttpContextAccessor();

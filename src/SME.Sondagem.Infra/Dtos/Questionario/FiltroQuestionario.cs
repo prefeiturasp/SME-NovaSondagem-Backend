@@ -12,5 +12,5 @@ public class FiltroQuestionario
     public int Ano { get; set; }
 
     //será usado futuramente
-    public int? CicloId { get; set; }
+    public int? BimestreId { get; set; }
 }

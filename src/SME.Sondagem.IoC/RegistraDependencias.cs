@@ -14,7 +14,6 @@ using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Aplicacao.Services.EOL;
-using SME.Sondagem.Aplicacao.UseCases.Aluno;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
@@ -96,7 +95,6 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterProficienciasUseCase, ObterProficienciasUseCase>();
         services.TryAddScoped<IObterProficienciaPorIdUseCase, ObterProficienciaPorIdUseCase>();
         services.TryAddScoped<IComponenteCurricularUseCase, ComponenteCurricularUseCase>();
-        services.TryAddScoped<IAlunoUseCase, AlunoUseCase>();
         services.TryAddScoped<ICriarQuestaoUseCase, CriarQuestaoUseCase>();
         services.TryAddScoped<IAtualizarQuestaoUseCase, AtualizarQuestaoUseCase>();
         services.TryAddScoped<IExcluirQuestaoUseCase, ExcluirQuestaoUseCase>();

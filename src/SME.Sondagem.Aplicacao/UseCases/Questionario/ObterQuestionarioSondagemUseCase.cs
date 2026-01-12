@@ -14,159 +14,226 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 {
     private readonly IRepositorioElasticTurma _repositorioElasticTurma;
     private readonly IRepositorioElasticAluno _repositorioElasticAluno;
-    private readonly IRepositorioCiclo _repositorioCiclo;
-    private readonly IRepositorioOpcaoResposta _repositorioOpcaoResposta;
     private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
     private readonly IRepositorioSondagem _repositorioSondagem;
+    private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IAlunoPapService _alunoPapService;
 
     public ObterQuestionarioSondagemUseCase(
         IRepositorioElasticTurma repositorioElasticTurma,
         IRepositorioElasticAluno repositorioElasticAluno,
-        IRepositorioOpcaoResposta repositorioOpcaoResposta,
         IRepositorioRespostaAluno repositorioRespostaAluno,
-        IAlunoPapService alunoPapService)
+        IAlunoPapService alunoPapService,
+        IRepositorioSondagem repositorioSondagem,
+        IRepositorioQuestao repositorioQuestao)
     {
-        this._repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
-        this._repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));
-        this._repositorioOpcaoResposta = repositorioOpcaoResposta ?? throw new ArgumentNullException(nameof(repositorioOpcaoResposta));
-        this._repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
-        this._alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
+        _repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
+        _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));    
+        _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
+        _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
+        _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
+        _repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
     }
 
     public async Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
-        if (filtro == null)
-            throw new ArgumentNullException(nameof(filtro));
+        ArgumentNullException.ThrowIfNull(filtro);
 
-        var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken);
+        var turma = await ValidarFiltroEModalidade(filtro, cancellationToken);
 
-        if (turma == null)
-            throw new ErroInternoException("Turma não localizada");
+        var sondagemAtiva = await ObterSondagemAtivaOuLancarExcecao(cancellationToken);
 
-        if (filtro.Modalidade == 0)
-            throw new RegraNegocioException("A modalidade é obrigatória no filtro");
+        return await ProcessarQuestionario(filtro, turma, sondagemAtiva, cancellationToken);
+    }
+
+    private async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
+    {
+        var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
+            ?? throw new ErroInternoException("Turma não localizada");
 
         if (filtro.ProficienciaId == 0)
             throw new RegraNegocioException("A proficiência é obrigatória no filtro");
 
-        if (turma.Modalidade != filtro.Modalidade)
-            throw new RegraNegocioException("A modalidade do filtro não corresponde a esta turma");
-
-        if (string.IsNullOrWhiteSpace(turma.SerieEnsino))
-            throw new ErroInternoException("Série de ensino da turma não informada");
-
-        if (turma.SerieEnsino != filtro.Ano.ToString())
-            throw new RegraNegocioException("A série ano do filtro não corresponde a esta turma");
-
-        if (filtro.Modalidade == (int)Modalidade.Fundamental || filtro.Modalidade == (int)Modalidade.EJA)
-        {
-            if (filtro.Ano == 1 || filtro.Ano == 2 || filtro.Ano == 3)
-            {
-                var alunos = await _repositorioElasticAluno.ObterAlunosPorIdTurma(filtro.TurmaId, cancellationToken);
-
-                if (alunos == null || !alunos.Any())
-                    throw new ErroInternoException("Não há alunos cadastrados para a turma informada");
-
-                var opcoesResposta = await _repositorioOpcaoResposta.ObterTodosAsync(cancellationToken);
-                
-                if (opcoesResposta == null)
-                    throw new ErroInternoException("Não foi possível obter as opções de resposta");
-
-                var opcoesRespostaDto = opcoesResposta.Select(op => new OpcaoRespostaDto
-                {
-                    DescricaoOpcaoResposta = op?.DescricaoOpcaoResposta ?? string.Empty,
-                    Legenda = op?.Legenda ?? string.Empty,
-                    CorFundo = op?.CorFundo ?? string.Empty,
-                    CorTexto = op?.CorTexto ?? string.Empty
-                }).ToList();
-
-                var colunas = ObterColunasCiclos(opcoesRespostaDto);
-                
-                if (colunas == null || !colunas.Any())
-                    throw new ErroInternoException("Não foi possível obter as colunas dos ciclos");
-
-                var ciclosIds = colunas.Select(c => c.IdCiclo).ToList();
-
-                var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
-
-                var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
-                    codigosAlunos, 
-                    turma.AnoLetivo, 
-                    cancellationToken);
-
-                var alunosComLinguaPortuguesaSegundaLingua = await _repositorioRespostaAluno
-                    .VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-                        codigosAlunos, 
-                        TipoQuestao.LinguaPortuguesaSegundaLingua, 
-                        cancellationToken);
-
-                // Buscar todas as respostas dos alunos para os ciclos
-                var respostasAlunos = await _repositorioRespostaAluno.ObterRespostasAlunosPorCiclosAsync(
-                    codigosAlunos,
-                    ciclosIds,
-                    filtro.ProficienciaId,
-                    filtro.Ano,
-                    cancellationToken);
-
-                var estudantes = new List<EstudanteQuestionarioDto>();
-                
-                foreach (var aluno in alunos)
-                {
-                    var colunasAluno = colunas.Select(c =>
-                    {
-                        RespostaDto? respostaDto = null;
-                        
-                        if (respostasAlunos.TryGetValue((aluno.CodigoAluno, c.IdCiclo), out var resposta))
-                        {
-                            respostaDto = new RespostaDto
-                            {
-                                Id = resposta.Id,
-                                OpcaoRespostaId = resposta.OpcaoRespostaId
-                            };
-                        }
-                        
-                        return new ColunaQuestionarioDto
-                        {
-                            IdCiclo = c.IdCiclo,
-                            DescricaoColuna = c.DescricaoColuna,
-                            PeriodoBimestreAtivo = c.PeriodoBimestreAtivo,
-                            OpcaoResposta = c.OpcaoResposta,
-                            Resposta = respostaDto ?? new RespostaDto()
-                        };
-                    }).ToList();
-
-                    estudantes.Add(new EstudanteQuestionarioDto
-                    {
-                        NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                        Codigo = aluno.CodigoAluno,
-                        Nome = aluno.NomeAluno ?? string.Empty,
-                        LinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua.GetValueOrDefault(aluno.CodigoAluno, false),
-                        Pap = alunosComPap.GetValueOrDefault(aluno.CodigoAluno, false),
-                        //  Aee = aluno.PossuiAee,
-                        PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
-                        Coluna = colunasAluno
-                    });
-                }
-
-                var questionario = new QuestionarioSondagemDto
-                {
-                    TituloTabelaRespostas = ObterTituloTabelaRespostas(filtro.ProficienciaId, filtro.Ano),
-                    Estudantes = estudantes,
-                };
-
-                return questionario;
-            }
-            else
-            {
-                throw new ErroInternoException("Não há questionário para a série informada");
-            }
-        }
-        else
-            throw new ErroInternoException("Não há questionário para a modalidade informada");
+        return turma;
     }
 
-    private string ObterTituloTabelaRespostas(int proficienciaId, int ano)
+    private async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtivaOuLancarExcecao(CancellationToken cancellationToken)
+    {
+        return await _repositorioSondagem.ObterSondagemAtiva(cancellationToken)
+            ?? throw new ErroInternoException("Não há sondagem ativa cadastrada no sistema");
+    }
+
+    private async Task<QuestionarioSondagemDto> ProcessarQuestionario(
+        FiltroQuestionario filtro, 
+        TurmaElasticDto turma,
+        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva, 
+        CancellationToken cancellationToken)
+    {
+        var modalidade = turma.Modalidade;
+        var ano = int.TryParse(turma.AnoTurma, out var anoTurma) ? anoTurma : 0;
+
+        ValidarModalidadeEAno(modalidade, ano);
+
+        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, turma.AnoLetivo, filtro.ProficienciaId, cancellationToken);
+
+        var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
+
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
+
+        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre);
+
+        var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
+
+        var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
+            codigosAlunos, 
+            turma.AnoLetivo, 
+            cancellationToken);
+
+        var alunosComLinguaPortuguesaSegundaLingua = await _repositorioRespostaAluno
+            .VerificarAlunosTemRespostaPorTipoQuestaoAsync(
+                codigosAlunos, 
+                TipoQuestao.LinguaPortuguesaSegundaLingua, 
+                cancellationToken);
+
+        var respostasAlunosPorQuestoes = await _repositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
+            codigosAlunos.Select(x => (long)x).ToList(),
+            questoesIds.Select(x => (long)x).ToList(),
+            sondagemAtiva.Id,
+            cancellationToken);
+
+        var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.ToDictionary(
+            kvp => ((int)kvp.Key.CodigoAluno, (int)kvp.Key.QuestaoId),
+            kvp => (dynamic)kvp.Value
+        );
+
+        var estudantes = ConstruirEstudantes(
+            alunos, 
+            colunas, 
+            respostasAlunosPorQuestoesConvertido, 
+            alunosComLinguaPortuguesaSegundaLingua, 
+            alunosComPap);
+
+        return new QuestionarioSondagemDto
+        {
+            TituloTabelaRespostas = ObterTituloTabelaRespostas(filtro.ProficienciaId, ano),
+            Estudantes = estudantes,
+        };
+    }
+
+    private static void ValidarModalidadeEAno(int modalidade, int ano)
+    {
+        if (modalidade != (int)Modalidade.Fundamental && modalidade != (int)Modalidade.EJA)
+            throw new ErroInternoException("Não há questionário para a modalidade informada");
+
+        if (ano is < 1 or > 3)
+            throw new ErroInternoException("Não há questionário para a série informada");
+    }
+
+    private async Task<IEnumerable<Dominio.Entidades.Questionario.Questao>> ObterQuestoesAtivasOuLancarExcecao(
+        int modalidade,
+        int ano,
+        int anoLetivo,
+        int proficienciaId,
+        CancellationToken cancellationToken)
+    {
+        var questoesAtivas = await _repositorioQuestao.ObterQuestoesAtivasPorFiltroAsync(
+            modalidade,
+            anoLetivo,
+            proficienciaId,
+            ano,
+            cancellationToken);
+
+        return questoesAtivas != null && questoesAtivas.Any()
+            ? questoesAtivas
+            : throw new ErroInternoException("Não há questões ativas para o questionário com os filtros informados");
+    }
+
+    private static List<int> ObterQuestoesIdsPorTipo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    {
+        return questoesAtivas
+            .Where(q => q.Tipo == TipoQuestao.Combo || q.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua)
+            .Select(q => q.Id)
+            .ToList();
+    }
+
+    private async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, CancellationToken cancellationToken)
+    {
+        var alunos = await _repositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, cancellationToken);
+
+        return alunos != null && alunos.Any()
+            ? alunos
+            : throw new ErroInternoException("Não há alunos cadastrados para a turma informada");
+    }    
+
+    private static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecao(
+        ICollection<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> periodosBimestre)
+    {
+        var bimestresAtivos = periodosBimestre
+            .Where(p => !p.Excluido)
+            .Select(p => new ColunaQuestionarioDto
+            {
+                IdCiclo = p.BimestreId,
+                DescricaoColuna = p.Bimestre?.Descricao ?? string.Empty,
+                PeriodoBimestreAtivo = DateTime.Now >= p.DataInicio && DateTime.Now <= p.DataFim,
+                OpcaoResposta = []
+            })
+            .ToList();
+
+        return bimestresAtivos.Count != 0
+            ? Task.FromResult(bimestresAtivos)
+            : throw new ErroInternoException("Não foi possível obter as colunas dos ciclos");
+    }
+
+    private static List<EstudanteQuestionarioDto> ConstruirEstudantes(
+        IEnumerable<dynamic> alunos,
+        List<ColunaQuestionarioDto> colunas,
+        Dictionary<(int CodigoAluno, int IdCiclo), dynamic> respostasAlunosPorQuestoes,
+        Dictionary<int, bool> alunosComLinguaPortuguesaSegundaLingua,
+        Dictionary<int, bool> alunosComPap)
+    {
+        var estudantes = new List<EstudanteQuestionarioDto>();
+
+        foreach (var aluno in alunos)
+        {
+            var codigoAluno = (int)aluno.CodigoAluno;
+
+            var colunasAluno = colunas.Select(c =>
+            {
+                var chave = (codigoAluno, c.IdCiclo);
+                var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
+
+                return new ColunaQuestionarioDto
+                {
+                    IdCiclo = c.IdCiclo,
+                    DescricaoColuna = c.DescricaoColuna,
+                    PeriodoBimestreAtivo = c.PeriodoBimestreAtivo,
+                    OpcaoResposta = c.OpcaoResposta,
+                    Resposta = possuiResposta && resposta is not null
+                        ? new RespostaDto
+                        {
+                            Id = resposta.Id,
+                            OpcaoRespostaId = resposta.OpcaoRespostaId
+                        }
+                        : new RespostaDto()
+                };
+            }).ToList();
+
+            estudantes.Add(new EstudanteQuestionarioDto
+            {
+                NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                Codigo = codigoAluno,
+                Nome = aluno.NomeAluno ?? string.Empty,
+                LinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
+                Pap = alunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
+                PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
+                Coluna = colunasAluno
+            });
+        }
+
+        return estudantes;
+    }
+
+    private static string ObterTituloTabelaRespostas(int proficienciaId, int ano)
     {
         return proficienciaId switch
         {
@@ -176,61 +243,5 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             (int)Dominio.Enums.Proficiencia.Leitura when ano >= 1 && ano <= 3 => "Compreensão de textos",
             _ => string.Empty
         };
-    }
-
-    private List<ColunaQuestionarioDto> ObterColunasCiclos(List<OpcaoRespostaDto> opcoesResposta)
-    {
-        if (opcoesResposta == null)
-            throw new ArgumentNullException(nameof(opcoesResposta));
-
-        // TODO: Implementar lógica para determinar qual período está ativo baseado em datas do backend
-        var periodoAtivo = ObterPeriodoAtivo();
-
-        return new List<ColunaQuestionarioDto>
-        {
-            new ColunaQuestionarioDto
-            {
-                IdCiclo = 1,
-                DescricaoColuna = "Sondagem inicial",
-                PeriodoBimestreAtivo = periodoAtivo == 0,
-                OpcaoResposta = opcoesResposta
-            },
-            new ColunaQuestionarioDto
-            {
-                IdCiclo = 2,
-                DescricaoColuna = "1º bimestre",
-                PeriodoBimestreAtivo = periodoAtivo == 1,
-                OpcaoResposta = opcoesResposta
-            },
-            new ColunaQuestionarioDto
-            {
-                IdCiclo = 3,
-                DescricaoColuna = "2º bimestre",
-                PeriodoBimestreAtivo = periodoAtivo == 2,
-                OpcaoResposta = opcoesResposta
-            },
-            new ColunaQuestionarioDto
-            {
-                IdCiclo = 4,
-                DescricaoColuna = "3º bimestre",
-                PeriodoBimestreAtivo = periodoAtivo == 3,
-                OpcaoResposta = opcoesResposta
-            },
-            new ColunaQuestionarioDto
-            {
-                IdCiclo = 5,
-                DescricaoColuna = "4º bimestre",
-                PeriodoBimestreAtivo = periodoAtivo == 4,
-                OpcaoResposta = opcoesResposta
-            }
-        };
-    }
-
-    private int ObterPeriodoAtivo()
-    {
-        // TODO: Implementar lógica real baseada em dados do backend (datas de início/fim dos períodos)
-        // Por enquanto, retornando período fixo para exemplo
-        // 0 = Sondagem inicial, 1 = 1º bimestre, 2 = 2º bimestre, 3 = 3º bimestre, 4 = 4º bimestre
-        return 0; // Sondagem inicial ativa por padrão
     }
 }

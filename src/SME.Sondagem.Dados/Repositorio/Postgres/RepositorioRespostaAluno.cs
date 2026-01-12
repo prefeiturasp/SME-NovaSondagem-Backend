@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
@@ -35,33 +36,21 @@ public class RepositorioRespostaAluno : IRepositorioRespostaAluno
         );
     }
 
-    public async Task<Dictionary<(int AlunoId, int CicloId), (int Id, int OpcaoRespostaId)>> ObterRespostasAlunosPorCiclosAsync(
-        List<int> alunosIds, 
-        List<int> ciclosIds, 
-        int proficienciaId, 
-        int ano, 
-        CancellationToken cancellationToken)
+    public async Task<Dictionary<(long CodigoAluno, long QuestaoId), RespostaAluno>> ObterRespostasAlunosPorQuestoesAsync(
+    List<long> codigosAlunos,
+    List<long> questoesIds,
+    long sondagemId,
+    CancellationToken cancellationToken = default)
     {
         var respostas = await _context.RespostasAluno
-            .Include(ra => ra.Sondagem)
-                .ThenInclude(s => s.Questionario)
-                    .ThenInclude(q => q.Ciclo)
-            .Include(ra => ra.Questao)
-            .Where(ra => alunosIds.Contains(ra.AlunoId) 
-                && ciclosIds.Contains(ra.Sondagem.Questionario.CicloId)
-                && ra.Sondagem.Questionario.ProficienciaId == proficienciaId)
-            .Select(ra => new
-            {
-                ra.AlunoId,
-                CicloId = ra.Sondagem.Questionario.CicloId,
-                ra.Id,
-                ra.OpcaoRespostaId
-            })
+            .Where(r => codigosAlunos.Contains(r.AlunoId)
+                && questoesIds.Contains(r.QuestaoId)
+                && r.SondagemId == sondagemId
+                && !r.Excluido)
             .ToListAsync(cancellationToken);
 
         return respostas.ToDictionary(
-            r => (r.AlunoId, r.CicloId),
-            r => (r.Id, r.OpcaoRespostaId)
+            r => ((long)r.AlunoId, (long)r.QuestaoId)
         );
     }
 }

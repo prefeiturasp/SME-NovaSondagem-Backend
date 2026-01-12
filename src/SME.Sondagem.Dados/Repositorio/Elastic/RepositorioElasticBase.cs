@@ -32,7 +32,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
 
         public async Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(
             string indice,
-            Func<QueryDescriptor<TResponse>, Query> query,
+            Func<QueryDescriptor<TResponse>, Query> request,
             string nomeConsulta,
             object? parametro = null) where TResponse : class
         {
@@ -41,7 +41,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             SearchResponse<TResponse> response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
                 await elasticClient.SearchAsync<TResponse>(s => s
                     .Indices(indice)
-                    .Query(q => query(q))
+                    .Query(q => request(q))
                     .Scroll(TempoCursor)
                     .Size(QuantidadeRetorno)),
                 NomeTelemetria, nomeConsulta, indice, parametro?.ToString());
@@ -117,7 +117,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         public async Task<long> ObterTotalDeRegistroAPartirDeUmaCondicaoAsync<TDocument>(
             string indice,
             string nomeConsulta,
-            Func<QueryDescriptor<TDocument>, Query> query,
+            Func<QueryDescriptor<TDocument>, Query> request,
             object parametro = null) where TDocument : class
         {
             try
@@ -125,7 +125,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 SearchResponse<TDocument> response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TDocument>>(
                     async () => await elasticClient.SearchAsync<TDocument>(s => s
                         .Indices(indice)
-                        .Query(q => query(q))
+                        .Query(q => request(q))
                         .Size(0)
                     ),
                     NomeTelemetria,

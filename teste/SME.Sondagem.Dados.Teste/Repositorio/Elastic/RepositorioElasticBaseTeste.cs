@@ -6,7 +6,7 @@ using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Infra.Interfaces;
 using Xunit;
 
-namespace SME.Sondagem.Dados.Teste.Repositorio;
+namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic;
 
 public class RepositorioElasticBaseTeste
 {
