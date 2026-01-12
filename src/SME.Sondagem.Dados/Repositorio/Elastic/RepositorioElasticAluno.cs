@@ -1,12 +1,11 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dominio.Entidades.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Interfaces;
 
-namespace SME.SERAp.Prova.Dados
+namespace SME.Sondagem.Dados.Repositorio.Elastic
 {
     public class RepositorioElasticAluno : RepositorioElasticBase<AlunoElasticDto>, IRepositorioElasticAluno
     {

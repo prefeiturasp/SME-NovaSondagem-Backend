@@ -1,9 +1,6 @@
-﻿using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
-using SME.SERAp.Prova.Dados;
+﻿using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
-using SME.Sondagem.Infra.Interfaces;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
 {

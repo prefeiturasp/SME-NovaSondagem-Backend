@@ -440,5 +440,37 @@ namespace SME.Sondagem.IoC.Teste
 
             Assert.NotNull(elasticClient);
         }
+
+        [Fact]
+        public void AdicionarElasticSearch_ComUrlsApenasEspacos_DeveRetornarSemCriarClient()
+        {
+            // Arrange
+            var configValues = new Dictionary<string, string>
+    {
+        { "ElasticSearch:Urls", "   " }, // string.IsNullOrWhiteSpace == true
+        { "ElasticSearch:DefaultIndex", "teste-index" }
+    };
+
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(configValues!)
+                .Build();
+
+            var method = typeof(ElasticSearchExtension).GetMethod(
+                "AdicionarElasticSearch",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            // Act
+            method?.Invoke(null, new object[] { _services, _configuration });
+
+            // Assert
+            var serviceProvider = _services.BuildServiceProvider();
+
+            var elasticOptions = serviceProvider.GetService<ElasticOptions>();
+            Assert.NotNull(elasticOptions);
+
+            // Branch crítico: client NÃO pode existir
+            var elasticClient = serviceProvider.GetService<ElasticsearchClient>();
+            Assert.Null(elasticClient);
+        }
     }
 }

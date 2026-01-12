@@ -50,13 +50,13 @@ namespace SME.Sondagem.IoC.Extensions
                 
                 if (!existsResponse.IsValidResponse)
                 {
-                    Console.WriteLine($"⚠️ Não foi possível verificar a existência do índice: {indiceAlunoMatriculaTurmaDre}");
+                    Console.WriteLine($"Não foi possível verificar a existência do índice: {indiceAlunoMatriculaTurmaDre}");
                     return;
                 }
 
                 if (existsResponse.Exists)
                 {
-                    Console.WriteLine($"ℹ️ Índice {indiceAlunoMatriculaTurmaDre} já existe.");
+                    Console.WriteLine($"Índice {indiceAlunoMatriculaTurmaDre} já existe.");
                     return;
                 }
 
@@ -74,16 +74,16 @@ namespace SME.Sondagem.IoC.Extensions
 
                 if (!createResponse.IsValidResponse)
                 {
-                    Console.WriteLine($"⚠️ Erro ao criar índice {indiceTurma}: {createResponse.ElasticsearchServerError?.Error?.Reason}");
+                    Console.WriteLine($"Erro ao criar índice {indiceTurma}: {createResponse.ElasticsearchServerError?.Error?.Reason}");
                 }
                 else
                 {
-                    Console.WriteLine($"✅ Índice {indiceTurma} criado com sucesso!");
+                    Console.WriteLine($"Índice {indiceTurma} criado com sucesso!");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"❌ Erro ao mapear índices: {ex.Message}");
+                Console.WriteLine($"Erro ao mapear índices: {ex.Message}");
                 throw;
             }
         }

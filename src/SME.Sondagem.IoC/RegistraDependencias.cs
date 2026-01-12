@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SERAp.Prova.Dados;
-using SME.Sondagem.Aplicacao.Interfaces.Aluno;
 using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
 using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;

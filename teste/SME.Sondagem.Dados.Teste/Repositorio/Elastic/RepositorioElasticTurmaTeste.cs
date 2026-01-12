@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
