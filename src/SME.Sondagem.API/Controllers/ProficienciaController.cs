@@ -11,7 +11,7 @@ namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class ProficienciaController : ControllerBase
 {
     private readonly IObterProficienciasUseCase obterProficienciasUseCase;
