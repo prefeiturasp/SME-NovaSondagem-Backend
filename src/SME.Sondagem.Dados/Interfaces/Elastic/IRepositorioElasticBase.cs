@@ -3,7 +3,7 @@ namespace SME.Sondagem.Dados.Interfaces.Elastic
 {
     public interface IRepositorioElasticBase<T> where T : class
     {
-        Task<T> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null);
+        Task<T?> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null);
 
         Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(string indice,
             Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta,

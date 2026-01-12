@@ -35,31 +35,7 @@ builder.Services.AddSingleton(configuracaoRabbitLogOptions);
 
 var redisOptions = new RedisOptions();
 builder.Configuration.GetSection(RedisOptions.Secao).Bind(redisOptions, c => c.BindNonPublicProperties = true);
-
-var redisConfigurationOptions = new ConfigurationOptions()
-{
-    Proxy = redisOptions.Proxy,
-    SyncTimeout = redisOptions.SyncTimeout,
-    EndPoints = { redisOptions.Endpoint }
-};
-
-var muxer = ConnectionMultiplexer.Connect(redisConfigurationOptions);
-builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
-
 builder.Services.AddHttpClient();
-
-var urlApiEol = builder.Configuration.GetValue<string>("UrlApiEol");
-if (string.IsNullOrEmpty(urlApiEol))
-{
-    throw new InvalidOperationException("A configuração 'UrlApiEol' é obrigatória.");
-}
-
-builder.Services.AddHttpClient(ServicoEolConstants.SERVICO, client =>
-{
-    client.BaseAddress = new Uri(urlApiEol);
-    client.Timeout = TimeSpan.FromSeconds(180);
-});
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -72,6 +48,7 @@ RegistraDocumentacaoSwagger.Registrar(builder.Services);
 RegistraDependencias.Registrar(builder.Services, builder.Configuration);
 RegistraRepositorios.Registrar(builder.Services);
 RegistraConfiguracaoCors.Registrar(builder);
+RegistraApiEol.Registrar(builder.Services, builder.Configuration);
 
 builder.Services.AddAuthorization();
 
@@ -120,9 +97,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
-var logger = app.Services.GetRequiredService<ILogger<Program>>();
-logger.LogInformation("SME Sondagem API iniciada com sucesso!");
-logger.LogInformation($"Ambiente: {app.Environment.EnvironmentName}");
-logger.LogInformation($"Connection String configurada: {!string.IsNullOrEmpty(builder.Configuration.GetConnectionString("SondagemConnection"))}");
-
-app.Run();

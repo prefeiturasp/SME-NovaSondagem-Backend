@@ -1,6 +1,7 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infra.Interfaces;
 
@@ -21,13 +22,22 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             this.elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
 
-        public async Task<T> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null)
+        public async Task<T?> ObterAsync(
+            string indice,
+            string id,
+            string nomeConsulta,
+            object? parametro = null)
         {
-            GetResponse<T> response = await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<T>>(async () =>
-                await elasticClient.GetAsync<T>(id, g => g.Index(indice)), NomeTelemetria, nomeConsulta, indice, parametro?.ToString() ?? string.Empty
-            );
+            GetResponse<T> response =
+                await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<T>>(
+                    async () => await elasticClient.GetAsync<T>(id, g => g.Index(indice)),
+                    NomeTelemetria,
+                    nomeConsulta,
+                    indice,
+                    parametro?.ToString() ?? string.Empty
+                );
 
-            return response.Found == true ? response.Source : null;
+            return response.Found ? response.Source : null;
         }
 
         public async Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(
@@ -44,10 +54,10 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     .Query(q => request(q))
                     .Scroll(TempoCursor)
                     .Size(QuantidadeRetorno)),
-                NomeTelemetria, nomeConsulta, indice, parametro?.ToString());
+                NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
 
             if (response is null || !response.IsValidResponse)
-                throw new Exception(response?.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response?.ElasticsearchServerError?.ToString()!);
 
             lista.AddRange(response.Documents);
 
@@ -58,7 +68,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     NomeTelemetria,
                     $"{nomeConsulta} scroll",
                     indice,
-                    parametro?.ToString());
+                    parametro?.ToString()!);
 
                 if (!response.IsValidResponse)
                     throw new Exception(response.ElasticsearchServerError?.ToString());
@@ -75,7 +85,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         }
 
         public async Task<IEnumerable<TResponse>> ObterTodosAsync<TResponse>(string indice, string nomeConsulta,
-            object parametro = null) where TResponse : class
+            object? parametro = null) where TResponse : class
         {
             SearchResponse<TResponse> response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(
                 async () => await elasticClient.SearchAsync<TResponse>(s => s
@@ -95,7 +105,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         }
 
         public async Task<long> ObterTotalDeRegistroAsync<TDocument>(string indice, string nomeConsulta,
-            object parametro = null) where TDocument : class
+            object? parametro = null) where TDocument : class
         {
             SearchResponse<TDocument> response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TDocument>>(
                 async () => await elasticClient.SearchAsync<TDocument>(s => s
@@ -118,7 +128,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             string indice,
             string nomeConsulta,
             Func<QueryDescriptor<TDocument>, Query> request,
-            object parametro = null) where TDocument : class
+            object? parametro = null) where TDocument : class
         {
             try
             {
@@ -144,7 +154,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             }
         }
 
-        public async Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object parametro = null)
+        public async Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object? parametro = null)
         {
             GetResponse<T> response = await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<T>>(async () =>
                 await elasticClient.GetAsync<T>(id, g => g
@@ -154,7 +164,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 NomeTelemetria,
                 nomeConsulta,
                 indice,
-                parametro?.ToString());
+                parametro?.ToString()!);
 
             if (!response.IsValidResponse)
                 throw new Exception(response.ElasticsearchServerError?.ToString());
