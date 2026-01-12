@@ -95,7 +95,7 @@ public class ProficienciaController : ControllerBase
         }
         catch (OperationCanceledException e)
         {
-            return StatusCode(499, new { mensagem = e.Message });
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
         catch (Exception)
         {

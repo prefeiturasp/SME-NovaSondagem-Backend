@@ -156,7 +156,7 @@ public class ProficienciaControllerTeste
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Requisição cancelada pelo cliente", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal(MensagemNegocioComuns.REQUISICAO_CANCELADA, mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     [Fact]
