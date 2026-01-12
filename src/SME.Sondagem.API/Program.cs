@@ -48,6 +48,18 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(muxer);
 
 builder.Services.AddHttpClient();
 
+var urlApiEol = builder.Configuration.GetValue<string>("UrlApiEol");
+if (string.IsNullOrEmpty(urlApiEol))
+{
+    throw new InvalidOperationException("A configuração 'UrlApiEol' é obrigatória.");
+}
+
+builder.Services.AddHttpClient(ServicoEolConstants.SERVICO, client =>
+{
+    client.BaseAddress = new Uri(urlApiEol);
+    client.Timeout = TimeSpan.FromSeconds(180);
+});
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

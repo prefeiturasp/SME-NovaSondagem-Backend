@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 
 namespace SME.Sondagem.Infra.Exceptions;
 
+[ExcludeFromCodeCoverage]
 public class NegocioException : Exception
 {
     public NegocioException(string mensagem, int statusCode = 409) : base(mensagem)

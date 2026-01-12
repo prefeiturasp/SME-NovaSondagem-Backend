@@ -30,10 +30,12 @@ public class RepositorioRespostaAluno : IRepositorioRespostaAluno
             .Distinct()
             .ToListAsync(cancellationToken);
 
-        return alunosIds.ToDictionary(
-            alunoId => alunoId,
-            alunoId => respostas.Contains(alunoId)
-        );
+        return alunosIds
+            .Distinct()
+            .ToDictionary(
+                alunoId => alunoId,
+                alunoId => respostas.Contains(alunoId)
+            );
     }
 
     public async Task<Dictionary<(long CodigoAluno, long QuestaoId), RespostaAluno>> ObterRespostasAlunosPorQuestoesAsync(
