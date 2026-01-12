@@ -126,7 +126,7 @@ public class RepositorioElasticAlunoTeste
             {
                 CodigoAluno = 1,
                 NumeroAlunoChamada = "2",
-                NomeAluno = null,
+                NomeAluno = "",
                 PossuiDeficiencia = 0
             }
         };
@@ -139,7 +139,7 @@ public class RepositorioElasticAlunoTeste
         var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
 
         var aluno = resultado.First();
-        aluno.NomeAluno.Should().BeNull();
+        aluno.NomeAluno.Should().Be("");
     }
 
     [Fact]

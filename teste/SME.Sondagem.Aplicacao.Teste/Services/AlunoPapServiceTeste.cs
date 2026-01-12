@@ -22,7 +22,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         {
             var service = new AlunoPapService(httpClientFactoryMock.Object);
 
-            var result = await service.VerificarAlunosPossuemProgramaPapAsync(null, 2024);
+            var result = await service.VerificarAlunosPossuemProgramaPapAsync(Array.Empty<int>(), 2024);
 
             Assert.NotNull(result);
             Assert.Empty(result);

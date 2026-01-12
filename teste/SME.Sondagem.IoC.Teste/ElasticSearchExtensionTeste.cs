@@ -11,7 +11,7 @@ namespace SME.Sondagem.IoC.Teste
     public class ElasticSearchExtensionTeste
     {
         private IServiceCollection _services;
-        private IConfiguration _configuration;
+        private IConfiguration? _configuration;
 
         public ElasticSearchExtensionTeste()
         {

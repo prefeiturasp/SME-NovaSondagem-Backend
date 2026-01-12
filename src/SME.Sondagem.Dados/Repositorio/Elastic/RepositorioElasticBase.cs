@@ -63,6 +63,9 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
 
             while (response.Documents.Count > 0 && response.Documents.Count == QuantidadeRetorno)
             {
+                if (response.ScrollId is null)
+                    break;
+
                 response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
                     await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(response.ScrollId) { Scroll = TimeSpan.FromSeconds(10) }),
                     NomeTelemetria,
@@ -96,7 +99,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 NomeTelemetria,
                 nomeConsulta,
                 indice,
-                parametro?.ToString());
+                parametro?.ToString() ?? string.Empty);
 
             if (!response.IsValidResponse)
                 throw new Exception(response.ElasticsearchServerError?.ToString());
@@ -116,7 +119,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 NomeTelemetria,
                 nomeConsulta,
                 indice,
-                parametro?.ToString());
+                parametro?.ToString() ?? string.Empty);
 
             if (!response.IsValidResponse)
                 throw new Exception(response.ElasticsearchServerError?.ToString());
@@ -141,7 +144,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     NomeTelemetria,
                     nomeConsulta,
                     indice,
-                    parametro?.ToString());
+                    parametro?.ToString() ?? string.Empty);
 
                 if (!response.IsValidResponse)
                     throw new Exception(response.ElasticsearchServerError?.ToString());
