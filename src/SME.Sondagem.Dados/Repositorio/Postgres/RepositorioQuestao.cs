@@ -74,6 +74,8 @@ public class RepositorioQuestao : IRepositorioQuestao
     {
         return await context.Questoes
             .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
             .Where(q => !q.Excluido
                 && q.Questionario.ModalidadeId == modalidadeId
                 && q.Questionario.AnoLetivo == anoLetivo

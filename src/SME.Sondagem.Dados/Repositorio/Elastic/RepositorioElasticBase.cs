@@ -21,10 +21,10 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             this.elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
 
-        public async Task<T> ObterAsync(string indice, string id, string nomeConsulta, object parametro = null)
+        public async Task<T> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null)
         {
             GetResponse<T> response = await servicoTelemetria.RegistrarComRetornoAsync<GetResponse<T>>(async () =>
-                await elasticClient.GetAsync<T>(id, g => g.Index(indice)), NomeTelemetria, nomeConsulta, indice, parametro?.ToString()
+                await elasticClient.GetAsync<T>(id, g => g.Index(indice)), NomeTelemetria, nomeConsulta, indice, parametro?.ToString() ?? string.Empty
             );
 
             return response.Found == true ? response.Source : null;

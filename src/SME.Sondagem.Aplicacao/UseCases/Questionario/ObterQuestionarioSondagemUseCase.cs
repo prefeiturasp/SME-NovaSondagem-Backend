@@ -80,7 +80,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
 
-        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre);
+        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre, questoesAtivas);
 
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
@@ -113,9 +113,11 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             alunosComLinguaPortuguesaSegundaLingua, 
             alunosComPap);
 
+        var tituloTabelaRespostas = ObterTituloTabelaRespostas(questoesAtivas);
+
         return new QuestionarioSondagemDto
         {
-            TituloTabelaRespostas = ObterTituloTabelaRespostas(filtro.ProficienciaId, ano),
+            TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
         };
     }
@@ -166,8 +168,22 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     }    
 
     private static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecao(
-        ICollection<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> periodosBimestre)
+        ICollection<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> periodosBimestre,
+        IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
+        var opcoesResposta = questoesAtivas
+            .SelectMany(q => q.QuestaoOpcoes)
+            .OrderBy(qo => qo.Ordem)
+            .Select(qo => new OpcaoRespostaDto
+            {
+                Ordem = qo.Ordem,
+                DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
+                Legenda = qo.OpcaoResposta.Legenda,
+                CorFundo = qo.OpcaoResposta.CorFundo,
+                CorTexto = qo.OpcaoResposta.CorTexto
+            })
+            .ToList();
+
         var bimestresAtivos = periodosBimestre
             .Where(p => !p.Excluido)
             .Select(p => new ColunaQuestionarioDto
@@ -175,7 +191,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                 IdCiclo = p.BimestreId,
                 DescricaoColuna = p.Bimestre?.Descricao ?? string.Empty,
                 PeriodoBimestreAtivo = DateTime.Now >= p.DataInicio && DateTime.Now <= p.DataFim,
-                OpcaoResposta = []
+                OpcaoResposta = opcoesResposta
             })
             .ToList();
 
@@ -233,15 +249,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return estudantes;
     }
 
-    private static string ObterTituloTabelaRespostas(int proficienciaId, int ano)
+    private static string ObterTituloTabelaRespostas(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
-        return proficienciaId switch
-        {
-            (int)Dominio.Enums.Proficiencia.Escrita when ano == 1 => "Sistema de escrita",
-            (int)Dominio.Enums.Proficiencia.Escrita when ano == 2 => "Reescrita",
-            (int)Dominio.Enums.Proficiencia.Escrita when ano == 3 => "Produção",
-            (int)Dominio.Enums.Proficiencia.Leitura when ano >= 1 && ano <= 3 => "Compreensão de textos",
-            _ => string.Empty
-        };
+        var primeiraQuestao = questoesAtivas.FirstOrDefault();
+        return primeiraQuestao?.Nome ?? string.Empty;
     }
 }
