@@ -125,7 +125,7 @@ namespace SME.Sondagem.Infra.Teste.Services
         {
             policyMock
                 .Setup(p => p.ExecuteAsync(It.IsAny<Func<Task>>()))
-                .Returns<Func<Task>>(async action =>
+                .Returns<Func<Task>>(action =>
                 {
                     throw new Exception("Falha simulada");
                 });
