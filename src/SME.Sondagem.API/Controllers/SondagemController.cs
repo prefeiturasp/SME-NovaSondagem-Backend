@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
+using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 
@@ -30,8 +31,18 @@ public class SondagemController : ControllerBase
     [HttpPost("salvar")]
     public async Task<IActionResult> SalvarSondagem([FromBody] SondagemSalvarDto dto)
     {
-        var resultado = await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto);
-        return Ok(resultado);
+        try
+        {
+            return Ok(await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto));
+        }
+        catch (RegraNegocioException ex)
+        {
+            return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { mensagem = "Erro ao salvar sondagem" });
+        }
     }
 
 }

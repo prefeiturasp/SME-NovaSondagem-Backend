@@ -1,5 +1,6 @@
 ﻿using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
@@ -21,22 +22,18 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
             var sondagemAtiva = await _repositorioSondagem.ObterSondagemAtiva();
             var respostas = new List<RespostaAluno>();
             var sondagemId = dto.SondagemId;
-
-            //sondagemAtiva.PeriodosBimestre
-            // comparar com o que vem dentro do aluno.respostas
             
             if (sondagemAtiva == null)
-               throw new NegocioException("Nenhuma sondagem ativa encontrada para salvar as respostas.");
+               throw new NegocioException(MensagemNegocioComuns.NENHUM_SONDAGEM_ATIVA_ENCONRADA);
 
             if (sondagemAtiva.Id != dto.SondagemId)
-                throw new NegocioException("As respostas só podem ser salvas para a sondagem ativa.");
+                throw new NegocioException(MensagemNegocioComuns.SALVAR_SOMENTE_PARA_SONDAGEM_ATIVA);
 
-            // criar uma régra que valida se o bimestre enviado pelo front está ativo na sondagem.periodosBimestres
-            var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre;
-            
+            var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
 
-            var repostasAlunos = await _repositorioSondagemResposta
-                .ObterRespostasPorSondagemEAlunosAsync(sondagemId, dto.Alunos.Select(a => a.AlunoId).ToList(), dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)));
+            var alunosIds = dto.Alunos.Select(a => a.AlunoId);
+            var questoresIds = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId));
+            var repostasAlunos = await _repositorioSondagemResposta.ObterRespostasPorSondagemEAlunosAsync(sondagemId, alunosIds, questoresIds);
 
             foreach (var aluno in dto.Alunos)
             {
@@ -54,25 +51,21 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
                     if(repostasAlunos is not null )
                     {
                         var respostaExistente = repostasAlunos
-                            .FirstOrDefault(r => r.AlunoId == aluno.AlunoId && r.QuestaoId == respostaDto.RespostaId);
-                        if (respostaExistente != null)
-                        {
-                            respostaExistente.AtualizarResposta(respostaDto.RespostaSelecionada, DateTime.UtcNow);
-                            respostas.Add(respostaExistente);
-                        }
+                            .FirstOrDefault(r => r.AlunoId == aluno.AlunoId && r.QuestaoId == respostaDto.QuestaoId);
+                        if (respostaExistente == null) continue;
+                        respostaExistente.AtualizarResposta(respostaDto.OpcaoRepostaId, DateTime.UtcNow);
+                        respostas.Add(respostaExistente);
                     }
                     else
                     {
-                        var resposta = new RespostaAluno(
+                        respostas.Add(new RespostaAluno(
                             sondagemId,
                             aluno.AlunoId,
-                            respostaDto.RespostaId,
-                            respostaDto.RespostaSelecionada,
-                            DateTime.UtcNow
-                        );
-
-                        respostas.Add(resposta);
-
+                            respostaDto.QuestaoId,
+                            respostaDto.OpcaoRepostaId,
+                            DateTime.UtcNow,
+                            respostaDto.BimestreId
+                        ));
                     }
                 }
             }

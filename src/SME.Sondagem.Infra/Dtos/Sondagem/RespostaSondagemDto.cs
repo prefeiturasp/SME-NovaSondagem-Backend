@@ -2,10 +2,9 @@
 {
     public class RespostaSondagemDto
     {
-        //bimestreId
-        //questaoId
-        public int BimestreId { get; set; }  // 1° ciclo, 2° ciclo...
-        public int QuestaoId { get; set; }     // questao_id
-        public int OpcaoRepostaId { get; set; }  // opcao_resposta_id
+        public int BimestreId { get; set; } 
+        public int QuestaoId { get; set; } 
+        public int OpcaoRepostaId { get; set; }
+        public int RespostaSelecionada { get; set; }
     }
 }

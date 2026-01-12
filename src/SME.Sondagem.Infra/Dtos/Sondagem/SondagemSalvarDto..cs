@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SME.Sondagem.Infrastructure.Dtos.Sondagem
+﻿namespace SME.Sondagem.Infrastructure.Dtos.Sondagem
 {
     public class SondagemSalvarDto
     {
