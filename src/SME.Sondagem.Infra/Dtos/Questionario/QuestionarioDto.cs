@@ -12,13 +12,13 @@ public class QuestionarioDto
     public int CodigoTurma { get; set; }
     
     [JsonPropertyName("nometurma")]
-    public string NomeTurma { get; set; }
-    
+    public string NomeTurma { get; set; } = string.Empty;
+
     [JsonPropertyName("anoletivo")]
     public int AnoLetivo { get; set; }
     
     [JsonPropertyName("codigoescola")]
-    public string CodigoEscola { get; set; }
-    
+    public string CodigoEscola { get; set; } = string.Empty;
+
     public TipoQuestionario Tipo { get; set; }
 }

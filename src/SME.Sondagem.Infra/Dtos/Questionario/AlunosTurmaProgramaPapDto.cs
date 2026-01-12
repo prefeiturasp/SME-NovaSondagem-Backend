@@ -8,8 +8,8 @@ namespace SME.Sondagem.Infrastructure.Dtos.Questionario
     {
         public int AnoLetivo { get; set; }
         public int CodigoTurma { get; set; }
-        public string CodigoDre { get; set; }
-        public string CodigoUe { get; set; }
+        public string CodigoDre { get; set; } = string.Empty;
+        public string CodigoUe { get; set; } = string.Empty;
         public int CodigoAluno { get; set; }
         public int ComponenteCurricularId { get; set; }
         public TipoPap TipoPap { get; set; }

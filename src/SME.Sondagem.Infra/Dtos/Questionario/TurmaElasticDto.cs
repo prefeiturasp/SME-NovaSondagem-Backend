@@ -10,25 +10,25 @@ public class TurmaElasticDto
     public int CodigoTurma { get; set; }
     
     [JsonPropertyName("codigoescola")]
-    public string CodigoEscola { get; set; }
-    
+    public string CodigoEscola { get; set; } = string.Empty;
+
     [JsonPropertyName("anoletivo")]
     public int AnoLetivo { get; set; }
     
     [JsonPropertyName("NomeTurma")]
-    public string NomeTurma { get; set; }
-    
+    public string NomeTurma { get; set; } = string.Empty;
+
     [JsonPropertyName("SerieEnsino")]
-    public string SerieEnsino { get; set; }
-    
+    public string SerieEnsino { get; set; } = string.Empty;
+
     [JsonPropertyName("NomeFiltro")]
-    public string NomeFiltro { get; set; }
-    
+    public string NomeFiltro { get; set; } = string.Empty;
+
     [JsonPropertyName("Modalidade")]
     public int Modalidade { get; set; }
     
     [JsonPropertyName("AnoTurma")]
-    public string AnoTurma { get; set; }
+    public string AnoTurma { get; set; } = string.Empty;
 
     [JsonPropertyName("TipoTurma")]
     public int TipoTurma { get; set; }
@@ -41,8 +41,8 @@ public class TurmaElasticDto
 public class ComponenteCurricularElasticDto
 {
     [JsonPropertyName("NomeComponenteCurricular")]
-    public string Nome { get; set; }
-    
+    public string Nome { get; set; } = string.Empty;
+
     [JsonPropertyName("ComponenteCurricularCodigo")]
     public int Codigo { get; set; }
 }

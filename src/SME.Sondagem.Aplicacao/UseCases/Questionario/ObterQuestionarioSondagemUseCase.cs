@@ -176,6 +176,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto
             {
+                Id = qo.Id,
                 Ordem = qo.Ordem,
                 DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
                 Legenda = qo.OpcaoResposta.Legenda,

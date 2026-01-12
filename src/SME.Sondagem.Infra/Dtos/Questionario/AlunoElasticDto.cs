@@ -13,13 +13,13 @@ public class AlunoElasticDto
     public int CodigoMatricula { get; set; }
     
     [JsonPropertyName("nomealuno")]
-    public string NomeAluno { get; set; }
-    
+    public string NomeAluno { get; set; } = string.Empty;
+
     [JsonPropertyName("nomesocialaluno")]
     public string? NomeSocialAluno { get; set; }
     
     [JsonPropertyName("numeroalunochamada")]
-    public string NumeroAlunoChamada { get; set; }
+    public string NumeroAlunoChamada { get; set; } = string.Empty;
     
     [JsonPropertyName("datanascimento")]
     public DateTime DataNascimento { get; set; }
@@ -28,17 +28,17 @@ public class AlunoElasticDto
     public int CodigoTurma { get; set; }
     
     [JsonPropertyName("codigoescola")]
-    public string CodigoEscola { get; set; }
-    
+    public string CodigoEscola { get; set; } = string.Empty;
+
     [JsonPropertyName("codigodre")]
-    public string CodigoDre { get; set; }
-    
+    public string CodigoDre { get; set; } = string.Empty;
+
     [JsonPropertyName("anoletivo")]
     public int AnoLetivo { get; set; }
     
     [JsonPropertyName("situacaomatricula")]
-    public string SituacaoMatricula { get; set; }
-    
+    public string SituacaoMatricula { get; set; } = string.Empty;
+
     [JsonPropertyName("codigosituacaomatricula")]
     public int CodigoSituacaoMatricula { get; set; }
     
@@ -58,14 +58,14 @@ public class AlunoElasticDto
     public int PossuiDeficiencia { get; set; }
     
     [JsonPropertyName("nomeresponsavel")]
-    public string NomeResponsavel { get; set; }
-    
+    public string NomeResponsavel { get; set; } = string.Empty;
+
     [JsonPropertyName("tiporesponsavel")]
     public int TipoResponsavel { get; set; }
     
     [JsonPropertyName("celularresponsavel")]
-    public string CelularResponsavel { get; set; }
-    
+    public string CelularResponsavel { get; set; } = string.Empty;
+
     [JsonPropertyName("dataatualizacaocontato")]
     public DateTime DataAtualizacaoContato { get; set; }
 }
