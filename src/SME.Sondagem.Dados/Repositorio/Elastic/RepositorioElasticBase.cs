@@ -67,14 +67,14 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     break;
 
                 response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
-                    await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(response.ScrollId) { Scroll = TimeSpan.FromSeconds(10) }),
+                    await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(response.ScrollId!) { Scroll = TimeSpan.FromSeconds(10) }),
                     NomeTelemetria,
                     $"{nomeConsulta} scroll",
                     indice,
                     parametro?.ToString()!);
 
                 if (!response.IsValidResponse)
-                    throw new Exception(response.ElasticsearchServerError?.ToString());
+                    throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
                 lista.AddRange(response.Documents);
             }
@@ -99,10 +99,10 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 NomeTelemetria,
                 nomeConsulta,
                 indice,
-                parametro?.ToString() ?? string.Empty);
+                parametro?.ToString()!);
 
             if (!response.IsValidResponse)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
             return response.Documents.ToList();
         }
@@ -119,10 +119,10 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 NomeTelemetria,
                 nomeConsulta,
                 indice,
-                parametro?.ToString() ?? string.Empty);
+                parametro?.ToString()!);
 
             if (!response.IsValidResponse)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
             return response.Total;
         }
@@ -144,10 +144,10 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     NomeTelemetria,
                     nomeConsulta,
                     indice,
-                    parametro?.ToString() ?? string.Empty);
+                    parametro?.ToString()!);
 
                 if (!response.IsValidResponse)
-                    throw new Exception(response.ElasticsearchServerError?.ToString());
+                    throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
                 return response.Total;
             }
@@ -170,7 +170,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 parametro?.ToString()!);
 
             if (!response.IsValidResponse)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
             return response.Found;
         }
@@ -183,7 +183,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 .UpdateMany(listaDeDocumentos, (bu, d) => bu.Doc(d).DocAsUpsert()));
 
             if (!response.IsValidResponse || response.Errors)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
         }
 
         public async Task<bool> InserirAsync<TRequest>(TRequest entidade, string indice) where TRequest : class
@@ -196,7 +196,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 entidade.ConverterObjectParaJson());
 
             if (!response.IsValidResponse)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
             return true;
         }
@@ -213,7 +213,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 indice);
 
             if (!response.IsValidResponse)
-                throw new Exception(response.ElasticsearchServerError?.ToString());
+                throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
         }
     }
 }

@@ -16,12 +16,17 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
             return Task.FromResult(Retorno);
         }
 
+        public Task<AlunoElasticDto?> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null)
+        {
+            throw new NotImplementedException();
+        }
+
         Task IRepositorioElasticBase<AlunoElasticDto>.ExcluirTodos<TDocument>(string indice, string nomeConsulta)
         {
             throw new NotImplementedException();
         }
 
-        Task<bool> IRepositorioElasticBase<AlunoElasticDto>.ExisteAsync(string indice, string id, string nomeConsulta, object parametro)
+        Task<bool> IRepositorioElasticBase<AlunoElasticDto>.ExisteAsync(string indice, string id, string nomeConsulta, object? parametro)
         {
             throw new NotImplementedException();
         }
@@ -41,27 +46,22 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
             throw new NotImplementedException();
         }
 
-        Task<AlunoElasticDto> IRepositorioElasticBase<AlunoElasticDto>.ObterAsync(string indice, string id, string nomeConsulta, object parametro)
+        Task<IEnumerable<TResponse>> IRepositorioElasticBase<AlunoElasticDto>.ObterListaAsync<TResponse>(string indice, Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta, object? parametro)
         {
             throw new NotImplementedException();
         }
 
-        Task<IEnumerable<TResponse>> IRepositorioElasticBase<AlunoElasticDto>.ObterListaAsync<TResponse>(string indice, Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta, object parametro)
+        Task<IEnumerable<TResponse>> IRepositorioElasticBase<AlunoElasticDto>.ObterTodosAsync<TResponse>(string indice, string nomeConsulta, object? parametro)
         {
             throw new NotImplementedException();
         }
 
-        Task<IEnumerable<TResponse>> IRepositorioElasticBase<AlunoElasticDto>.ObterTodosAsync<TResponse>(string indice, string nomeConsulta, object parametro)
+        Task<long> IRepositorioElasticBase<AlunoElasticDto>.ObterTotalDeRegistroAPartirDeUmaCondicaoAsync<TDocument>(string indice, string nomeConsulta, Func<QueryDescriptor<TDocument>, Query> request, object? parametro)
         {
             throw new NotImplementedException();
         }
 
-        Task<long> IRepositorioElasticBase<AlunoElasticDto>.ObterTotalDeRegistroAPartirDeUmaCondicaoAsync<TDocument>(string indice, string nomeConsulta, Func<QueryDescriptor<TDocument>, Query> request, object parametro)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<long> IRepositorioElasticBase<AlunoElasticDto>.ObterTotalDeRegistroAsync<TDocument>(string indice, string nomeConsulta, object parametro)
+        Task<long> IRepositorioElasticBase<AlunoElasticDto>.ObterTotalDeRegistroAsync<TDocument>(string indice, string nomeConsulta, object? parametro)
         {
             throw new NotImplementedException();
         }

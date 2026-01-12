@@ -126,7 +126,7 @@ public class RepositorioElasticAlunoTeste
             {
                 CodigoAluno = 1,
                 NumeroAlunoChamada = "2",
-                NomeAluno = "",
+                NomeAluno = null!,
                 PossuiDeficiencia = 0
             }
         };

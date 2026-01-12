@@ -1,5 +1,4 @@
 ﻿using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Entidades.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -18,25 +17,17 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         {
             if (filtro.TurmaId == 0)
             {
-                return null;
+                return null!;
             }
 
-            Func<QueryDescriptor<TurmaElasticDto>, Query> query = q =>
-                q.Bool(b => b
-                    .Must(
-                        m => m.Term(t => t
-                            .Field("codigoturma")
-                            .Value(filtro.TurmaId)
-                        )
-                    )
-                );
-
-            return await ObterAsync(
+            var retorno = await ObterAsync(
                 IndicesElastic.INDICE_TURMA,
                 filtro.TurmaId.ToString(),
                 "Obter turma por código",
                 new { filtro.TurmaId }
             );
+
+            return retorno!;
         }
     }
 }

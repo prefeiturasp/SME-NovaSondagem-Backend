@@ -6,7 +6,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
 {
     public class RepositorioElasticTurmaFake : IRepositorioElasticTurma
     {
-        public TurmaElasticDto Retorno { get; set; }
+        public TurmaElasticDto Retorno { get; set; } = null!;
 
         public RepositorioElasticTurmaFake()
         {
@@ -17,12 +17,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
             return Task.FromResult(Retorno);
         }
 
-        public Task<TurmaElasticDto> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null)
+        public Task<TurmaElasticDto?> ObterAsync(string indice, string id, string nomeConsulta, object? parametro = null)
         {
-            return Task.FromResult(Retorno);
+            return Task.FromResult(Retorno)!;
         }
 
-        public Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(string indice, Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta, object parametro = null) where TResponse : class
+        public Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(string indice, Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta, object? parametro = null) where TResponse : class
         {
             throw new NotImplementedException();
         }
@@ -37,7 +37,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
             throw new NotImplementedException();
         }
 
-        public Task<long> ObterTotalDeRegistroAPartirDeUmaCondicaoAsync<TDocument>(string indice, string nomeConsulta, Func<QueryDescriptor<TDocument>, Query> request, object parametro = null) where TDocument : class
+        public Task<long> ObterTotalDeRegistroAPartirDeUmaCondicaoAsync<TDocument>(string indice, string nomeConsulta, Func<QueryDescriptor<TDocument>, Query> request, object? parametro = null) where TDocument : class
         {
             throw new NotImplementedException();
         }
