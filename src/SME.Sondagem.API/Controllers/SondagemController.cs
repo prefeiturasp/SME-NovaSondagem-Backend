@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
+using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 
 namespace SME.Sondagem.API.Controllers;
@@ -29,13 +30,16 @@ public class SondagemController : ControllerBase
     }
 
     [HttpPost("salvar")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SalvarSondagem([FromBody] SondagemSalvarDto dto)
     {
         try
         {
-            return Ok(await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto));
+            var result = await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto);
+            return Ok(result);
         }
-        catch (RegraNegocioException ex)
+        catch (NegocioException ex)
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
