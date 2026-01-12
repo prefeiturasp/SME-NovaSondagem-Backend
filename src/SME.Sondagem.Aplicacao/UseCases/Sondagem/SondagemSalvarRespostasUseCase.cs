@@ -32,20 +32,48 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
                 throw new NegocioException("As respostas só podem ser salvas para a sondagem ativa.");
 
             // criar uma régra que valida se o bimestre enviado pelo front está ativo na sondagem.periodosBimestres
+            var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre;
+            
+
+            var repostasAlunos = await _repositorioSondagemResposta
+                .ObterRespostasPorSondagemEAlunosAsync(sondagemId, dto.Alunos.Select(a => a.AlunoId).ToList(), dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)));
 
             foreach (var aluno in dto.Alunos)
             {
                 foreach (var respostaDto in aluno.Respostas)
                 {
-                    var resposta = new RespostaAluno(
-                        sondagemId,
-                        aluno.AlunoId,
-                        respostaDto.RespostaId,
-                        respostaDto.RespostaSelecionada,
-                        DateTime.UtcNow
-                    );
+                   var periodoBimestreAtivo = periodosBimestresAtivos
+                        .FirstOrDefault(pb => pb.BimestreId == respostaDto.BimestreId);
 
-                    respostas.Add(resposta);
+                    if (periodoBimestreAtivo == null)
+                        continue;
+
+                    if (periodoBimestreAtivo.DataInicio < DateTime.Now || periodoBimestreAtivo.DataFim > DateTime.Now)
+                        continue;
+
+                    if(repostasAlunos is not null )
+                    {
+                        var respostaExistente = repostasAlunos
+                            .FirstOrDefault(r => r.AlunoId == aluno.AlunoId && r.QuestaoId == respostaDto.RespostaId);
+                        if (respostaExistente != null)
+                        {
+                            respostaExistente.AtualizarResposta(respostaDto.RespostaSelecionada, DateTime.UtcNow);
+                            respostas.Add(respostaExistente);
+                        }
+                    }
+                    else
+                    {
+                        var resposta = new RespostaAluno(
+                            sondagemId,
+                            aluno.AlunoId,
+                            respostaDto.RespostaId,
+                            respostaDto.RespostaSelecionada,
+                            DateTime.UtcNow
+                        );
+
+                        respostas.Add(resposta);
+
+                    }
                 }
             }
 
