@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Repositorio.Postgres;
 
 namespace SME.Sondagem.API.Configuracoes;
 
+[ExcludeFromCodeCoverage]
 public static class RegistraRepositorios
 {
     public static void Registrar(IServiceCollection services)
