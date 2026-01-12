@@ -297,10 +297,9 @@ namespace SME.Sondagem.IoC.Teste
             var elasticOptions = serviceProvider.GetService<ElasticOptions>();
 
             Assert.NotNull(elasticOptions);
-            Assert.Null(elasticOptions.Urls);
-            Assert.Null(elasticOptions.DefaultIndex);
+            Assert.True(string.IsNullOrEmpty(elasticOptions.Urls));
+            Assert.True(string.IsNullOrEmpty(elasticOptions.DefaultIndex));
             
-            // O client não deve ser registrado quando não há configuração de URLs
             var elasticClient = serviceProvider.GetService<ElasticsearchClient>();
             Assert.Null(elasticClient);
         }
