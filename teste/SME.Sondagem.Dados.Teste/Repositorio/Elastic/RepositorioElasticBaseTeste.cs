@@ -24,7 +24,7 @@ public class RepositorioElasticBaseTeste
     [Fact]
     public void Construtor_ComServicoTelemetriaNulo_DeveLancarArgumentNullException()
     {
-        var act = () => new RepositorioElasticBaseFake(null, elasticClientMock.Object);
+        var act = () => new RepositorioElasticBaseFake(null!, elasticClientMock.Object);
 
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("servicoTelemetria");
@@ -33,7 +33,7 @@ public class RepositorioElasticBaseTeste
     [Fact]
     public void Construtor_ComElasticClientNulo_DeveLancarArgumentNullException()
     {
-        var act = () => new RepositorioElasticBaseFake(servicoTelemetriaMock.Object, null);
+        var act = () => new RepositorioElasticBaseFake(servicoTelemetriaMock.Object, null!);
 
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("elasticClient");
@@ -69,7 +69,7 @@ public class RepositorioElasticBaseTeste
     [Fact]
     public async Task ObterAsync_ComDocumentoNaoEncontrado_DeveRetornarNull()
     {
-        ConfigurarServicoTelemetriaParaExecutarFuncao<EntidadeTeste>(servicoTelemetriaMock, null, false);
+        ConfigurarServicoTelemetriaParaExecutarFuncao<EntidadeTeste>(servicoTelemetriaMock, null!, false);
 
         var repositorio = new RepositorioElasticBaseFake(servicoTelemetriaMock.Object, elasticClientMock.Object);
         var resultado = await repositorio.ObterAsync<EntidadeTeste>("indice-teste", "999", "consulta-teste");
@@ -269,7 +269,7 @@ public class RepositorioElasticBaseTeste
     [Fact]
     public async Task ExisteAsync_ComDocumentoInexistente_DeveRetornarFalse()
     {
-        ConfigurarServicoTelemetriaParaExecutarFuncao<EntidadeTeste>(servicoTelemetriaMock, null, false);
+        ConfigurarServicoTelemetriaParaExecutarFuncao<EntidadeTeste>(servicoTelemetriaMock, null!, false);
 
         var repositorio = new RepositorioElasticBaseFake(servicoTelemetriaMock.Object, elasticClientMock.Object);
         var resultado = await repositorio.ExisteAsync<EntidadeTeste>("indice-teste", "999", "consulta-teste");
@@ -424,7 +424,7 @@ public class RepositorioElasticBaseTeste
                 var response = new MockGetResponse<T>
                 {
                     Found = false,
-                    Source = null,
+                    Source = null!,
                     IsValidResponse = false
                 };
                 return response;
@@ -449,7 +449,7 @@ public class RepositorioElasticBaseTeste
                     Documents = documentos,
                     IsValidResponse = true,
                     Total = documentos.Count,
-                    ScrollId = null
+                    ScrollId = null!
                 };
                 return response;
             });
@@ -472,7 +472,7 @@ public class RepositorioElasticBaseTeste
                     Documents = [],
                     IsValidResponse = false,
                     Total = 0,
-                    ScrollId = null
+                    ScrollId = null!
                 };
                 return response;
             });
@@ -496,7 +496,7 @@ public class RepositorioElasticBaseTeste
                     Documents = [],
                     IsValidResponse = true,
                     Total = total,
-                    ScrollId = null
+                    ScrollId = null!
                 };
                 return response;
             });
@@ -628,7 +628,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
         string indice,
         Func<QueryDescriptor<T>, Query> query,
         string nomeConsulta,
-        object parametro = null) where T : class
+        object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockSearchResponse<T>>();
 
@@ -641,7 +641,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
     public new async Task<IEnumerable<T>> ObterTodosAsync<T>(
         string indice,
         string nomeConsulta,
-        object parametro = null) where T : class
+        object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockSearchResponse<T>>();
 
@@ -654,7 +654,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
     public new async Task<long> ObterTotalDeRegistroAsync<T>(
         string indice,
         string nomeConsulta,
-        object parametro = null) where T : class
+        object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockSearchResponse<T>>();
 
@@ -668,7 +668,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
         string indice,
         string nomeConsulta,
         Func<QueryDescriptor<T>, Query> query,
-        object parametro = null) where T : class
+        object? parametro = null) where T : class
     {
         try
         {
@@ -685,7 +685,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
         }
     }
 
-    public new async Task<bool> ExisteAsync<T>(string indice, string id, string nomeConsulta, object parametro = null) where T : class
+    public new async Task<bool> ExisteAsync<T>(string indice, string id, string nomeConsulta, object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockGetResponse<T>>();
 
@@ -743,6 +743,6 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
 
 public class EntidadeTeste
 {
-    public string Id { get; set; }
-    public string Nome { get; set; }
+    public string Id { get; set; } = String.Empty;
+    public string Nome { get; set; } = String.Empty;
 }
