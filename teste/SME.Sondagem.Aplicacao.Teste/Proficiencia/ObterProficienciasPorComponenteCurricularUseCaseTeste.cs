@@ -24,7 +24,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
         public void Construtor_QuandoRepositorioNulo_DeveLancarArgumentNullException()
         {
             var exception = Assert.Throws<ArgumentNullException>(() =>
-                new ObterProficienciasPorComponenteCurricularUseCase(null));
+                new ObterProficienciasPorComponenteCurricularUseCase(null!));
 
             Assert.Equal("proficienciaRepositorio", exception.ParamName);
         }
