@@ -21,7 +21,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
 
             _repositorioMock
                 .Setup(x => x.ObterTurmaPorId(It.IsAny<FiltroQuestionario>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((TurmaElasticDto)null);
+                .ReturnsAsync((TurmaElasticDto)null!);
 
             var resultado = await _repositorioMock.Object.ObterTurmaPorId(filtro, CancellationToken.None);
 
@@ -68,7 +68,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic
 
             _repositorioMock
                 .Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
-                .ReturnsAsync((TurmaElasticDto)null);
+                .ReturnsAsync((TurmaElasticDto)null!);
 
             var resultado = await _repositorioMock.Object.ObterTurmaPorId(filtro, CancellationToken.None);
 
