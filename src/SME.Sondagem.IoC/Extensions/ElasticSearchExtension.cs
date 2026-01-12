@@ -10,34 +10,51 @@ namespace SME.Sondagem.IoC.Extensions
 {
     internal static class ElasticSearchExtension
     {
+        internal static Func<Uri, ElasticsearchClientSettings> CriarSettings = CriarSettingsPadrao;
+        internal static Func<ElasticsearchClientSettings, ElasticsearchClient> CriarClient =
+            settings => new ElasticsearchClient(settings);
+        internal static Func<ElasticsearchClient, Task> MapearIndices = MapearIndicesAsync;
+
         internal static void AdicionarElasticSearch(this IServiceCollection services, IConfiguration configuration)
         {
             var elasticOptions = new ElasticOptions();
-            configuration.GetSection(ElasticOptions.Secao).Bind(elasticOptions, c => c.BindNonPublicProperties = true);
+            configuration
+                .GetSection(ElasticOptions.Secao)
+                .Bind(elasticOptions, c => c.BindNonPublicProperties = true);
+
             services.AddSingleton(elasticOptions);
 
-            if (string.IsNullOrWhiteSpace(elasticOptions.Urls)) return;
+            if (string.IsNullOrWhiteSpace(elasticOptions.Urls))
+                return;
 
             var uri = new Uri(elasticOptions.Urls.Split(',')[0].Trim());
 
-            var settings = new ElasticsearchClientSettings(uri)
-                .DefaultFieldNameInferrer(f => f.ToLowerInvariant())
-                .ServerCertificateValidationCallback((_, _, _, _) => true);
+            var settings = CriarSettings(uri);
 
-            settings.DefaultIndex(elasticOptions.DefaultIndex);
-
-            if (!string.IsNullOrEmpty(elasticOptions.Username) && !string.IsNullOrEmpty(elasticOptions.Password))
+            if (!string.IsNullOrEmpty(elasticOptions.DefaultIndex))
             {
-                settings = settings.Authentication(new BasicAuthentication(elasticOptions.Username, elasticOptions.Password));
+                settings.DefaultIndex(elasticOptions.DefaultIndex);
             }
 
-            var client = new ElasticsearchClient(settings);
+            if (!string.IsNullOrEmpty(elasticOptions.Username) &&
+                !string.IsNullOrEmpty(elasticOptions.Password))
+            {
+                settings = settings.Authentication(
+                    new BasicAuthentication(elasticOptions.Username, elasticOptions.Password));
+            }
 
-            MapearIndicesAsync(client).GetAwaiter().GetResult();
+            var client = CriarClient(settings);
+
+            MapearIndices(client).GetAwaiter().GetResult();
 
             services.AddSingleton(client);
         }
-
+        private static ElasticsearchClientSettings CriarSettingsPadrao(Uri uri)
+        {
+            return new ElasticsearchClientSettings(uri)
+                .DefaultFieldNameInferrer(f => f.ToLowerInvariant())
+                .ServerCertificateValidationCallback((_, _, _, _) => true);
+        }
         private static async Task MapearIndicesAsync(ElasticsearchClient elasticClient)
         {
             const string indiceAlunoMatriculaTurmaDre = IndicesElastic.INDICE_ALUNO_MATRICULA_TURMA_DRE;
@@ -45,24 +62,26 @@ namespace SME.Sondagem.IoC.Extensions
 
             try
             {
-                // Verifica se o índice principal já existe
-                var existsResponse = await elasticClient.Indices.ExistsAsync(indiceAlunoMatriculaTurmaDre);
-                
+                var existsResponse =
+                    await elasticClient.Indices.ExistsAsync(indiceAlunoMatriculaTurmaDre);
+
                 if (!existsResponse.IsValidResponse)
                 {
-                    Console.WriteLine($"Não foi possível verificar a existência do índice: {indiceAlunoMatriculaTurmaDre}");
+                    Console.WriteLine(
+                        $"Não foi possível verificar a existência do índice: {indiceAlunoMatriculaTurmaDre}");
                     return;
                 }
 
                 if (existsResponse.Exists)
                 {
-                    Console.WriteLine($"Índice {indiceAlunoMatriculaTurmaDre} já existe.");
+                    Console.WriteLine(
+                        $"Índice {indiceAlunoMatriculaTurmaDre} já existe.");
                     return;
                 }
 
-                // Cria o índice de turma
-                var createResponse = await elasticClient.Indices.CreateAsync(indiceTurma, c => c
-                    .Mappings(m => m
+                var createResponse = await elasticClient.Indices.CreateAsync(
+                    indiceTurma,
+                    c => c.Mappings(m => m
                         .Properties<QuestionarioDto>(p => p
                             .Keyword(k => k.CodigoTurma)
                             .IntegerNumber(k => k.CodigoTurma)
@@ -74,11 +93,14 @@ namespace SME.Sondagem.IoC.Extensions
 
                 if (!createResponse.IsValidResponse)
                 {
-                    Console.WriteLine($"Erro ao criar índice {indiceTurma}: {createResponse.ElasticsearchServerError?.Error?.Reason}");
+                    Console.WriteLine(
+                        $"Erro ao criar índice {indiceTurma}: " +
+                        $"{createResponse.ElasticsearchServerError?.Error?.Reason}");
                 }
                 else
                 {
-                    Console.WriteLine($"Índice {indiceTurma} criado com sucesso!");
+                    Console.WriteLine(
+                        $"Índice {indiceTurma} criado com sucesso!");
                 }
             }
             catch (Exception ex)
