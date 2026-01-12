@@ -42,7 +42,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
             return sondagemAtiva.Id != sondagemId ? throw new NegocioException(MensagemNegocioComuns.SALVAR_SOMENTE_PARA_SONDAGEM_ATIVA) : sondagemAtiva;
         }
 
-        private List<RespostaAluno> ProcessarRespostasAlunos(
+        private static List<RespostaAluno> ProcessarRespostasAlunos(
             SondagemSalvarDto dto,
             IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
             IEnumerable<RespostaAluno> repostasAlunos)
@@ -68,7 +68,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
             return respostas;
         }
 
-        private RespostaAluno? ProcessarRespostaIndividual(
+        private static RespostaAluno? ProcessarRespostaIndividual(
             int sondagemId,
             int alunoId,
             RespostaSondagemDto respostaDto,
