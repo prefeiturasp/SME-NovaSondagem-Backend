@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>SME.Sondagem.Aplicacao</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>84a2938b-12aa-4ed4-ac0d-5605a7fc89b6</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
+    <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
+  </ItemGroup>
+
+</Project>
