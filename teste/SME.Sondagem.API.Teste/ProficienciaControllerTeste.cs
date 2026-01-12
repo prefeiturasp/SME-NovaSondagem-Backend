@@ -551,7 +551,7 @@ public class ProficienciaControllerTeste
         var okResult = Assert.IsType<OkObjectResult>(resultado);
         Assert.Equal(200, okResult.StatusCode);
 
-        var proficienciasRetornadas = Assert.IsAssignableFrom<IEnumerable<ProficienciaDto>>(okResult.Value);
+        var proficienciasRetornadas = Assert.IsType<IEnumerable<ProficienciaDto>>(okResult.Value, exactMatch: false);
         var listaProficiencias = proficienciasRetornadas.ToList();
 
         Assert.NotNull(listaProficiencias);

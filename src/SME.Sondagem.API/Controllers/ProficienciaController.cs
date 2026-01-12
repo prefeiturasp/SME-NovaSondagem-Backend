@@ -93,7 +93,7 @@ public class ProficienciaController : ControllerBase
 
             return Ok(resultado);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException)
         {
             return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
