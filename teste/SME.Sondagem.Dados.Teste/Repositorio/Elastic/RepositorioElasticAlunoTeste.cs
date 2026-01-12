@@ -139,7 +139,7 @@ public class RepositorioElasticAlunoTeste
         var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
 
         var aluno = resultado.First();
-        aluno.NomeAluno.Should().Be("");
+        aluno.NomeAluno.Should().BeNull();
     }
 
     [Fact]
