@@ -40,9 +40,11 @@ using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.IoC;
 
+[ExcludeFromCodeCoverage]
 public static class RegistraDependencias
 {
     public static void Registrar(IServiceCollection services, IConfiguration configuration)
@@ -101,6 +103,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestoesUseCase, ObterQuestoesUseCase>();
         services.TryAddScoped<IObterQuestaoPorIdUseCase, ObterQuestaoPorIdUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
+        services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase, ObterProficienciasPorComponenteCurricularUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)

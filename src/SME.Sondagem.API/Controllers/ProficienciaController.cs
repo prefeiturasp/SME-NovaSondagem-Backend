@@ -5,6 +5,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
+using SME.Sondagem.Infra.Exceptions;
 
 namespace SME.Sondagem.API.Controllers;
 
@@ -18,19 +19,22 @@ public class ProficienciaController : ControllerBase
     private readonly ICriarProficienciaUseCase criarProficienciaUseCase;
     private readonly IAtualizarProficienciaUseCase atualizarProficienciaUseCase;
     private readonly IExcluirProficienciaUseCase excluirProficienciaUseCase;
+    private readonly IObterProficienciasPorComponenteCurricularUseCase obterProficienciasPorComponenteCurricularUseCase;
 
     public ProficienciaController(
         IObterProficienciasUseCase obterProficienciasUseCase,
         IObterProficienciaPorIdUseCase obterProficienciaPorIdUseCase,
         ICriarProficienciaUseCase criarProficienciaUseCase,
         IAtualizarProficienciaUseCase atualizarProficienciaUseCase,
-        IExcluirProficienciaUseCase excluirProficienciaUseCase)
+        IExcluirProficienciaUseCase excluirProficienciaUseCase,
+        IObterProficienciasPorComponenteCurricularUseCase obterProficienciasPorComponenteCurricularUseCase)
     {
         this.obterProficienciasUseCase = obterProficienciasUseCase;
         this.obterProficienciaPorIdUseCase = obterProficienciaPorIdUseCase;
         this.criarProficienciaUseCase = criarProficienciaUseCase;
         this.atualizarProficienciaUseCase = atualizarProficienciaUseCase;
         this.excluirProficienciaUseCase = excluirProficienciaUseCase;
+        this.obterProficienciasPorComponenteCurricularUseCase = obterProficienciasPorComponenteCurricularUseCase;
     }
 
     [HttpGet]
@@ -49,6 +53,29 @@ public class ProficienciaController : ControllerBase
         catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao listar proficiências" });
+        }
+    }
+
+    [HttpGet("componente-curricular/{componenteCurricularId:long}")]
+    [ProducesResponseType(typeof(IEnumerable<ProficienciaDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterProeficienciaPorComponenteCurricular(long componenteCurricularId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var consulta =
+                await obterProficienciasPorComponenteCurricularUseCase.ExecutarAsync(componenteCurricularId,
+                    cancellationToken);
+            return Ok(consulta);
+        }
+        catch (NegocioException e)
+        {
+            return StatusCode(e.StatusCode, new { mensagem = e.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { mensagem = "Erro ao obter proficiência" });
         }
     }
 

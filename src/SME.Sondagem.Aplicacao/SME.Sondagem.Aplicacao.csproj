@@ -5,6 +5,7 @@
     <RootNamespace>SME.Sondagem.Aplicacao</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>84a2938b-12aa-4ed4-ac0d-5605a7fc89b6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
