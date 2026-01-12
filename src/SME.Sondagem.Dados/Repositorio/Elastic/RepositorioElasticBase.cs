@@ -51,7 +51,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
 
             lista.AddRange(response.Documents);
 
-            while (response.Documents.Any() && response.Documents.Count == QuantidadeRetorno)
+            while (response.Documents.Count > 0 && response.Documents.Count == QuantidadeRetorno)
             {
                 response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
                     await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(response.ScrollId) { Scroll = TimeSpan.FromSeconds(10) }),

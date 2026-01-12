@@ -574,7 +574,7 @@ public class RepositorioElasticBaseTeste
 public class MockGetResponse<T> where T : class
 {
     public bool Found { get; set; }
-    public T Source { get; set; }
+    public T? Source { get; set; }
     public bool IsValidResponse { get; set; }
 }
 
@@ -583,7 +583,7 @@ public class MockSearchResponse<T> where T : class
     public List<T> Documents { get; set; } = [];
     public bool IsValidResponse { get; set; }
     public long Total { get; set; }
-    public string ScrollId { get; set; }
+    public string ScrollId { get; set; } = string.Empty;
 }
 
 public class MockIndexResponse
@@ -614,7 +614,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
         this.servicoTelemetria = servicoTelemetria;
     }
 
-    public new async Task<T> ObterAsync<T>(string indice, string id, string nomeConsulta, object parametro = null) where T : class
+    public async Task<T?> ObterAsync<T>(string indice, string id, string nomeConsulta, object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockGetResponse<T>>();
 
@@ -685,7 +685,7 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
         }
     }
 
-    public new async Task<bool> ExisteAsync<T>(string indice, string id, string nomeConsulta, object? parametro = null) where T : class
+    public async Task<bool> ExisteAsync<T>(string indice, string id, string nomeConsulta, object? parametro = null) where T : class
     {
         var mockResponse = await ObterRespostaMock<MockGetResponse<T>>();
 
@@ -721,12 +721,12 @@ public class RepositorioElasticBaseFake : RepositorioElasticBase<EntidadeTeste>
             throw new Exception("Erro simulado no Elasticsearch");
     }
 
-    private async Task<T> ObterRespostaMock<T>() where T : class
+    private async Task<T?> ObterRespostaMock<T>() where T : class, new()
     {
         try
         {
             var resultado = await servicoTelemetria.RegistrarComRetornoAsync<T>(
-                async () => await Task.FromResult<object>(Activator.CreateInstance(typeof(T))),
+                async () => await Task.FromResult<object>(new T()),
                 string.Empty,
                 string.Empty,
                 string.Empty,
