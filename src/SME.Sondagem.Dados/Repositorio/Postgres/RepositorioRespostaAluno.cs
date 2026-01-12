@@ -20,7 +20,7 @@ namespace SME.Sondagem.Dados.Repositorio.Postgres
             
             return await _context.RespostasAluno
                 .AsNoTracking() 
-                .Where(ra => ra.SondagemId == sondagemId 
+                .Where(ra => !ra.Excluido && ra.SondagemId == sondagemId 
                              && alunosIdsList.Contains(ra.AlunoId)
                              && questoesIdsList.Contains(ra.QuestaoId))
                 .ToListAsync(cancellationToken);
