@@ -8,11 +8,8 @@ namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IRepositorioRespostaAluno
 {
-    private readonly SondagemDbContext _context;
-
     public RepositorioRespostaAluno(SondagemDbContext context) : base(context)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public async Task<bool> VerificarAlunoTemRespostaPorTipoQuestaoAsync(int alunoId, TipoQuestao tipoQuestao,
