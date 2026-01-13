@@ -12,6 +12,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
 
     public RepositorioRespostaAluno(SondagemDbContext context) : base(context)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
     public async Task<bool> VerificarAlunoTemRespostaPorTipoQuestaoAsync(int alunoId, TipoQuestao tipoQuestao,
