@@ -31,7 +31,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())
-            .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem)null);
+            .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem?)null);
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<NegocioException>(() => _useCase.SalvarOuAtualizarSondagemAsync(dto));

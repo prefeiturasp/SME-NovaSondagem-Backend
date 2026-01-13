@@ -55,17 +55,19 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var respostas = new List<RespostaAluno>();
 
         foreach (var aluno in dto.Alunos)
-        foreach (var respostaDto in aluno.Respostas)
         {
-            var resposta = ProcessarRespostaIndividual(
-                dto.SondagemId,
-                aluno.AlunoId,
-                respostaDto,
-                periodosBimestresAtivos,
-                repostasAlunos);
+            foreach (var respostaDto in aluno.Respostas)
+            {
+                var resposta = ProcessarRespostaIndividual(
+                    dto.SondagemId,
+                    aluno.AlunoId,
+                    respostaDto,
+                    periodosBimestresAtivos,
+                    repostasAlunos);
 
-            if (resposta != null)
-                respostas.Add(resposta);
+                if (resposta != null)
+                    respostas.Add(resposta);
+            }
         }
 
         return respostas;
