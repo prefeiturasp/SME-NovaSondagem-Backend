@@ -44,6 +44,7 @@ public class RepositorioSondagem : IRepositorioSondagem
                     p.DataInicio <= dataAtual &&
                     p.DataFim >= dataAtual))
             .Include(s => s.PeriodosBimestre.Where(p => !p.Excluido))
+            .ThenInclude(p => p.Bimestre)
             .FirstOrDefaultAsync(cancellationToken);
 
         return sondagem!;
