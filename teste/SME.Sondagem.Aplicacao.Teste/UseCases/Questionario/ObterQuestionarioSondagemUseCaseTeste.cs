@@ -138,7 +138,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioElasticTurma.Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
             .ReturnsAsync((TurmaElasticDto?)null!);
 
-        var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
         Assert.Equal("Turma não localizada", exception.Message);
     }
@@ -196,7 +196,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioSondagem.Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
             .ReturnsAsync(sondagem);
 
-        var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
         Assert.Equal("Não há questionário para a modalidade informada", exception.Message);
     }
