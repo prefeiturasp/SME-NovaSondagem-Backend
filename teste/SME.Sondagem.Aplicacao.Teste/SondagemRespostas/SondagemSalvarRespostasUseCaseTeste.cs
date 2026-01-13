@@ -30,7 +30,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         var dto = SondagemMockData.ObterSondagemMock();
 
         _repositorioSondagem
-            .Setup(x => x.ObterSondagemAtiva())
+            .Setup(x => x.ObterSondagemAtiva())!
             .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem?)null);
 
         // Act & Assert
