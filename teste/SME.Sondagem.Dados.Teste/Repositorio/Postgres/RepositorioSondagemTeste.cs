@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using Xunit;
 
@@ -25,13 +26,14 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         }
 
         private static SondagemPeriodoBimestre CriarPeriodoBimestre(
+            int sondagemId,
             DateTime inicio,
             DateTime fim,
             bool excluido = false)
         {
             var periodo = new SondagemPeriodoBimestre(
-                sondagemId: 1, 
-                bimestreId: 1, 
+                sondagemId: sondagemId,
+                bimestreId: 1,
                 dataInicio: inicio,
                 dataFim: fim
             );
@@ -39,6 +41,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             typeof(SondagemPeriodoBimestre).GetProperty("Excluido")!.SetValue(periodo, excluido);
 
             return periodo;
+        }
+
+        private static Bimestre CriarBimestre(int id, int codBimestreEnsinoEol = 1, string descricao = "1º Bimestre")
+        {
+            var bimestre = new Bimestre(codBimestreEnsinoEol, descricao);
+            typeof(Bimestre).GetProperty("Id")!.SetValue(bimestre, id);
+            return bimestre;
         }
 
         #endregion
@@ -120,17 +129,23 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterSondagemAtiva_deve_retornar_sondagem_com_periodo_ativo));
 
+            var bimestre = CriarBimestre(1);
+            context.Bimestres.Add(bimestre);
+
             var sondagem = CriarSondagem(1);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
 
             var periodoAtivo = CriarPeriodoBimestre(
+                sondagemId: 1,
                 inicio: DateTime.UtcNow.AddDays(-1),
                 fim: DateTime.UtcNow.AddDays(1)
             );
 
-            sondagem.PeriodosBimestre.Add(periodoAtivo);
-
-            context.Sondagens.Add(sondagem);
+            context.SondagemPeriodosBimestre.Add(periodoAtivo);
             await context.SaveChangesAsync();
+
+            context.ChangeTracker.Clear();
 
             var repo = new RepositorioSondagem(context);
 
@@ -145,18 +160,24 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterSondagemAtiva_nao_deve_retornar_sondagem_quando_periodo_excluido));
 
+            var bimestre = CriarBimestre(1);
+            context.Bimestres.Add(bimestre);
+
             var sondagem = CriarSondagem(1);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
 
             var periodoExcluido = CriarPeriodoBimestre(
+                sondagemId: 1,
                 inicio: DateTime.UtcNow.AddDays(-1),
                 fim: DateTime.UtcNow.AddDays(1),
                 excluido: true
             );
 
-            sondagem.PeriodosBimestre.Add(periodoExcluido);
-
-            context.Sondagens.Add(sondagem);
+            context.SondagemPeriodosBimestre.Add(periodoExcluido);
             await context.SaveChangesAsync();
+
+            context.ChangeTracker.Clear();
 
             var repo = new RepositorioSondagem(context);
 
@@ -170,17 +191,23 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterSondagemAtiva_nao_deve_retornar_sondagem_quando_sondagem_excluida));
 
+            var bimestre = CriarBimestre(1);
+            context.Bimestres.Add(bimestre);
+
             var sondagem = CriarSondagem(1, excluido: true);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
 
             var periodoAtivo = CriarPeriodoBimestre(
+                sondagemId: 1,
                 inicio: DateTime.UtcNow.AddDays(-1),
                 fim: DateTime.UtcNow.AddDays(1)
             );
 
-            sondagem.PeriodosBimestre.Add(periodoAtivo);
-
-            context.Sondagens.Add(sondagem);
+            context.SondagemPeriodosBimestre.Add(periodoAtivo);
             await context.SaveChangesAsync();
+
+            context.ChangeTracker.Clear();
 
             var repo = new RepositorioSondagem(context);
 
