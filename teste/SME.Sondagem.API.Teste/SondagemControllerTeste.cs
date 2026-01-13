@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.Sondagem.API.Controllers;
-using SME.Sondagem.API.Teste.Mock.Dto;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Exceptions;
+using SME.Sondagem.Infra.Teste.DTO;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 using Xunit;
 
