@@ -70,7 +70,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
-        var ano = int.TryParse(turma.AnoTurma, out var anoTurma) ? anoTurma : 0;
+
+        if (!int.TryParse(turma.AnoTurma, out int ano))
+            throw new ErroInternoException("Ano da turma inválido");
 
         ValidarModalidadeEAno(modalidade, ano);
 

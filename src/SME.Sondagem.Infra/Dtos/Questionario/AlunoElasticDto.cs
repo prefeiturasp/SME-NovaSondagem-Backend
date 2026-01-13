@@ -61,8 +61,8 @@ public class AlunoElasticDto
     public string NomeResponsavel { get; set; } = string.Empty;
 
     [JsonPropertyName("tiporesponsavel")]
-    public int TipoResponsavel { get; set; }
-    
+    public int? TipoResponsavel { get; set; }
+
     [JsonPropertyName("celularresponsavel")]
     public string CelularResponsavel { get; set; } = string.Empty;
 

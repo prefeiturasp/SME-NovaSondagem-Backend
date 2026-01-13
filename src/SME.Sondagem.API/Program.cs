@@ -55,33 +55,6 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 await RegistraDatabaseMigrations.Registrar(app);
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<SondagemDbContext>();
-
-    try
-    {
-        Console.WriteLine("Verificando migrations pendentes...");
-        var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
-
-        if (pendingMigrations.Any())
-        {
-            Console.WriteLine($"Aplicando {pendingMigrations.Count()} migration(s)...");
-            await dbContext.Database.MigrateAsync();
-            Console.WriteLine("Migrations aplicadas com sucesso!");
-        }
-        else
-        {
-            Console.WriteLine("Banco de dados está atualizado!");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro ao aplicar migrations: {ex.Message}");
-        Console.WriteLine($"   Stack: {ex.StackTrace}");
-    }
-}
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
