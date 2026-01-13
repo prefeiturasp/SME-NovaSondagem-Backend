@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;

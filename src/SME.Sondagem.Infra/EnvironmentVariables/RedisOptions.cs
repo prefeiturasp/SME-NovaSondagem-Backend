@@ -7,7 +7,7 @@ namespace SME.Sondagem.Infra.EnvironmentVariables;
 public class RedisOptions
 {
     public static string Secao => "Redis";
-    public string? Endpoint { get; set; }
+    public string Endpoint { get; set; } = String.Empty;
     public int SyncTimeout { get; set; } = 5000;
     public Proxy Proxy { get; set; }
 }

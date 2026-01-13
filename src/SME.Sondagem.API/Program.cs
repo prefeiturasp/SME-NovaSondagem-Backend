@@ -1,9 +1,12 @@
-using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using SME.SME.Sondagem.Api.Configuracoes;
 using SME.Sondagem.API.Configuracoes;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
+using StackExchange.Redis;
+using System.Diagnostics.CodeAnalysis;
 
 
 [assembly: ExcludeFromCodeCoverage]
@@ -32,7 +35,7 @@ builder.Services.AddSingleton(configuracaoRabbitLogOptions);
 
 var redisOptions = new RedisOptions();
 builder.Configuration.GetSection(RedisOptions.Secao).Bind(redisOptions, c => c.BindNonPublicProperties = true);
-
+builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -42,9 +45,10 @@ RegistraCache.Registrar(builder.Services, redisOptions);
 RegistraMensageria.Registrar(builder.Services, rabbitOptions);
 RegistraAutenticacao.Registrar(builder.Services, builder.Configuration);
 RegistraDocumentacaoSwagger.Registrar(builder.Services);
-RegistraDependencias.Registrar(builder.Services);
+RegistraDependencias.Registrar(builder.Services, builder.Configuration);
 RegistraRepositorios.Registrar(builder.Services);
 RegistraConfiguracaoCors.Registrar(builder);
+RegistraApiEol.Registrar(builder.Services, builder.Configuration);
 
 builder.Services.AddAuthorization();
 

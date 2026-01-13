@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using SME.Sondagem.Infrastructure.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 
 namespace SME.Sondagem.Infrastructure.Services
 {
