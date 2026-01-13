@@ -30,4 +30,10 @@
     <ProjectReference Include="..\SME.Sondagem.IoC\SME.Sondagem.IoC.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>SME.Sondagem.IoC.Teste</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>

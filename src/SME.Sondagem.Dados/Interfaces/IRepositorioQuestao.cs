@@ -9,4 +9,10 @@ public interface IRepositorioQuestao
     Task<long> CriarAsync(Questao questao, CancellationToken cancellationToken = default);
     Task<bool> AtualizarAsync(Questao questao, CancellationToken cancellationToken = default);
     Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Questao>> ObterQuestoesAtivasPorFiltroAsync(
+        int modalidadeId, 
+        int anoLetivo, 
+        int proficienciaId, 
+        int serieAno, 
+        CancellationToken cancellationToken = default);
 }
