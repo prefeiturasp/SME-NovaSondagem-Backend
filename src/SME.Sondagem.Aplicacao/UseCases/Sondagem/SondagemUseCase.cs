@@ -1,3 +1,4 @@
+
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 
@@ -5,16 +6,17 @@ namespace SME.Sondagem.Aplicacao.UseCases.Sondagem
 {
     public class SondagemUseCase : ISondagemUseCase
     {
-        private readonly IRepositorioSondagem sondagemRepository;
+        private readonly IRepositorioSondagem _sondagemRepository;
 
-        public SondagemUseCase(IRepositorioSondagem sondagemRepository)
+        public SondagemUseCase(
+            IRepositorioSondagem sondagemRepository)
         {
-            this.sondagemRepository = sondagemRepository;
+            _sondagemRepository = sondagemRepository;
         }
 
         public async Task<IEnumerable<object>> ObterTodasSondagensAsync()
         {
-            return await sondagemRepository.ObterTodosAsync();
+            return await _sondagemRepository.ObterTodosAsync();
         }
     }
 }
