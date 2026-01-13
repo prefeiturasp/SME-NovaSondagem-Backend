@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
+using SME.Sondagem.Infra.Exceptions;
+using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 
 namespace SME.Sondagem.API.Controllers;
 
@@ -11,10 +13,12 @@ namespace SME.Sondagem.API.Controllers;
 public class SondagemController : ControllerBase
 {
     private readonly ISondagemUseCase sondagemUseCase;
+    private readonly ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase;
 
-    public SondagemController(ISondagemUseCase sondagemUseCase)
+    public SondagemController(ISondagemUseCase sondagemUseCase, ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase)
     {
         this.sondagemUseCase = sondagemUseCase;
+        this.sondagemSalvarRespostasUseCase = sondagemSalvarRespostasUseCase;
     }
 
     [HttpGet]
@@ -23,4 +27,25 @@ public class SondagemController : ControllerBase
         var resultado = await sondagemUseCase.ObterTodasSondagensAsync();
         return Ok(resultado);
     }
+
+    [HttpPost]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Post([FromBody] SondagemSalvarDto dto)
+    {
+        try
+        {
+            var result = await sondagemSalvarRespostasUseCase.SalvarOuAtualizarSondagemAsync(dto);
+            return Ok(result);
+        }
+        catch (NegocioException ex)
+        {
+            return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { mensagem = "Erro ao salvar sondagem" });
+        }
+    }
+
 }

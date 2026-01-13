@@ -21,6 +21,12 @@ public class RespostaAluno : EntidadeBase
     public DateTime DataResposta { get; private set; }
     public int? BimestreId { get; private set; }
 
+    public void AtualizarResposta(int opcaoRespostaId, DateTime dataResposta)
+    {
+        OpcaoRespostaId = opcaoRespostaId;
+        DataResposta = dataResposta;
+    }
+
     // Navegação
     public virtual Sondagem Sondagem { get; private set; } = null!;
     public virtual Aluno Aluno { get; private set; } = null!;

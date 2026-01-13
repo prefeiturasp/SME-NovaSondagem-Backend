@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SME.Sondagem.Aplicacao\SME.Sondagem.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.Sondagem.Infra.Teste\SME.Sondagem.Infra.Teste.csproj" />
   </ItemGroup>
 
 </Project>
