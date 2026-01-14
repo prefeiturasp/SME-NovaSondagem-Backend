@@ -119,6 +119,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return new QuestionarioSondagemDto
         {
+            SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
         };
