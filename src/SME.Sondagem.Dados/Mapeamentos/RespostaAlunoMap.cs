@@ -55,11 +55,6 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasConstraintName("fk_resposta_sondagem")
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(x => x.Aluno)
-            .WithMany(x => x.Respostas)
-            .HasForeignKey(x => x.AlunoId)
-            .HasConstraintName("fk_resposta_aluno");
-
         builder.HasOne(x => x.Questao)
             .WithMany(x => x.Respostas)
             .HasForeignKey(x => x.QuestaoId)
