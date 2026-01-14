@@ -2,9 +2,11 @@ using Elastic.Clients.Elasticsearch;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Infra.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio.Auditoria;
 
+[ExcludeFromCodeCoverage]
 public class RepositorioAuditoria : RepositorioElasticBase<Dominio.Entidades.Auditoria>, IRepositorioAuditoria
 {
     public RepositorioAuditoria(IServicoTelemetria servicoTelemetria, ElasticsearchClient elasticClient)
