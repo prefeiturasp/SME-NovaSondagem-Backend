@@ -24,7 +24,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
     {
         var respostas = await _context.RespostasAluno
             .Include(ra => ra.Questao)
-            .Where(ra => alunosIds.Contains(ra.AlunoId) && ra.Questao.Tipo == tipoQuestao)
+            .Where(ra => alunosIds.Contains(ra.AlunoId) && ra.Questao.Tipo == tipoQuestao && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
             .Select(ra => ra.AlunoId)
             .Distinct()
             .ToListAsync(cancellationToken);
