@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 
@@ -8,7 +9,8 @@ namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IRepositorioRespostaAluno
 {
-    public RepositorioRespostaAluno(SondagemDbContext context) : base(context)
+    public RepositorioRespostaAluno(SondagemDbContext context, ServicoAuditoria servicoAuditoria) : base(context,
+        servicoAuditoria)
     {
     }
 
