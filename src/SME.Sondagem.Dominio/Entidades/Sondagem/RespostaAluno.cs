@@ -4,6 +4,7 @@ namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 
 public class RespostaAluno : EntidadeBase
 {
+    public RespostaAluno() { }
     public RespostaAluno(int sondagemId, int alunoId, int questaoId, int opcaoRespostaId, DateTime dataResposta, int? bimestreId = null)
     {
         SondagemId = sondagemId;
@@ -17,7 +18,7 @@ public class RespostaAluno : EntidadeBase
     public int SondagemId { get; private set; }
     public int AlunoId { get; private set; }
     public int QuestaoId { get; private set; }
-    public int OpcaoRespostaId { get; private set; }
+    public int? OpcaoRespostaId { get; set; }
     public DateTime DataResposta { get; private set; }
     public int? BimestreId { get; private set; }
 
