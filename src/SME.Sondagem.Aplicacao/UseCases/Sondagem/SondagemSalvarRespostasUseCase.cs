@@ -32,16 +32,14 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
 
         var alunosIds = dto.Alunos.Select(a => a.Codigo);
-        var questoresIds = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId));
+        var questoesId = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)) ?? [0];
 
         //obter questionarioId do com base questoresIds
-        var questionarioId = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoresIds.FirstOrDefault());
+        var questionarioId = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId);
         if (questionarioId == null)
             throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
 
-        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao
-            .ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(questionarioId.Value,
-                TipoQuestao.LinguaPortuguesaSegundaLingua);
+        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(questionarioId.Value,TipoQuestao.LinguaPortuguesaSegundaLingua);
         //obter questao lingua portuguesa não excluida a partir do questionarioId e do tipo TipoQuestao.LinguaPortuguesaSegundaLingua
         //adicionar o id dessa questao na lista de questoesIds para poder buscar as respostas dos alunos para essa questao
         //criar variavel questaoLinguaPortuguesaSegundaLinguaId e passar para o ProcessarRespostasAlunos
@@ -49,7 +47,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         if (questaoLinguaPortuguesaSegundaLingua == null)
             throw new NegocioException(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA);
 
-        var questoesIdsResposta = questoresIds.ToList();
+        var questoesIdsResposta = questoesId.ToList();
         questoesIdsResposta.Add(questaoLinguaPortuguesaSegundaLingua.Id);
 
         var repostasAlunos =

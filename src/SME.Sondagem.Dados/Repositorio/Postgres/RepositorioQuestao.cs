@@ -65,6 +65,19 @@ public class RepositorioQuestao : IRepositorioQuestao
         await context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<IEnumerable<Questao>> ObterQuestionarioIdPorQuestoesAsync(IEnumerable<int> questoesId,
+        CancellationToken cancellationToken = default)
+    {
+        return await context.Questoes
+            .AsNoTracking()
+            .Where(q => questoesId.Contains(q.Id) && !q.Excluido)
+            .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Questao>> ObterQuestoesAtivasPorFiltroAsync(
     int modalidadeId,
     int anoLetivo,

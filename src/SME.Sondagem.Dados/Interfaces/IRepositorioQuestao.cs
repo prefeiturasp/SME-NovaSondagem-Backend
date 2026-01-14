@@ -15,4 +15,6 @@ public interface IRepositorioQuestao
         int proficienciaId, 
         int serieAno, 
         CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<Questao>> ObterQuestionarioIdPorQuestoesAsync(IEnumerable<int> questoesId, CancellationToken cancellationToken = default);
 }
