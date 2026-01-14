@@ -41,7 +41,8 @@ public class ErroNaoEncontradoExceptionTeste
     {
         var exception = new ErroNaoEncontradoException("Teste");
 
-        Assert.IsAssignableFrom<Exception>(exception);
+        Assert.IsType<ErroNaoEncontradoException>(exception);
+        Assert.True(exception is Exception);
     }
 
     [Fact]
