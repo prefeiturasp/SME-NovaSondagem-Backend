@@ -4,9 +4,11 @@ using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infra.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio.Elastic
 {
+    [ExcludeFromCodeCoverage]
     public abstract class RepositorioElasticBase<T> : IRepositorioElasticBase<T> where T : class
     {
         private const int QuantidadeRetorno = 200;
