@@ -182,7 +182,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             return response.Found;
         }
 
-        public async Task InserirBulk<TRequest>(IEnumerable<TRequest> listaDeDocumentos, string indice = "")
+        public async Task InserirBulk<TRequest>(IEnumerable<TRequest> listaDeDocumentos, string indice)
             where TRequest : class
         {
             var response = await elasticClient.BulkAsync(b => b
@@ -193,7 +193,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
         }
 
-        public async Task<bool> InserirAsync<TRequest>(TRequest entidade, string indice = "") where TRequest : class
+        public async Task<bool> InserirAsync<TRequest>(TRequest entidade, string indice) where TRequest : class
         {
             IndexResponse response = await servicoTelemetria.RegistrarComRetornoAsync<IndexResponse>(
                 async () => await elasticClient.IndexAsync(entidade, d => d.Index(indice)),
