@@ -1,9 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
 using SME.Sondagem.Dominio;
 
 namespace SME.Sondagem.API.Middlewares;
 
+[ExcludeFromCodeCoverage]
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
