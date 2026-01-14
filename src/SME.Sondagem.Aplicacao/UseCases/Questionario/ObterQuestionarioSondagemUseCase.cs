@@ -49,7 +49,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
-            ?? throw new ErroInternoException("Turma não localizada");
+            ?? throw new ErroNaoEncontradoException("Turma não localizada");
 
         if (filtro.ProficienciaId == 0)
             throw new RegraNegocioException("A proficiência é obrigatória no filtro");
@@ -119,6 +119,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return new QuestionarioSondagemDto
         {
+            SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
         };
@@ -127,10 +128,10 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private static void ValidarModalidadeEAno(int modalidade, int ano)
     {
         if (modalidade != (int)Modalidade.Fundamental && modalidade != (int)Modalidade.EJA)
-            throw new ErroInternoException("Não há questionário para a modalidade informada");
+            throw new ErroNaoEncontradoException("Não há questionário para a modalidade informada");
 
         if (ano is < 1 or > 3)
-            throw new ErroInternoException("Não há questionário para a série informada");
+            throw new ErroNaoEncontradoException("Não há questionário para a série informada");
     }
 
     private async Task<IEnumerable<Dominio.Entidades.Questionario.Questao>> ObterQuestoesAtivasOuLancarExcecao(
@@ -149,7 +150,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return questoesAtivas != null && questoesAtivas.Any()
             ? questoesAtivas
-            : throw new ErroInternoException("Não há questões ativas para o questionário com os filtros informados");
+            : throw new ErroNaoEncontradoException("Não há questões ativas para o questionário com os filtros informados");
     }
 
     private static List<int> ObterQuestoesIdsPorTipo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
@@ -166,7 +167,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return alunos != null && alunos.Any()
             ? alunos
-            : throw new ErroInternoException("Não há alunos cadastrados para a turma informada");
+            : throw new ErroNaoEncontradoException("Não há alunos cadastrados para a turma informada");
     }    
 
     private static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecao(
@@ -200,7 +201,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return bimestresAtivos.Count != 0
             ? Task.FromResult(bimestresAtivos)
-            : throw new ErroInternoException("Não foi possível obter as colunas dos ciclos");
+            : throw new ErroNaoEncontradoException("Não foi possível obter as colunas dos ciclos");
     }
 
     private static List<EstudanteQuestionarioDto> ConstruirEstudantes(
