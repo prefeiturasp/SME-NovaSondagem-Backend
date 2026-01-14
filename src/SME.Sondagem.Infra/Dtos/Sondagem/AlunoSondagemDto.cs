@@ -2,10 +2,10 @@
 {
     public class AlunoSondagemDto
     {
-        public int AlunoId { get; set; }  
-        public string NumeroEstudante { get; set; } = null!;
+        public int Codigo { get; set; }  
+        public string NumeroAlunoChamada { get; set; } = null!;
         public string NomeEstudante { get; set; } = null!;
-        public bool Lp { get; set; }
+        public bool LinguaPortuguesaSegundaLingua { get; set; }
         public List<RespostaSondagemDto> Respostas { get; set; } = new();
     }
 }
