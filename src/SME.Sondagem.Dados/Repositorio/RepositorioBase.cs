@@ -67,7 +67,6 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         if (entidades.Count == 0)
             return false;
 
-        var idsInsercao = new List<long>();
         var idsAlteracao = new List<long>();
         foreach (var entidade in entidades)
         {
@@ -93,7 +92,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         }
 
         await _context.SaveChangesAsync(cancellationToken);
-        idsInsercao = entidades.Where(e => !idsAlteracao.Contains(e.Id)).Select(e => (long)e.Id).ToList();
+        var idsInsercao = entidades.Where(e => !idsAlteracao.Contains(e.Id)).Select(e => (long)e.Id).ToList();
         if (idsInsercao.Count > 0)
         {
             await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), idsInsercao, "I")
