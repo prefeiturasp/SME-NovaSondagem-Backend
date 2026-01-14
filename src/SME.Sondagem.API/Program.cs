@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using SME.SME.Sondagem.Api.Configuracoes;
 using SME.Sondagem.API.Configuracoes;
-using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
-using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
 
 
@@ -64,6 +63,8 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseHttpsRedirection();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseRouting();
 app.UseAuthentication();
 app.UseCors("CorsPolicy");
 app.UseAuthorization();

@@ -26,12 +26,14 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     )
                 );
 
-            return await ObterListaAsync(
+            var resultado = await ObterListaAsync(
                 IndicesElastic.INDICE_ALUNO_MATRICULA_TURMA_DRE,
                 query,
                 "Obter alunos por Id da turma",
                 new { idTurma }
             );
+
+            return resultado.DistinctBy(a => a.CodigoAluno);
         }
     }
 }
