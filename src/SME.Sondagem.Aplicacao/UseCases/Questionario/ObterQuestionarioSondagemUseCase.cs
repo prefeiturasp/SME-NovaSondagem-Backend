@@ -115,7 +115,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             alunosComLinguaPortuguesaSegundaLingua, 
             alunosComPap);
 
-        var questaoId = questoesAtivas.Where(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).FirstOrDefault()?.Id ?? 0;
+        var questaoId = questoesAtivas.FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
         var tituloTabelaRespostas = ObterTituloTabelaRespostas(questoesAtivas);
 
