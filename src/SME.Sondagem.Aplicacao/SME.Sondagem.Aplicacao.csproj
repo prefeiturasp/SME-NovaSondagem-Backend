@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\SGP\" />
-  </ItemGroup>
-
 </Project>
