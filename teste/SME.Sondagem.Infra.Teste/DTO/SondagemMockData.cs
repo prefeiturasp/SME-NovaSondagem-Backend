@@ -14,10 +14,10 @@ public static class SondagemMockData
             [
                 new AlunoSondagemDto
                 {
-                    AlunoId = 101,
-                    NumeroEstudante = "2024001234",
+                    Codigo = 101,
+                    NumeroAlunoChamada = "2024001234",
                     NomeEstudante = "João Silva Santos",
-                    Lp = true,
+                    LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -45,10 +45,10 @@ public static class SondagemMockData
 
                 new AlunoSondagemDto
                 {
-                    AlunoId = 102,
-                    NumeroEstudante = "2024001235",
+                    Codigo = 102,
+                    NumeroAlunoChamada = "2024001235",
                     NomeEstudante = "Maria Oliveira Costa",
-                    Lp = false,
+                    LinguaPortuguesaSegundaLingua = false,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -69,10 +69,10 @@ public static class SondagemMockData
 
                 new AlunoSondagemDto
                 {
-                    AlunoId = 103,
-                    NumeroEstudante = "2024001236",
+                    Codigo = 103,
+                    NumeroAlunoChamada = "2024001236",
                     NomeEstudante = "Pedro Henrique Souza",
-                    Lp = true,
+                    LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -140,10 +140,10 @@ public static class SondagemMockData
     {
         return new AlunoSondagemDto
         {
-            AlunoId = 201,
-            NumeroEstudante = "2024005678",
+            Codigo = 201,
+            NumeroAlunoChamada = "2024005678",
             NomeEstudante = "Ana Carolina Ferreira",
-            Lp = false,
+            LinguaPortuguesaSegundaLingua = false,
             Respostas =
             [
                 new RespostaSondagemDto

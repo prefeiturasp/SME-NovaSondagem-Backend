@@ -220,7 +220,7 @@ public class SondagemSalvarRespostasUseCaseTeste
             {
                 new()
                 {
-                    AlunoId = 100,
+                    Codigo = 100,
                     Respostas = new List<RespostaSondagemDto>
                     {
                         new()
@@ -233,7 +233,7 @@ public class SondagemSalvarRespostasUseCaseTeste
                 },
                 new()
                 {
-                    AlunoId = 200,
+                    Codigo = 200,
                     Respostas = new List<RespostaSondagemDto>
                     {
                         new()

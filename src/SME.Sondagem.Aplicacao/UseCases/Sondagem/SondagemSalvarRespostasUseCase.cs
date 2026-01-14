@@ -24,7 +24,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
 
-        var alunosIds = dto.Alunos.Select(a => a.AlunoId);
+        var alunosIds = dto.Alunos.Select(a => a.Codigo);
         var questoresIds = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId));
         var repostasAlunos =
             await _repositorioSondagemResposta.ObterRespostasPorSondagemEAlunosAsync(dto.SondagemId, alunosIds,
@@ -60,7 +60,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             {
                 var resposta = ProcessarRespostaIndividual(
                     dto.SondagemId,
-                    aluno.AlunoId,
+                    aluno.Codigo,
                     respostaDto,
                     periodosBimestresAtivos,
                     repostasAlunos);
