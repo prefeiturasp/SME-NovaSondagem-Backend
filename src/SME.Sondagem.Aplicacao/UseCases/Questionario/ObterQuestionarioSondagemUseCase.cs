@@ -178,6 +178,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var opcoesResposta = questoesAtivas
+            .Where(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)    
             .SelectMany(q => q.QuestaoOpcoes)
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto
