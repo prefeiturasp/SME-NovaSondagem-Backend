@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Contexto;
 
+[ExcludeFromCodeCoverage]
 public abstract class ContextoBase : IContextoAplicacao
 {
     protected ContextoBase()
@@ -15,12 +16,12 @@ public abstract class ContextoBase : IContextoAplicacao
     public string PerfilUsuario => ObterVariavel<string>("PerfilUsuario") ?? string.Empty;
     public IDictionary<string, object> Variaveis { get; set; }
     public string Administrador => ObterVariavel<string>("Administrador") ?? string.Empty;
+    public string UsuarioLogadoRf => ObterVariavel<string>("RF") ?? "0";
     public abstract void AdicionarVariaveis(IDictionary<string, object> variaveis);
     public abstract IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
 
     public T ObterVariavel<T>(string nome)
     {
-
         if (Variaveis.TryGetValue(nome, out var valor))
             return (T)valor;
 

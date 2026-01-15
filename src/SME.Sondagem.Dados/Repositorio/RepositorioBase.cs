@@ -1,18 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio.Entidades;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio;
 
+[ExcludeFromCodeCoverage]
 public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 {
     protected readonly SondagemDbContext _context;
+    private readonly IServicoAuditoria _servicoAuditoria;
     protected readonly DbSet<T> _dbSet;
 
-    public RepositorioBase(SondagemDbContext context)
+    public RepositorioBase(SondagemDbContext context, IServicoAuditoria servicoAuditoria)
     {
         _context = context;
+        _servicoAuditoria = servicoAuditoria;
         _dbSet = context.Set<T>();
     }
 
@@ -35,6 +40,8 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         if (entidade.Id == 0)
         {
             await _dbSet.AddAsync(entidade, cancellationToken);
+            await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "I")
+                .WaitAsync(cancellationToken);
         }
         else
         {
@@ -48,6 +55,9 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             {
                 _dbSet.Update(entidade);
             }
+
+            await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "A")
+                .WaitAsync(cancellationToken);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
@@ -59,6 +69,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         if (entidades.Count == 0)
             return false;
 
+        var idsAlteracao = new List<long>();
         foreach (var entidade in entidades)
         {
             if (entidade.Id == 0)
@@ -77,10 +88,25 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
                 {
                     _dbSet.Update(entidade);
                 }
+
+                idsAlteracao.Add(entidade.Id);
             }
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        var idsInsercao = entidades.Where(e => !idsAlteracao.Contains(e.Id)).Select(e => (long)e.Id).ToList();
+        if (idsInsercao.Count > 0)
+        {
+            await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), idsInsercao, "I")
+                .WaitAsync(cancellationToken);
+        }
+
+        if (idsAlteracao.Count > 0)
+        {
+            await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), idsAlteracao, "A")
+                .WaitAsync(cancellationToken);
+        }
+
         return true;
     }
 
@@ -91,6 +117,8 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         {
             _dbSet.Remove(entidade);
             await _context.SaveChangesAsync(cancellationToken);
+            await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "E")
+                .WaitAsync(cancellationToken);
         }
     }
 
@@ -98,9 +126,11 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
         _dbSet.Remove(entidade);
         await _context.SaveChangesAsync(cancellationToken);
+        await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "E").WaitAsync(cancellationToken);
     }
 
-    public virtual async Task<long> RemoverLogico(long id, string? coluna = null, CancellationToken cancellationToken = default)
+    public virtual async Task<long> RemoverLogico(long id, string? coluna = null,
+        CancellationToken cancellationToken = default)
     {
         var entidade = await _dbSet
             .IgnoreQueryFilters()
@@ -111,11 +141,12 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 
         entidade.Excluido = true;
         await _context.SaveChangesAsync(cancellationToken);
-
+        await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "E").WaitAsync(cancellationToken);
         return entidade.Id;
     }
 
-    public virtual async Task<bool> RemoverLogico(long[] ids, string? coluna = null, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> RemoverLogico(long[] ids, string? coluna = null,
+        CancellationToken cancellationToken = default)
     {
         if (ids == null || ids.Length == 0)
             return false;
@@ -133,6 +164,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             entidade.Excluido = true;
         }
 
+        await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), ids, "A").WaitAsync(cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
@@ -148,11 +180,12 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 
         entidade.Excluido = false;
         await _context.SaveChangesAsync(cancellationToken);
-
+        await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "R").WaitAsync(cancellationToken);
         return true;
     }
 
-    public virtual async Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<T>> ListarTodosIncluindoExcluidosAsync(
+        CancellationToken cancellationToken = default)
     {
         return await _dbSet
             .IgnoreQueryFilters()

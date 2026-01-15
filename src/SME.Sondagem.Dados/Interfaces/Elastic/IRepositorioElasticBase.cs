@@ -20,8 +20,8 @@ namespace SME.Sondagem.Dados.Interfaces.Elastic
             where TDocument : class;
 
         Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object? parametro = null);
-        Task InserirBulk<TRequest>(IEnumerable<TRequest> listaDeDocumentos, string indice) where TRequest : class;
-        Task<bool> InserirAsync<TRequest>(TRequest entidade, string indice) where TRequest : class;
+        Task InserirBulk<TRequest>(IEnumerable<TRequest> listaDeDocumentos, string indice = "") where TRequest : class;
+        Task<bool> InserirAsync<TRequest>(TRequest entidade, string indice = "") where TRequest : class;
         Task ExcluirTodos<TDocument>(string indice = "", string nomeConsulta = "") where TDocument : class;
     }
 }
