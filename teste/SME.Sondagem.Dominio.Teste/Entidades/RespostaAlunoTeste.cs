@@ -59,7 +59,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now);
 
             Assert.NotNull(respostaAluno);
-            Assert.Null(respostaAluno.Aluno);
         }
 
         [Fact]

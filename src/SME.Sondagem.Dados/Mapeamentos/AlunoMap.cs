@@ -66,11 +66,6 @@ public class AlunoMap : IEntityTypeConfiguration<Aluno>
             .HasDatabaseName("uk_aluno_ra")
             .IsUnique()
             .HasFilter("ra_aluno IS NOT NULL");
-
-        builder.HasMany(x => x.Respostas)
-            .WithOne(x => x.Aluno)
-            .HasForeignKey(x => x.AlunoId)
-            .HasConstraintName("fk_resposta_aluno");
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<Aluno> builder)

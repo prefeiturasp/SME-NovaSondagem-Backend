@@ -273,7 +273,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
             It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Dictionary<(long, long), RespostaAluno>());
+            .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
@@ -305,7 +305,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
             It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Dictionary<(long, long), RespostaAluno>());
+            .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
@@ -364,9 +364,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         respostaAluno.GetType().BaseType!.GetProperty("Id")!.SetValue(respostaAluno, 1);
 
-        var respostas = new Dictionary<(long CodigoAluno, long QuestaoId), RespostaAluno>
+        var respostas = new Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>
         {
-            { (1001L, 1L), respostaAluno }
+            { (1001L, 1L, 1), respostaAluno }
         };
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
@@ -709,7 +709,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
             It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new Dictionary<(long, long), RespostaAluno>());
+            .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
     }
 
     private void ConfigurarMocksCompleto(

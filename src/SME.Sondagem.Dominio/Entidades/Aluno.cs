@@ -15,7 +15,4 @@ public class Aluno : EntidadeBase
     public string? RacaNome { get; init; }
     public int? CorId { get; init; }
     public string? CorNome { get; init; }
-
-    // Navegação
-    public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
 }

@@ -56,8 +56,10 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public async Task VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_true_quando_existir()
         {
-            var context = CriarContexto(nameof(VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_true_quando_existir));
+            var context =
+                CriarContexto(nameof(VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_true_quando_existir));
 
+            var servicoAuditoria = CriarServicoAuditoria();
             var questao = CriarQuestao(1, TipoQuestao.Combo);
             context.Questoes.Add(questao);
 
@@ -67,7 +69,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioRespostaAluno(context);
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
 
             var resultado = await repo.VerificarAlunoTemRespostaPorTipoQuestaoAsync(
                 alunoId: 10,
@@ -80,9 +82,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public async Task VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_false_quando_nao_existir()
         {
-            var context = CriarContexto(nameof(VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_false_quando_nao_existir));
+            var context =
+                CriarContexto(
+                    nameof(VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_false_quando_nao_existir));
 
-            var repo = new RepositorioRespostaAluno(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
 
             var resultado = await repo.VerificarAlunoTemRespostaPorTipoQuestaoAsync(
                 alunoId: 99,
@@ -99,8 +104,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public async Task VerificarAlunosTemRespostaPorTipoQuestaoAsync_deve_retornar_dicionario_com_true_e_false()
         {
-            var context = CriarContexto(nameof(VerificarAlunosTemRespostaPorTipoQuestaoAsync_deve_retornar_dicionario_com_true_e_false));
+            var context =
+                CriarContexto(
+                    nameof(VerificarAlunosTemRespostaPorTipoQuestaoAsync_deve_retornar_dicionario_com_true_e_false));
 
+            var servicoAuditoria = CriarServicoAuditoria();
             var questao = CriarQuestao(1, TipoQuestao.Combo);
             context.Questoes.Add(questao);
 
@@ -110,7 +118,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioRespostaAluno(context);
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
 
             var alunosIds = new List<int> { 1, 2 };
 
@@ -131,15 +139,17 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public async Task ObterRespostasAlunosPorQuestoesAsync_deve_retornar_dicionario_com_chave_composta()
         {
-            var context = CriarContexto(nameof(ObterRespostasAlunosPorQuestoesAsync_deve_retornar_dicionario_com_chave_composta));
+            var context =
+                CriarContexto(nameof(ObterRespostasAlunosPorQuestoesAsync_deve_retornar_dicionario_com_chave_composta));
 
+            var servicoAuditoria = CriarServicoAuditoria();
             var resposta1 = CriarRespostaAluno(alunoId: 10, questaoId: 100, sondagemId: 1);
             var resposta2 = CriarRespostaAluno(alunoId: 20, questaoId: 200, sondagemId: 1);
 
             context.RespostasAluno.AddRange(resposta1, resposta2);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioRespostaAluno(context);
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
 
             var resultado = await repo.ObterRespostasAlunosPorQuestoesAsync(
                 codigosAlunos: new List<long> { 10, 20 },
@@ -148,21 +158,23 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
-            Assert.Contains((10L, 100L), resultado.Keys);
-            Assert.Contains((20L, 200L), resultado.Keys);
+            Assert.Contains((10L, 100L, null), resultado.Keys);
+            Assert.Contains((20L, 200L, null), resultado.Keys);
         }
 
         [Fact]
         public async Task ObterRespostasAlunosPorQuestoesAsync_nao_deve_retornar_respostas_excluidas()
         {
-            var context = CriarContexto(nameof(ObterRespostasAlunosPorQuestoesAsync_nao_deve_retornar_respostas_excluidas));
+            var context =
+                CriarContexto(nameof(ObterRespostasAlunosPorQuestoesAsync_nao_deve_retornar_respostas_excluidas));
 
+            var servicoAuditoria = CriarServicoAuditoria();
             var resposta = CriarRespostaAluno(alunoId: 10, questaoId: 100, sondagemId: 1, excluido: true);
 
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioRespostaAluno(context);
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
 
             var resultado = await repo.ObterRespostasAlunosPorQuestoesAsync(
                 codigosAlunos: new List<long> { 10 },

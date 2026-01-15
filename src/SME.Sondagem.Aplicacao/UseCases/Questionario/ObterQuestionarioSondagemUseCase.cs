@@ -103,8 +103,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             sondagemAtiva.Id,
             cancellationToken);
 
-        var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.ToDictionary(
-            kvp => ((int)kvp.Key.CodigoAluno, (int)kvp.Key.QuestaoId),
+        var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
+            kvp => ((int)kvp.Key.CodigoAluno, kvp.Key.BimestreId ?? 0),
             kvp => (dynamic)kvp.Value
         );
 
@@ -115,10 +115,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             alunosComLinguaPortuguesaSegundaLingua, 
             alunosComPap);
 
+        var questaoId = questoesAtivas.FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
+
         var tituloTabelaRespostas = ObterTituloTabelaRespostas(questoesAtivas);
 
         return new QuestionarioSondagemDto
         {
+            QuestaoId = questaoId,
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
@@ -175,6 +178,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var opcoesResposta = questoesAtivas
+            .Where(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)    
             .SelectMany(q => q.QuestaoOpcoes)
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto

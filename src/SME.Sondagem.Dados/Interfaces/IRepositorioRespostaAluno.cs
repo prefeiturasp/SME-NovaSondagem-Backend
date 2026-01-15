@@ -17,7 +17,7 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
         IEnumerable<int> questoesIds,
         CancellationToken cancellationToken = default);
 
-    Task<Dictionary<(long CodigoAluno, long QuestaoId), RespostaAluno>> ObterRespostasAlunosPorQuestoesAsync(
+    Task<Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>> ObterRespostasAlunosPorQuestoesAsync(
         List<long> codigosAlunos,
         List<long> questoesIds,
         long sondagemId,
