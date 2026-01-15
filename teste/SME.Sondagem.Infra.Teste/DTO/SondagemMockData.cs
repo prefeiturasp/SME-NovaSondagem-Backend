@@ -15,9 +15,9 @@ public static class SondagemMockData
                 new AlunoSondagemDto
                 {
                     Codigo = 101,
-                    NumeroEstudante = "2024001234",
+                    NumeroAlunoChamada = "2024001234",
                     NomeEstudante = "João Silva Santos",
-                    Lp = true,
+                    LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -46,9 +46,9 @@ public static class SondagemMockData
                 new AlunoSondagemDto
                 {
                     Codigo = 102,
-                    NumeroEstudante = "2024001235",
+                    NumeroAlunoChamada = "2024001235",
                     NomeEstudante = "Maria Oliveira Costa",
-                    Lp = false,
+                    LinguaPortuguesaSegundaLingua = false,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -70,9 +70,9 @@ public static class SondagemMockData
                 new AlunoSondagemDto
                 {
                     Codigo = 103,
-                    NumeroEstudante = "2024001236",
+                    NumeroAlunoChamada = "2024001236",
                     NomeEstudante = "Pedro Henrique Souza",
-                    Lp = true,
+                    LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [
                         new RespostaSondagemDto
@@ -141,9 +141,9 @@ public static class SondagemMockData
         return new AlunoSondagemDto
         {
             Codigo = 201,
-            NumeroEstudante = "2024005678",
+            NumeroAlunoChamada = "2024005678",
             NomeEstudante = "Ana Carolina Ferreira",
-            Lp = false,
+            LinguaPortuguesaSegundaLingua = false,
             Respostas =
             [
                 new RespostaSondagemDto
