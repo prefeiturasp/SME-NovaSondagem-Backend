@@ -127,5 +127,7 @@ public static class RegistraDependencias
     private static void RegistrarContextos(IServiceCollection services)
     {
         services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
+        services.TryAddScoped<ContextoBase>(provider => 
+            (ContextoBase)provider.GetRequiredService<IContextoAplicacao>());
     }
 }

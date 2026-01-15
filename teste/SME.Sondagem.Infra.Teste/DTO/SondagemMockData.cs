@@ -14,7 +14,7 @@ public static class SondagemMockData
             [
                 new AlunoSondagemDto
                 {
-                    AlunoId = 101,
+                    Codigo = 101,
                     NumeroEstudante = "2024001234",
                     NomeEstudante = "João Silva Santos",
                     Lp = true,
@@ -45,7 +45,7 @@ public static class SondagemMockData
 
                 new AlunoSondagemDto
                 {
-                    AlunoId = 102,
+                    Codigo = 102,
                     NumeroEstudante = "2024001235",
                     NomeEstudante = "Maria Oliveira Costa",
                     Lp = false,
@@ -69,7 +69,7 @@ public static class SondagemMockData
 
                 new AlunoSondagemDto
                 {
-                    AlunoId = 103,
+                    Codigo = 103,
                     NumeroEstudante = "2024001236",
                     NomeEstudante = "Pedro Henrique Souza",
                     Lp = true,
@@ -140,7 +140,7 @@ public static class SondagemMockData
     {
         return new AlunoSondagemDto
         {
-            AlunoId = 201,
+            Codigo = 201,
             NumeroEstudante = "2024005678",
             NomeEstudante = "Ana Carolina Ferreira",
             Lp = false,

@@ -29,7 +29,8 @@ public class ServicoAuditoria : IServicoAuditoria
             RF = _database.UsuarioLogadoRf,
             Perfil = perfil,
             Acao = acao,
-            Administrador = _database.Administrador
+            Administrador = _database.Administrador,
+            Id = Guid.NewGuid()
         };
         await _repositorioAuditoria.Salvar(auditoria);
     }
@@ -47,7 +48,8 @@ public class ServicoAuditoria : IServicoAuditoria
             RF = _database.UsuarioLogadoRf,
             Perfil = perfil,
             Acao = acao,
-            Administrador = _database.Administrador
+            Administrador = _database.Administrador,
+            Id = Guid.NewGuid()
         }).ToList();
 
         await _repositorioAuditoria.SalvarMultiplos(auditorias);

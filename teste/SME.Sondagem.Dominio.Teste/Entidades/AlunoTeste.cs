@@ -77,22 +77,6 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.Null(aluno.RacaNome);
             Assert.Null(aluno.CorId);
             Assert.Null(aluno.CorNome);
-        }
-
-        [Fact]
-        public void Deve_inicializar_colecao_de_respostas()
-        {
-            var aluno = new Aluno
-            {
-                RaAluno = "123",
-                NomeAluno = "Aluno",
-                IsPap = false,
-                IsAee = false,
-                IsPcd = false
-            };
-
-            Assert.NotNull(aluno.Respostas);
-            Assert.Empty(aluno.Respostas);
-        }
+        }       
     }
 }

@@ -29,7 +29,7 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
 
         builder.Property(x => x.OpcaoRespostaId)
             .HasColumnName("opcao_resposta_id")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.DataResposta)
             .HasColumnName("data_resposta")
@@ -63,7 +63,8 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
         builder.HasOne(x => x.OpcaoResposta)
             .WithMany(x => x.Respostas)
             .HasForeignKey(x => x.OpcaoRespostaId)
-            .HasConstraintName("fk_resposta_opcao");
+            .HasConstraintName("fk_resposta_opcao")
+            .IsRequired(false);
 
         builder.HasOne(x => x.Bimestre)
             .WithMany(x => x.RespostaAlunos)

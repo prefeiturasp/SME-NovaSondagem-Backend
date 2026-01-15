@@ -103,7 +103,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 
         if (idsAlteracao.Count > 0)
         {
-            await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), idsInsercao, "A")
+            await _servicoAuditoria.AuditarMultiplosAsync(typeof(T).Name.ToLower(), idsAlteracao, "A")
                 .WaitAsync(cancellationToken);
         }
 

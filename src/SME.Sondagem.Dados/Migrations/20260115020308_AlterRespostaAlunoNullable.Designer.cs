@@ -12,8 +12,8 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    [Migration("20260114201124_AlterRespostaAlunoMapRemoveConstraint")]
-    partial class AlterRespostaAlunoMapRemoveConstraint
+    [Migration("20260115020308_AlterRespostaAlunoNullable")]
+    partial class AlterRespostaAlunoNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -934,7 +934,7 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
-                    b.Property<int>("OpcaoRespostaId")
+                    b.Property<int?>("OpcaoRespostaId")
                         .HasColumnType("integer")
                         .HasColumnName("opcao_resposta_id");
 
@@ -948,8 +948,6 @@ namespace SME.Sondagem.Dados.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_resposta_aluno");
-
-                    b.HasIndex("AlunoId");
 
                     b.HasIndex("BimestreId");
 
@@ -1198,13 +1196,6 @@ namespace SME.Sondagem.Dados.Migrations
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.RespostaAluno", b =>
                 {
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.Aluno", "Aluno")
-                        .WithMany("Respostas")
-                        .HasForeignKey("AlunoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_resposta_aluno");
-
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Bimestre", "Bimestre")
                         .WithMany("RespostaAlunos")
                         .HasForeignKey("BimestreId")
@@ -1213,8 +1204,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta", "OpcaoResposta")
                         .WithMany("Respostas")
                         .HasForeignKey("OpcaoRespostaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("fk_resposta_opcao");
 
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.Questao", "Questao")
@@ -1230,8 +1219,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_resposta_sondagem");
-
-                    b.Navigation("Aluno");
 
                     b.Navigation("Bimestre");
 
@@ -1261,11 +1248,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("Bimestre");
 
                     b.Navigation("Sondagem");
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Aluno", b =>
-                {
-                    b.Navigation("Respostas");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Auditoria", b =>

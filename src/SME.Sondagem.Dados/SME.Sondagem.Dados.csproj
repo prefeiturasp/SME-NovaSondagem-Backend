@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20260114201124_AlterRespostaAlunoMapRemoveConstraint.cs" />
+    <Compile Remove="Migrations\20260114201124_AlterRespostaAlunoMapRemoveConstraint.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<Content Update="@(Content)">
 		<Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
 	</Content>

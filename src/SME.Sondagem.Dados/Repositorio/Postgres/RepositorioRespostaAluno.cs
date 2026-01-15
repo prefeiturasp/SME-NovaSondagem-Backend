@@ -26,8 +26,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
     {
         var respostas = await _context.RespostasAluno
             .Include(ra => ra.Questao)
-            .Where(ra => alunosIds.Contains(ra.AlunoId) && ra.Questao.Tipo == tipoQuestao)
-            .Select(ra => ra.AlunoId)
+            .Where(ra => ra.AlunoId.HasValue && alunosIds.Contains(ra.AlunoId.Value) && ra.Questao.Tipo == tipoQuestao)
+            .Select(ra => ra.AlunoId ?? 0) 
             .Distinct()
             .ToListAsync(cancellationToken);
 
@@ -53,8 +53,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await _context.RespostasAluno
             .AsNoTracking()
             .Where(ra => !ra.Excluido && ra.SondagemId == sondagemId
-                                      && alunosIdsList.Contains(ra.AlunoId)
-                                      && questoesIdsList.Contains(ra.QuestaoId))
+                                  && ra.AlunoId.HasValue && alunosIdsList.Contains(ra.AlunoId.Value)
+                                  && questoesIdsList.Contains(ra.QuestaoId))
             .ToListAsync(cancellationToken);
     }
 
@@ -67,13 +67,15 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             CancellationToken cancellationToken = default)
     {
         var respostas = await _context.RespostasAluno
-            .Where(r => codigosAlunos.Contains(r.AlunoId)
+            .Where(r => r.AlunoId.HasValue
+                        && codigosAlunos.Contains((long)r.AlunoId.Value)
                         && questoesIds.Contains(r.QuestaoId)
                         && r.SondagemId == sondagemId
                         && !r.Excluido)
             .ToListAsync(cancellationToken);
 
-        return respostas.ToDictionary(r => ((long)r.AlunoId, (long)r.QuestaoId)
+        return respostas.ToDictionary(
+            r => ((long)(r.AlunoId ?? 0), (long)r.QuestaoId)
         );
     }
 }
