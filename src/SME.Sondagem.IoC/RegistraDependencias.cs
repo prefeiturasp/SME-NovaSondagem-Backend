@@ -39,6 +39,9 @@ using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
+using SME.Sondagem.Dados.Repositorio.Auditoria;
+using SME.Sondagem.Dados.Services.Auditoria;
 
 namespace SME.Sondagem.IoC;
 
@@ -65,6 +68,7 @@ public static class RegistraDependencias
         services.AddScoped<IRepositorioElasticTurma, RepositorioElasticTurma>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+        services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
     }
 
     private static void RegistrarServicos(IServiceCollection services)
@@ -73,6 +77,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         services.TryAddScoped<IServicoLog, ServicoLog>();
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
+        services.AddScoped<IServicoAuditoria, ServicoAuditoria>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -102,7 +107,9 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestaoPorIdUseCase, ObterQuestaoPorIdUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
         services.TryAddScoped<ISondagemSalvarRespostasUseCase, SondagemSalvarRespostasUseCase>();
-        services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase, ObterProficienciasPorComponenteCurricularUseCase>();
+        services
+            .TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,
+                ObterProficienciasPorComponenteCurricularUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
@@ -120,5 +127,7 @@ public static class RegistraDependencias
     private static void RegistrarContextos(IServiceCollection services)
     {
         services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
+        services.TryAddScoped<ContextoBase>(provider => 
+            (ContextoBase)provider.GetRequiredService<IContextoAplicacao>());
     }
 }
