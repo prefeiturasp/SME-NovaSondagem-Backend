@@ -158,8 +158,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
-            Assert.Contains((10L, 100L), resultado.Keys);
-            Assert.Contains((20L, 200L), resultado.Keys);
+            Assert.Contains((10L, 100L, null), resultado.Keys);
+            Assert.Contains((20L, 200L, null), resultado.Keys);
         }
 
         [Fact]
