@@ -104,7 +104,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             cancellationToken);
 
         var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
-            kvp => ((int)kvp.Key.CodigoAluno, (int)kvp.Key.QuestaoId),
+            kvp => ((int)kvp.Key.CodigoAluno, kvp.Key.BimestreId ?? 0),
             kvp => (dynamic)kvp.Value
         );
 

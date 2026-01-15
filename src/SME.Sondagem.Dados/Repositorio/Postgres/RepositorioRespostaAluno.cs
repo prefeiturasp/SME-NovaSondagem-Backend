@@ -59,7 +59,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
     }
 
 
-    public async Task<Dictionary<(long CodigoAluno, long QuestaoId), RespostaAluno>>
+    public async Task<Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>>
         ObterRespostasAlunosPorQuestoesAsync(
             List<long> codigosAlunos,
             List<long> questoesIds,
@@ -75,7 +75,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ToListAsync(cancellationToken);
 
         return respostas.ToDictionary(
-            r => ((long)(r.AlunoId ?? 0), (long)r.QuestaoId)
+            r => ((long)(r.AlunoId ?? 0), (long)r.QuestaoId, r.BimestreId)
         );
     }
 }
