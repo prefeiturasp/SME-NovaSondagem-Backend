@@ -113,7 +113,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             colunas, 
             respostasAlunosPorQuestoesConvertido, 
             alunosComLinguaPortuguesaSegundaLingua, 
-            alunosComPap);
+            alunosComPap)
+        .OrderBy(e => e.Nome)
+        .ToList();
 
         var questaoId = questoesAtivas.FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
