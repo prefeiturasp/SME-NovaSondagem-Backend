@@ -21,15 +21,24 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .AnyAsync(ra => ra.AlunoId == alunoId && ra.Questao.Tipo == tipoQuestao, cancellationToken);
     }
 
-    public async Task<Dictionary<int, bool>> VerificarAlunosTemRespostaPorTipoQuestaoAsync(List<int> alunosIds,
-        TipoQuestao tipoQuestao, CancellationToken cancellationToken)
+    public async Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(List<int> alunosIds,
+        Dominio.Entidades.Questionario.Questao? questao, CancellationToken cancellationToken)
     {
-        var respostas = await _context.RespostasAluno
+        var respostas = new List<int>();
+
+        if (questao is not null)
+        {
+            respostas = await _context.RespostasAluno
             .Include(ra => ra.Questao)
-            .Where(ra => ra.AlunoId.HasValue && alunosIds.Contains(ra.AlunoId.Value) && ra.Questao.Tipo == tipoQuestao)
-            .Select(ra => ra.AlunoId ?? 0) 
+            .Where(ra => ra.AlunoId.HasValue
+            && alunosIds.Contains(ra.AlunoId.Value)
+            && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
+            && ra.QuestaoId == questao.Id
+            && ra.OpcaoResposta.DescricaoOpcaoResposta.Equals("sim", StringComparison.OrdinalIgnoreCase))
+            .Select(ra => ra.AlunoId ?? 0)
             .Distinct()
             .ToListAsync(cancellationToken);
+        }
 
         return alunosIds
             .Distinct()

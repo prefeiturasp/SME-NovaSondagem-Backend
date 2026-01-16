@@ -65,6 +65,19 @@ public class RepositorioQuestao : IRepositorioQuestao
         await context.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<IEnumerable<Questao>> ObterQuestionarioIdPorQuestoesAsync(IEnumerable<int> questoesId,
+        CancellationToken cancellationToken = default)
+    {
+        return await context.Questoes
+            .AsNoTracking()
+            .Where(q => questoesId.Contains(q.Id) && !q.Excluido)
+            .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<Questao>> ObterQuestoesAtivasPorFiltroAsync(
     int modalidadeId,
     int anoLetivo,
@@ -85,5 +98,16 @@ public class RepositorioQuestao : IRepositorioQuestao
                 && (q.Tipo == TipoQuestao.Combo || q.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua))
             .OrderBy(q => q.Ordem)
             .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(int questionarioId, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default)
+    {
+        return await context.Questoes
+            .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
+            .FirstOrDefaultAsync(q => !q.Excluido 
+            && q.QuestionarioId == questionarioId
+            && q.Tipo == tipoQuestao, cancellationToken);
     }
 }

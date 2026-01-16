@@ -24,21 +24,21 @@ public static class SondagemMockData
                         {
                             BimestreId = 1,
                             QuestaoId = 1,
-                            OpcaoRepostaId = 3
+                            OpcaoRespostaId = 3
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 2,
-                            OpcaoRepostaId = 2
+                            OpcaoRespostaId = 2
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 3,
-                            OpcaoRepostaId = 4
+                            OpcaoRespostaId = 4
                         }
                     ]
                 },
@@ -55,14 +55,14 @@ public static class SondagemMockData
                         {
                             BimestreId = 1,
                             QuestaoId = 1,
-                            OpcaoRepostaId = 2
+                            OpcaoRespostaId = 2
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 2,
-                            OpcaoRepostaId = 3
+                            OpcaoRespostaId = 3
                         }
                     ]
                 },
@@ -79,28 +79,28 @@ public static class SondagemMockData
                         {
                             BimestreId = 1,
                             QuestaoId = 1,
-                            OpcaoRepostaId = 4
+                            OpcaoRespostaId = 4
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 2,
-                            OpcaoRepostaId = 4
+                            OpcaoRespostaId = 4
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 3,
-                            OpcaoRepostaId = 3
+                            OpcaoRespostaId = 3
                         },
 
                         new RespostaSondagemDto
                         {
                             BimestreId = 1,
                             QuestaoId = 4,
-                            OpcaoRepostaId = 2
+                            OpcaoRespostaId = 2
                         }
                     ]
                 }
@@ -150,7 +150,7 @@ public static class SondagemMockData
                 {
                     BimestreId = 2,
                     QuestaoId = 5,
-                    OpcaoRepostaId = 1
+                    OpcaoRespostaId = 1
                 }
             ]
         };
