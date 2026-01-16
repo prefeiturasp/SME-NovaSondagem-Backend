@@ -4,6 +4,6 @@
     {
         public int BimestreId { get; set; } 
         public int QuestaoId { get; set; } 
-        public int? OpcaoRepostaId { get; set; }
+        public int? OpcaoRespostaId { get; set; }
     }
 }

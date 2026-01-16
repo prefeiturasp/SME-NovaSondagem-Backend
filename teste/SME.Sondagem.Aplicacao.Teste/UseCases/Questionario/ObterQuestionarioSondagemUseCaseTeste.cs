@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -267,8 +268,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             It.IsAny<List<int>>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunosComPap);
 
-        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-            It.IsAny<List<int>>(), It.IsAny<TipoQuestao>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
+            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
@@ -295,8 +296,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .ReturnsAsync(alunos);
 
         var alunosComLingua = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
-        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-            It.IsAny<List<int>>(), TipoQuestao.LinguaPortuguesaSegundaLingua, It.IsAny<CancellationToken>()))
+        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
+            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunosComLingua);
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
@@ -373,8 +374,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(respostas);
 
-        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-            It.IsAny<List<int>>(), It.IsAny<TipoQuestao>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
+            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
@@ -699,8 +700,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
     private void ConfigurarMocksComplementares()
     {
-        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-            It.IsAny<List<int>>(), It.IsAny<TipoQuestao>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
+            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(

@@ -1,3 +1,4 @@
+using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 
@@ -8,8 +9,7 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
     Task<bool> VerificarAlunoTemRespostaPorTipoQuestaoAsync(int alunoId, TipoQuestao tipoQuestao,
         CancellationToken cancellationToken);
 
-    Task<Dictionary<int, bool>> VerificarAlunosTemRespostaPorTipoQuestaoAsync(List<int> alunosIds,
-        TipoQuestao tipoQuestao, CancellationToken cancellationToken);
+    Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(List<int> alunosIds, Questao? questao, CancellationToken cancellationToken);
 
     Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(
         int sondagemId,
