@@ -86,11 +86,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             int? respostaLinguaPortuguesaSegundaLinguaExistente = null;
             if (aluno.LinguaPortuguesaSegundaLingua)
             {
-                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")?.OpcaoRespostaId;
+                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.Equals("sim", StringComparison.OrdinalIgnoreCase))?.OpcaoRespostaId;
             }
             else
             {
-                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower().Equals("nao"))?.OpcaoRespostaId;
+                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.Equals("nao", StringComparison.OrdinalIgnoreCase))?.OpcaoRespostaId;
             }
 
             if(repostaLinguaPortuguesaSegundaLinguaDto is not null)
