@@ -1,9 +1,6 @@
 ﻿using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Dados.Repositorio.Postgres;
-using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
-using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Exceptions;
@@ -34,15 +31,12 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var alunosIds = dto.Alunos.Select(a => a.Codigo);
         var questoesId = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)) ?? [0];
 
-        //obter questionarioId do com base questoresIds
-        var questionarioId = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId);
-        if (questionarioId == null)
+        var questoes = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId);
+        if (questoes == null)
             throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
 
-        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(questionarioId.FirstOrDefault()!, TipoQuestao.LinguaPortuguesaSegundaLingua);
-        //obter questao lingua portuguesa não excluida a partir do questionarioId e do tipo TipoQuestao.LinguaPortuguesaSegundaLingua
-        //adicionar o id dessa questao na lista de questoesIds para poder buscar as respostas dos alunos para essa questao
-        //criar variavel questaoLinguaPortuguesaSegundaLinguaId e passar para o ProcessarRespostasAlunos
+        var primeiroQuestionarioId = questoes.FirstOrDefault()!.QuestionarioId;
+        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(primeiroQuestionarioId, TipoQuestao.LinguaPortuguesaSegundaLingua);
 
         if (questaoLinguaPortuguesaSegundaLingua == null)
             throw new NegocioException(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA);

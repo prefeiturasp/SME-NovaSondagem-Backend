@@ -19,5 +19,5 @@ public interface IRepositorioQuestao
 
     Task<IEnumerable<Questao>> ObterQuestionarioIdPorQuestoesAsync(IEnumerable<int> questoesId, CancellationToken cancellationToken = default);
 
-    Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(Questao questionario, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default);
+    Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(int questionarioId, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default);
 }

@@ -100,14 +100,14 @@ public class RepositorioQuestao : IRepositorioQuestao
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(Questao questao, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default)
+    public async Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(int questionarioId, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default)
     {
         return await context.Questoes
             .Include(q => q.Questionario)
             .Include(q => q.QuestaoOpcoes)
                 .ThenInclude(qo => qo.OpcaoResposta)
             .FirstOrDefaultAsync(q => !q.Excluido 
-            && q.Id == questao.QuestionarioId
+            && q.QuestionarioId == questionarioId
             && q.Tipo == tipoQuestao, cancellationToken);
     }
 }

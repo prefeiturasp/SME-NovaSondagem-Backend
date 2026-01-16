@@ -104,7 +104,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         _repositorioQuestao
             .Setup(x => x.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
-                It.IsAny<Questao>(),
+                It.IsAny<int>(),
                 TipoQuestao.LinguaPortuguesaSegundaLingua,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(questaoLinguaPortuguesa);
@@ -196,7 +196,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         _repositorioQuestao
             .Setup(x => x.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
-                It.IsAny<Questao>(),
+                It.IsAny<int>(),
                 TipoQuestao.LinguaPortuguesaSegundaLingua,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(questaoLinguaPortuguesa);
@@ -287,7 +287,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         _repositorioQuestao
             .Setup(x => x.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
-                It.IsAny<Questao>(),
+                It.IsAny<int>(),
                 TipoQuestao.LinguaPortuguesaSegundaLingua,
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(questaoLinguaPortuguesa);
