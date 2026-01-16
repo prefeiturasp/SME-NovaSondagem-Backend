@@ -39,7 +39,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         if (questionarioId == null)
             throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
 
-        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(questionarioId.Value,TipoQuestao.LinguaPortuguesaSegundaLingua);
+        var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(questionarioId.FirstOrDefault()!, TipoQuestao.LinguaPortuguesaSegundaLingua);
         //obter questao lingua portuguesa não excluida a partir do questionarioId e do tipo TipoQuestao.LinguaPortuguesaSegundaLingua
         //adicionar o id dessa questao na lista de questoesIds para poder buscar as respostas dos alunos para essa questao
         //criar variavel questaoLinguaPortuguesaSegundaLinguaId e passar para o ProcessarRespostasAlunos
@@ -86,17 +86,17 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             int? respostaLinguaPortuguesaSegundaLinguaExistente = null;
             if (aluno.LinguaPortuguesaSegundaLingua)
             {
-                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")?.Id;
+                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")?.OpcaoRespostaId;
             }
             else
             {
-                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "nao")?.Id;
+                respostaLinguaPortuguesaSegundaLinguaExistente = questaoLinguaPortugues.QuestaoOpcoes.FirstOrDefault(o => o.OpcaoResposta.DescricaoOpcaoResposta.ToLower().Equals("nao"))?.OpcaoRespostaId;
             }
 
             if(repostaLinguaPortuguesaSegundaLinguaDto is not null)
             {
                 repostaLinguaPortuguesaSegundaLinguaDto.AtualizarResposta(
-                    respostaLinguaPortuguesaSegundaLinguaExistente.Value,
+                    respostaLinguaPortuguesaSegundaLinguaExistente,
                     DateTime.UtcNow);
 
                 respostas.Add(repostaLinguaPortuguesaSegundaLinguaDto);
@@ -107,7 +107,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     dto.SondagemId,
                     aluno.Codigo,
                     questaoLinguaPortugues.Id,
-                    respostaLinguaPortuguesaSegundaLinguaExistente.Value,
+                    respostaLinguaPortuguesaSegundaLinguaExistente,
                     DateTime.UtcNow,
                     null);
 
@@ -149,7 +149,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             return null;
 
         var respostaExistente = repostasAlunos?.FirstOrDefault(r =>
-            r.AlunoId == alunoId && r.QuestaoId == respostaDto.QuestaoId);
+            r.AlunoId == alunoId && r.QuestaoId == respostaDto.QuestaoId && r.BimestreId == respostaDto.BimestreId);
 
         return CriarOuAtualizarResposta(
             sondagemId,
@@ -178,10 +178,10 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 sondagemId,
                 alunoId,
                 respostaDto.QuestaoId,
-                respostaDto.OpcaoRepostaId,
+                respostaDto.OpcaoRespostaId,
                 DateTime.UtcNow,
                 respostaDto.BimestreId);
-        respostaExistente.AtualizarResposta(respostaDto.OpcaoRepostaId, DateTime.UtcNow);
+        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow);
         return respostaExistente;
     }
 }

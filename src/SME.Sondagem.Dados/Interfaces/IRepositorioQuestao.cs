@@ -1,4 +1,5 @@
 using SME.Sondagem.Dominio.Entidades.Questionario;
+using SME.Sondagem.Dominio.Enums;
 
 namespace SME.Sondagem.Dados.Interfaces;
 
@@ -17,4 +18,6 @@ public interface IRepositorioQuestao
         CancellationToken cancellationToken = default);
 
     Task<IEnumerable<Questao>> ObterQuestionarioIdPorQuestoesAsync(IEnumerable<int> questoesId, CancellationToken cancellationToken = default);
+
+    Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(Questao questionario, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default);
 }

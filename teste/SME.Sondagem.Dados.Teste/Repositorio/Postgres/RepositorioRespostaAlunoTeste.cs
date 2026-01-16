@@ -122,9 +122,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var alunosIds = new List<int> { 1, 2 };
 
-            var resultado = await repo.VerificarAlunosTemRespostaPorTipoQuestaoAsync(
+            var resultado = await repo.VerificarAlunosPossuiLinguaPortuguesaAsync(
                 alunosIds,
-                TipoQuestao.Combo,
+                questao,
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);

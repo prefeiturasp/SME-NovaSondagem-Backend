@@ -2,7 +2,9 @@ using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
+using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Teste.DTO;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
@@ -14,13 +16,15 @@ public class SondagemSalvarRespostasUseCaseTeste
 {
     private readonly Mock<IRepositorioSondagem> _repositorioSondagem;
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
+    private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly SondagemSalvarRespostasUseCase _useCase;
 
     public SondagemSalvarRespostasUseCaseTeste()
     {
         _repositorioSondagem = new Mock<IRepositorioSondagem>();
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
-        _useCase = new SondagemSalvarRespostasUseCase(_repositorioSondagem.Object, _repositorioSondagemResposta.Object);
+        _repositorioQuestao = new Mock<IRepositorioQuestao>(); 
+        _useCase = new SondagemSalvarRespostasUseCase(_repositorioSondagem.Object, _repositorioSondagemResposta.Object, _repositorioQuestao.Object);
     }
 
     [Fact]
@@ -226,7 +230,7 @@ public class SondagemSalvarRespostasUseCaseTeste
                         new()
                         {
                             QuestaoId = 10,
-                            OpcaoRepostaId = 5,
+                            OpcaoRespostaId = 5,
                             BimestreId = bimestreId
                         }
                     }
@@ -239,7 +243,7 @@ public class SondagemSalvarRespostasUseCaseTeste
                         new()
                         {
                             QuestaoId = 10,
-                            OpcaoRepostaId = 6,
+                            OpcaoRespostaId = 6,
                             BimestreId = bimestreId
                         }
                     }

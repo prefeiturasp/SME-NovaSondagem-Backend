@@ -99,4 +99,15 @@ public class RepositorioQuestao : IRepositorioQuestao
             .OrderBy(q => q.Ordem)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<Questao?> ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(Questao questao, TipoQuestao tipoQuestao, CancellationToken cancellationToken = default)
+    {
+        return await context.Questoes
+            .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
+            .FirstOrDefaultAsync(q => !q.Excluido 
+            && q.Id == questao.QuestionarioId
+            && q.Tipo == tipoQuestao, cancellationToken);
+    }
 }

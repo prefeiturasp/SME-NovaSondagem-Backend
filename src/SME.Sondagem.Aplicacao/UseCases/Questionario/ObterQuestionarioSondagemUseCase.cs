@@ -78,6 +78,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, turma.AnoLetivo, filtro.ProficienciaId, cancellationToken);
 
+        var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
+
         var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
@@ -92,9 +94,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             cancellationToken);
 
         var alunosComLinguaPortuguesaSegundaLingua = await _repositorioRespostaAluno
-            .VerificarAlunosTemRespostaPorTipoQuestaoAsync(
-                codigosAlunos, 
-                TipoQuestao.LinguaPortuguesaSegundaLingua, 
+            .VerificarAlunosPossuiLinguaPortuguesaAsync(
+                codigosAlunos,
+                questaoLinguaPortuguesa,
                 cancellationToken);
 
         var respostasAlunosPorQuestoes = await _repositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
