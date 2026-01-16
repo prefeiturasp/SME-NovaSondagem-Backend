@@ -109,11 +109,23 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                     nameof(VerificarAlunosTemRespostaPorTipoQuestaoAsync_deve_retornar_dicionario_com_true_e_false));
 
             var servicoAuditoria = CriarServicoAuditoria();
-            var questao = CriarQuestao(1, TipoQuestao.Combo);
+    
+            var questao = CriarQuestao(1, TipoQuestao.LinguaPortuguesaSegundaLingua);
             context.Questoes.Add(questao);
+
+            var opcaoResposta = new OpcaoResposta(
+                ordem: 1,
+                descricaoOpcaoResposta: "Sim",
+                legenda: null,
+                corFundo: null,
+                corTexto: null
+            );
+            typeof(OpcaoResposta).GetProperty("Id")!.SetValue(opcaoResposta, 1);
+            context.OpcoesResposta.Add(opcaoResposta);
 
             var resposta = CriarRespostaAluno(alunoId: 1, questaoId: 1);
             typeof(RespostaAluno).GetProperty("Questao")!.SetValue(resposta, questao);
+            typeof(RespostaAluno).GetProperty("OpcaoResposta")!.SetValue(resposta, opcaoResposta);
 
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
@@ -130,6 +142,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.Equal(2, resultado.Count);
             Assert.True(resultado[1]);
             Assert.False(resultado[2]);
+
         }
 
         #endregion
