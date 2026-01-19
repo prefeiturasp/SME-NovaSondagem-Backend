@@ -1,24 +1,18 @@
 ﻿using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Infrastructure.Dtos;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
 
 namespace SME.Sondagem.Infra.Dtos.Questionario;
 
 [ExcludeFromCodeCoverage]
-public class QuestionarioDto
+public class QuestionarioDto : BaseDto
 {
-    
-    [JsonPropertyName("codigoturma")]
-    public int CodigoTurma { get; set; }
-    
-    [JsonPropertyName("nometurma")]
-    public string NomeTurma { get; set; } = string.Empty;
-
-    [JsonPropertyName("anoletivo")]
-    public int AnoLetivo { get; set; }
-    
-    [JsonPropertyName("codigoescola")]
-    public string CodigoEscola { get; set; } = string.Empty;
-
+    public required string Nome { get; set; }
     public TipoQuestionario Tipo { get; set; }
+    public int AnoLetivo { get; set; }
+    public int ComponenteCurricularId { get; set; }
+    public int ProficienciaId { get; set; }
+    public int SondagemId { get; set; }
+    public int? ModalidadeId { get; set; }
+    public int? SerieAno { get; set; }
 }

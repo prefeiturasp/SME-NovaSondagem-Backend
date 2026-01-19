@@ -25,9 +25,12 @@ using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
 using SME.Sondagem.Aplicacao.Validators.Questao;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dados.Services.Auditoria;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -39,9 +42,6 @@ using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 using System.Diagnostics.CodeAnalysis;
-using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dados.Repositorio.Auditoria;
-using SME.Sondagem.Dados.Services.Auditoria;
 
 namespace SME.Sondagem.IoC;
 
@@ -62,13 +62,15 @@ public static class RegistraDependencias
 
     private static void RegistrarRepositorios(IServiceCollection services)
     {
+        services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
+        services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
+        services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+        services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
+
         //repositórios do Elastic
         services.AddScoped<IRepositorioElasticAluno, RepositorioElasticAluno>();
         services.AddScoped<IRepositorioElasticTurma, RepositorioElasticTurma>();
-        services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
-        services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
-        services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
     }
 
     private static void RegistrarServicos(IServiceCollection services)
@@ -92,6 +94,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirOpcaoRespostaUseCase, ExcluirOpcaoRespostaUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaUseCase, ObterOpcaoRespostasUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaPorIdUseCase, ObterOpcaoRespostaPorIdUseCase>();
+        services.TryAddScoped<ICriarQuestionarioUseCase, CriarQuestionarioUseCase>();
+        services.TryAddScoped<IAtualizarQuestionarioUseCase, AtualizarQuestionarioUseCase>();
+        services.TryAddScoped<IExcluirQuestionarioUseCase, ExcluirQuestionarioUseCase>();
+        services.TryAddScoped<IObterQuestionariosUseCase, ObterQuestionariosUseCase>();
+        services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
         services.TryAddScoped<ISondagemUseCase, SondagemUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
