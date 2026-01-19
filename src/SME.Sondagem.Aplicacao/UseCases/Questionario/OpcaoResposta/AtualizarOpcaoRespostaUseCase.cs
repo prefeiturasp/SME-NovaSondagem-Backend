@@ -29,6 +29,7 @@ public class AtualizarOpcaoRespostaUseCase : IAtualizarOpcaoRespostaUseCase
 
         return new OpcaoRespostaDto
         {
+            Id = opcaoRespostaExistente.Id,
             DescricaoOpcaoResposta = opcaoRespostaExistente.DescricaoOpcaoResposta,
             Legenda = opcaoRespostaExistente.Legenda,
             CorFundo = opcaoRespostaExistente.CorFundo,
