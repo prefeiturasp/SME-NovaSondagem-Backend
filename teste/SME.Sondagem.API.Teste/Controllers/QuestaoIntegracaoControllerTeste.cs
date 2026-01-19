@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
-using SME.Sondagem.Dominio;
-using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
@@ -33,7 +31,7 @@ namespace SME.Sondagem.API.Teste.Controller
             return new QuestaoDto
             {
                 Nome = "Nome Teste",
-                Tipo = TipoQuestao.Periodo
+                Tipo = Dominio.Enums.TipoQuestao.Periodo
             };
         }
 
@@ -52,33 +50,6 @@ namespace SME.Sondagem.API.Teste.Controller
             var ok = result as OkObjectResult;
             ok.Should().NotBeNull();
             ok!.StatusCode.Should().Be(StatusCodes.Status200OK);
-        }
-
-        [Fact]
-        public async Task Get_OperationCanceledException()
-        {
-            obterMock.Setup(x => x.ExecutarAsync(It.IsAny<CancellationToken>()))
-                     .ThrowsAsync(new OperationCanceledException());
-
-            var controller = CriarController();
-
-            var result = await controller.Get(CancellationToken.None);
-
-            var status = result as ObjectResult;
-            status!.StatusCode.Should().Be(499);
-        }
-
-        [Fact]
-        public async Task Get_Exception()
-        {
-            obterMock.Setup(x => x.ExecutarAsync(It.IsAny<CancellationToken>()))
-                     .ThrowsAsync(new Exception());
-
-            var controller = CriarController();
-
-            var result = await controller.Get(CancellationToken.None);
-
-            (result as ObjectResult)!.StatusCode.Should().Be(500);
         }
 
         #endregion
@@ -111,19 +82,6 @@ namespace SME.Sondagem.API.Teste.Controller
             (result as NotFoundObjectResult)!.StatusCode.Should().Be(404);
         }
 
-        [Fact]
-        public async Task GetById_Exception()
-        {
-            obterPorIdMock.Setup(x => x.ExecutarAsync(1, It.IsAny<CancellationToken>()))
-                          .ThrowsAsync(new Exception());
-
-            var controller = CriarController();
-
-            var result = await controller.GetById(1, CancellationToken.None);
-
-            (result as ObjectResult)!.StatusCode.Should().Be(500);
-        }
-
         #endregion
 
         #region CREATE
@@ -142,47 +100,17 @@ namespace SME.Sondagem.API.Teste.Controller
         }
 
         [Fact]
-        public async Task Create_ValidationException()
-        {
-            var validationFailures = new List<FluentValidation.Results.ValidationFailure>
-            {
-                new FluentValidation.Results.ValidationFailure("DescricaoQuestao", "Campo obrigatório")
-            };
-
-            criarMock.Setup(x => x.ExecutarAsync(It.IsAny<QuestaoDto>(), It.IsAny<CancellationToken>()))
-                     .ThrowsAsync(new FluentValidation.ValidationException(validationFailures));
-
-            var controller = CriarController();
-
-            var result = await controller.Create(CriarDto(), CancellationToken.None);
-
-            (result as BadRequestObjectResult)!.StatusCode.Should().Be(400);
-        }
-
-        [Fact]
-        public async Task Create_RegraNegocioException()
-        {
-            criarMock.Setup(x => x.ExecutarAsync(It.IsAny<QuestaoDto>(), It.IsAny<CancellationToken>()))
-                     .ThrowsAsync(new RegraNegocioException("erro", 409));
-
-            var controller = CriarController();
-
-            var result = await controller.Create(CriarDto(), CancellationToken.None);
-
-            (result as ObjectResult)!.StatusCode.Should().Be(409);
-        }
-
-        [Fact]
-        public async Task Create_Exception()
+        public async Task Create_Exception_DevePropagarExcecao()
         {
             criarMock.Setup(x => x.ExecutarAsync(It.IsAny<QuestaoDto>(), It.IsAny<CancellationToken>()))
                      .ThrowsAsync(new Exception());
 
             var controller = CriarController();
 
-            var result = await controller.Create(CriarDto(), CancellationToken.None);
+            Func<Task> act = async () =>
+                await controller.Create(CriarDto(), CancellationToken.None);
 
-            (result as ObjectResult)!.StatusCode.Should().Be(500);
+            await act.Should().ThrowAsync<Exception>();
         }
 
         #endregion
@@ -244,6 +172,7 @@ namespace SME.Sondagem.API.Teste.Controller
 
             (result as NotFoundObjectResult)!.StatusCode.Should().Be(404);
         }
+
         #endregion
     }
 }
