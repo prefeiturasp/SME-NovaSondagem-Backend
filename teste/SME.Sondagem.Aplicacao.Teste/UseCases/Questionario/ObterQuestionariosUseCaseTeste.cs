@@ -268,7 +268,9 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
 
             var resultado = await _useCase.ExecutarAsync();
 
-            Assert.IsAssignableFrom<IEnumerable<Infra.Dtos.Questionario.QuestionarioDto>>(resultado);
+            Assert.NotNull(resultado);
+            Assert.IsType<List<Infra.Dtos.Questionario.QuestionarioDto>>(resultado.ToList());
+            Assert.All(resultado, item => Assert.IsType<Infra.Dtos.Questionario.QuestionarioDto>(item));
         }
     }
 }

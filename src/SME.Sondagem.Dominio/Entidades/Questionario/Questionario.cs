@@ -4,40 +4,35 @@ namespace SME.Sondagem.Dominio.Entidades.Questionario;
 
 public class Questionario : EntidadeBase
 {
-    public Questionario(string nome, TipoQuestionario tipo, int anoLetivo, 
-        int componenteCurricularId, int proficienciaId, int sondagemId, 
-        int? modalidadeId = null, int? serieAno = null)
+    public Questionario(
+        string nome,
+        TipoQuestionario tipo,
+        int anoLetivo,
+        int componenteCurricularId,
+        int proficienciaId,
+        int sondagemId,
+        int? modalidadeId = null,
+        int? serieAno = null)
     {
-        if (string.IsNullOrWhiteSpace(nome))
-            throw new ArgumentException("Nome não pode ser vazio.", nameof(nome));
-
-        if (componenteCurricularId <= 0)
-            throw new ArgumentException("Componente Curricular Id deve ser maior que zero.", nameof(componenteCurricularId));
-
-        if (proficienciaId <= 0)
-            throw new ArgumentException("Proficiencia Id deve ser maior que zero.", nameof(proficienciaId));
-
-        if (sondagemId <= 0)
-            throw new ArgumentException("Sondagem Id deve ser maior que zero.", nameof(sondagemId));
-
-        Nome = nome;
-        Tipo = tipo;
-        AnoLetivo = anoLetivo;
-        ComponenteCurricularId = componenteCurricularId;
-        ProficienciaId = proficienciaId;
-        SondagemId = sondagemId;
-        ModalidadeId = modalidadeId;
-        SerieAno = serieAno;
+        ValidarEAplicar(
+            nome,
+            tipo,
+            anoLetivo,
+            componenteCurricularId,
+            proficienciaId,
+            sondagemId,
+            modalidadeId,
+            serieAno);
     }
 
-    public string Nome { get; set; } = string.Empty;
-    public TipoQuestionario Tipo { get; set; }
-    public int AnoLetivo { get; set; }
-    public int ComponenteCurricularId { get; set; }
-    public int ProficienciaId { get; set; }
-    public int SondagemId { get; set; }
-    public int? ModalidadeId { get; set; }
-    public int? SerieAno { get; set; }
+    public string Nome { get; private set; } = string.Empty;
+    public TipoQuestionario Tipo { get; private set; }
+    public int AnoLetivo { get; private set; }
+    public int ComponenteCurricularId { get; private set; }
+    public int ProficienciaId { get; private set; }
+    public int SondagemId { get; private set; }
+    public int? ModalidadeId { get; private set; }
+    public int? SerieAno { get; private set; }
 
     // Navegação
     public virtual Entidades.Sondagem.Sondagem Sondagem { get; private set; } = null!;
@@ -45,9 +40,36 @@ public class Questionario : EntidadeBase
     public virtual Proficiencia Proficiencia { get; private set; } = null!;
     public virtual ICollection<Questao> Questoes { get; private set; } = new List<Questao>();
 
-    public void Atualizar(string nome, TipoQuestionario tipo, int anoLetivo,
-        int componenteCurricularId, int proficienciaId, int sondagemId,
-        int? modalidadeId = null, int? serieAno = null)
+    public void Atualizar(
+        string nome,
+        TipoQuestionario tipo,
+        int anoLetivo,
+        int componenteCurricularId,
+        int proficienciaId,
+        int sondagemId,
+        int? modalidadeId = null,
+        int? serieAno = null)
+    {
+        ValidarEAplicar(
+            nome,
+            tipo,
+            anoLetivo,
+            componenteCurricularId,
+            proficienciaId,
+            sondagemId,
+            modalidadeId,
+            serieAno);
+    }
+
+    private void ValidarEAplicar(
+        string nome,
+        TipoQuestionario tipo,
+        int anoLetivo,
+        int componenteCurricularId,
+        int proficienciaId,
+        int sondagemId,
+        int? modalidadeId,
+        int? serieAno)
     {
         if (string.IsNullOrWhiteSpace(nome))
             throw new ArgumentException("Nome não pode ser vazio.", nameof(nome));

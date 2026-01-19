@@ -7,7 +7,7 @@ namespace SME.Sondagem.API.Middlewares;
 [ExcludeFromCodeCoverage]
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class ChaveIntegracaoApi : Attribute, IAsyncActionFilter
+public class ChaveIntegracaoApiAttribute : Attribute, IAsyncActionFilter
 {
     private const string ChaveIntegracaoHeader = "x-api-sondagem-key";
     private const string ChaveIntegracaoConfigurationKey = "ChaveIntegracaoApiSondagem";

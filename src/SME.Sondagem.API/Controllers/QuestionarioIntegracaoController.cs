@@ -9,7 +9,7 @@ namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[ChaveIntegracaoApi]
+[ChaveIntegracaoApiAttribute]
 public class QuestionarioIntegracaoController : ControllerBase
 {
     private readonly IObterQuestionariosUseCase obterQuestionariosUseCase;
