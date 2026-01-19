@@ -1,71 +1,69 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using SME.Sondagem.API.Controllers;
-using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Dominio;
-using SME.Sondagem.Infrastructure.Dtos.Bimestre;
+using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste;
+namespace SME.Sondagem.API.Teste.Controller;
 
-public class BimestreControllerTeste
+public class QuestaoControllerTeste
 {
-    private readonly Mock<IObterBimestresUseCase> _obterBimestresUseCaseMock;
-    private readonly Mock<IObterBimestrePorIdUseCase> _obterBimestrePorIdUseCaseMock;
-    private readonly Mock<ICriarBimestreUseCase> _criarBimestreUseCaseMock;
-    private readonly Mock<IAtualizarBimestreUseCase> _atualizarBimestreUseCaseMock;
-    private readonly Mock<IExcluirBimestreUseCase> _excluirBimestreUseCaseMock;
-    private readonly BimestreController _controller;
+    private readonly Mock<IObterQuestoesUseCase> _obterQuestoesUseCaseMock;
+    private readonly Mock<IObterQuestaoPorIdUseCase> _obterQuestaoPorIdUseCaseMock;
+    private readonly Mock<ICriarQuestaoUseCase> _criarQuestaoUseCaseMock;
+    private readonly Mock<IAtualizarQuestaoUseCase> _atualizarQuestaoUseCaseMock;
+    private readonly Mock<IExcluirQuestaoUseCase> _excluirQuestaoUseCaseMock;
+    private readonly QuestaoController _controller;
     private readonly CancellationToken _cancellationToken;
 
-    public BimestreControllerTeste()
+    public QuestaoControllerTeste()
     {
-        _obterBimestresUseCaseMock = new Mock<IObterBimestresUseCase>();
-        _obterBimestrePorIdUseCaseMock = new Mock<IObterBimestrePorIdUseCase>();
-        _criarBimestreUseCaseMock = new Mock<ICriarBimestreUseCase>();
-        _atualizarBimestreUseCaseMock = new Mock<IAtualizarBimestreUseCase>();
-        _excluirBimestreUseCaseMock = new Mock<IExcluirBimestreUseCase>();
+        _obterQuestoesUseCaseMock = new Mock<IObterQuestoesUseCase>();
+        _obterQuestaoPorIdUseCaseMock = new Mock<IObterQuestaoPorIdUseCase>();
+        _criarQuestaoUseCaseMock = new Mock<ICriarQuestaoUseCase>();
+        _atualizarQuestaoUseCaseMock = new Mock<IAtualizarQuestaoUseCase>();
+        _excluirQuestaoUseCaseMock = new Mock<IExcluirQuestaoUseCase>();
         _cancellationToken = CancellationToken.None;
 
-
-        _controller = new BimestreController(
-            _criarBimestreUseCaseMock.Object,
-            _atualizarBimestreUseCaseMock.Object,
-            _excluirBimestreUseCaseMock.Object,
-            _obterBimestrePorIdUseCaseMock.Object,
-            _obterBimestresUseCaseMock.Object
+        _controller = new QuestaoController(
+            _obterQuestoesUseCaseMock.Object,
+            _obterQuestaoPorIdUseCaseMock.Object,
+            _criarQuestaoUseCaseMock.Object,
+            _atualizarQuestaoUseCaseMock.Object,
+            _excluirQuestaoUseCaseMock.Object
         );
     }
 
     #region Listar Tests
 
     [Fact]
-    public async Task Listar_DeveRetornarOk_ComListaDeBimestres()
+    public async Task Listar_DeveRetornarOk_ComListaDeQuestoes()
     {
-        var bimestres = new List<BimestreDto>
+        var questoes = new List<QuestaoDto>
         {
-            new BimestreDto { Id = 1, Descricao = "Bimestre 1" },
-            new BimestreDto { Id = 2, Descricao = "Bimestre 2" }
+            new QuestaoDto { Id = 1, Nome = "Questao 1" },
+            new QuestaoDto { Id = 2, Nome = "Questao 2" }
         };
 
-        _obterBimestresUseCaseMock
+        _obterQuestoesUseCaseMock
             .Setup(x => x.ExecutarAsync(_cancellationToken))
-            .ReturnsAsync(bimestres);
+            .ReturnsAsync(questoes);
 
         var result = await _controller.Listar(_cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.Equal(bimestres, okResult.Value);
+        Assert.Equal(questoes, okResult.Value);
     }
 
     [Fact]
     public async Task Listar_OperationCanceledException_DeveRetornarStatus499()
     {
-        _obterBimestresUseCaseMock
+        _obterQuestoesUseCaseMock
             .Setup(x => x.ExecutarAsync(_cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -83,7 +81,7 @@ public class BimestreControllerTeste
     public async Task Listar_Exception_DeveRetornarStatus500()
     {
         var exception = new Exception("Erro interno");
-        _obterBimestresUseCaseMock
+        _obterQuestoesUseCaseMock
             .Setup(x => x.ExecutarAsync(_cancellationToken))
             .ThrowsAsync(exception);
 
@@ -94,7 +92,7 @@ public class BimestreControllerTeste
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Erro ao listar bimestres", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Erro ao listar questões", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     #endregion
@@ -102,29 +100,29 @@ public class BimestreControllerTeste
     #region ObterPorId Tests
 
     [Fact]
-    public async Task ObterPorId_DeveRetornarOk_ComBimestre()
+    public async Task ObterPorId_DeveRetornarOk_ComQuestao()
     {
-        const long id = 1;
-        var bimestre = new BimestreDto { Id = 1, Descricao = "Bimestre Teste" };
+        const int id = 1;
+        var questao = new QuestaoDto { Id = 1, Nome = "Questao Teste" };
 
-        _obterBimestrePorIdUseCaseMock
+        _obterQuestaoPorIdUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
-            .ReturnsAsync(bimestre);
+            .ReturnsAsync(questao);
 
         var result = await _controller.ObterPorId(id, _cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.Equal(bimestre, okResult.Value);
+        Assert.Equal(questao, okResult.Value);
     }
 
     [Fact]
-    public async Task ObterPorId_BimestreNaoEncontrado_DeveRetornarNotFound()
+    public async Task ObterPorId_QuestaoNaoEncontrado_DeveRetornarNotFound()
     {
-        const long id = 999;
-        _obterBimestrePorIdUseCaseMock
+        const int id = 999;
+        _obterQuestaoPorIdUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
-            .ReturnsAsync((BimestreDto?)null);
+            .ReturnsAsync((QuestaoDto?)null);
 
         var result = await _controller.ObterPorId(id, _cancellationToken);
 
@@ -133,14 +131,14 @@ public class BimestreControllerTeste
 
         Assert.NotNull(notFoundResult.Value);
         var mensagemProperty = notFoundResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal($"Bimestre com ID {id} não encontrado", mensagemProperty?.GetValue(notFoundResult.Value));
+        Assert.Equal($"Questão com ID {id} não encontrada", mensagemProperty?.GetValue(notFoundResult.Value));
     }
 
     [Fact]
     public async Task ObterPorId_OperationCanceledException_DeveRetornarStatus499()
     {
-        const long id = 1;
-        _obterBimestrePorIdUseCaseMock
+        const int id = 1;
+        _obterQuestaoPorIdUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -157,9 +155,9 @@ public class BimestreControllerTeste
     [Fact]
     public async Task ObterPorId_Exception_DeveRetornarStatus500()
     {
-        const long id = 1;
+        const int id = 1;
         var exception = new Exception("Erro interno");
-        _obterBimestrePorIdUseCaseMock
+        _obterQuestaoPorIdUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ThrowsAsync(exception);
 
@@ -170,7 +168,7 @@ public class BimestreControllerTeste
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Erro ao obter bimestre", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Erro ao obter questão", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     #endregion
@@ -178,40 +176,45 @@ public class BimestreControllerTeste
     #region Criar Tests
 
     [Fact]
-    public async Task Criar_DeveRetornarCreated_ComBimestreCriado()
+    public async Task Criar_DeveRetornarCreated_ComQuestaoCriado()
     {
-        var bimestreDto = new BimestreDto { Descricao = "Novo Bimestre" };
-        const long bimestreId = 1;
+        var questaoDto = new QuestaoDto { Nome = "Nova Questao" };
+        var questaoCriada = new QuestaoDto { Id = 1, Nome = "Nova Questao" };
+        const int questaoId = 1;
 
-        _criarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(bimestreDto, _cancellationToken))
-            .ReturnsAsync(bimestreId);
+        _criarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
+            .ReturnsAsync(questaoId);
 
-        var result = await _controller.Criar(bimestreDto, _cancellationToken);
+        _obterQuestaoPorIdUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoId, _cancellationToken))
+            .ReturnsAsync(questaoCriada);
+
+        var result = await _controller.Criar(questaoDto, _cancellationToken);
 
         var createdResult = Assert.IsType<CreatedAtActionResult>(result);
         Assert.Equal(StatusCodes.Status201Created, createdResult.StatusCode);
-        Assert.Equal(nameof(BimestreController.ObterPorId), createdResult.ActionName);
+        Assert.Equal(nameof(QuestaoController.ObterPorId), createdResult.ActionName);
 
         var routeValues = createdResult.RouteValues;
         Assert.NotNull(routeValues);
-        Assert.Equal(bimestreId, routeValues["id"]);
+        Assert.True(routeValues.ContainsKey("id"));
+        Assert.Equal(questaoId, Convert.ToInt32(routeValues["id"]!));
 
-        var resultValue = createdResult.Value;
-        Assert.NotNull(resultValue);
-        var idProperty = resultValue.GetType().GetProperty("id");
-        Assert.Equal(bimestreId, idProperty?.GetValue(resultValue));
+        var resultValue = Assert.IsType<QuestaoDto>(createdResult.Value);
+        Assert.Equal(questaoId, resultValue.Id);
+        Assert.Equal("Nova Questao", resultValue.Nome);
     }
 
     [Fact]
     public async Task Criar_OperationCanceledException_DeveRetornarStatus499()
     {
-        var bimestreDto = new BimestreDto { Descricao = "Novo Bimestre" };
-        _criarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(bimestreDto, _cancellationToken))
+        var questaoDto = new QuestaoDto { Nome = "Nova Questao" };
+        _criarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _controller.Criar(bimestreDto, _cancellationToken);
+        var result = await _controller.Criar(questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(499, statusCodeResult.StatusCode);
@@ -224,18 +227,18 @@ public class BimestreControllerTeste
     [Fact]
     public async Task Criar_ValidationException_DeveRetornarBadRequest()
     {
-        var bimestreDto = new BimestreDto { Descricao = "" };
+        var questaoDto = new QuestaoDto { Nome = "" };
         var validationFailures = new List<FluentValidation.Results.ValidationFailure>
         {
             new("Nome", "Nome é obrigatório")
         };
         var validationException = new ValidationException(validationFailures);
 
-        _criarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(bimestreDto, _cancellationToken))
+        _criarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
             .ThrowsAsync(validationException);
 
-        var result = await _controller.Criar(bimestreDto, _cancellationToken);
+        var result = await _controller.Criar(questaoDto, _cancellationToken);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
@@ -251,41 +254,41 @@ public class BimestreControllerTeste
     [Fact]
     public async Task Criar_NegocioException_DeveRetornarStatusDaExcecao()
     {
-        var bimestreDto = new BimestreDto { Descricao = "Bimestre Duplicado" };
-        var negocioException = new RegraNegocioException("Bimestre já existe", StatusCodes.Status409Conflict);
+        var questaoDto = new QuestaoDto { Nome = "Questao Duplicado" };
+        var negocioException = new RegraNegocioException("Questao já existe", StatusCodes.Status409Conflict);
 
-        _criarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(bimestreDto, _cancellationToken))
+        _criarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
             .ThrowsAsync(negocioException);
 
-        var result = await _controller.Criar(bimestreDto, _cancellationToken);
+        var result = await _controller.Criar(questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status409Conflict, statusCodeResult.StatusCode);
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Bimestre já existe", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Questao já existe", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     [Fact]
     public async Task Criar_Exception_DeveRetornarStatus500()
     {
-        var bimestreDto = new BimestreDto { Descricao = "Novo Bimestre" };
+        var questaoDto = new QuestaoDto { Nome = "Nova Questao" };
         var exception = new Exception("Erro interno");
 
-        _criarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(bimestreDto, _cancellationToken))
+        _criarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(questaoDto, _cancellationToken))
             .ThrowsAsync(exception);
 
-        var result = await _controller.Criar(bimestreDto, _cancellationToken);
+        var result = await _controller.Criar(questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Erro ao criar bimestre", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Erro ao criar questão", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     #endregion
@@ -293,53 +296,53 @@ public class BimestreControllerTeste
     #region Atualizar Tests
 
     [Fact]
-    public async Task Atualizar_DeveRetornarOk_ComBimestreAtualizado()
+    public async Task Atualizar_DeveRetornarOk_ComQuestaoAtualizado()
     {
         const int id = 1;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "Bimestre Atualizado" };
+        var questaoDto = new QuestaoDto { Id = id, Nome = "Questao Atualizado" };
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
-            .ReturnsAsync(bimestreDto);
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
+            .ReturnsAsync(questaoDto);
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.Equal(bimestreDto, okResult.Value);
+        Assert.Equal(questaoDto, okResult.Value);
     }
 
     [Fact]
-    public async Task Atualizar_BimestreNaoEncontrado_DeveRetornarNotFound()
+    public async Task Atualizar_QuestaoNaoEncontrado_DeveRetornarNotFound()
     {
         const int id = 999;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "Bimestre" };
+        var questaoDto = new QuestaoDto { Id = id, Nome = "Questao" };
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
-            .ReturnsAsync((BimestreDto?)null);
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
+            .ReturnsAsync((QuestaoDto?)null);
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
         Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
 
         Assert.NotNull(notFoundResult.Value);
         var mensagemProperty = notFoundResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal($"Bimestre com ID {id} não encontrado", mensagemProperty?.GetValue(notFoundResult.Value));
+        Assert.Equal($"Questão com ID {id} não encontrada", mensagemProperty?.GetValue(notFoundResult.Value));
     }
 
     [Fact]
     public async Task Atualizar_OperationCanceledException_DeveRetornarStatus499()
     {
         const int id = 1;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "Bimestre Atualizado" };
+        var questaoDto = new QuestaoDto { Id = id, Nome = "Questao Atualizado" };
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(499, statusCodeResult.StatusCode);
@@ -353,18 +356,18 @@ public class BimestreControllerTeste
     public async Task Atualizar_ValidationException_DeveRetornarBadRequest()
     {
         const int id = 1;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "" };
+        var questaoDto = new QuestaoDto { Id = id, Nome = "" };
         var validationFailures = new List<FluentValidation.Results.ValidationFailure>
         {
             new("Nome", "Nome é obrigatório")
         };
         var validationException = new ValidationException(validationFailures);
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
             .ThrowsAsync(validationException);
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
@@ -381,42 +384,42 @@ public class BimestreControllerTeste
     public async Task Atualizar_NegocioException_DeveRetornarStatusDaExcecao()
     {
         const int id = 1;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "Bimestre" };
-        var negocioException = new RegraNegocioException("Bimestre não encontrado", StatusCodes.Status404NotFound);
+        var questaoDto = new QuestaoDto { Id = id, Nome = "Questao" };
+        var negocioException = new RegraNegocioException("Questao não encontrado", StatusCodes.Status404NotFound);
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
             .ThrowsAsync(negocioException);
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status404NotFound, statusCodeResult.StatusCode);
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Bimestre não encontrado", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Questao não encontrado", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     [Fact]
     public async Task Atualizar_Exception_DeveRetornarStatus500()
     {
         const int id = 1;
-        var bimestreDto = new BimestreDto { Id = id, Descricao = "Bimestre" };
+        var questaoDto = new QuestaoDto { Id = id, Nome = "Questao" };
         var exception = new Exception("Erro interno");
 
-        _atualizarBimestreUseCaseMock
-            .Setup(x => x.ExecutarAsync(id, bimestreDto, _cancellationToken))
+        _atualizarQuestaoUseCaseMock
+            .Setup(x => x.ExecutarAsync(id, questaoDto, _cancellationToken))
             .ThrowsAsync(exception);
 
-        var result = await _controller.Atualizar(id, bimestreDto, _cancellationToken);
+        var result = await _controller.Atualizar(id, questaoDto, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Erro ao atualizar bimestre", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Erro ao atualizar questão", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     #endregion
@@ -426,8 +429,8 @@ public class BimestreControllerTeste
     [Fact]
     public async Task Excluir_DeveRetornarNoContent_QuandoExclusaoComSucesso()
     {
-        const long id = 1;
-        _excluirBimestreUseCaseMock
+        const int id = 1;
+        _excluirQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ReturnsAsync(true);
 
@@ -438,10 +441,10 @@ public class BimestreControllerTeste
     }
 
     [Fact]
-    public async Task Excluir_BimestreNaoEncontrado_DeveRetornarNotFound()
+    public async Task Excluir_QuestaoNaoEncontrado_DeveRetornarNotFound()
     {
-        const long id = 999;
-        _excluirBimestreUseCaseMock
+        const int id = 999;
+        _excluirQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ReturnsAsync(false);
 
@@ -452,14 +455,14 @@ public class BimestreControllerTeste
 
         Assert.NotNull(notFoundResult.Value);
         var mensagemProperty = notFoundResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal($"Bimestre com ID {id} não encontrado", mensagemProperty?.GetValue(notFoundResult.Value));
+        Assert.Equal($"Questão com ID {id} não encontrada", mensagemProperty?.GetValue(notFoundResult.Value));
     }
 
     [Fact]
     public async Task Excluir_OperationCanceledException_DeveRetornarStatus499()
     {
-        const long id = 1;
-        _excluirBimestreUseCaseMock
+        const int id = 1;
+        _excluirQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
@@ -476,9 +479,9 @@ public class BimestreControllerTeste
     [Fact]
     public async Task Excluir_Exception_DeveRetornarStatus500()
     {
-        const long id = 1;
+        const int id = 1;
         var exception = new Exception("Erro interno");
-        _excluirBimestreUseCaseMock
+        _excluirQuestaoUseCaseMock
             .Setup(x => x.ExecutarAsync(id, _cancellationToken))
             .ThrowsAsync(exception);
 
@@ -489,7 +492,7 @@ public class BimestreControllerTeste
 
         Assert.NotNull(statusCodeResult.Value);
         var mensagemProperty = statusCodeResult.Value.GetType().GetProperty("mensagem");
-        Assert.Equal("Erro ao excluir bimestre", mensagemProperty?.GetValue(statusCodeResult.Value));
+        Assert.Equal("Erro ao excluir questão", mensagemProperty?.GetValue(statusCodeResult.Value));
     }
 
     #endregion

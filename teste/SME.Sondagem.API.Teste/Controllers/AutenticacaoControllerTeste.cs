@@ -5,7 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos.Autenticacao;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste;
+namespace SME.Sondagem.API.Teste.Controller;
 
 public class AutenticacaoControllerTeste
 {

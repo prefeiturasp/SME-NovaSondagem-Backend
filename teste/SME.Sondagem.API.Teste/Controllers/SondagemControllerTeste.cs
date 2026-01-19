@@ -9,7 +9,7 @@ using SME.Sondagem.Infra.Teste.DTO;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste;
+namespace SME.Sondagem.API.Teste.Controller;
 
 public class SondagemControllerTeste
 {

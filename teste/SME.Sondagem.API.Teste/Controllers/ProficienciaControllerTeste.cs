@@ -11,7 +11,7 @@ using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Exceptions;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste;
+namespace SME.Sondagem.API.Teste.Controller;
 
 public class ProficienciaControllerTeste
 {
