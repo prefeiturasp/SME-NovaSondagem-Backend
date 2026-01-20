@@ -163,7 +163,6 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private static List<int> ObterQuestoesIdsPorTipo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         return questoesAtivas
-            .Where(q => q.Tipo == TipoQuestao.Combo || q.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua)
             .Select(q => q.Id)
             .ToList();
     }
@@ -198,7 +197,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                     IdCiclo = bimestreId.Value,
                     DescricaoColuna = q.Nome,          
                     PeriodoBimestreAtivo = true,
-                    OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas)
+                    OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas, true)
                 })
                 .ToList();
 
@@ -227,7 +226,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             : throw new ErroNaoEncontradoException("Não foi possível obter as colunas dos ciclos");
     }
 
-    private static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    private static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas, bool possuiSubperguntas = false)
     {
         var retorno = questoesAtivas
             .Where(q => q.Id == questaoId)
@@ -235,7 +234,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto
             {
-                Id = qo.Id,
+                Id = possuiSubperguntas ? qo.OpcaoRespostaId : qo.Id,
                 Ordem = qo.Ordem,
                 DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
                 Legenda = qo.OpcaoResposta.Legenda,

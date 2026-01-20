@@ -437,11 +437,13 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
-        _mockRepositorioRespostaAluno.Verify(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(),
-            It.Is<List<long>>(ids => ids.Count == 2), 
-            It.IsAny<long>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+        _mockRepositorioRespostaAluno.Verify(x =>
+            x.ObterRespostasAlunosPorQuestoesAsync(
+                It.IsAny<List<long>>(),
+                It.Is<List<long>>(ids => ids.Count == 3),
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
