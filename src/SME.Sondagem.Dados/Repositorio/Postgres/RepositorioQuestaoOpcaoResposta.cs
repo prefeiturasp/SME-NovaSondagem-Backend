@@ -38,7 +38,7 @@ public class RepositorioQuestaoOpcaoResposta : IRepositorioQuestaoOpcaoResposta
 
     public async Task<bool> AtualizarAsync(QuestaoOpcaoResposta questaoOpcaoResposta, CancellationToken cancellationToken = default)
     {
-        var questaoOpcaoRespostaExistente = await context.OpcoesResposta
+        var questaoOpcaoRespostaExistente = await context.QuestoesOpcoesResposta
             .FirstOrDefaultAsync(p => p.Id == questaoOpcaoResposta.Id && !p.Excluido, cancellationToken);
 
         if (questaoOpcaoRespostaExistente == null)
@@ -54,7 +54,7 @@ public class RepositorioQuestaoOpcaoResposta : IRepositorioQuestaoOpcaoResposta
 
     public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken = default)
     {
-        var questaoOpcaoResposta = await context.OpcoesResposta
+        var questaoOpcaoResposta = await context.QuestoesOpcoesResposta
             .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
 
         if (questaoOpcaoResposta == null)

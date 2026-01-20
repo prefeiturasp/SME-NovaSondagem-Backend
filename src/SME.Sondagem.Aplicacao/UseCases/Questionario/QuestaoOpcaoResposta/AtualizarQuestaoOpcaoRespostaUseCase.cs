@@ -13,16 +13,16 @@ public class AtualizarQuestaoOpcaoRespostaUseCase : IAtualizarQuestaoOpcaoRespos
         this.questaoOpcaoRespostaRepositorio = questaoOpcaoRespostaRepositorio;
     }
 
-    public async Task<QuestaoOpcaoRespostaDto?> ExecutarAsync(long id, QuestaoOpcaoRespostaDto questaoQuestaoOpcaoRespostaDto, CancellationToken cancellationToken = default)
+    public async Task<QuestaoOpcaoRespostaDto?> ExecutarAsync(long id, QuestaoOpcaoRespostaDto questaoOpcaoRespostaDto, CancellationToken cancellationToken = default)
     {
         var questaoOpcaoRespostaExistente = await questaoOpcaoRespostaRepositorio.ObterPorIdAsync(id, cancellationToken: cancellationToken);
 
         if (questaoOpcaoRespostaExistente == null)
             return null;
 
-        questaoOpcaoRespostaExistente.AtualizarQuestaoId(questaoQuestaoOpcaoRespostaDto.QuestaoId);
-        questaoOpcaoRespostaExistente.AtualizarOpcaoRespostaId(questaoQuestaoOpcaoRespostaDto.OpcaoRespostaId);
-        questaoOpcaoRespostaExistente.AtualizarOrdem(questaoQuestaoOpcaoRespostaDto.Ordem);
+        questaoOpcaoRespostaExistente.AtualizarQuestaoId(questaoOpcaoRespostaDto.QuestaoId);
+        questaoOpcaoRespostaExistente.AtualizarOpcaoRespostaId(questaoOpcaoRespostaDto.OpcaoRespostaId);
+        questaoOpcaoRespostaExistente.AtualizarOrdem(questaoOpcaoRespostaDto.Ordem);
 
         var sucesso = await questaoOpcaoRespostaRepositorio.AtualizarAsync(questaoOpcaoRespostaExistente, cancellationToken: cancellationToken);
         
