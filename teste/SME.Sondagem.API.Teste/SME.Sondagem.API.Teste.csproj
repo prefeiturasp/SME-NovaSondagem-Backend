@@ -35,4 +35,8 @@
     <ProjectReference Include="..\SME.Sondagem.Infra.Teste\SME.Sondagem.Infra.Teste.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NovaPasta\" />
+  </ItemGroup>
+
 </Project>

@@ -12,20 +12,11 @@ namespace SME.Sondagem.API.Controllers;
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class SondagemController : ControllerBase
 {
-    private readonly ISondagemUseCase sondagemUseCase;
     private readonly ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase;
 
-    public SondagemController(ISondagemUseCase sondagemUseCase, ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase)
+    public SondagemController(ISondagemSalvarRespostasUseCase sondagemSalvarRespostasUseCase)
     {
-        this.sondagemUseCase = sondagemUseCase;
         this.sondagemSalvarRespostasUseCase = sondagemSalvarRespostasUseCase;
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> Get()
-    {
-        var resultado = await sondagemUseCase.ObterTodasSondagensAsync();
-        return Ok(resultado);
     }
 
     [HttpPost]
