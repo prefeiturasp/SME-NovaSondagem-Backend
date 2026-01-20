@@ -62,6 +62,7 @@ public class Questao : EntidadeBase
         SomenteLeitura = somenteLeitura;
         Dimensao = dimensao;
         GrupoQuestoesId = grupoQuestoesId;
+        QuestaoVinculoId = QuestaoVinculoId;
         Tamanho = tamanho;
         Mascara = mascara;
         PlaceHolder = placeHolder;
