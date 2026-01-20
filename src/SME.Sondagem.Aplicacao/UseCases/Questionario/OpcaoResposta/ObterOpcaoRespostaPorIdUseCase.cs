@@ -22,6 +22,7 @@ public class ObterOpcaoRespostaPorIdUseCase : IObterOpcaoRespostaPorIdUseCase
 
         return new OpcaoRespostaDto
         {
+            Id = opcaoResposta.Id,
             Ordem = opcaoResposta.Ordem,
             DescricaoOpcaoResposta = opcaoResposta.DescricaoOpcaoResposta,
             Legenda = opcaoResposta.Legenda,
