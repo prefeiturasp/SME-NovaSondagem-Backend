@@ -15,7 +15,7 @@ public class Questao : EntidadeBase
     public bool SomenteLeitura { get; private set; }
     public int Dimensao { get; private set; }
     public int? GrupoQuestoesId { get; private set; }
-    public int? QuestaoVinculoId { get; private set; }
+    public int? QuestaoVinculoId { get; }
     public int? Tamanho { get; private set; }
     public string? Mascara { get; private set; }
     public string? PlaceHolder { get; private set; }
@@ -62,7 +62,6 @@ public class Questao : EntidadeBase
         SomenteLeitura = somenteLeitura;
         Dimensao = dimensao;
         GrupoQuestoesId = grupoQuestoesId;
-        QuestaoVinculoId = QuestaoVinculoId;
         Tamanho = tamanho;
         Mascara = mascara;
         PlaceHolder = placeHolder;
