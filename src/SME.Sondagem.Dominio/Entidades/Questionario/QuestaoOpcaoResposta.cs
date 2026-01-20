@@ -16,4 +16,8 @@ public class QuestaoOpcaoResposta : EntidadeBase
     // Navegação
     public virtual Questao Questao { get; private set; } = null!;
     public virtual OpcaoResposta OpcaoResposta { get; private set; } = null!;
+
+    public void AtualizarOrdem(int ordem) => Ordem = ordem;
+    public void AtualizarOpcaoRespostaId(int opcaoRespostaId) => OpcaoRespostaId = opcaoRespostaId;
+    public void AtualizarQuestaoId(int questaoId) => QuestaoId = questaoId;
 }

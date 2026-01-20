@@ -7,6 +7,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
+using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -18,6 +19,7 @@ using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
+using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.Validators.Bimestre;
@@ -66,6 +68,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+        services.TryAddScoped<IRepositorioQuestaoOpcaoResposta, RepositorioQuestaoOpcaoResposta>();
         services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
 
         //repositórios do Elastic
@@ -94,6 +97,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirOpcaoRespostaUseCase, ExcluirOpcaoRespostaUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaUseCase, ObterOpcaoRespostasUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaPorIdUseCase, ObterOpcaoRespostaPorIdUseCase>();
+        services.TryAddScoped<ICriarQuestaoOpcaoRespostaUseCase, CriarQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IAtualizarQuestaoOpcaoRespostaUseCase, AtualizarQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IExcluirQuestaoOpcaoRespostaUseCase, ExcluirQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IObterQuestaoOpcaoRespostaUseCase, ObterQuestaoOpcaoRespostasUseCase>();
+        services.TryAddScoped<IObterQuestaoOpcaoRespostaPorIdUseCase, ObterQuestaoOpcaoRespostaPorIdUseCase>();
         services.TryAddScoped<ICriarQuestionarioUseCase, CriarQuestionarioUseCase>();
         services.TryAddScoped<IAtualizarQuestionarioUseCase, AtualizarQuestionarioUseCase>();
         services.TryAddScoped<IExcluirQuestionarioUseCase, ExcluirQuestionarioUseCase>();
