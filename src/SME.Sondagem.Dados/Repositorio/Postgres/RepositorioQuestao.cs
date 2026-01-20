@@ -86,16 +86,17 @@ public class RepositorioQuestao : IRepositorioQuestao
     CancellationToken cancellationToken = default)
     {
         return await context.Questoes
-            .Include(q => q.Questionario)
-            .Include(q => q.QuestaoOpcoes)
-                .ThenInclude(qo => qo.OpcaoResposta)
-            .Where(q => !q.Excluido
+            .AsNoTracking()
+            .Where(q => !q.Excluido 
                 && q.Questionario.ModalidadeId == modalidadeId
                 && q.Questionario.AnoLetivo == anoLetivo
                 && q.Questionario.ProficienciaId == proficienciaId
                 && q.Questionario.SerieAno == serieAno
-                && !q.Questionario.Excluido
-                && (q.Tipo == TipoQuestao.Combo || q.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua))
+                && !q.Questionario.Excluido)
+            .Include(q => q.QuestaoVinculo)
+            .Include(q => q.Questionario)
+            .Include(q => q.QuestaoOpcoes)
+                .ThenInclude(qo => qo.OpcaoResposta)
             .OrderBy(q => q.Ordem)
             .ToListAsync(cancellationToken);
     }

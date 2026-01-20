@@ -22,6 +22,10 @@ public class QuestaoMap : IEntityTypeConfiguration<Questao>
         builder.Property(x => x.GrupoQuestoesId)
             .HasColumnName("grupo_questoes_id");
 
+       builder.Property(x => x.QuestaoVinculoId)
+        .HasColumnName("questao_vinculo_id")
+            .IsRequired(false);
+
         builder.Property(x => x.Ordem)
             .HasColumnName("ordem")
             .IsRequired();
@@ -100,6 +104,12 @@ public class QuestaoMap : IEntityTypeConfiguration<Questao>
             .WithOne(x => x.Questao)
             .HasForeignKey(x => x.QuestaoId)
             .HasConstraintName("fk_resposta_questao");
+
+       builder.HasOne(x => x.QuestaoVinculo)
+        .WithMany(x => x.QuestoesVinculadas)
+        .HasForeignKey(x => x.QuestaoVinculoId)
+        .HasConstraintName("fk_questao_vinculo")
+        .IsRequired(false);
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<Questao> builder)
