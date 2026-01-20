@@ -21,7 +21,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
         {
             repositorioMock
                 .Setup(r => r.ObterTodosAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Enumerable.Empty<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem?>());
+                .ReturnsAsync(Enumerable.Empty<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>());
 
             var resultado = await useCase.ExecutarAsync();
 

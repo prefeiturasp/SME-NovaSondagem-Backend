@@ -230,7 +230,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var repo = new RepositorioSondagem(context);
 
-            var resultado = await repo.ExcluirAsync(1);
+            var resultado = await repo.ExcluirAsync(1, CancellationToken.None);
 
             Assert.True(resultado);
 
@@ -245,7 +245,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_false_quando_sondagem_nao_existir));
             var repo = new RepositorioSondagem(context);
 
-            var resultado = await repo.ExcluirAsync(999);
+            var resultado = await repo.ExcluirAsync(999, CancellationToken.None);
 
             Assert.False(resultado);
         }
@@ -261,7 +261,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var repo = new RepositorioSondagem(context);
 
-            var resultado = await repo.ExcluirAsync(1);
+            var resultado = await repo.ExcluirAsync(1, CancellationToken.None);
 
             Assert.False(resultado);
         }

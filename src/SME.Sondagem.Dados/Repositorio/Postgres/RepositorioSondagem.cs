@@ -18,7 +18,7 @@ public class RepositorioSondagem : IRepositorioSondagem
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Dominio.Entidades.Sondagem.Sondagem> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<Dominio.Entidades.Sondagem.Sondagem?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var sondagem = await _context.Sondagens
             .AsNoTracking()
@@ -50,7 +50,7 @@ public class RepositorioSondagem : IRepositorioSondagem
         return sondagem!;
     }
 
-    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken)
     {
         var sondagem = await _context.Sondagens
             .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
