@@ -5,7 +5,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
-namespace SME.Sondagem.API.Controllers;
+namespace SME.Sondagem.API.Controllers.Integracao;
 
 [Route("api/[controller]")]
 [ApiController]

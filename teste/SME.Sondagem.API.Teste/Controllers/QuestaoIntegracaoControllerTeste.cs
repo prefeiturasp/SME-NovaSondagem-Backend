@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using SME.Sondagem.API.Controllers;
+using SME.Sondagem.API.Controllers.Integracao;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
-using SME.Sondagem.API.Controllers;
+using SME.Sondagem.API.Controllers.Integracao;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;

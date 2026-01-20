@@ -70,6 +70,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
         services.TryAddScoped<IRepositorioQuestaoOpcaoResposta, RepositorioQuestaoOpcaoResposta>();
         services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
+        services.TryAddScoped<IRepositorioSondagem, RepositorioSondagem>();
 
         //repositórios do Elastic
         services.AddScoped<IRepositorioElasticAluno, RepositorioElasticAluno>();
@@ -108,7 +109,6 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionariosUseCase, ObterQuestionariosUseCase>();
         services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
-        services.TryAddScoped<ISondagemUseCase, SondagemUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
@@ -122,6 +122,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestaoPorIdUseCase, ObterQuestaoPorIdUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
         services.TryAddScoped<ISondagemSalvarRespostasUseCase, SondagemSalvarRespostasUseCase>();
+        services.TryAddScoped<ICriarSondagemUseCase, CriarSondagemUseCase>();
+        services.TryAddScoped<IAtualizarSondagemUseCase, AtualizarSondagemUseCase>();
+        services.TryAddScoped<IExcluirSondagemUseCase, ExcluirSondagemUseCase>();
+        services.TryAddScoped<IObterSondagensUseCase, ObterSondagemUseCase>();
+        services.TryAddScoped<IObterSondagemPorIdUseCase, ObterSondagemPorIdUseCase>();
         services
             .TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,
                 ObterProficienciasPorComponenteCurricularUseCase>();
