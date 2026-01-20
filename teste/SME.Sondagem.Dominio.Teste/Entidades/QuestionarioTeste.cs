@@ -18,17 +18,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var proficienciaId = 7;
             var sondagemId = 10;
 
-            var questionario = new Questionario
-            {
-                Nome = nome,
-                Tipo = tipo,
-                AnoLetivo = anoLetivo,
-                ModalidadeId = modalidadeId,
-                SerieAno = serieAno,
-                ComponenteCurricularId = componenteCurricularId,
-                ProficienciaId = proficienciaId,
-                SondagemId = sondagemId
-            };
+            var questionario = new Questionario(
+                nome,
+                tipo,
+                anoLetivo,
+                componenteCurricularId,
+                proficienciaId,
+                sondagemId,
+                modalidadeId,
+                serieAno
+            );
 
             Assert.Equal(nome, questionario.Nome);
             Assert.Equal(tipo, questionario.Tipo);
@@ -50,15 +49,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var proficienciaId = 2;
             var sondagemId = 3;
 
-            var questionario = new Questionario
-            {
-                Nome = nome,
-                Tipo = tipo,
-                AnoLetivo = anoLetivo,
-                ComponenteCurricularId = componenteCurricularId,
-                ProficienciaId = proficienciaId,
-                SondagemId = sondagemId
-            };
+            var questionario = new Questionario(
+                nome,
+                tipo,
+                anoLetivo,
+                componenteCurricularId,
+                proficienciaId,
+                sondagemId,
+                null,
+                null
+            );
 
             Assert.Equal(nome, questionario.Nome);
             Assert.Equal(tipo, questionario.Tipo);
@@ -99,16 +99,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_aceitar_modalidade_id_nulo()
         {
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1,
-                ModalidadeId = null
-            };
+            var questionario = new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                2024,
+                1,
+                1,
+                1,
+                null,
+                null
+            );
 
             Assert.Null(questionario.ModalidadeId);
         }
@@ -116,16 +116,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_aceitar_serie_ano_nulo()
         {
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1,
-                SerieAno = null
-            };
+            var questionario = new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                2024,
+                1,
+                1,
+                1,
+                null,
+                null
+            );
 
             Assert.Null(questionario.SerieAno);
         }
@@ -134,16 +134,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_aceitar_modalidade_id_com_valor()
         {
             var modalidadeId = 5;
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1,
-                ModalidadeId = modalidadeId
-            };
+            var questionario = new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                2024,
+                1,
+                1,
+                1,
+                modalidadeId,
+                null
+            );
 
             Assert.Equal(modalidadeId, questionario.ModalidadeId);
         }
@@ -152,16 +152,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_aceitar_serie_ano_com_valor()
         {
             var serieAno = 7;
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1,
-                SerieAno = serieAno
-            };
+            var questionario = new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                2024,
+                1,
+                1,
+                1,
+                null,
+                serieAno
+            );
 
             Assert.Equal(serieAno, questionario.SerieAno);
         }
@@ -170,15 +170,16 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_aceitar_diferentes_tipos_de_questionario()
         {
             var tipoAvaliacao = TipoQuestionario.RegistroAcaoBuscaAtiva;
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = tipoAvaliacao,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1
-            };
+            var questionario = new Questionario(
+                "Teste",
+                tipoAvaliacao,
+                2024,
+                1,
+                1,
+                1,
+                null,
+                null
+            );
 
             Assert.Equal(tipoAvaliacao, questionario.Tipo);
         }
@@ -187,30 +188,32 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_aceitar_diferentes_anos_letivos()
         {
             var anoLetivo = 2026;
-            var questionario = new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = anoLetivo,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1
-            };
+            var questionario = new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                anoLetivo,
+                1,
+                1,
+                1,
+                null,
+                null
+            );
 
             Assert.Equal(anoLetivo, questionario.AnoLetivo);
         }
 
         private static Questionario CriarQuestionarioPadrao()
         {
-            return new Questionario
-            {
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita,
-                AnoLetivo = 2024,
-                ComponenteCurricularId = 1,
-                ProficienciaId = 1,
-                SondagemId = 1
-            };
+            return new Questionario(
+                "Teste",
+                TipoQuestionario.SondagemEscrita,
+                2024,
+                1,
+                1,
+                1,
+                null,
+                null
+            );
         }
     }
 }

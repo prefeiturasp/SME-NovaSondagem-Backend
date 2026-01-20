@@ -1,79 +1,110 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Text.Json;
+using FluentValidation;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.Sondagem.API.Middlewares;
 
 [ExcludeFromCodeCoverage]
-public class ExceptionHandlingMiddleware
+public sealed class ExceptionHandlingMiddleware
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly RequestDelegate next;
+    private readonly ILogger<ExceptionHandlingMiddleware> logger;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger)
     {
-        _next = next;
-        _logger = logger;
+        this.next = next;
+        this.logger = logger;
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
+        }
+        catch (OperationCanceledException)
+        {
+            await WriteResponseAsync(
+                context,
+                StatusCodes.Status499ClientClosedRequest,
+                MensagemNegocioComuns.REQUISICAO_CANCELADA,
+                "RequestCanceled");
+        }
+        catch (ValidationException ex)
+        {
+            await WriteResponseAsync(
+                context,
+                StatusCodes.Status400BadRequest,
+                "Erro de validação",
+                "ValidationError",
+                ex.Errors.Select(e => new
+                {
+                    campo = e.PropertyName,
+                    mensagem = e.ErrorMessage
+                }));
+        }
+        catch (RegraNegocioException ex)
+        {
+            await WriteResponseAsync(
+                context,
+                ex.StatusCode,
+                ex.Message,
+                "RegraNegocio");
+        }
+        catch (ErroNaoEncontradoException ex)
+        {
+            await WriteResponseAsync(
+                context,
+                StatusCodes.Status404NotFound,
+                ex.Message,
+                "NotFound");
         }
         catch (Exception ex)
         {
-            await HandleExceptionAsync(context, ex);
+            logger.LogError(ex, "Erro inesperado");
+
+            await WriteResponseAsync(
+                context,
+                StatusCodes.Status500InternalServerError,
+                "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
+                "InternalServerError");
         }
     }
 
-    private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private async Task WriteResponseAsync(
+        HttpContext context,
+        int statusCode,
+        string message,
+        string type,
+        object? details = null)
     {
         context.Response.ContentType = "application/json";
+        context.Response.StatusCode = statusCode;
 
-        var response = exception switch
+        var response = new
         {
-            RegraNegocioException regraNegocio => new
-            {
-                StatusCode = (int)HttpStatusCode.BadRequest,
-                Message = regraNegocio.Message,
-                Type = "RegraNegocio"
-            },
-            ErroNaoEncontradoException erroNaoEncontrado => new
-            {
-                StatusCode = (int)HttpStatusCode.NotFound,
-                Message = erroNaoEncontrado.Message,
-                Type = "ErroNaoEncontrado"
-            },
-            ErroInternoException erroInterno => new
-            {
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Message = erroInterno.Message,
-                Type = "ErroInterno"
-            },
-            _ => new
-            {
-                StatusCode = (int)HttpStatusCode.InternalServerError,
-                Message = "Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.",
-                Type = "ErroDesconhecido"
-            }
+            statusCode,
+            message,
+            type,
+            details
         };
 
-        context.Response.StatusCode = response.StatusCode;
-
-        if (_logger.IsEnabled(LogLevel.Error))
+        if (logger.IsEnabled(LogLevel.Error) && statusCode >= 500)
         {
-            _logger.LogError(exception, "Erro capturado: {Message}", exception.Message);
+            logger.LogError("Erro {Type}: {Message}", type, message);
         }
 
-        var jsonResponse = JsonSerializer.Serialize(response, JsonOptions);
-
-        await context.Response.WriteAsync(jsonResponse);
+        await context.Response.WriteAsync(
+            JsonSerializer.Serialize(response, JsonOptions));
     }
 }
