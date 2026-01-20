@@ -50,10 +50,10 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
-            ?? throw new ErroNaoEncontradoException("Turma não localizada");
+            ?? throw new RegraNegocioException("Turma não localizada", 400);
 
         if (filtro.ProficienciaId == 0)
-            throw new RegraNegocioException("A proficiência é obrigatória no filtro");
+            throw new RegraNegocioException("A proficiência é obrigatória no filtro", 400);
 
         return turma;
     }
@@ -118,11 +118,11 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             .FirstOrDefault();
 
         var nomeInseridoPor = criadoMaisAntigo is not null
-            ? $"Inserido por {criadoMaisAntigo.CriadoPor} {criadoMaisAntigo.CriadoRF} em {criadoMaisAntigo.CriadoEm:dd/MM/yyyy HH:mm}"
+            ? $"Inserido por {criadoMaisAntigo.CriadoPor} ({criadoMaisAntigo.CriadoRF}) em {criadoMaisAntigo.CriadoEm:dd/MM/yyyy HH:mm}"
             : null;
 
         var nomeAlteradoPor = alteradoMaisRecente is not null
-            ? $"Alterado por {alteradoMaisRecente.AlteradoPor} {alteradoMaisRecente.AlteradoRF} em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
+            ? $"Alterado por {alteradoMaisRecente.AlteradoPor} ({alteradoMaisRecente.AlteradoRF}) em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
             : null;
 
         var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
