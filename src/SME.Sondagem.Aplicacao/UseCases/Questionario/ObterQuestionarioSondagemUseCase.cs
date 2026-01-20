@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -105,6 +106,25 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             sondagemAtiva.Id,
             cancellationToken);
 
+        var respostas = respostasAlunosPorQuestoes.Values;
+
+        var criadoMaisAntigo = respostas
+            .OrderBy(r => r.CriadoEm)
+            .FirstOrDefault();
+
+        var alteradoMaisRecente = respostas
+            .Where(r => r.AlteradoEm.HasValue)
+            .OrderByDescending(r => r.AlteradoEm)
+            .FirstOrDefault();
+
+        var nomeInseridoPor = criadoMaisAntigo is not null
+            ? $"Inserido por {criadoMaisAntigo.CriadoPor} {criadoMaisAntigo.CriadoRF} em {criadoMaisAntigo.CriadoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
+        var nomeAlteradoPor = alteradoMaisRecente is not null
+            ? $"Alterado por {alteradoMaisRecente.AlteradoPor} {alteradoMaisRecente.AlteradoRF} em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
         var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
             kvp => ((int)kvp.Key.CodigoAluno, kvp.Key.BimestreId ?? 0),
             kvp => (dynamic)kvp.Value
@@ -129,6 +149,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
+            InseridoPor = nomeInseridoPor,
+            AlteradoPor = nomeAlteradoPor
         };
     }
 
