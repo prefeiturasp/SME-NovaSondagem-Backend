@@ -19,7 +19,7 @@ public class RepositorioSondagem : IRepositorioSondagem
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Dominio.Entidades.Sondagem.Sondagem> ObterPorIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<Dominio.Entidades.Sondagem.Sondagem?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var sondagem = await _context.Sondagens
             .AsNoTracking()
@@ -49,5 +49,34 @@ public class RepositorioSondagem : IRepositorioSondagem
             .FirstOrDefaultAsync(cancellationToken);
 
         return sondagem!;
+    }
+
+    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken)
+    {
+        var sondagem = await _context.Sondagens
+            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
+
+        if (sondagem == null)
+            return false;
+
+        sondagem.Excluido = true;
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> AtualizarAsync(Dominio.Entidades.Sondagem.Sondagem sondagem, CancellationToken cancellationToken = default)
+    {
+        var sondagemExistente = await _context.Sondagens
+            .FirstOrDefaultAsync(p => p.Id == sondagem.Id && !p.Excluido, cancellationToken);
+
+        if (sondagemExistente == null)
+            return false;
+
+        sondagemExistente.AlteradoEm = sondagem.AlteradoEm;
+        sondagemExistente.AlteradoPor = sondagem.AlteradoPor;
+        sondagemExistente.AlteradoRF = sondagem.AlteradoRF;
+
+        await _context.SaveChangesAsync(cancellationToken);
+        return true;
     }
 }

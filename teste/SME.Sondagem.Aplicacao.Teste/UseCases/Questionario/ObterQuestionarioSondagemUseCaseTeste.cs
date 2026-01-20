@@ -10,7 +10,7 @@ using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
-namespace SME.Sondagem.Aplicacao.Tests.UseCases.Questionario;
+namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario;
 
 public class ObterQuestionarioSondagemUseCaseTeste
 {
@@ -269,7 +269,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .ReturnsAsync(alunosComPap);
 
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
@@ -297,7 +297,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var alunosComLingua = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunosComLingua);
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
@@ -375,7 +375,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .ReturnsAsync(respostas);
 
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
@@ -703,7 +703,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private void ConfigurarMocksComplementares()
     {
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(

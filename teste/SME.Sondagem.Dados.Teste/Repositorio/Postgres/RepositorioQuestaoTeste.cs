@@ -199,17 +199,16 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterQuestoesAtivasPorFiltroAsync_deve_retornar_apenas_questoes_validas));
 
-            var questionario = new Questionario()
-            {
-                ModalidadeId = 1,
-                AnoLetivo = 2025,
-                ProficienciaId = 1,
-                SerieAno = 2,
-                Nome = "Teste",
-                Tipo = TipoQuestionario.SondagemEscrita, 
-                ComponenteCurricularId = 1,
-                SondagemId = 1
-            };
+            var questionario = new Questionario(
+                nome: "Teste",
+                tipo: TipoQuestionario.SondagemEscrita,
+                anoLetivo: 2025,
+                componenteCurricularId: 1,
+                proficienciaId: 1,
+                sondagemId: 1,
+                modalidadeId: 1,
+                serieAno: 2
+            );
 
             context.Questionarios.Add(questionario);
             await context.SaveChangesAsync();
