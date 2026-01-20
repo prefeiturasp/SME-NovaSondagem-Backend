@@ -100,17 +100,18 @@ namespace SME.Sondagem.API.Teste.Controller
         }
 
         [Fact]
-        public async Task Create_Exception_DevePropagarExcecao()
+        public async Task Create_Exception_DeveRetornar500()
         {
             criarMock.Setup(x => x.ExecutarAsync(It.IsAny<QuestaoDto>(), It.IsAny<CancellationToken>()))
-                     .ThrowsAsync(new Exception());
+                     .ThrowsAsync(new Exception("Erro de teste"));
 
             var controller = CriarController();
 
-            Func<Task> act = async () =>
-                await controller.Create(CriarDto(), CancellationToken.None);
+            var result = await controller.Create(CriarDto(), CancellationToken.None);
 
-            await act.Should().ThrowAsync<Exception>();
+            var objectResult = result as ObjectResult;
+            objectResult.Should().NotBeNull();
+            objectResult!.StatusCode.Should().Be(500);
         }
 
         #endregion

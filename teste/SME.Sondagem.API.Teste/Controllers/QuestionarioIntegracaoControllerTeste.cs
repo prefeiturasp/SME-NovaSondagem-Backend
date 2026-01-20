@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using SME.Sondagem.API.Controllers;
+using SME.Sondagem.API.Controllers.Integracao;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Enums;

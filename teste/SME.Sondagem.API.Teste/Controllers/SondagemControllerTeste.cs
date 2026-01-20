@@ -13,15 +13,13 @@ namespace SME.Sondagem.API.Teste.Controller;
 
 public class SondagemControllerTeste
 {
-    private readonly Mock<ISondagemUseCase> _sondagemUseCase;
     private readonly Mock<ISondagemSalvarRespostasUseCase> _sondagemSalvarRespostasUseCase;
     private readonly SondagemController _controller;
 
     public SondagemControllerTeste()
     {
-        _sondagemUseCase = new Mock<ISondagemUseCase>();
         _sondagemSalvarRespostasUseCase = new Mock<ISondagemSalvarRespostasUseCase>();
-        _controller = new SondagemController(_sondagemUseCase.Object, _sondagemSalvarRespostasUseCase.Object);
+        _controller = new SondagemController(_sondagemSalvarRespostasUseCase.Object);
     }
     
     [Fact(DisplayName = "Deve salvar com sucesso as respostas da sondagem")]

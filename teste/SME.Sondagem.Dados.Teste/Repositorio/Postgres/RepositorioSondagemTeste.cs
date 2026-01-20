@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SME.Sondagem.Dados.Repositorio.Postgres;
+﻿using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using Xunit;
@@ -214,6 +213,125 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var resultado = await repo.ObterSondagemAtiva();
 
             Assert.Null(resultado);
+        }
+
+        #endregion
+
+        #region ExcluirAsync
+
+        [Fact]
+        public async Task ExcluirAsync_deve_marcar_sondagem_como_excluida_quando_existir()
+        {
+            var context = CriarContexto(nameof(ExcluirAsync_deve_marcar_sondagem_como_excluida_quando_existir));
+
+            var sondagem = CriarSondagem(1);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
+
+            var repo = new RepositorioSondagem(context);
+
+            var resultado = await repo.ExcluirAsync(1);
+
+            Assert.True(resultado);
+
+            var sondagemExcluida = await context.Sondagens.FindAsync(1);
+            Assert.NotNull(sondagemExcluida);
+            Assert.True(sondagemExcluida.Excluido);
+        }
+
+        [Fact]
+        public async Task ExcluirAsync_deve_retornar_false_quando_sondagem_nao_existir()
+        {
+            var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_false_quando_sondagem_nao_existir));
+            var repo = new RepositorioSondagem(context);
+
+            var resultado = await repo.ExcluirAsync(999);
+
+            Assert.False(resultado);
+        }
+
+        [Fact]
+        public async Task ExcluirAsync_deve_retornar_false_quando_sondagem_ja_excluida()
+        {
+            var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_false_quando_sondagem_ja_excluida));
+
+            var sondagem = CriarSondagem(1, excluido: true);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
+
+            var repo = new RepositorioSondagem(context);
+
+            var resultado = await repo.ExcluirAsync(1);
+
+            Assert.False(resultado);
+        }
+
+        #endregion
+
+        #region AtualizarAsync
+
+        [Fact]
+        public async Task AtualizarAsync_deve_atualizar_sondagem_quando_existir()
+        {
+            var context = CriarContexto(nameof(AtualizarAsync_deve_atualizar_sondagem_quando_existir));
+
+            var sondagem = CriarSondagem(1);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
+
+            context.ChangeTracker.Clear();
+
+            var sondagemAtualizada = CriarSondagem(1);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("AlteradoEm")!.SetValue(sondagemAtualizada, DateTime.UtcNow);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("AlteradoPor")!.SetValue(sondagemAtualizada, "Usuario Teste");
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("AlteradoRF")!.SetValue(sondagemAtualizada, "123456");
+
+            var repo = new RepositorioSondagem(context);
+
+            var resultado = await repo.AtualizarAsync(sondagemAtualizada);
+
+            Assert.True(resultado);
+
+            var sondagemVerificada = await context.Sondagens.FindAsync(1);
+            Assert.NotNull(sondagemVerificada);
+            Assert.Equal("Usuario Teste", sondagemVerificada.AlteradoPor);
+            Assert.Equal("123456", sondagemVerificada.AlteradoRF);
+            Assert.NotNull(sondagemVerificada.AlteradoEm);
+        }
+
+        [Fact]
+        public async Task AtualizarAsync_deve_retornar_false_quando_sondagem_nao_existir()
+        {
+            var context = CriarContexto(nameof(AtualizarAsync_deve_retornar_false_quando_sondagem_nao_existir));
+            var repo = new RepositorioSondagem(context);
+
+            var sondagem = CriarSondagem(999);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("AlteradoEm")!.SetValue(sondagem, DateTime.UtcNow);
+
+            var resultado = await repo.AtualizarAsync(sondagem);
+
+            Assert.False(resultado);
+        }
+
+        [Fact]
+        public async Task AtualizarAsync_deve_retornar_false_quando_sondagem_excluida()
+        {
+            var context = CriarContexto(nameof(AtualizarAsync_deve_retornar_false_quando_sondagem_excluida));
+
+            var sondagem = CriarSondagem(1, excluido: true);
+            context.Sondagens.Add(sondagem);
+            await context.SaveChangesAsync();
+
+            context.ChangeTracker.Clear();
+
+            var sondagemAtualizada = CriarSondagem(1);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("AlteradoEm")!.SetValue(sondagemAtualizada, DateTime.UtcNow);
+
+            var repo = new RepositorioSondagem(context);
+
+            var resultado = await repo.AtualizarAsync(sondagemAtualizada);
+
+            Assert.False(resultado);
         }
 
         #endregion
