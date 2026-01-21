@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -50,10 +51,10 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
-            ?? throw new ErroNaoEncontradoException("Turma não localizada");
+            ?? throw new RegraNegocioException("Turma não localizada", 400);
 
         if (filtro.ProficienciaId == 0)
-            throw new RegraNegocioException("A proficiência é obrigatória no filtro");
+            throw new RegraNegocioException("A proficiência é obrigatória no filtro", 400);
 
         return turma;
     }
@@ -106,6 +107,25 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             sondagemAtiva.Id,
             cancellationToken);
 
+        var respostas = respostasAlunosPorQuestoes.Values;
+
+        var criadoMaisAntigo = respostas
+            .OrderBy(r => r.CriadoEm)
+            .FirstOrDefault();
+
+        var alteradoMaisRecente = respostas
+            .Where(r => r.AlteradoEm.HasValue)
+            .OrderByDescending(r => r.AlteradoEm)
+            .FirstOrDefault();
+
+        var nomeInseridoPor = criadoMaisAntigo is not null
+            ? $"Inserido por {criadoMaisAntigo.CriadoPor} ({criadoMaisAntigo.CriadoRF}) em {criadoMaisAntigo.CriadoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
+        var nomeAlteradoPor = alteradoMaisRecente is not null
+            ? $"Alterado por {alteradoMaisRecente.AlteradoPor} ({alteradoMaisRecente.AlteradoRF}) em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
         var respostasAlunosPorQuestoesConvertido =
             respostasAlunosPorQuestoes
                 .Where(x => x.Value?.OpcaoRespostaId is not null)
@@ -141,6 +161,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
             Estudantes = estudantes,
+            InseridoPor = nomeInseridoPor,
+            AlteradoPor = nomeAlteradoPor
         };
     }
 
