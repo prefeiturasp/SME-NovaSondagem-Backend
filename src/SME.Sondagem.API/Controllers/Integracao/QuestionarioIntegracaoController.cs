@@ -2,6 +2,7 @@
 using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.API.Controllers.Integracao;
@@ -46,7 +47,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var resultado = await obterQuestionarioPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException($"Questionário {id} não encontrado");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
 
         return Ok(resultado);
     }
@@ -76,7 +77,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var resultado = await atualizarQuestionarioUseCase.ExecutarAsync(id, dto, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException($"Questionário {id} não encontrado");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
 
         return Ok(resultado);
     }
@@ -88,7 +89,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var sucesso = await excluirQuestionarioUseCase.ExecutarAsync(id, cancellationToken);
 
         if (!sucesso)
-            throw new ErroNaoEncontradoException($"Questionário {id} não encontrado");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
 
         return NoContent();
     }

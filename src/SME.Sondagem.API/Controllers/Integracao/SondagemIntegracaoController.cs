@@ -2,6 +2,7 @@
 using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 
 namespace SME.Sondagem.API.Controllers.Integracao;
@@ -46,7 +47,7 @@ public class SondagemIntegracaoController : ControllerBase
         var resultado = await obterSondagemPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException($"Sondagem {id} não encontrada");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
 
         return Ok(resultado);
     }
@@ -76,7 +77,7 @@ public class SondagemIntegracaoController : ControllerBase
         var resultado = await atualizarSondagemUseCase.ExecutarAsync(id, dto, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException($"Sondagem {id} não encontrada");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
 
         return Ok(resultado);
     }
@@ -88,7 +89,7 @@ public class SondagemIntegracaoController : ControllerBase
         var sucesso = await excluirSondagemUseCase.ExecutarAsync(id, cancellationToken);
 
         if (!sucesso)
-            throw new ErroNaoEncontradoException($"Sondagem {id} não encontrada");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
 
         return NoContent();
     }
