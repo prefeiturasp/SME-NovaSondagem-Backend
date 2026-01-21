@@ -139,7 +139,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioElasticTurma.Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
             .ReturnsAsync((TurmaElasticDto?)null!);
 
-        var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
         Assert.Equal("Turma não localizada", exception.Message);
     }
