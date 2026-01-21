@@ -61,7 +61,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     private static bool ExisteQuestaoLinguaPortuguesaSegundaLingua(IEnumerable<Dominio.Entidades.Questionario.Questao> questoes)
     {
         return questoes.Any(q => q.Questionario.ModalidadeId == (int)Modalidade.Fundamental 
-                                 && q.Questionario.ComponenteCurricular.Id == 1   
+                                 && q.Questionario.ComponenteCurricularId == 1   
                                  && q.Questionario.ProficienciaId == (int)Dominio.Enums.Proficiencia.Escrita);
     }
 
