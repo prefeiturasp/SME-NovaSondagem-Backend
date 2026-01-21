@@ -7,6 +7,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioProficienciaTeste : RepositorioBaseTeste
     {
+        private static readonly string[] NomesEsperadosComponente1 = ["Escrita", "Números"];
+
         [Fact]
         public async Task ObterTodosAsync_deve_retornar_somente_proficiencias_nao_excluidas_ordenadas_por_nome()
         {
@@ -192,9 +194,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 Assert.Equal(1, p.ComponenteCurricularId);
             });
 
-            var nomesEsperados = new[] { "Escrita", "Números" };
             Assert.Equal(
-                nomesEsperados,
+                NomesEsperadosComponente1,
                 lista.Select(p => p.Nome).ToArray()
             );
         }
