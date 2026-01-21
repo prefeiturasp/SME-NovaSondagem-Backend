@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -47,6 +50,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             typeof(RespostaAluno).GetProperty("Excluido")!.SetValue(resposta, excluido);
             return resposta;
+        }
+
+        private static RepositorioRespostaAluno CriarRepositorio(SondagemDbContext context)
+        {
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            return new RepositorioRespostaAluno(context, auditoriaMock.Object);
         }
 
         #endregion
@@ -109,7 +118,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                     nameof(VerificarAlunosTemRespostaPorTipoQuestaoAsync_deve_retornar_dicionario_com_true_e_false));
 
             var servicoAuditoria = CriarServicoAuditoria();
-    
+
             var questao = CriarQuestao(1, TipoQuestao.LinguaPortuguesaSegundaLingua);
             context.Questoes.Add(questao);
 
@@ -199,5 +208,104 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         }
 
         #endregion
+
+        [Fact]
+        public async Task ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoAlunosIdsVazio()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoAlunosIdsVazio));
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
+                sondagemId: 1,
+                alunosIds: [],
+                questoesIds: new[] { 1, 2 }
+            );
+
+            // Assert
+            Assert.Empty(resultado);
+        }
+
+        [Fact]
+        public async Task ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoQuestoesIdsVazio()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoQuestoesIdsVazio));
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
+                sondagemId: 1,
+                alunosIds: new[] { 10, 20 },
+                questoesIds: []
+            );
+
+            // Assert
+            Assert.Empty(resultado);
+        }
+
+        [Fact]
+        public async Task ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas));
+
+            var respostaValida = new RespostaAluno(
+                sondagemId: 1,
+                alunoId: 10,
+                questaoId: 100,
+                opcaoRespostaId: 1,
+                dataResposta: DateTime.Now
+            );
+
+            var respostaOutroAluno = new RespostaAluno(
+                sondagemId: 1,
+                alunoId: 99,
+                questaoId: 100,
+                opcaoRespostaId: 1,
+                dataResposta: DateTime.Now
+            );
+
+            var respostaOutraQuestao = new RespostaAluno(
+                sondagemId: 1,
+                alunoId: 10,
+                questaoId: 999,
+                opcaoRespostaId: 1,
+                dataResposta: DateTime.Now
+            );
+
+            var respostaExcluida = new RespostaAluno(
+                sondagemId: 1,
+                alunoId: 10,
+                questaoId: 100,
+                opcaoRespostaId: 1,
+                dataResposta: DateTime.Now
+            );
+            respostaExcluida.Excluido = true;
+
+            context.RespostasAluno.AddRange(
+                respostaValida,
+                respostaOutroAluno,
+                respostaOutraQuestao,
+                respostaExcluida
+            );
+            await context.SaveChangesAsync();
+
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
+                sondagemId: 1,
+                alunosIds: new[] { 10 },
+                questoesIds: new[] { 100 }
+            );
+
+            // Assert
+            var lista = resultado.ToList();
+
+            Assert.Single(lista);
+            Assert.Equal(respostaValida.Id, lista[0].Id);
+        }
     }
 }
