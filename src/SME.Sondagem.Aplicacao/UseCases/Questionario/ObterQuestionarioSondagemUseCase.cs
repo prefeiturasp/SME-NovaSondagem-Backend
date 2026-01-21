@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -105,15 +106,26 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             sondagemAtiva.Id,
             cancellationToken);
 
-        var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
-            kvp => ((int)kvp.Key.CodigoAluno, kvp.Key.BimestreId ?? 0),
-            kvp => (dynamic)kvp.Value
-        );
+        var respostasAlunosPorQuestoesConvertido =
+            respostasAlunosPorQuestoes
+                .Where(x => x.Value?.OpcaoRespostaId is not null)
+                .GroupBy(x => (
+                    CodigoAluno: (int)x.Key.CodigoAluno, x.Key.BimestreId, x.Key.QuestaoId
+                ))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g
+                        .Select(x => x.Value!)
+                        .First()
+                );
+
+        var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
         var estudantes = ConstruirEstudantes(
             alunos,
             colunas,
             respostasAlunosPorQuestoesConvertido,
+            questaoIdPrincipal,
             alunosComLinguaPortuguesaSegundaLingua,
             alunosComPap)
         .OrderBy(e => e.Nome)
@@ -197,6 +209,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                     IdCiclo = bimestreId.Value,
                     DescricaoColuna = q.Nome,          
                     PeriodoBimestreAtivo = true,
+                    QuestaoSubrespostaId = q.Id,
                     OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas, true)
                 })
                 .ToList();
@@ -255,7 +268,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private static List<EstudanteQuestionarioDto> ConstruirEstudantes(
         IEnumerable<dynamic> alunos,
         List<ColunaQuestionarioDto> colunas,
-        Dictionary<(int CodigoAluno, int IdCiclo), dynamic> respostasAlunosPorQuestoes,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        long questaoIdPrincipal,
         Dictionary<int, bool> alunosComLinguaPortuguesaSegundaLingua,
         Dictionary<int, bool> alunosComPap)
     {
@@ -267,7 +281,19 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
             var colunasAluno = colunas.Select(c =>
             {
-                var chave = (codigoAluno, c.IdCiclo);
+                long questaoIdChave =
+                    c.QuestaoSubrespostaId.HasValue
+                        ? c.QuestaoSubrespostaId.Value
+                        : questaoIdPrincipal;
+
+                int? bimestreIdChave = c.IdCiclo == 0 ? (int?)null : c.IdCiclo;
+
+                var chave = (
+                    CodigoAluno: codigoAluno,
+                    BimestreId: bimestreIdChave,
+                    QuestaoId: questaoIdChave
+                );
+
                 var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
                 return new ColunaQuestionarioDto
@@ -275,12 +301,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                     IdCiclo = c.IdCiclo,
                     DescricaoColuna = c.DescricaoColuna,
                     PeriodoBimestreAtivo = c.PeriodoBimestreAtivo,
+                    QuestaoSubrespostaId = c.QuestaoSubrespostaId,
                     OpcaoResposta = c.OpcaoResposta,
                     Resposta = possuiResposta && resposta is not null
                         ? new RespostaDto
                         {
                             Id = resposta.Id,
-                            OpcaoRespostaId = resposta.OpcaoRespostaId
+                            OpcaoRespostaId = resposta.OpcaoRespostaId ?? 0
                         }
                         : new RespostaDto()
                 };
