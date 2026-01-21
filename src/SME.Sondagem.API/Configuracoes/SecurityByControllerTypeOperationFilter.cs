@@ -8,6 +8,9 @@ namespace SME.Sondagem.API.Configuracoes;
 [ExcludeFromCodeCoverage]
 public class SecurityByControllerTypeOperationFilter : IOperationFilter
 {
+    private static readonly string[] EmptyStringArray = Array.Empty<string>();
+    private static readonly string[] BearerArray = new[] { "Bearer" };
+
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var isIntegracao =
@@ -37,7 +40,7 @@ public class SecurityByControllerTypeOperationFilter : IOperationFilter
                             Id = "ApiKey"
                         }
                     },
-                    Array.Empty<string>()
+                    EmptyStringArray
                 }
             });
         }
@@ -55,7 +58,7 @@ public class SecurityByControllerTypeOperationFilter : IOperationFilter
                             Id = "Bearer"
                         }
                     },
-                    new[] { "Bearer" }
+                    BearerArray
                 }
             });
         }
