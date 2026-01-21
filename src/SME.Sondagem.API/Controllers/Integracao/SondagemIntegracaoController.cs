@@ -46,8 +46,8 @@ public class SondagemIntegracaoController : ControllerBase
     {
         var resultado = await obterSondagemPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
-        if (resultado == null)
-            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, id));
+        if (resultado is null)
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA, id));
 
         return Ok(resultado);
     }
@@ -76,8 +76,8 @@ public class SondagemIntegracaoController : ControllerBase
     {
         var resultado = await atualizarSondagemUseCase.ExecutarAsync(id, dto, cancellationToken);
 
-        if (resultado == null)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
+        if (resultado is null)
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA, id));
 
         return Ok(resultado);
     }
@@ -89,7 +89,7 @@ public class SondagemIntegracaoController : ControllerBase
         var sucesso = await excluirSondagemUseCase.ExecutarAsync(id, cancellationToken);
 
         if (!sucesso)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA, id));
 
         return NoContent();
     }

@@ -47,7 +47,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var resultado = await obterQuestionarioPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, id));
 
         return Ok(resultado);
     }
@@ -77,7 +77,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var resultado = await atualizarQuestionarioUseCase.ExecutarAsync(id, dto, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, id));
 
         return Ok(resultado);
     }
@@ -89,7 +89,7 @@ public class QuestionarioIntegracaoController : ControllerBase
         var sucesso = await excluirQuestionarioUseCase.ExecutarAsync(id, cancellationToken);
 
         if (!sucesso)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO);
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, id));
 
         return NoContent();
     }
