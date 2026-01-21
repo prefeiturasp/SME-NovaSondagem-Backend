@@ -216,11 +216,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoAlunosIdsVazio));
             var repo = CriarRepositorio(context);
 
+            var questoesIds = new[] { 1, 2 };
+
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
                 alunosIds: [],
-                questoesIds: new[] { 1, 2 }
+                questoesIds: questoesIds
             );
 
             // Assert
@@ -234,10 +236,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarVazio_QuandoQuestoesIdsVazio));
             var repo = CriarRepositorio(context);
 
+            var alunosIds = new[] { 10, 20 };
+
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
-                alunosIds: new[] { 10, 20 },
+                alunosIds: alunosIds,
                 questoesIds: []
             );
 
@@ -294,11 +298,14 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var repo = CriarRepositorio(context);
 
+            var alunosIds = new[] { 10 };
+            var questoesIds = new[] { 100 };
+
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
-                alunosIds: new[] { 10 },
-                questoesIds: new[] { 100 }
+                alunosIds: alunosIds,
+                questoesIds: questoesIds
             );
 
             // Assert

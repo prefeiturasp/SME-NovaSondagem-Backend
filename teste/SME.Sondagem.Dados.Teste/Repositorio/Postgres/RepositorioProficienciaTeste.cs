@@ -192,8 +192,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 Assert.Equal(1, p.ComponenteCurricularId);
             });
 
+            var nomesEsperados = new[] { "Escrita", "Números" };
             Assert.Equal(
-                new[] { "Escrita", "Números" },
+                nomesEsperados,
                 lista.Select(p => p.Nome).ToArray()
             );
         }
