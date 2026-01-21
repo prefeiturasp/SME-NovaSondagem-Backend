@@ -16,5 +16,6 @@ public enum TipoQuestao
     ComboMultiplaEscolhaMes = 12,
     ComboDinamico = 13,
     ComboMultiplaEscolhaDinamico = 14,
-    LinguaPortuguesaSegundaLingua = 15
+    LinguaPortuguesaSegundaLingua = 15,
+    QuestaoComSubpergunta = 16,
 }

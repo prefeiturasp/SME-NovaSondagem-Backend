@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
@@ -34,7 +35,7 @@ public class RepositorioSondagem : IRepositorioSondagem
 
     public async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtiva(CancellationToken cancellationToken = default)
     {
-        var dataAtual = DateTime.UtcNow;
+        var dataAtual = DateTimeExtension.HorarioBrasilia();
         var sondagem = await _context.Sondagens
             .AsNoTracking()
             .Where(s =>
