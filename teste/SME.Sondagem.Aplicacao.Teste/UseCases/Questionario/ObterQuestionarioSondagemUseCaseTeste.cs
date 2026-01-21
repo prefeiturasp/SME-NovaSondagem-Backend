@@ -440,10 +440,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
         var primeiroEstudante = resultado.Estudantes!.First();
-        var primeiraColuna = primeiroEstudante.Coluna!.First();
-        Assert.NotNull(primeiraColuna.Resposta);
-        Assert.Equal(0, primeiraColuna.Resposta.Id);
-        Assert.Equal(0, primeiraColuna.Resposta.OpcaoRespostaId);
+        var primeiraColuna = primeiroEstudante.Coluna!.First();        
+        Assert.Null(primeiraColuna.Resposta);
     }
 
     [Fact]
