@@ -47,7 +47,7 @@ public class SondagemIntegracaoController : ControllerBase
         var resultado = await obterSondagemPorIdUseCase.ExecutarAsync(id, cancellationToken);
 
         if (resultado == null)
-            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SONDAGEM_NAO_ENCONTRADA);
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, id));
 
         return Ok(resultado);
     }
