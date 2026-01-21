@@ -193,7 +193,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas,
         int? bimestreId)
     {
-        
+
         var possuiSubperguntas = PossuiQuestaoVinculo(questoesAtivas);
 
         if (possuiSubperguntas)
@@ -207,7 +207,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                 .Select(q => new ColunaQuestionarioDto
                 {
                     IdCiclo = bimestreId.Value,
-                    DescricaoColuna = q.Nome,          
+                    DescricaoColuna = q.Nome,
                     PeriodoBimestreAtivo = true,
                     QuestaoSubrespostaId = q.Id,
                     OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas)
@@ -279,39 +279,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         {
             var codigoAluno = (int)aluno.CodigoAluno;
 
-            var colunasAluno = colunas.Select(c =>
-            {
-                long questaoIdChave =
-                    c.QuestaoSubrespostaId.HasValue
-                        ? c.QuestaoSubrespostaId.Value
-                        : questaoIdPrincipal;
-
-                int? bimestreIdChave = c.IdCiclo == 0 ? (int?)null : c.IdCiclo;
-
-                var chave = (
-                    CodigoAluno: codigoAluno,
-                    BimestreId: bimestreIdChave,
-                    QuestaoId: questaoIdChave
-                );
-
-                var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
-
-                return new ColunaQuestionarioDto
-                {
-                    IdCiclo = c.IdCiclo,
-                    DescricaoColuna = c.DescricaoColuna,
-                    PeriodoBimestreAtivo = c.PeriodoBimestreAtivo,
-                    QuestaoSubrespostaId = c.QuestaoSubrespostaId,
-                    OpcaoResposta = c.OpcaoResposta,
-                    Resposta = possuiResposta && resposta is not null
-                        ? new RespostaDto
-                        {
-                            Id = resposta.Id,
-                            OpcaoRespostaId = resposta.OpcaoRespostaId == 0 ? null : resposta.OpcaoRespostaId
-                        }
-                        : null,
-                };
-            }).ToList();
+            var colunasAluno = colunas
+                .Select(c => ConstruirColunaAluno(c, codigoAluno, questaoIdPrincipal, respostasAlunosPorQuestoes))
+                .ToList();
 
             estudantes.Add(new EstudanteQuestionarioDto
             {
@@ -328,10 +298,55 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return estudantes;
     }
 
+    private static ColunaQuestionarioDto ConstruirColunaAluno(
+        ColunaQuestionarioDto colunaBase,
+        int codigoAluno,
+        long questaoIdPrincipal,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes)
+    {
+        long questaoIdChave = colunaBase.QuestaoSubrespostaId.HasValue
+            ? colunaBase.QuestaoSubrespostaId.Value
+            : questaoIdPrincipal;
+
+        int? bimestreIdChave = colunaBase.IdCiclo == 0 ? (int?)null : colunaBase.IdCiclo;
+
+        var chave = (
+            CodigoAluno: codigoAluno,
+            BimestreId: bimestreIdChave,
+            QuestaoId: questaoIdChave
+        );
+
+        var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
+
+        return new ColunaQuestionarioDto
+        {
+            IdCiclo = colunaBase.IdCiclo,
+            DescricaoColuna = colunaBase.DescricaoColuna,
+            PeriodoBimestreAtivo = colunaBase.PeriodoBimestreAtivo,
+            QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
+            OpcaoResposta = colunaBase.OpcaoResposta,
+            Resposta = ConstruirResposta(possuiResposta, resposta)
+        };
+    }
+
+    private static RespostaDto? ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
+    {
+        if (!possuiResposta || resposta is null)
+            return null;
+
+        var opcaoRespostaId = resposta.OpcaoRespostaId == 0 ? null : resposta.OpcaoRespostaId;
+
+        return new RespostaDto
+        {
+            Id = resposta.Id,
+            OpcaoRespostaId = opcaoRespostaId
+        };
+    }
+
     private static string ObterTituloTabelaRespostas(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var primeiraQuestao = questoesAtivas.FirstOrDefault();
-        
+
         return PossuiQuestaoVinculo(questoesAtivas)
             ? questoesAtivas.FirstOrDefault(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta)?.QuestaoVinculo?.Nome!
             : primeiraQuestao?.Nome ?? string.Empty;
