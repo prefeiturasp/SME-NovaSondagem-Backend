@@ -1,5 +1,4 @@
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dominio.Entidades;
 
 namespace SME.Sondagem.Dados.Interfaces;
 

@@ -679,6 +679,10 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("character varying(200)")
                         .HasColumnName("place_holder");
 
+                    b.Property<int?>("QuestaoVinculoId")
+                        .HasColumnType("integer")
+                        .HasColumnName("questao_vinculo_id");
+
                     b.Property<int>("QuestionarioId")
                         .HasColumnType("integer")
                         .HasColumnName("questionario_id");
@@ -701,6 +705,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasName("pk_questao");
 
                     b.HasIndex("GrupoQuestoesId");
+
+                    b.HasIndex("QuestaoVinculoId");
 
                     b.HasIndex("QuestionarioId");
 
@@ -1124,6 +1130,11 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasForeignKey("GrupoQuestoesId")
                         .HasConstraintName("fk_questao_grupo");
 
+                    b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.Questao", "QuestaoVinculo")
+                        .WithMany("QuestoesVinculadas")
+                        .HasForeignKey("QuestaoVinculoId")
+                        .HasConstraintName("fk_questao_vinculo");
+
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.Questionario", "Questionario")
                         .WithMany("Questoes")
                         .HasForeignKey("QuestionarioId")
@@ -1132,6 +1143,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasConstraintName("fk_questao_questionario");
 
                     b.Navigation("GrupoQuestoes");
+
+                    b.Navigation("QuestaoVinculo");
 
                     b.Navigation("Questionario");
                 });
@@ -1288,6 +1301,8 @@ namespace SME.Sondagem.Dados.Migrations
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Questionario.Questao", b =>
                 {
                     b.Navigation("QuestaoOpcoes");
+
+                    b.Navigation("QuestoesVinculadas");
 
                     b.Navigation("Respostas");
                 });

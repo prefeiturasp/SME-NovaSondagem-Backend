@@ -15,6 +15,7 @@ public class Questao : EntidadeBase
     public bool SomenteLeitura { get; private set; }
     public int Dimensao { get; private set; }
     public int? GrupoQuestoesId { get; private set; }
+    public int? QuestaoVinculoId { get; }
     public int? Tamanho { get; private set; }
     public string? Mascara { get; private set; }
     public string? PlaceHolder { get; private set; }
@@ -25,6 +26,8 @@ public class Questao : EntidadeBase
     public virtual GrupoQuestoes? GrupoQuestoes { get; private set; } = null!;
     public virtual ICollection<QuestaoOpcaoResposta> QuestaoOpcoes { get; private set; } = new List<QuestaoOpcaoResposta>();
     public virtual ICollection<RespostaAluno> Respostas { get; private set; } = new List<RespostaAluno>();
+    public virtual ICollection<Questao> QuestoesVinculadas { get; private set; } = new List<Questao>();
+    public virtual Questao? QuestaoVinculo { get; private set; } = null!;
 
     private Questao()
     {
