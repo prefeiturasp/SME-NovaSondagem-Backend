@@ -71,7 +71,7 @@ public class QuestaoIntegracaoController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(500, new { mensagem = "Erro ao obter questionário" });
+            return StatusCode(500, new { mensagem = "Erro ao obter questão" });
         }
     }
 

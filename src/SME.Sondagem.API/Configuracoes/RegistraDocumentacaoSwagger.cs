@@ -1,11 +1,11 @@
 ﻿using Microsoft.OpenApi.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.API.Configuracoes;
 
+[ExcludeFromCodeCoverage]
 public static class RegistraDocumentacaoSwagger
 {
-    private static readonly string[] BearerSecurityRequirement = ["Bearer"];
-
     public static void Registrar(IServiceCollection services)
     {
         services.AddSwaggerGen(c =>
@@ -16,9 +16,12 @@ public static class RegistraDocumentacaoSwagger
                 Version = "1.0"
             });
 
-            var securitySchema = new OpenApiSecurityScheme
+            // =========================
+            // JWT - Bearer
+            // =========================
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Description = "Para autenticação, incluir 'Bearer' seguido do token JWT. Exemplo: \"Authorization: Bearer {token}\"",
+                Description = "Authorization: Bearer token",
                 Name = "Authorization",
                 In = ParameterLocation.Header,
                 Type = SecuritySchemeType.Http,
@@ -28,16 +31,25 @@ public static class RegistraDocumentacaoSwagger
                     Type = ReferenceType.SecurityScheme,
                     Id = "Bearer"
                 }
-            };
+            });
 
-            c.AddSecurityDefinition("Bearer", securitySchema);
-
-            var securityRequirement = new OpenApiSecurityRequirement
+            // =========================
+            // API KEY - Integração
+            // =========================
+            c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
             {
-                { securitySchema, BearerSecurityRequirement }
-            };
+                Description = "Informe a API Key de integração",
+                Name = "x-api-sondagem-key",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.ApiKey,
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            });
 
-            c.AddSecurityRequirement(securityRequirement);
+            c.OperationFilter<SecurityByControllerTypeOperationFilter>();
         });
     }
 }
