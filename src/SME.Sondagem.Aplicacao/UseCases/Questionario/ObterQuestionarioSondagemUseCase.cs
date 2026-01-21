@@ -240,9 +240,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                         ? new RespostaDto
                         {
                             Id = resposta.Id,
-                            OpcaoRespostaId = resposta.OpcaoRespostaId
+                            OpcaoRespostaId = resposta.OpcaoRespostaId == 0 ? null : resposta.OpcaoRespostaId
                         }
-                        : new RespostaDto()
+                        : null,
                 };
             }).ToList();
 
