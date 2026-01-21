@@ -7,6 +7,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
+using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -18,6 +19,7 @@ using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
+using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.Validators.Bimestre;
@@ -25,9 +27,12 @@ using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
 using SME.Sondagem.Aplicacao.Validators.Questao;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dados.Services.Auditoria;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -39,9 +44,6 @@ using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 using System.Diagnostics.CodeAnalysis;
-using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dados.Repositorio.Auditoria;
-using SME.Sondagem.Dados.Services.Auditoria;
 
 namespace SME.Sondagem.IoC;
 
@@ -62,13 +64,17 @@ public static class RegistraDependencias
 
     private static void RegistrarRepositorios(IServiceCollection services)
     {
+        services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
+        services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
+        services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
+        services.TryAddScoped<IRepositorioQuestaoOpcaoResposta, RepositorioQuestaoOpcaoResposta>();
+        services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
+        services.TryAddScoped<IRepositorioSondagem, RepositorioSondagem>();
+
         //repositórios do Elastic
         services.AddScoped<IRepositorioElasticAluno, RepositorioElasticAluno>();
         services.AddScoped<IRepositorioElasticTurma, RepositorioElasticTurma>();
-        services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
-        services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
-        services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
     }
 
     private static void RegistrarServicos(IServiceCollection services)
@@ -92,8 +98,17 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirOpcaoRespostaUseCase, ExcluirOpcaoRespostaUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaUseCase, ObterOpcaoRespostasUseCase>();
         services.TryAddScoped<IObterOpcaoRespostaPorIdUseCase, ObterOpcaoRespostaPorIdUseCase>();
+        services.TryAddScoped<ICriarQuestaoOpcaoRespostaUseCase, CriarQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IAtualizarQuestaoOpcaoRespostaUseCase, AtualizarQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IExcluirQuestaoOpcaoRespostaUseCase, ExcluirQuestaoOpcaoRespostaUseCase>();
+        services.TryAddScoped<IObterQuestaoOpcaoRespostaUseCase, ObterQuestaoOpcaoRespostasUseCase>();
+        services.TryAddScoped<IObterQuestaoOpcaoRespostaPorIdUseCase, ObterQuestaoOpcaoRespostaPorIdUseCase>();
+        services.TryAddScoped<ICriarQuestionarioUseCase, CriarQuestionarioUseCase>();
+        services.TryAddScoped<IAtualizarQuestionarioUseCase, AtualizarQuestionarioUseCase>();
+        services.TryAddScoped<IExcluirQuestionarioUseCase, ExcluirQuestionarioUseCase>();
+        services.TryAddScoped<IObterQuestionariosUseCase, ObterQuestionariosUseCase>();
+        services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
-        services.TryAddScoped<ISondagemUseCase, SondagemUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
@@ -107,6 +122,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestaoPorIdUseCase, ObterQuestaoPorIdUseCase>();
         services.TryAddScoped<IAutenticacaoUseCase, AutenticacaoUseCase>();
         services.TryAddScoped<ISondagemSalvarRespostasUseCase, SondagemSalvarRespostasUseCase>();
+        services.TryAddScoped<ICriarSondagemUseCase, CriarSondagemUseCase>();
+        services.TryAddScoped<IAtualizarSondagemUseCase, AtualizarSondagemUseCase>();
+        services.TryAddScoped<IExcluirSondagemUseCase, ExcluirSondagemUseCase>();
+        services.TryAddScoped<IObterSondagensUseCase, ObterSondagemUseCase>();
+        services.TryAddScoped<IObterSondagemPorIdUseCase, ObterSondagemPorIdUseCase>();
         services
             .TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,
                 ObterProficienciasPorComponenteCurricularUseCase>();

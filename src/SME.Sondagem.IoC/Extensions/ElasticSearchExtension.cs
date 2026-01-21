@@ -109,7 +109,7 @@ namespace SME.Sondagem.IoC.Extensions
                 var createResponse = await elasticClient.Indices.CreateAsync(
                     indiceTurma,
                     c => c.Mappings(m => m
-                        .Properties<QuestionarioDto>(p => p
+                        .Properties<TurmaElasticDto>(p => p
                             .Keyword(k => k.CodigoTurma)
                             .IntegerNumber(k => k.CodigoTurma)
                             .Keyword(k => k.NomeTurma)

@@ -2,7 +2,6 @@
 using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dados.Services.Auditoria;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
