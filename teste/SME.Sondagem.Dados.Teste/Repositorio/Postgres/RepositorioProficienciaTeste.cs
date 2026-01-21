@@ -164,5 +164,38 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.False(resultado);
         }
+
+        [Fact]
+        public async Task ObterProeficienciaPorComponenteCurricular_DeveRetornarApenasProficienciasDoComponenteInformado()
+        {
+            var contexto = CriarContexto(nameof(ObterProeficienciaPorComponenteCurricular_DeveRetornarApenasProficienciasDoComponenteInformado));
+
+            var prof1 = new Proficiencia("Escrita", 1);
+            var prof2 = new Proficiencia("Números", 1);
+            var prof3 = new Proficiencia("Mapeamento dos saberes", 2);
+            var prof4 = new Proficiencia("Leitura", 1);
+            prof4.Excluido = true;
+
+            contexto.Proficiencias.AddRange(prof1, prof2, prof3, prof4);
+            await contexto.SaveChangesAsync();
+
+            var repositorio = new RepositorioProficiencia(contexto);
+
+            var resultado = await repositorio.ObterProeficienciaPorComponenteCurricular(1);
+
+            var lista = resultado.ToList();
+
+            Assert.Equal(2, lista.Count);
+
+            Assert.All(lista, p =>
+            {
+                Assert.Equal(1, p.ComponenteCurricularId);
+            });
+
+            Assert.Equal(
+                new[] { "Escrita", "Números" },
+                lista.Select(p => p.Nome).ToArray()
+            );
+        }
     }
 }
