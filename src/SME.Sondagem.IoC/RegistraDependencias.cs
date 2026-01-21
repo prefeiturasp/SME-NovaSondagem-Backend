@@ -80,6 +80,7 @@ public static class RegistraDependencias
     private static void RegistrarServicos(IServiceCollection services)
     {
         services.AddScoped<IAlunoPapService, AlunoPapService>();
+        services.AddScoped<IControleAcessoService, ControleAcessoService>();
         services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         services.TryAddScoped<IServicoLog, ServicoLog>();
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
