@@ -210,7 +210,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                     DescricaoColuna = q.Nome,          
                     PeriodoBimestreAtivo = true,
                     QuestaoSubrespostaId = q.Id,
-                    OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas, true)
+                    OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas)
                 })
                 .ToList();
 
@@ -239,7 +239,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             : throw new ErroNaoEncontradoException("Não foi possível obter as colunas dos ciclos");
     }
 
-    private static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas, bool possuiSubperguntas = false)
+    private static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var retorno = questoesAtivas
             .Where(q => q.Id == questaoId)
@@ -247,7 +247,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto
             {
-                Id = possuiSubperguntas ? qo.OpcaoRespostaId : qo.Id,
+                Id = qo.OpcaoRespostaId,
                 Ordem = qo.Ordem,
                 DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
                 Legenda = qo.OpcaoResposta.Legenda,
