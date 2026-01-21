@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -28,7 +29,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IRepositorioQuestao repositorioQuestao)
     {
         _repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
-        _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));    
+        _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));
         _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
@@ -64,9 +65,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     }
 
     private async Task<QuestionarioSondagemDto> ProcessarQuestionario(
-        FiltroQuestionario filtro, 
+        FiltroQuestionario filtro,
         TurmaElasticDto turma,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva, 
+        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
@@ -84,13 +85,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
 
-        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre, questoesAtivas);
+        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
 
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
-            codigosAlunos, 
-            turma.AnoLetivo, 
+            codigosAlunos,
+            turma.AnoLetivo,
             cancellationToken);
 
         var alunosComLinguaPortuguesaSegundaLingua = await _repositorioRespostaAluno
@@ -105,16 +106,27 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             sondagemAtiva.Id,
             cancellationToken);
 
-        var respostasAlunosPorQuestoesConvertido = respostasAlunosPorQuestoes.Where(x => x.Value?.OpcaoRespostaId is not null).ToDictionary(
-            kvp => ((int)kvp.Key.CodigoAluno, kvp.Key.BimestreId ?? 0),
-            kvp => (dynamic)kvp.Value
-        );
+        var respostasAlunosPorQuestoesConvertido =
+            respostasAlunosPorQuestoes
+                .Where(x => x.Value?.OpcaoRespostaId is not null)
+                .GroupBy(x => (
+                    CodigoAluno: (int)x.Key.CodigoAluno, x.Key.BimestreId, x.Key.QuestaoId
+                ))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g
+                        .Select(x => x.Value!)
+                        .First()
+                );
+
+        var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
         var estudantes = ConstruirEstudantes(
-            alunos, 
-            colunas, 
-            respostasAlunosPorQuestoesConvertido, 
-            alunosComLinguaPortuguesaSegundaLingua, 
+            alunos,
+            colunas,
+            respostasAlunosPorQuestoesConvertido,
+            questaoIdPrincipal,
+            alunosComLinguaPortuguesaSegundaLingua,
             alunosComPap)
         .OrderBy(e => e.Nome)
         .ToList();
@@ -163,7 +175,6 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private static List<int> ObterQuestoesIdsPorTipo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         return questoesAtivas
-            .Where(q => q.Tipo == TipoQuestao.Combo || q.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua)
             .Select(q => q.Id)
             .ToList();
     }
@@ -175,26 +186,42 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return alunos != null && alunos.Any()
             ? alunos
             : throw new ErroNaoEncontradoException("Não há alunos cadastrados para a turma informada");
-    }    
+    }
 
     private static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecao(
         ICollection<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> periodosBimestre,
-        IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+        IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas,
+        int? bimestreId)
     {
-        var opcoesResposta = questoesAtivas
-            .Where(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)    
-            .SelectMany(q => q.QuestaoOpcoes)
-            .OrderBy(qo => qo.Ordem)
-            .Select(qo => new OpcaoRespostaDto
-            {
-                Id = qo.Id,
-                Ordem = qo.Ordem,
-                DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
-                Legenda = qo.OpcaoResposta.Legenda,
-                CorFundo = qo.OpcaoResposta.CorFundo,
-                CorTexto = qo.OpcaoResposta.CorTexto
-            })
-            .ToList();
+        
+        var possuiSubperguntas = PossuiQuestaoVinculo(questoesAtivas);
+
+        if (possuiSubperguntas)
+        {
+            if (!bimestreId.HasValue)
+                throw new ArgumentException("bimestreId é obrigatório quando existem subperguntas.");
+
+            var colunasPorQuestao = questoesAtivas
+                .Where(q => !q.Excluido && q.Tipo != TipoQuestao.QuestaoComSubpergunta)
+                .OrderBy(q => q.Ordem)
+                .Select(q => new ColunaQuestionarioDto
+                {
+                    IdCiclo = bimestreId.Value,
+                    DescricaoColuna = q.Nome,          
+                    PeriodoBimestreAtivo = true,
+                    QuestaoSubrespostaId = q.Id,
+                    OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas, true)
+                })
+                .ToList();
+
+            return colunasPorQuestao.Count != 0
+                ? Task.FromResult(colunasPorQuestao)
+                : throw new ErroNaoEncontradoException(
+                    "Não foi possível obter as colunas das subperguntas");
+        }
+
+        var questaoBimestre = questoesAtivas.FirstOrDefault(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua);
+        var opcoesResposta = ObterOpcoesRespostasPorQuestao(questaoBimestre!.Id, questoesAtivas);
 
         var bimestresAtivos = periodosBimestre
             .Where(p => !p.Excluido)
@@ -212,10 +239,37 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             : throw new ErroNaoEncontradoException("Não foi possível obter as colunas dos ciclos");
     }
 
+    private static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas, bool possuiSubperguntas = false)
+    {
+        var retorno = questoesAtivas
+            .Where(q => q.Id == questaoId)
+            .SelectMany(q => q.QuestaoOpcoes)
+            .OrderBy(qo => qo.Ordem)
+            .Select(qo => new OpcaoRespostaDto
+            {
+                Id = possuiSubperguntas ? qo.OpcaoRespostaId : qo.Id,
+                Ordem = qo.Ordem,
+                DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
+                Legenda = qo.OpcaoResposta.Legenda,
+                CorFundo = qo.OpcaoResposta.CorFundo,
+                CorTexto = qo.OpcaoResposta.CorTexto
+            })
+            .ToList();
+
+        return retorno;
+    }
+
+
+    private static bool PossuiQuestaoVinculo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    {
+        return questoesAtivas.Any(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta);
+    }
+
     private static List<EstudanteQuestionarioDto> ConstruirEstudantes(
         IEnumerable<dynamic> alunos,
         List<ColunaQuestionarioDto> colunas,
-        Dictionary<(int CodigoAluno, int IdCiclo), dynamic> respostasAlunosPorQuestoes,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        long questaoIdPrincipal,
         Dictionary<int, bool> alunosComLinguaPortuguesaSegundaLingua,
         Dictionary<int, bool> alunosComPap)
     {
@@ -227,7 +281,19 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
             var colunasAluno = colunas.Select(c =>
             {
-                var chave = (codigoAluno, c.IdCiclo);
+                long questaoIdChave =
+                    c.QuestaoSubrespostaId.HasValue
+                        ? c.QuestaoSubrespostaId.Value
+                        : questaoIdPrincipal;
+
+                int? bimestreIdChave = c.IdCiclo == 0 ? (int?)null : c.IdCiclo;
+
+                var chave = (
+                    CodigoAluno: codigoAluno,
+                    BimestreId: bimestreIdChave,
+                    QuestaoId: questaoIdChave
+                );
+
                 var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
                 return new ColunaQuestionarioDto
@@ -235,12 +301,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                     IdCiclo = c.IdCiclo,
                     DescricaoColuna = c.DescricaoColuna,
                     PeriodoBimestreAtivo = c.PeriodoBimestreAtivo,
+                    QuestaoSubrespostaId = c.QuestaoSubrespostaId,
                     OpcaoResposta = c.OpcaoResposta,
                     Resposta = possuiResposta && resposta is not null
                         ? new RespostaDto
                         {
                             Id = resposta.Id,
-                            OpcaoRespostaId = resposta.OpcaoRespostaId
+                            OpcaoRespostaId = resposta.OpcaoRespostaId ?? 0
                         }
                         : new RespostaDto()
                 };
@@ -264,6 +331,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private static string ObterTituloTabelaRespostas(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var primeiraQuestao = questoesAtivas.FirstOrDefault();
-        return primeiraQuestao?.Nome ?? string.Empty;
+        
+        return PossuiQuestaoVinculo(questoesAtivas)
+            ? questoesAtivas.FirstOrDefault(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta)?.QuestaoVinculo?.Nome!
+            : primeiraQuestao?.Nome ?? string.Empty;
     }
 }

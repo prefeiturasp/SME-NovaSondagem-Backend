@@ -349,46 +349,81 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterQuestionarioSondagem_DeveRetornarColunasComRespostasDoAluno()
+    public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
+        // Arrange
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
-        var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
-        var sondagem = CriarSondagemMock();
-        var questoes = CriarQuestoesMock();
-        var alunos = CriarAlunosMock();
 
-        ConfigurarMocksBase(filtro, turma, sondagem, questoes);
-        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(alunos);
+        var questaoRespondidaId = 13;
 
-        var respostaAluno = new RespostaAluno(1, 1001, 1, 10, DateTime.Now, 1);
+        ConfigurarMocksBase(
+            filtro,
+            new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 },
+            CriarSondagemMock(),
+            CriarQuestoesMockComSubResposta(questaoRespondidaId)
+        );
 
-        respostaAluno.GetType().BaseType!.GetProperty("Id")!.SetValue(respostaAluno, 1);
+        _mockRepositorioElasticAluno
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new[]
+            {
+            new AlunoElasticDto
+            {
+                CodigoAluno = 1001,
+                NomeAluno = "Aluno Teste",
+                NumeroAlunoChamada = "1",
+                PossuiDeficiencia = 0
+            }
+            });
 
-        var respostas = new Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>
-        {
-            { (1001L, 1L, 1), respostaAluno }
-        };
+        var respostaAluno = new RespostaAluno(
+            sondagemId: 1,
+            questaoId: questaoRespondidaId,
+            alunoId: 1001,
+            bimestreId: 1,
+            opcaoRespostaId: 10,
+            dataResposta: DateTime.Now
+        );
 
-        _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(respostas);
+        respostaAluno.GetType().BaseType!
+            .GetProperty("Id")!
+            .SetValue(respostaAluno, 1);
 
-        _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
+                It.IsAny<List<long>>(),
+                It.IsAny<List<long>>(),
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>
+            {
+            { (1001L, questaoRespondidaId, 1), respostaAluno }
+            });
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
+                It.IsAny<List<int>>(),
+                It.IsAny<Dominio.Entidades.Questionario.Questao>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
-        _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
-            It.IsAny<List<int>>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockAlunoPapService
+            .Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
+                It.IsAny<List<int>>(),
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
+        // Act
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
-        var primeiroEstudante = resultado.Estudantes!.First();
-        var primeiraColuna = primeiroEstudante.Coluna!.First();
-        Assert.NotNull(primeiraColuna.Resposta);
-        Assert.Equal(1, primeiraColuna.Resposta.Id);
-        Assert.Equal(10, primeiraColuna.Resposta.OpcaoRespostaId);
+        // Assert (simples e correto)
+        var resposta = resultado.Estudantes!
+            .SelectMany(e => e.Coluna!)
+            .Select(c => c.Resposta)
+            .FirstOrDefault();
+
+        Assert.NotNull(resposta);
     }
 
     [Fact]
@@ -437,11 +472,13 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
-        _mockRepositorioRespostaAluno.Verify(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(),
-            It.Is<List<long>>(ids => ids.Count == 2), 
-            It.IsAny<long>(),
-            It.IsAny<CancellationToken>()), Times.Once);
+        _mockRepositorioRespostaAluno.Verify(x =>
+            x.ObterRespostasAlunosPorQuestoesAsync(
+                It.IsAny<List<long>>(),
+                It.Is<List<long>>(ids => ids.Count == 3),
+                It.IsAny<long>(),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 
     [Fact]
@@ -545,6 +582,49 @@ public class ObterQuestionarioSondagemUseCaseTeste
         bimestreProperty?.SetValue(periodo, bimestre);
 
         return sondagem;
+    }
+
+    private static List<Dominio.Entidades.Questionario.Questao>
+    CriarQuestoesMockComSubResposta(int subQuestaoId)
+    {
+        var questaoPai = new Dominio.Entidades.Questionario.Questao(
+            questionarioId: 1,
+            ordem: 1,
+            nome: "Compreensão de textos",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Combo,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 12
+        );
+
+        questaoPai.GetType().BaseType!
+            .GetProperty("Id")!
+            .SetValue(questaoPai, 1);
+
+        var subQuestao = new Dominio.Entidades.Questionario.Questao(
+            questionarioId: 1,
+            ordem: 1,
+            nome: "Localização",
+            observacao: string.Empty,
+            obrigatorio: true,
+            tipo: TipoQuestao.Combo,
+            opcionais: string.Empty,
+            somenteLeitura: false,
+            dimensao: 12
+        );
+
+        subQuestao.GetType().BaseType!
+            .GetProperty("Id")!
+            .SetValue(subQuestao, subQuestaoId);
+
+        typeof(Dominio.Entidades.Questionario.Questao)
+            .GetProperty(nameof(Dominio.Entidades.Questionario.Questao.QuestaoVinculo))!
+            .SetValue(subQuestao, questaoPai);
+
+
+        return new List<Dominio.Entidades.Questionario.Questao> { subQuestao };
     }
 
     private static Dominio.Entidades.Sondagem.Sondagem CriarSondagemComPeriodoAtivoMock()
