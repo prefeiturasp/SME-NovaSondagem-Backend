@@ -49,7 +49,7 @@ namespace SME.Sondagem.API.Teste.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var lista = Assert.IsAssignableFrom<IEnumerable<QuestaoOpcaoRespostaDto>>(okResult.Value);
+            var lista = Assert.IsType<List<QuestaoOpcaoRespostaDto>>(okResult.Value);
             Assert.Empty(lista);
             _obterMock.Verify(x => x.ExecutarAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -73,8 +73,8 @@ namespace SME.Sondagem.API.Teste.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<QuestaoOpcaoRespostaDto>>(okResult.Value);
-            Assert.Equal(3, retorno.Count());
+            var retorno = Assert.IsType<List<QuestaoOpcaoRespostaDto>>(okResult.Value);
+            Assert.Equal(3, retorno.Count);
             Assert.Equal(lista, okResult.Value);
             _obterMock.Verify(x => x.ExecutarAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -190,11 +190,9 @@ namespace SME.Sondagem.API.Teste.Controllers
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             Assert.Equal(nameof(QuestaoOpcaoRespostaIntegracaoController.GetById), createdResult.ActionName);
             Assert.Equal(idCriado, createdResult.Value);
-
             var routeValues = createdResult.RouteValues;
             Assert.NotNull(routeValues);
             Assert.Equal(idCriado, routeValues["id"]);
-
             _criarMock.Verify(x => x.ExecutarAsync(dto, It.IsAny<CancellationToken>()), Times.Once);
         }
 
