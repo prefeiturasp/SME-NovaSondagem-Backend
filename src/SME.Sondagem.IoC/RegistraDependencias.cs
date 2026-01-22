@@ -12,6 +12,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
+using SME.Sondagem.Aplicacao.Interfaces.Turma;
 using SME.Sondagem.Aplicacao.Services.EOL;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
@@ -22,6 +23,7 @@ using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
+using SME.Sondagem.Aplicacao.UseCases.Turma;
 using SME.Sondagem.Aplicacao.Validators.Bimestre;
 using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
@@ -128,6 +130,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirSondagemUseCase, ExcluirSondagemUseCase>();
         services.TryAddScoped<IObterSondagensUseCase, ObterSondagemUseCase>();
         services.TryAddScoped<IObterSondagemPorIdUseCase, ObterSondagemPorIdUseCase>();
+        services.TryAddScoped<IObterPermissaoTurmaUseCase, ObterPermissaoTurmaUseCase>();
         services
             .TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,
                 ObterProficienciasPorComponenteCurricularUseCase>();

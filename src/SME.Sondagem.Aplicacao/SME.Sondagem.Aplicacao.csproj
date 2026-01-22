@@ -9,19 +9,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentValidation" Version="12.1.0"/>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12"/>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
+        <PackageReference Include="FluentValidation" Version="12.1.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj"/>
-        <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj"/>
+        <ProjectReference Include="..\SME.Sondagem.Dados\SME.Sondagem.Dados.csproj" />
+        <ProjectReference Include="..\SME.Sondagem.Infra\SME.Sondagem.Infra.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Interfaces\Services\Auditoria\"/>
-        <Folder Include="Services\SGP\"/>
+        <Folder Include="Interfaces\Services\Auditoria\" />
+        <Folder Include="Services\SGP\" />
     </ItemGroup>
 
 </Project>
