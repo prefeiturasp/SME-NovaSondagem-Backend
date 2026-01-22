@@ -200,7 +200,7 @@ public class AtualizarQuestaoUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_AtualizacaoComSucesso_DeveRetornarQuestaoDtoCompleto()
     {
-        const long id = 1;
+        const int id = 1;
 
         var questaoDto = new QuestaoDto
         {

@@ -8,7 +8,6 @@ namespace SME.Sondagem.Infra.Dtos.Questionario;
 [ExcludeFromCodeCoverage]
 public class QuestaoDto : BaseDto
 {
-    public int Id { get; set; }
     public int QuestionarioId { get; set; }
     public int? GrupoQuestoesId { get; set; }
     public int Ordem { get; set; }

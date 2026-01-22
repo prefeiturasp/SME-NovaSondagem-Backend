@@ -109,7 +109,7 @@ public class ObterQuestaoPorIdUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_QuestaoExiste_DeveRetornarQuestaoDto()
     {
-        const long id = 1;
+        const int id = 1;
         var agora = DateTime.Now;
         var agoraAlterado = agora.AddHours(1);
 
