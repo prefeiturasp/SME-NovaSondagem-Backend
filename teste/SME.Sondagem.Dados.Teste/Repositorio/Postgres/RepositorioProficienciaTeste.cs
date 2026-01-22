@@ -7,6 +7,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioProficienciaTeste : RepositorioBaseTeste
     {
+        private static readonly string[] NomesEsperadosComponente1 = ["Escrita", "Números"];
+
         [Fact]
         public async Task ObterTodosAsync_deve_retornar_somente_proficiencias_nao_excluidas_ordenadas_por_nome()
         {
@@ -163,6 +165,39 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var resultado = await repositorio.ExcluirAsync(999);
 
             Assert.False(resultado);
+        }
+
+        [Fact]
+        public async Task ObterProeficienciaPorComponenteCurricular_DeveRetornarApenasProficienciasDoComponenteInformado()
+        {
+            var contexto = CriarContexto(nameof(ObterProeficienciaPorComponenteCurricular_DeveRetornarApenasProficienciasDoComponenteInformado));
+
+            var prof1 = new Proficiencia("Escrita", 1);
+            var prof2 = new Proficiencia("Números", 1);
+            var prof3 = new Proficiencia("Mapeamento dos saberes", 2);
+            var prof4 = new Proficiencia("Leitura", 1);
+            prof4.Excluido = true;
+
+            contexto.Proficiencias.AddRange(prof1, prof2, prof3, prof4);
+            await contexto.SaveChangesAsync();
+
+            var repositorio = new RepositorioProficiencia(contexto);
+
+            var resultado = await repositorio.ObterProeficienciaPorComponenteCurricular(1);
+
+            var lista = resultado.ToList();
+
+            Assert.Equal(2, lista.Count);
+
+            Assert.All(lista, p =>
+            {
+                Assert.Equal(1, p.ComponenteCurricularId);
+            });
+
+            Assert.Equal(
+                NomesEsperadosComponente1,
+                lista.Select(p => p.Nome).ToArray()
+            );
         }
     }
 }

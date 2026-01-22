@@ -229,5 +229,99 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         }
 
         #endregion
+
+        [Fact]
+        public async Task ObterQuestionarioIdPorQuestoesAsync_DeveRetornarQuestoesNaoExcluidasComRelacionamentos()
+        {
+            var context = CriarContexto(nameof(ObterQuestionarioIdPorQuestoesAsync_DeveRetornarQuestoesNaoExcluidasComRelacionamentos));
+
+            var questionario = new SME.Sondagem.Dominio.Entidades.Questionario.Questionario(
+                sondagemId: 1,
+                componenteCurricularId: 1,  
+                tipo: TipoQuestionario.SondagemEscrita,
+                nome: "Questionário Teste",
+                modalidadeId: 1,
+                anoLetivo: 2024,
+                proficienciaId: 1,
+                serieAno: 5
+            );
+
+            context.Questionarios.Add(questionario);
+            await context.SaveChangesAsync();
+
+            var opcao = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(1, "Descrição", "Legenda", "#FFFFF", "#00000");
+            context.OpcoesResposta.Add(opcao);
+            await context.SaveChangesAsync();
+
+            var questao1 = new Questao(
+                questionarioId: questionario.Id,
+                ordem: 1,
+                nome: "Questão 1",
+                observacao: "",
+                obrigatorio: true,
+                tipo: TipoQuestao.Radio,
+                opcionais: "{}",
+                somenteLeitura: false,
+                dimensao: 12,
+                grupoQuestoesId: null,
+                mascara: null,
+                placeHolder: null,
+                nomeComponente: null
+            );
+
+            var questao2 = new Questao(
+                questionarioId: questionario.Id,
+                ordem: 2,
+                nome: "Questão 2",
+                observacao: "",
+                obrigatorio: true,
+                tipo: TipoQuestao.Radio,
+                opcionais: "{}",
+                somenteLeitura: false,
+                dimensao: 12,
+                grupoQuestoesId: null,
+                mascara: null,
+                placeHolder: null,
+                nomeComponente: null
+            );
+
+            context.Questoes.AddRange(questao1, questao2);
+            await context.SaveChangesAsync();
+
+            var questaoOpcao1 = new SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta(
+                questaoId: questao1.Id,
+                opcaoRespostaId: opcao.Id,
+                ordem: 1
+            );
+
+            var questaoOpcao2 = new SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta(
+                questaoId: questao2.Id,
+                opcaoRespostaId: opcao.Id,
+                ordem: 1
+            );
+
+            context.QuestoesOpcoesResposta.AddRange(questaoOpcao1, questaoOpcao2);
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioQuestao(context);
+
+            var resultado = await repositorio.ObterQuestionarioIdPorQuestoesAsync(
+                new[] { questao1.Id, questao2.Id }
+            );
+
+            var lista = resultado.ToList();
+
+            Assert.Equal(2, lista.Count); 
+
+            var questao1Result = lista.First(q => q.Id == questao1.Id);
+            Assert.NotNull(questao1Result.Questionario);
+            Assert.NotEmpty(questao1Result.QuestaoOpcoes);
+            Assert.NotNull(questao1Result.QuestaoOpcoes.First().OpcaoResposta);
+
+            var questao2Result = lista.First(q => q.Id == questao2.Id);
+            Assert.NotNull(questao2Result.Questionario);
+            Assert.NotEmpty(questao2Result.QuestaoOpcoes);
+            Assert.NotNull(questao2Result.QuestaoOpcoes.First().OpcaoResposta);
+        }
     }
 }
