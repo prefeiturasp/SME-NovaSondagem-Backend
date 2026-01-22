@@ -1,322 +1,314 @@
-﻿using FluentAssertions;
+﻿using Elastic.Clients.Elasticsearch;
+using Moq;
+using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infra.Interfaces;
 using Xunit;
 
-namespace SME.Sondagem.Dados.Teste.Repositorio.Elastic;
-
-public class RepositorioElasticAlunoTeste
+namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 {
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComAlunosConfigurados_DeveRetornarListaDeAlunos()
+    internal class RepositorioElasticAlunoTestDouble : RepositorioElasticAluno
     {
-        var alunosEsperados = new List<AlunoElasticDto>
+        public List<AlunoElasticDto> Itens { get; } = new();
+
+        public RepositorioElasticAlunoTestDouble(IServicoTelemetria servicoTelemetria, ElasticsearchClient elasticClient)
+            : base(servicoTelemetria, elasticClient) { }
+
+        protected override bool EhRespostaValida<TResponse>(SearchResponse<TResponse> response) => true;
+
+        protected override IReadOnlyCollection<TResponse> ObterDocumentos<TResponse>(SearchResponse<TResponse> response)
         {
-            new()
+            if (typeof(TResponse) == typeof(AlunoElasticDto))
+                return (IReadOnlyCollection<TResponse>) (object) Itens;
+
+            return base.ObterDocumentos(response);
+        }
+    }
+
+    public class RepositorioElasticAlunoTeste
+    {
+        private readonly Mock<IServicoTelemetria> _mockServicoTelemetria;
+        private readonly Mock<ElasticsearchClient> _mockElasticClient;
+        private readonly RepositorioElasticAlunoTestDouble _repositorio;
+
+        public RepositorioElasticAlunoTeste()
+        {
+            _mockServicoTelemetria = new Mock<IServicoTelemetria>();
+
+            var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"));
+            _mockElasticClient = new Mock<ElasticsearchClient>(settings);
+
+            _repositorio = new RepositorioElasticAlunoTestDouble(
+                _mockServicoTelemetria.Object,
+                _mockElasticClient.Object
+            );
+        }
+
+        [Fact]
+        public void Construtor_DeveInicializarCorretamente()
+        {
+            // Arrange & Act
+            var repositorio = new RepositorioElasticAluno(
+                _mockServicoTelemetria.Object,
+                _mockElasticClient.Object
+            );
+
+            // Assert
+            Assert.NotNull(repositorio);
+        }
+
+        [Fact]
+        public void Construtor_DeveLancarExcecao_QuandoServicoTelemetriaForNulo()
+        {
+            // Arrange & Act & Assert
+            _ = Assert.Throws<ArgumentNullException>(() =>
+                new RepositorioElasticAluno(null!, _mockElasticClient.Object));
+        }
+
+        [Fact]
+        public void Construtor_DeveLancarExcecao_QuandoElasticClientForNulo()
+        {
+            // Arrange & Act & Assert
+            Assert.Throws<ArgumentNullException>(() =>
+                new RepositorioElasticAluno(_mockServicoTelemetria.Object, null!));
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveRetornarAlunosDistintos_QuandoExistiremAlunos()
+        {
+            // Arrange
+            var idTurma = 123;
+            var cancellationToken = CancellationToken.None;
+
+            var alunosEsperados = new List<AlunoElasticDto>
             {
-                CodigoAluno = 1,
-                NumeroAlunoChamada = "1",
-                NomeAluno = "João Silva",
-                PossuiDeficiencia = 0,
-                CodigoTurma = 10
-            },
-            new()
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 102, NomeAluno = "Aluno 2", CodigoTurma = idTurma }
+            };
+
+            ConfigurarMocksParaRetornar(alunosEsperados);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            Assert.NotNull(resultado);
+            var listaResultado = resultado.ToList();
+            Assert.Equal(2, listaResultado.Count); // Apenas 2 distintos
+            Assert.Contains(listaResultado, a => a.CodigoAluno == 1);
+            Assert.Contains(listaResultado, a => a.CodigoAluno == 2);
+
+            VerificarChamadaTelemetria("Obter alunos por Id da turma", Times.Once());
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveRetornarListaVazia_QuandoNaoExistiremAlunos()
+        {
+            // Arrange
+            var idTurma = 999;
+            var cancellationToken = CancellationToken.None;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Empty(resultado);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveChamarTelemetriaComParametrosCorretos()
+        {
+            // Arrange
+            var idTurma = 456;
+            var cancellationToken = CancellationToken.None;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
+
+            // Act
+            await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            _mockServicoTelemetria.Verify(
+                x => x.RegistrarComRetornoAsync<SearchResponse<AlunoElasticDto>>(
+                    It.IsAny<Func<Task<object>>>(),
+                    "Elastic",
+                    "Obter alunos por Id da turma",
+                    It.IsAny<string>(),
+                    It.Is<string>(s => s.Contains(idTurma.ToString()))),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveAplicarFiltroCorreto()
+        {
+            // Arrange
+            var idTurma = 789;
+            var cancellationToken = CancellationToken.None;
+
+            var alunosDaTurma = new List<AlunoElasticDto>
             {
-                CodigoAluno = 2,
-                NumeroAlunoChamada = "2",
-                NomeAluno = "Maria Santos",
-                PossuiDeficiencia = 1,
-                CodigoTurma = 10
-            }
-        };
+                new AlunoElasticDto { CodigoAluno = 10, CodigoTurma = idTurma, NomeAluno = "Aluno Turma Correta" }
+            };
 
-        var repositorioFake = new RepositorioElasticAlunoFake
+            ConfigurarMocksParaRetornar(alunosDaTurma);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.All(resultado, aluno => Assert.Equal(idTurma, aluno.CodigoTurma));
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveManterApenasUmRegistroPorCodigoAluno()
         {
-            Retorno = alunosEsperados
-        };
+            // Arrange
+            var idTurma = 100;
+            var cancellationToken = CancellationToken.None;
 
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        resultado.Should().NotBeNull();
-        resultado.Should().HaveCount(2);
-        resultado.Should().BeEquivalentTo(alunosEsperados);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_SemAlunosConfigurados_DeveRetornarListaVazia()
-    {
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = Enumerable.Empty<AlunoElasticDto>()
-        };
-
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        resultado.Should().NotBeNull();
-        resultado.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComUmAluno_DeveRetornarAlunoUnico()
-    {
-        var alunoEsperado = new AlunoElasticDto
-        {
-            CodigoAluno = 100,
-            NumeroAlunoChamada = "5",
-            NomeAluno = "Pedro Oliveira",
-            PossuiDeficiencia = 0,
-            CodigoTurma = 25
-        };
-
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = new[] { alunoEsperado }
-        };
-
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(25, CancellationToken.None);
-
-        resultado.Should().ContainSingle();
-        
-        var aluno = resultado.First();
-        aluno.CodigoAluno.Should().Be(100);
-        aluno.NumeroAlunoChamada.Should().Be("5");
-        aluno.NomeAluno.Should().Be("Pedro Oliveira");
-        aluno.PossuiDeficiencia.Should().Be(0);
-        aluno.CodigoTurma.Should().Be(25);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComAlunosComDeficiencia_DeveRetornarCorretamente()
-    {
-        var alunos = new List<AlunoElasticDto>
-        {
-            new()
+            var alunosComDuplicatas = new List<AlunoElasticDto>
             {
-                CodigoAluno = 1,
-                NumeroAlunoChamada = "1",
-                NomeAluno = "Aluno sem deficiência",
-                PossuiDeficiencia = 0
-            },
-            new()
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 102, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Aluno 2", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 201, NomeAluno = "Aluno 2", CodigoTurma = idTurma }
+            };
+
+            ConfigurarMocksParaRetornar(alunosComDuplicatas);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            var listaResultado = resultado.ToList();
+            Assert.Equal(2, listaResultado.Count);
+            Assert.Single(listaResultado, a => a.CodigoAluno == 1);
+            Assert.Single(listaResultado, a => a.CodigoAluno == 2);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(100)]
+        [InlineData(9999)]
+        public async Task ObterAlunosPorIdTurma_DeveFuncionarComDiferentesIdsTurma(int idTurma)
+        {
+            // Arrange
+            var cancellationToken = CancellationToken.None;
+            var alunos = new List<AlunoElasticDto>
             {
-                CodigoAluno = 2,
-                NumeroAlunoChamada = "2",
-                NomeAluno = "Aluno com deficiência",
-                PossuiDeficiencia = 1
-            }
-        };
+                new AlunoElasticDto { CodigoAluno = 1, CodigoTurma = idTurma, NomeAluno = "Aluno Teste" }
+            };
 
-        var repositorioFake = new RepositorioElasticAlunoFake
+            ConfigurarMocksParaRetornar(alunos);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Single(resultado);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveRetornarPrimeiroRegistro_QuandoHouverDuplicatas()
         {
-            Retorno = alunos
-        };
+            // Arrange
+            var idTurma = 555;
+            var cancellationToken = CancellationToken.None;
 
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        resultado.Should().HaveCount(2);
-        resultado.Should().Contain(a => a.PossuiDeficiencia == 0);
-        resultado.Should().Contain(a => a.PossuiDeficiencia == 1);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComAlunosSemNome_DeveRetornarComNomeNulo()
-    {
-        var alunos = new List<AlunoElasticDto>
-        {
-            new()
+            var alunosComDuplicatas = new List<AlunoElasticDto>
             {
-                CodigoAluno = 1,
-                NumeroAlunoChamada = "2",
-                NomeAluno = null!,
-                PossuiDeficiencia = 0
-            }
-        };
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Primeiro Registro", CodigoTurma = idTurma },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Segundo Registro", CodigoTurma = idTurma }
+            };
 
-        var repositorioFake = new RepositorioElasticAlunoFake
+            ConfigurarMocksParaRetornar(alunosComDuplicatas);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            var listaResultado = resultado.ToList();
+            Assert.Single(listaResultado);
+            Assert.Equal(100, listaResultado.First().CodigoMatricula);
+            Assert.Equal("Primeiro Registro", listaResultado.First().NomeAluno);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DevePreservarDadosCompletos_DosPrimeiroRegistros()
         {
-            Retorno = alunos
-        };
+            // Arrange
+            var idTurma = 888;
+            var cancellationToken = CancellationToken.None;
+            var dataEsperada = new DateTime(2024, 1, 15);
 
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        var aluno = resultado.First();
-        aluno.NomeAluno.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComMultiplosAlunos_DeveManterOrdem()
-    {
-        var alunos = new List<AlunoElasticDto>
-        {
-            new()
+            var alunos = new List<AlunoElasticDto>
             {
-                CodigoAluno = 3,
-                NumeroAlunoChamada = "3",
-                NomeAluno = "Carlos"
-            },
-            new()
-            {
-                CodigoAluno = 1,
-                NumeroAlunoChamada = "1",
-                NomeAluno = "Ana"
-            },
-            new()
-            {
-                CodigoAluno = 2,
-                NumeroAlunoChamada = "2",
-                NomeAluno = "Bruno"
-            }
-        };
+                new AlunoElasticDto
+                {
+                    CodigoAluno = 5,
+                    CodigoMatricula = 500,
+                    NomeAluno = "João Silva",
+                    NomeSocialAluno = "João",
+                    NumeroAlunoChamada = "10",
+                    DataNascimento = dataEsperada,
+                    CodigoTurma = idTurma
+                }
+            };
 
-        var repositorioFake = new RepositorioElasticAlunoFake
+            ConfigurarMocksParaRetornar(alunos);
+
+            // Act
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+
+            // Assert
+            var aluno = resultado.First();
+            Assert.Equal(5, aluno.CodigoAluno);
+            Assert.Equal(500, aluno.CodigoMatricula);
+            Assert.Equal("João Silva", aluno.NomeAluno);
+            Assert.Equal("João", aluno.NomeSocialAluno);
+            Assert.Equal("10", aluno.NumeroAlunoChamada);
+            Assert.Equal(dataEsperada, aluno.DataNascimento);
+        }
+
+        #region Métodos Auxiliares
+
+        private void ConfigurarMocksParaRetornar(List<AlunoElasticDto> documentos)
         {
-            Retorno = alunos
-        };
+            _repositorio.Itens.Clear();
+            _repositorio.Itens.AddRange(documentos);
 
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
+            var responseType = typeof(SearchResponse<AlunoElasticDto>);
+            var response = (SearchResponse<AlunoElasticDto>)Activator.CreateInstance(responseType, nonPublic: true)!;
 
-        resultado.Should().HaveCount(3);
-        resultado.Should().ContainInOrder(alunos);
-    }
+            _mockServicoTelemetria
+                .Setup(x => x.RegistrarComRetornoAsync<SearchResponse<AlunoElasticDto>>(
+                    It.IsAny<Func<Task<object>>>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(response);
+        }
 
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComCancellationToken_DeveExecutarNormalmente()
-    {
-        var alunos = new List<AlunoElasticDto>
+        private void VerificarChamadaTelemetria(string nomeConsulta, Times times)
         {
-            new() { CodigoAluno = 1, NomeAluno = "Aluno Teste" }
-        };
+            _mockServicoTelemetria.Verify(
+                x => x.RegistrarComRetornoAsync<SearchResponse<AlunoElasticDto>>(
+                    It.IsAny<Func<Task<object>>>(),
+                    "Elastic",
+                    nomeConsulta,
+                    It.IsAny<string>(),
+                    It.IsAny<string>()),
+                times);
+        }
 
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = alunos
-        };
-
-        using var cts = new CancellationTokenSource();
-
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, cts.Token);
-
-        resultado.Should().NotBeNull();
-        resultado.Should().ContainSingle();
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComDiferentesTurmas_DeveRetornarMesmoResultado()
-    {
-        var alunos = new List<AlunoElasticDto>
-        {
-            new() { CodigoAluno = 1, CodigoTurma = 10 },
-            new() { CodigoAluno = 2, CodigoTurma = 10 }
-        };
-
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = alunos
-        };
-
-        var resultado1 = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-        var resultado2 = await repositorioFake.ObterAlunosPorIdTurma(20, CancellationToken.None);
-
-        resultado1.Should().BeEquivalentTo(resultado2);
-        resultado1.Should().BeSameAs(resultado2);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_AlterandoRetorno_DeveRetornarNovosDados()
-    {
-        var primeiroRetorno = new List<AlunoElasticDto>
-        {
-            new() { CodigoAluno = 1, NomeAluno = "Aluno 1" }
-        };
-
-        var segundoRetorno = new List<AlunoElasticDto>
-        {
-            new() { CodigoAluno = 2, NomeAluno = "Aluno 2" },
-            new() { CodigoAluno = 3, NomeAluno = "Aluno 3" }
-        };
-
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = primeiroRetorno
-        };
-
-        var resultado1 = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        repositorioFake.Retorno = segundoRetorno;
-
-        var resultado2 = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        resultado1.Should().HaveCount(1);
-        resultado1.First().NomeAluno.Should().Be("Aluno 1");
-
-        resultado2.Should().HaveCount(2);
-        resultado2.Should().Contain(a => a.NomeAluno == "Aluno 2");
-        resultado2.Should().Contain(a => a.NomeAluno == "Aluno 3");
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComTodosOsCamposPreenchidos_DeveRetornarCompleto()
-    {
-        var alunoCompleto = new AlunoElasticDto
-        {
-            CodigoAluno = 12345,
-            NumeroAlunoChamada = "15",
-            NomeAluno = "Maria da Silva Santos",
-            PossuiDeficiencia = 1,
-            CodigoTurma = 100,
-            DataNascimento = new DateTime(2010, 5, 15)
-        };
-
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = new[] { alunoCompleto }
-        };
-
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(100, CancellationToken.None);
-
-        var aluno = resultado.First();
-        aluno.Should().BeEquivalentTo(alunoCompleto);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_ComGrandeQuantidadeDeAlunos_DeveRetornarTodos()
-    {
-        var alunos = Enumerable.Range(1, 250)
-            .Select(i => new AlunoElasticDto
-            {
-                CodigoAluno = i,
-                NumeroAlunoChamada = "{i}",
-                NomeAluno = $"Aluno {i}",
-                PossuiDeficiencia = i % 10 == 0 ? 1 : 0
-            })
-            .ToList();
-
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = alunos
-        };
-
-        var resultado = await repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        resultado.Should().HaveCount(250);
-        resultado.Should().Contain(a => a.CodigoAluno == 1);
-        resultado.Should().Contain(a => a.CodigoAluno == 250);
-        resultado.Count(a => a.PossuiDeficiencia == 1).Should().Be(25);
-    }
-
-    [Fact]
-    public async Task ObterAlunosPorIdTurma_DeveSerAsync()
-    {
-        var repositorioFake = new RepositorioElasticAlunoFake
-        {
-            Retorno = new[] { new AlunoElasticDto { CodigoAluno = 1 } }
-        };
-
-        var task = repositorioFake.ObterAlunosPorIdTurma(10, CancellationToken.None);
-
-        task.Should().NotBeNull();
-        task.IsCompleted.Should().BeTrue();
-        
-        var resultado = await task;
-        resultado.Should().NotBeNull();
+        #endregion
     }
 }
