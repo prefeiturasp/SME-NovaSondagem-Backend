@@ -74,8 +74,8 @@ namespace SME.Sondagem.API.Teste.Controller
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value); // MUDANÇA AQUI
-            Assert.Equal(2, retorno.Count());
+            var retorno = Assert.IsType<List<SondagemDto>>(okResult.Value);
+            Assert.Equal(2, retorno.Count);
 
             var primeiraSondagem = retorno.First();
             Assert.Equal(1, primeiraSondagem.Id);
@@ -103,7 +103,7 @@ namespace SME.Sondagem.API.Teste.Controller
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value); // MUDANÇA AQUI
+            var retorno = Assert.IsType<List<SondagemDto>>(okResult.Value);
             Assert.Empty(retorno);
 
             _obterSondagensUseCaseMock.Verify(
