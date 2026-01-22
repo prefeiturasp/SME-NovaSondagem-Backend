@@ -58,7 +58,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public void Construtor_DeveLancarExcecao_QuandoServicoTelemetriaForNulo()
         {
-            // Arrange & Act & Assert
             _ = Assert.Throws<ArgumentNullException>(() =>
                 new RepositorioElasticAluno(null!, _mockElasticClient.Object));
         }
@@ -66,7 +65,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public void Construtor_DeveLancarExcecao_QuandoElasticClientForNulo()
         {
-            // Arrange & Act & Assert
             Assert.Throws<ArgumentNullException>(() =>
                 new RepositorioElasticAluno(_mockServicoTelemetria.Object, null!));
         }
@@ -74,7 +72,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveRetornarAlunosDistintos_QuandoExistiremAlunos()
         {
-            // Arrange
             var idTurma = 123;
             var cancellationToken = CancellationToken.None;
 
@@ -87,13 +84,11 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunosEsperados);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             Assert.NotNull(resultado);
             var listaResultado = resultado.ToList();
-            Assert.Equal(2, listaResultado.Count); // Apenas 2 distintos
+            Assert.Equal(2, listaResultado.Count); 
             Assert.Contains(listaResultado, a => a.CodigoAluno == 1);
             Assert.Contains(listaResultado, a => a.CodigoAluno == 2);
 
@@ -103,16 +98,13 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveRetornarListaVazia_QuandoNaoExistiremAlunos()
         {
-            // Arrange
             var idTurma = 999;
             var cancellationToken = CancellationToken.None;
 
             ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
         }
@@ -120,16 +112,13 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveChamarTelemetriaComParametrosCorretos()
         {
-            // Arrange
             var idTurma = 456;
             var cancellationToken = CancellationToken.None;
 
             ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
 
-            // Act
             await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             _mockServicoTelemetria.Verify(
                 x => x.RegistrarComRetornoAsync<SearchResponse<AlunoElasticDto>>(
                     It.IsAny<Func<Task<object>>>(),
@@ -143,7 +132,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveAplicarFiltroCorreto()
         {
-            // Arrange
             var idTurma = 789;
             var cancellationToken = CancellationToken.None;
 
@@ -154,10 +142,8 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunosDaTurma);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.All(resultado, aluno => Assert.Equal(idTurma, aluno.CodigoTurma));
         }
@@ -165,7 +151,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveManterApenasUmRegistroPorCodigoAluno()
         {
-            // Arrange
             var idTurma = 100;
             var cancellationToken = CancellationToken.None;
 
@@ -180,10 +165,8 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunosComDuplicatas);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             var listaResultado = resultado.ToList();
             Assert.Equal(2, listaResultado.Count);
             Assert.Single(listaResultado, a => a.CodigoAluno == 1);
@@ -196,7 +179,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [InlineData(9999)]
         public async Task ObterAlunosPorIdTurma_DeveFuncionarComDiferentesIdsTurma(int idTurma)
         {
-            // Arrange
             var cancellationToken = CancellationToken.None;
             var alunos = new List<AlunoElasticDto>
             {
@@ -205,10 +187,8 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunos);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             Assert.NotNull(resultado);
             Assert.Single(resultado);
         }
@@ -216,7 +196,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DeveRetornarPrimeiroRegistro_QuandoHouverDuplicatas()
         {
-            // Arrange
             var idTurma = 555;
             var cancellationToken = CancellationToken.None;
 
@@ -228,10 +207,8 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunosComDuplicatas);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             var listaResultado = resultado.ToList();
             Assert.Single(listaResultado);
             Assert.Equal(100, listaResultado.First().CodigoMatricula);
@@ -241,7 +218,6 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         [Fact]
         public async Task ObterAlunosPorIdTurma_DevePreservarDadosCompletos_DosPrimeiroRegistros()
         {
-            // Arrange
             var idTurma = 888;
             var cancellationToken = CancellationToken.None;
             var dataEsperada = new DateTime(2024, 1, 15);
@@ -262,10 +238,8 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
             ConfigurarMocksParaRetornar(alunos);
 
-            // Act
             var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
 
-            // Assert
             var aluno = resultado.First();
             Assert.Equal(5, aluno.CodigoAluno);
             Assert.Equal(500, aluno.CodigoMatricula);
@@ -292,6 +266,16 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>()))
+                .Callback((Func<Task<object>> func, string _, string _, string _, string _) =>
+                {
+                    try
+                    {
+                        func().GetAwaiter().GetResult();
+                    }
+                    catch
+                    {
+                    }
+                })
                 .ReturnsAsync(response);
         }
 
