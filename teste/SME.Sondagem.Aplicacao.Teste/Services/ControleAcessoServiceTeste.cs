@@ -19,7 +19,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             httpClientFactoryMock = new Mock<IHttpClientFactory>();
         }
 
-        private static IHttpContextAccessor CriarHttpContextAccessor(
+        private static HttpContextAccessor CriarHttpContextAccessor(
             bool autenticado,
             string? rf = null,
             string? perfil = null)
