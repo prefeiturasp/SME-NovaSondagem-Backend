@@ -21,7 +21,7 @@ public class ObterBimestrePorIdUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_BimestreExiste_DeveRetornarBimestreDto()
     {
-        const long id = 1;
+        const int id = 1;
         var bimestre = new Dominio.Entidades.Bimestre(2, "Bimestre Teste")
         {
             Id = (int)id,
