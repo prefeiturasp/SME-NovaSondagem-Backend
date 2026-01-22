@@ -323,5 +323,128 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.NotEmpty(questao2Result.QuestaoOpcoes);
             Assert.NotNull(questao2Result.QuestaoOpcoes.First().OpcaoResposta);
         }
+
+        [Fact]
+        public async Task ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarQuestao_QuandoExistirENaoExcluida()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarQuestao_QuandoExistirENaoExcluida));
+
+            var questionario = new SME.Sondagem.Dominio.Entidades.Questionario.Questionario
+            (
+                nome: "Questionário Teste",
+                tipo: TipoQuestionario.SondagemLeitura,
+                anoLetivo: 2024,
+                componenteCurricularId: 1,
+                proficienciaId: 1,
+                sondagemId: 1,
+                modalidadeId: 1,
+                serieAno: 1
+            );
+
+            context.Questionarios.Add(questionario);
+            await context.SaveChangesAsync();
+
+            var opcao = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(1, "Descrição", "Legenda", "#FFFFFF", "#000000");
+            context.OpcoesResposta.Add(opcao);
+            await context.SaveChangesAsync();
+
+            var questao = new SME.Sondagem.Dominio.Entidades.Questionario.Questao(
+                questionarioId: questionario.Id,
+                ordem: 1,
+                nome: "Questão Teste",
+                observacao: "",
+                obrigatorio: true,
+                tipo: TipoQuestao.Combo,
+                opcionais: "{}",
+                somenteLeitura: false,
+                dimensao: 12,
+                grupoQuestoesId: null,
+                mascara: null,
+                placeHolder: null,
+                nomeComponente: null
+            );
+
+            context.Questoes.Add(questao);
+            await context.SaveChangesAsync();
+
+            var questaoOpcao = new SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta(
+                questaoId: questao.Id,
+                opcaoRespostaId: opcao.Id,
+                ordem: 1
+            );
+
+            context.QuestoesOpcoesResposta.Add(questaoOpcao);
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioQuestao(context);
+
+            // Act
+            var resultado = await repositorio.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                questionario.Id,
+                TipoQuestao.Combo);
+
+            // Assert
+            Assert.NotNull(resultado);
+            Assert.Equal(questao.Id, resultado!.Id);
+            Assert.NotNull(resultado.Questionario);
+            Assert.NotEmpty(resultado.QuestaoOpcoes);
+            Assert.NotNull(resultado.QuestaoOpcoes.First().OpcaoResposta);
+        }
+
+        [Fact]
+        public async Task ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoQuestaoNaoExistir()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoQuestaoNaoExistir));
+            var repositorio = new RepositorioQuestao(context);
+
+            // Act
+            var resultado = await repositorio.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                99,
+                TipoQuestao.Combo);
+
+            // Assert
+            Assert.Null(resultado);
+        }
+
+        [Fact]
+        public async Task ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoQuestaoEstiverExcluida()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoQuestaoEstiverExcluida));
+
+            context.Questoes.Add(CriarQuestao(1, true, TipoQuestao.Combo));
+
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioQuestao(context);
+
+            // Act
+            var resultado = await repositorio.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                1,
+                TipoQuestao.Combo);
+
+            // Assert
+            Assert.Null(resultado);
+        }
+
+        [Fact]
+        public async Task ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoTipoNaoConferir()
+        {
+            var context = CriarContexto(nameof(ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync_DeveRetornarNull_QuandoTipoNaoConferir));
+
+            context.Questoes.Add(CriarQuestao(1, false, TipoQuestao.Combo));
+
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioQuestao(context);
+
+            var resultado = await repositorio.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                1,
+                TipoQuestao.Combo);
+
+            Assert.Null(resultado);
+        }
     }
 }

@@ -52,11 +52,11 @@ public class ContextoBaseTeste
     public void NomeUsuario_QuandoDefinido_DeveRetornarValorDefinido()
     {
         var contexto = new ContextoBaseConcreto();
-        contexto.Variaveis["NomeUsuario"] = "João Silva";
+        contexto.Variaveis["NomeUsuario"] = "Joao Silva";
 
         var nomeUsuario = contexto.NomeUsuario;
 
-        Assert.Equal("João Silva", nomeUsuario);
+        Assert.Equal("Joao Silva", nomeUsuario);
     }
 
     [Fact]

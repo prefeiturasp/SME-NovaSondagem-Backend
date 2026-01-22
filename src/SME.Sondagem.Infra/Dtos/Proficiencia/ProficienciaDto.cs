@@ -4,7 +4,6 @@ namespace SME.Sondagem.Infra.Dtos.Proficiencia;
 
 public class ProficienciaDto : BaseDto
 {
-    public int Id { get; set; }
     public string Nome { get; set; } = string.Empty;
     public int ComponenteCurricularId { get; set; }
 }

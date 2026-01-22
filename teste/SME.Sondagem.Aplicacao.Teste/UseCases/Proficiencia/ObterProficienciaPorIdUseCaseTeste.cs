@@ -21,7 +21,7 @@ public class ObterProficienciaPorIdUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_ProficienciaExiste_DeveRetornarProficienciaDto()
     {
-        const long id = 1;
+        const int id = 1;
         var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste", 2)
         {
             Id = (int)id,
