@@ -20,6 +20,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private readonly IRepositorioSondagem _repositorioSondagem;
     private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IAlunoPapService _alunoPapService;
+    private readonly IControleAcessoService _controleAcessoService;
 
     public ObterQuestionarioSondagemUseCase(
         IRepositorioElasticTurma repositorioElasticTurma,
@@ -27,7 +28,8 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IRepositorioRespostaAluno repositorioRespostaAluno,
         IAlunoPapService alunoPapService,
         IRepositorioSondagem repositorioSondagem,
-        IRepositorioQuestao repositorioQuestao)
+        IRepositorioQuestao repositorioQuestao,
+        IControleAcessoService controleAcessoService)
     {
         _repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
         _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));
@@ -35,6 +37,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
         _repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
+        _controleAcessoService = controleAcessoService;
     }
 
     public async Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
@@ -160,6 +163,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             QuestaoId = questaoId,
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
+            PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(cancellationToken),
             Estudantes = estudantes,
             InseridoPor = nomeInseridoPor,
             AlteradoPor = nomeAlteradoPor
