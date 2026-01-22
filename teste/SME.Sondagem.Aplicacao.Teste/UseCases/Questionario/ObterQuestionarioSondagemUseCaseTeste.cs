@@ -20,6 +20,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioSondagem> _mockRepositorioSondagem;
     private readonly Mock<IRepositorioQuestao> _mockRepositorioQuestao;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
+    private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
     public ObterQuestionarioSondagemUseCaseTeste()
@@ -30,6 +31,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioSondagem = new Mock<IRepositorioSondagem>();
         _mockRepositorioQuestao = new Mock<IRepositorioQuestao>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
+        _mockControleAcessoService = new Mock<IControleAcessoService>();
 
         _useCase = new ObterQuestionarioSondagemUseCase(
             _mockRepositorioElasticTurma.Object,
@@ -37,7 +39,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockAlunoPapService.Object,
             _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         );
     }
 
@@ -52,7 +55,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockAlunoPapService.Object,
             _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         ));
     }
 
@@ -65,7 +69,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockAlunoPapService.Object,
             _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         ));
     }
 
@@ -78,7 +83,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             _mockAlunoPapService.Object,
             _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         ));
     }
 
@@ -91,7 +97,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             null!,
             _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         ));
     }
 
@@ -104,7 +111,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockAlunoPapService.Object,
             null!,
-            _mockRepositorioQuestao.Object
+            _mockRepositorioQuestao.Object,
+            _mockControleAcessoService.Object
         ));
     }
 
@@ -117,7 +125,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockAlunoPapService.Object,
             _mockRepositorioSondagem.Object,
-            null!
+            null!,
+            _mockControleAcessoService.Object
         ));
     }
 
