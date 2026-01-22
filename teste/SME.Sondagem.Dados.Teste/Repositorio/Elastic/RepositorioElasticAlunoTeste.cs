@@ -46,14 +46,12 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
         [Fact]
         public void Construtor_DeveInicializarCorretamente()
-        {
-            // Arrange & Act
+        {           
             var repositorio = new RepositorioElasticAluno(
                 _mockServicoTelemetria.Object,
                 _mockElasticClient.Object
             );
 
-            // Assert
             Assert.NotNull(repositorio);
         }
 
