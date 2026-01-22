@@ -25,6 +25,7 @@ namespace SME.Sondagem.API.Teste.Controller
             _criarSondagemUseCaseMock = new Mock<ICriarSondagemUseCase>();
             _atualizarSondagemUseCaseMock = new Mock<IAtualizarSondagemUseCase>();
             _excluirSondagemUseCaseMock = new Mock<IExcluirSondagemUseCase>();
+            _excluirSondagemUseCaseMock = new Mock<IExcluirSondagemUseCase>();
 
             _controller = new SondagemIntegracaoController(
                 _obterSondagensUseCaseMock.Object,
@@ -43,26 +44,26 @@ namespace SME.Sondagem.API.Teste.Controller
             // Arrange
             var cancellationToken = CancellationToken.None;
             var sondagensEsperadas = new List<SondagemDto>
-            {
-                new SondagemDto
-                {
-                    Id = 1,
-                    Descricao = "Sondagem de Matemática 2025",
-                    DataAplicacao = new DateTime(2025, 3, 15),
-                    CriadoEm = DateTime.Now.AddDays(-10),
-                    CriadoPor = "Sistema",
-                    CriadoRF = "1234567"
-                },
-                new SondagemDto
-                {
-                    Id = 2,
-                    Descricao = "Sondagem de Português 2025",
-                    DataAplicacao = new DateTime(2025, 4, 20),
-                    CriadoEm = DateTime.Now.AddDays(-5),
-                    CriadoPor = "Sistema",
-                    CriadoRF = "7654321"
-                }
-            };
+    {
+        new SondagemDto
+        {
+            Id = 1,
+            Descricao = "Sondagem de Matemática 2025",
+            DataAplicacao = new DateTime(2025, 3, 15),
+            CriadoEm = DateTime.Now.AddDays(-10),
+            CriadoPor = "Sistema",
+            CriadoRF = "1234567"
+        },
+        new SondagemDto
+        {
+            Id = 2,
+            Descricao = "Sondagem de Português 2025",
+            DataAplicacao = new DateTime(2025, 4, 20),
+            CriadoEm = DateTime.Now.AddDays(-5),
+            CriadoPor = "Sistema",
+            CriadoRF = "7654321"
+        }
+    };
 
             _obterSondagensUseCaseMock
                 .Setup(x => x.ExecutarAsync(cancellationToken))
@@ -73,7 +74,7 @@ namespace SME.Sondagem.API.Teste.Controller
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value); // MUDANÇA AQUI
             Assert.Equal(2, retorno.Count());
 
             var primeiraSondagem = retorno.First();
@@ -102,13 +103,14 @@ namespace SME.Sondagem.API.Teste.Controller
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value);
+            var retorno = Assert.IsAssignableFrom<IEnumerable<SondagemDto>>(okResult.Value); // MUDANÇA AQUI
             Assert.Empty(retorno);
 
             _obterSondagensUseCaseMock.Verify(
                 x => x.ExecutarAsync(cancellationToken),
                 Times.Once);
         }
+
 
         #endregion
 
