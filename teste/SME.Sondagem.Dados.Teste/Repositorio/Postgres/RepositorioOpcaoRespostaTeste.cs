@@ -7,7 +7,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioOpcaoRespostaTeste : RepositorioBaseTeste
     {
-        private  RepositorioOpcaoResposta CriarRepositorio(string nomeBanco)
+        private  static RepositorioOpcaoResposta CriarRepositorio(string nomeBanco)
         {
             var servicoAuditoria = CriarServicoAuditoria();
             var contexto = CriarContexto(nomeBanco);

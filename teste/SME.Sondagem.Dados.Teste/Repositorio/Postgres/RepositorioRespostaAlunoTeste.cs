@@ -62,7 +62,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             return resposta;
         }
 
-        private  RepositorioRespostaAluno CriarRepositorio(SondagemDbContext context)
+        private  static RepositorioRespostaAluno CriarRepositorio(SondagemDbContext context)
         {
             var auditoriaMock = new Mock<IServicoAuditoria>();
             var contextoBase = CriarConextoBase();
