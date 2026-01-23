@@ -2,7 +2,6 @@
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infra.Contexto;
 using System.Diagnostics.CodeAnalysis;
@@ -41,6 +40,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
 
     public virtual async Task<long> SalvarAsync(T entidade, CancellationToken cancellationToken = default)
     {
+        var dataAtual = GerarDataHoraAtual();
         if (entidade.Id == 0)
         {
             CriarDadosUsuarioCriacao(entidade);
@@ -50,7 +50,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         else
         {
             var entidadeExistente = await _dbSet.FindAsync([entidade.Id], cancellationToken);
-            CriarDadosUsuarioAlteracao(entidade);
+            CriarDadosUsuarioAlteracao(entidade,dataAtual);
             if (entidadeExistente != null)
             {
                 _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
@@ -74,6 +74,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             return false;
 
         var idsAlteracao = new List<long>();
+        var dataAtual = GerarDataHoraAtual();
         foreach (var entidade in entidades)
         {
             if (entidade.Id == 0)
@@ -84,7 +85,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             else
             {
                 var entidadeExistente = await _dbSet.FindAsync([entidade.Id], cancellationToken);
-                CriarDadosUsuarioAlteracao(entidade);
+                CriarDadosUsuarioAlteracao(entidade,dataAtual);
                 if (entidadeExistente != null)
                 {
                     _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
@@ -198,15 +199,24 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             .ToListAsync(cancellationToken);
     }
 
+    private static DateTime GerarDataHoraAtual()
+    {
+        var agora = DateTime.Now;
+        var atual = new DateTime(
+            agora.Year, agora.Month, agora.Day,
+            agora.Hour, agora.Minute, agora.Second,
+            DateTimeKind.Unspecified);
+        return atual;
+    }
     private void CriarDadosUsuarioCriacao(T entidade)
     {
         entidade.CriadoEm = DateTime.UtcNow;
         entidade.CriadoPor = _database.UsuarioLogado;
         entidade.CriadoRF = _database.UsuarioLogadoRf;
     }
-    private void CriarDadosUsuarioAlteracao(T entidade)
+    private void CriarDadosUsuarioAlteracao(T entidade,DateTime data)
     {
-        entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
+        entidade.AlteradoEm = data;
         entidade.AlteradoPor = _database.UsuarioLogado;
         entidade.AlteradoRF = _database.UsuarioLogadoRf;
     }

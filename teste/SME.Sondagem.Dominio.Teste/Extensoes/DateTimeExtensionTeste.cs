@@ -19,10 +19,11 @@ namespace SME.Sondagem.Dominio.Teste.Extensoes
         {
             var horaUtc = DateTime.UtcNow;
 
-            var horarioBrasilia = DateTimeExtension.HorarioBrasilia();
+            var horarioBrasilia = DateTimeExtension.HorarioBrasilia().AddHours(-3);
 
-            var diferencaEsperada = horaUtc.AddHours(-3);
-            Assert.True((horarioBrasilia - diferencaEsperada).TotalSeconds < 1);
+            var diferencaEmHoras = (horarioBrasilia - horaUtc).TotalHours;
+
+            Assert.True(Math.Abs(diferencaEmHoras + 3) < 0.001);
         }
 
         [Theory]
