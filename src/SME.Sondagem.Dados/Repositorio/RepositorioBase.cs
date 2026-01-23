@@ -68,13 +68,6 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         return entidade.Id;
     }
 
-    private void CriarDadosUsuarioCriacao(T entidade)
-    {
-        entidade.CriadoEm = DateTime.UtcNow;
-        entidade.CriadoPor = _database.UsuarioLogado;
-        entidade.CriadoRF = _database.UsuarioLogadoRf;
-    }
-
     public virtual async Task<bool> SalvarAsync(List<T> entidades, CancellationToken cancellationToken = default)
     {
         if (entidades.Count == 0)
@@ -120,13 +113,6 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
         }
 
         return true;
-    }
-
-    private void CriarDadosUsuarioAlteracao(T entidade)
-    {
-        entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
-        entidade.AlteradoPor = _database.UsuarioLogado;
-        entidade.AlteradoRF = _database.UsuarioLogadoRf;
     }
 
     public virtual async Task RemoverAsync(long id, CancellationToken cancellationToken = default)
@@ -210,5 +196,18 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             .IgnoreQueryFilters()
             .AsNoTracking()
             .ToListAsync(cancellationToken);
+    }
+
+    private void CriarDadosUsuarioCriacao(T entidade)
+    {
+        entidade.CriadoEm = DateTime.UtcNow;
+        entidade.CriadoPor = _database.UsuarioLogado;
+        entidade.CriadoRF = _database.UsuarioLogadoRf;
+    }
+    private void CriarDadosUsuarioAlteracao(T entidade)
+    {
+        entidade.AlteradoEm = DateTimeExtension.HorarioBrasilia();
+        entidade.AlteradoPor = _database.UsuarioLogado;
+        entidade.AlteradoRF = _database.UsuarioLogadoRf;
     }
 }
