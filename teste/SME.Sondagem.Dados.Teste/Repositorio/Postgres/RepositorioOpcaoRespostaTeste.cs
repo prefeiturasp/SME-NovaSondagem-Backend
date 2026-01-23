@@ -130,7 +130,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var resultado = await repositorio.SalvarAsync(entidade);
 
-            Assert.False(resultado == 0);
+            Assert.NotEqual(0, resultado);
         }
 
         #endregion
@@ -168,7 +168,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
         #endregion
 
-        private ContextoFake CriarConextoBase()
+        private static ContextoFake CriarConextoBase()
         {
             var contexto = new ContextoFake();
             contexto.AdicionarVariaveis(new Dictionary<string, object>

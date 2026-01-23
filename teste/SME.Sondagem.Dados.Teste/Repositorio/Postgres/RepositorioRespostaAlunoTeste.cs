@@ -321,7 +321,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.Equal(respostaValida.Id, lista[0].Id);
         }
 
-        private ContextoFake CriarConextoBase()
+        private static ContextoFake CriarConextoBase()
         {
             var contexto = new ContextoFake();
             contexto.AdicionarVariaveis(new Dictionary<string, object>

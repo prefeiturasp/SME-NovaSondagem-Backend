@@ -124,7 +124,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.False(existe);
         }
-        private ContextoFake CriarConextoBase()
+        private static ContextoFake CriarConextoBase()
         {
             var contexto = new ContextoFake();
             contexto.AdicionarVariaveis(new Dictionary<string, object>

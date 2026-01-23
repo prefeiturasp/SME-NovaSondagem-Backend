@@ -47,12 +47,10 @@ public class ServicoTelemetria : IServicoTelemetria
     {
         dynamic result;
 
-        DateTime inicioOperacao = default;
-        Stopwatch temporizador = default;
+        Stopwatch? temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
-            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
