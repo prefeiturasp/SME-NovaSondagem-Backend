@@ -6,14 +6,16 @@ public static class DateTimeExtension
     {
         return data;
     }
-   
+
     /// <summary>
     /// Método improvisado para aplicar o GMT de Brasília manualmente, enquanto o problema de reagionalização do servidor não é resolvido;
+    /// Esta Gerando a Hora errada com 3 horas a mais
+    /// return DateTime.UtcNow.AddHours(-3);
     /// </summary>
     /// <returns>Retorna data e hora aplicando GMT -3:00 de Brasília.</returns>
     public static DateTime HorarioBrasilia()
     {
-        return DateTime.UtcNow.AddHours(-3);
+        return DateTime.UtcNow;
     }
 
     public static DateTime ObterDomingo(this DateTime data)

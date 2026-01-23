@@ -30,6 +30,8 @@ public class SondagemDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(SondagemDbContext).Assembly);
 
         modelBuilder.Model.GetEntityTypes()
@@ -40,8 +42,18 @@ public class SondagemDbContext : DbContext
                 var parameter = Expression.Parameter(entityType.ClrType, "e");
                 var property = Expression.Property(parameter, nameof(EntidadeBase.Excluido));
                 var filter = Expression.Lambda(Expression.Not(property), parameter);
-
                 modelBuilder.Entity(entityType.ClrType).HasQueryFilter(filter);
             });
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            foreach (var property in entityType.GetProperties())
+            {
+                if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+                {
+                    property.SetColumnType("timestamp");
+                }
+            }
+        }
     }
 }
