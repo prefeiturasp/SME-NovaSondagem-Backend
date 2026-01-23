@@ -15,7 +15,7 @@ public class ObterOpcaoRespostasUseCase : IObterOpcaoRespostaUseCase
 
     public async Task<IEnumerable<OpcaoRespostaDto>> ExecutarAsync(CancellationToken cancellationToken = default)
     {
-        var opcaoRespostas = await opcaoRespostaRepositorio.ObterTodosAsync(cancellationToken: cancellationToken);
+        var opcaoRespostas = await opcaoRespostaRepositorio.ListarAsync(cancellationToken: cancellationToken);
 
         return opcaoRespostas.Select(p => new OpcaoRespostaDto
         {

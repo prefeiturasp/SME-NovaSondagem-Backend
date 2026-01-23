@@ -4,13 +4,14 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Infra.Contexto;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IRepositorioRespostaAluno
 {
-    public RepositorioRespostaAluno(SondagemDbContext context, IServicoAuditoria servicoAuditoria) : base(context,
-        servicoAuditoria)
+    public RepositorioRespostaAluno(SondagemDbContext context, IServicoAuditoria servicoAuditoria, ContextoBase contextoBase) : base(context,
+        servicoAuditoria, contextoBase)
     {
     }
 
