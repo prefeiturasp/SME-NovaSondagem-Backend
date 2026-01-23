@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 
 [assembly: ExcludeFromCodeCoverage]
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var builder = WebApplication.CreateBuilder(args);
 
 var conexaoDadosVariaveis = new ConnectionStringOptions();
