@@ -1,4 +1,5 @@
 ﻿using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades;
 using Xunit;
 
@@ -20,8 +21,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             context.ComponentesCurriculares.Add(componente);
             await context.SaveChangesAsync();
-
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var conextoBase = CriarConextoBase();
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var resultado = await repositorio.ObterPorCodigoEolAsync(123);
 
@@ -36,8 +37,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterPorCodigoEolAsync_deve_retornar_null_quando_nao_existir));
             var servicoAuditoria = CriarServicoAuditoria();
-
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var conextoBase = CriarConextoBase();
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var resultado = await repositorio.ObterPorCodigoEolAsync(999);
 
@@ -52,7 +53,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                     nameof(ObterPorAnoAsync_deve_retornar_somente_componentes_do_ano_informado_ordenados_por_nome));
 
             var servicoAuditoria = CriarServicoAuditoria();
-
+            var conextoBase = CriarConextoBase();
             context.ComponentesCurriculares.AddRange(
                 new ComponenteCurricular("Português", 5, "EF", 10),
                 new ComponenteCurricular("Matemática", 5, "EF", 20),
@@ -61,7 +62,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var resultado = await repositorio.ObterPorAnoAsync(5);
 
@@ -76,6 +77,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ExisteComCodigoEolAsync_deve_retornar_true_quando_codigo_existir()
         {
             var context = CriarContexto(nameof(ExisteComCodigoEolAsync_deve_retornar_true_quando_codigo_existir));
+            var conextoBase = CriarConextoBase();
             var servicoAuditoria = CriarServicoAuditoria();
             context.ComponentesCurriculares.Add(
                 new ComponenteCurricular("Ciências", 6, "EF", 555)
@@ -83,7 +85,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var existe = await repositorio.ExisteComCodigoEolAsync(555);
 
@@ -94,8 +96,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ExisteComCodigoEolAsync_deve_retornar_false_quando_codigo_nao_existir()
         {
             var context = CriarContexto(nameof(ExisteComCodigoEolAsync_deve_retornar_false_quando_codigo_nao_existir));
+            var conextoBase = CriarConextoBase();
             var servicoAuditoria = CriarServicoAuditoria();
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var existe = await repositorio.ExisteComCodigoEolAsync(999);
 
@@ -106,12 +109,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ExisteComCodigoEolAsync_deve_ignorar_id_informado()
         {
             var context = CriarContexto(nameof(ExisteComCodigoEolAsync_deve_ignorar_id_informado));
+            var conextoBase = CriarConextoBase();
             var servicoAuditoria = CriarServicoAuditoria();
             var componente = new ComponenteCurricular("Geografia", 7, "EF", 777);
             context.ComponentesCurriculares.Add(componente);
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria);
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
 
             var existe = await repositorio.ExisteComCodigoEolAsync(
                 codigoEol: 777,
@@ -119,6 +123,18 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             );
 
             Assert.False(existe);
+        }
+        private ContextoFake CriarConextoBase()
+        {
+            var contexto = new ContextoFake();
+            contexto.AdicionarVariaveis(new Dictionary<string, object>
+                {
+                    { "NomeUsuario", "Usuario Teste" },
+                    { "RF", "123456" },
+                    { "Administrador", "true" }
+                });
+
+            return contexto;
         }
     }
 }

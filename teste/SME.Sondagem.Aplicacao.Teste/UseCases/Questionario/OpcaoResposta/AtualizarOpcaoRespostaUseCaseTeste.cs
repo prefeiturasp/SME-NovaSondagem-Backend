@@ -37,7 +37,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         Assert.Null(resultado);
         _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioOpcaoRespostaMock.Verify(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -65,14 +65,14 @@ public class AtualizarOpcaoRespostaUseCaseTeste
             .ReturnsAsync(opcaoRespostaExistente);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
         Assert.Null(resultado);
         _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioOpcaoRespostaMock.Verify(x => x.AtualizarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -101,8 +101,8 @@ public class AtualizarOpcaoRespostaUseCaseTeste
             .ReturnsAsync(opcaoRespostaExistente);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
@@ -119,7 +119,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         Assert.Equal("#000000", opcaoRespostaExistente.CorTexto);
 
         _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioOpcaoRespostaMock.Verify(x => x.AtualizarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -149,14 +149,14 @@ public class AtualizarOpcaoRespostaUseCaseTeste
             .ReturnsAsync(opcaoRespostaExistente);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto, cancellationToken);
 
         Assert.NotNull(resultado);
         _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken), Times.Once);
-        _repositorioOpcaoRespostaMock.Verify(x => x.AtualizarAsync(opcaoRespostaExistente, cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(opcaoRespostaExistente, cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -185,8 +185,8 @@ public class AtualizarOpcaoRespostaUseCaseTeste
             .ReturnsAsync(opcaoRespostaExistente);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
@@ -229,8 +229,8 @@ public class AtualizarOpcaoRespostaUseCaseTeste
             .ReturnsAsync(opcaoRespostaExistente);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
@@ -248,6 +248,6 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         Assert.Equal("#00FFFF", opcaoRespostaExistente.CorTexto);
 
         _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioOpcaoRespostaMock.Verify(x => x.AtualizarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(opcaoRespostaExistente, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

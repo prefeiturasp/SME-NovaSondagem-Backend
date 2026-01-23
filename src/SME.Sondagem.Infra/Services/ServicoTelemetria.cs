@@ -47,37 +47,75 @@ public class ServicoTelemetria : IServicoTelemetria
     {
         dynamic result;
 
-        Stopwatch? temporizador = default;
+        DateTime inicioOperacao = default;
+        Stopwatch temporizador = default;
 
         if (telemetriaOptions.ApplicationInsights)
         {
+            inicioOperacao = DateTime.UtcNow;
             temporizador = Stopwatch.StartNew();
         }
 
         if (telemetriaOptions.Apm)
         {
-            var temporizadorApm = Stopwatch.StartNew();
-            result = await acao();
-            temporizadorApm.Stop();
 
-            Agent.Tracer.CurrentTransaction.CaptureSpan(telemetriaNome, acaoNome, span =>
+            if (Agent.Tracer.CurrentTransaction is null)
             {
-                span.SetLabel(telemetriaNome, telemetriaValor);
+                var transaction = Agent.Tracer.StartTransaction(telemetriaNome, acaoNome);
 
-                if (!string.IsNullOrEmpty(parametros))
-                    span.SetLabel("Parametros", parametros);
+                try
+                {
+                    result = await transaction.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
+                    {
+                        var temporizador = Stopwatch.StartNew();
+                        var resultado = await acao();
+                        temporizador.Stop();
 
-                span.Duration = temporizadorApm.Elapsed.TotalMilliseconds;
-            });
+                        span.SetLabel(telemetriaNome, telemetriaValor);
+                        span.Duration = temporizador.Elapsed.TotalMilliseconds;
+
+                        return resultado;
+                    });
+
+                    transaction.Result = "success";
+                }
+                catch (Exception ex)
+                {
+                    transaction.CaptureException(ex);
+                    transaction.Result = "failure";
+                    throw;
+                }
+                finally
+                {
+                    transaction.End();
+                }
+            }
+            else
+            {
+                var temporizadorApm = Stopwatch.StartNew();
+                result = await acao();
+                temporizadorApm.Stop();
+
+                Agent.Tracer.CurrentTransaction.CaptureSpan(telemetriaNome, acaoNome, (span) =>
+                {
+                    span.SetLabel(telemetriaNome, telemetriaValor);
+                    span.Duration = temporizadorApm.Elapsed.TotalMilliseconds;
+                });
+            }
+
         }
         else
+        {
             result = await acao();
+        }
 
-        if (!telemetriaOptions.ApplicationInsights || temporizador == null)
+        if (!telemetriaOptions.ApplicationInsights)
             return result;
 
-        temporizador?.Stop();
+        if (temporizador == null)
+            return result;
 
+        temporizador.Stop();
         return result;
     }
 

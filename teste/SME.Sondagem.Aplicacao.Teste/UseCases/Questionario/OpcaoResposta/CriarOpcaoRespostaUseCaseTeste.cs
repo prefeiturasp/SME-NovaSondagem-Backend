@@ -31,20 +31,20 @@ public class CriarOpcaoRespostaUseCaseTeste
         const long expectedId = 123;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedId);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.Equal(expectedId, resultado);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o =>
                 o.DescricaoOpcaoResposta == opcaoRespostaDto.DescricaoOpcaoResposta &&
                 o.Legenda == opcaoRespostaDto.Legenda &&
                 o.CorFundo == opcaoRespostaDto.CorFundo &&
                 o.CorTexto == opcaoRespostaDto.CorTexto),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -61,17 +61,16 @@ public class CriarOpcaoRespostaUseCaseTeste
         const long expectedId = 456;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedId);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.Equal(expectedId, resultado);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o =>
-                o.Legenda == null),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+                o.Legenda == null), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -88,18 +87,18 @@ public class CriarOpcaoRespostaUseCaseTeste
         const long expectedId = 789;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedId);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.Equal(expectedId, resultado);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o =>
                 o.CorFundo == null &&
                 o.CorTexto == null),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -119,9 +118,9 @@ public class CriarOpcaoRespostaUseCaseTeste
             };
 
             _repositorioOpcaoRespostaMock
-                .Setup(x => x.CriarAsync(
+                .Setup(x => x.SalvarAsync(
                     It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o => o.DescricaoOpcaoResposta == descricao),
-                    cancellationToken: It.IsAny<CancellationToken>()))
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(idEsperado++);
 
             var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
@@ -129,9 +128,9 @@ public class CriarOpcaoRespostaUseCaseTeste
             Assert.True(resultado > 0);
         }
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Exactly(descricoes.Length));
+            It.IsAny<CancellationToken>()), Times.Exactly(descricoes.Length));
     }
 
     [Fact]
@@ -148,7 +147,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: cancellationTokenCancelado))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -167,7 +166,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -190,7 +189,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta? opcaoRespostaCapturada = null;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
             .Callback<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta, CancellationToken>((o, ct) => opcaoRespostaCapturada = o)
             .ReturnsAsync(1);
 
@@ -217,14 +216,14 @@ public class CriarOpcaoRespostaUseCaseTeste
         var customCancellationToken = new CancellationTokenSource().Token;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: customCancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), customCancellationToken))
             .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(opcaoRespostaDto, customCancellationToken);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),
-            cancellationToken: customCancellationToken), Times.Once);
+                 customCancellationToken), Times.Once);
     }
 
     [Fact]
@@ -239,15 +238,15 @@ public class CriarOpcaoRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),  It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.True(resultado > 0);
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o => o.DescricaoOpcaoResposta == string.Empty),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+             It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -263,15 +262,15 @@ public class CriarOpcaoRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),  It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.True(resultado > 0);
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o => o.DescricaoOpcaoResposta == descricaoLonga),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+             It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -291,9 +290,9 @@ public class CriarOpcaoRespostaUseCaseTeste
             };
 
             _repositorioOpcaoRespostaMock
-                .Setup(x => x.CriarAsync(
+                .Setup(x => x.SalvarAsync(
                     It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o => o.CorFundo == cor),
-                    cancellationToken: It.IsAny<CancellationToken>()))
+                     It.IsAny<CancellationToken>()))
                 .ReturnsAsync(idEsperado++);
 
             var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
@@ -301,9 +300,9 @@ public class CriarOpcaoRespostaUseCaseTeste
             Assert.True(resultado > 0);
         }
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Exactly(cores.Length));
+             It.IsAny<CancellationToken>()), Times.Exactly(cores.Length));
     }
 
     [Fact]
@@ -318,17 +317,17 @@ public class CriarOpcaoRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(),  It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.True(resultado > 0);
-        _repositorioOpcaoRespostaMock.Verify(x => x.CriarAsync(
+        _repositorioOpcaoRespostaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(o =>
                 o.Legenda == null &&
                 o.CorFundo == null &&
                 o.CorTexto == null),
-            cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+             It.IsAny<CancellationToken>()), Times.Once);
     }
 }

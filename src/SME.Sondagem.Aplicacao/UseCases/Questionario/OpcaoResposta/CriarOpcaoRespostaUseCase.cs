@@ -22,6 +22,6 @@ public class CriarOpcaoRespostaUseCase : ICriarOpcaoRespostaUseCase
             opcaoRespostaDto.CorFundo,
             opcaoRespostaDto.CorTexto);
 
-        return await opcaoRespostaRepositorio.CriarAsync(opcaoResposta, cancellationToken: cancellationToken);
+        return await opcaoRespostaRepositorio.SalvarAsync(opcaoResposta, cancellationToken: cancellationToken);
     }
 }

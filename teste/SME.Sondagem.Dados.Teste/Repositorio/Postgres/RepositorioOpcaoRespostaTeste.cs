@@ -1,4 +1,5 @@
 ﻿using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using Xunit;
 
@@ -6,10 +7,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioOpcaoRespostaTeste : RepositorioBaseTeste
     {
-        private static RepositorioOpcaoResposta CriarRepositorio(string nomeBanco)
+        private  RepositorioOpcaoResposta CriarRepositorio(string nomeBanco)
         {
+            var servicoAuditoria = CriarServicoAuditoria();
             var contexto = CriarContexto(nomeBanco);
-            return new RepositorioOpcaoResposta(contexto);
+            var conextoBase = CriarConextoBase();
+            return new RepositorioOpcaoResposta(contexto, servicoAuditoria, conextoBase);
         }
 
         #region ObterTodosAsync
@@ -18,6 +21,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ObterTodosAsync_DeveRetornarSomenteNaoExcluidosOrdenadosPorDescricao()
         {
             var nomeBanco = Guid.NewGuid().ToString();
+            var servicoAuditoria = CriarServicoAuditoria();
             using var contexto = CriarContexto(nomeBanco);
 
             contexto.OpcoesResposta.AddRange(
@@ -27,14 +31,14 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             );
 
             await contexto.SaveChangesAsync();
+            var conextoBase = CriarConextoBase();
+            var repositorio = new RepositorioOpcaoResposta(contexto, servicoAuditoria, conextoBase);
 
-            var repositorio = new RepositorioOpcaoResposta(contexto);
-
-            var resultado = (await repositorio.ObterTodosAsync()).ToList();
+            var resultado = (await repositorio.ListarAsync()).ToList();
 
             Assert.Equal(2, resultado.Count);
-            Assert.Equal("A", resultado[0].DescricaoOpcaoResposta);
-            Assert.Equal("C", resultado[1].DescricaoOpcaoResposta);
+            Assert.Equal("C", resultado[0].DescricaoOpcaoResposta);
+            Assert.Equal("A", resultado[1].DescricaoOpcaoResposta);
         }
 
         #endregion
@@ -46,12 +50,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var nomeBanco = Guid.NewGuid().ToString();
             using var contexto = CriarContexto(nomeBanco);
+            var servicoAuditoria = CriarServicoAuditoria();
 
             var entidade = new OpcaoResposta(1, "Opção", null, null, null);
             contexto.OpcoesResposta.Add(entidade);
             await contexto.SaveChangesAsync();
-
-            var repositorio = new RepositorioOpcaoResposta(contexto);
+            var conextoBase = CriarConextoBase();
+            var repositorio = new RepositorioOpcaoResposta(contexto, servicoAuditoria, conextoBase);
 
             var resultado = await repositorio.ObterPorIdAsync(entidade.Id);
 
@@ -80,7 +85,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var entidade = new OpcaoResposta(1, "Nova opção", null, null, null);
 
-            var id = await repositorio.CriarAsync(entidade);
+            var id = await repositorio.SalvarAsync(entidade);
 
             Assert.True(id > 0);
         }
@@ -94,25 +99,26 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var nomeBanco = Guid.NewGuid().ToString();
             using var contexto = CriarContexto(nomeBanco);
+            var servicoAuditoria = CriarServicoAuditoria();
 
             var entidade = new OpcaoResposta(1, "Antiga", null, null, null);
             contexto.OpcoesResposta.Add(entidade);
             await contexto.SaveChangesAsync();
 
             entidade.AlteradoEm = DateTime.UtcNow;
-            entidade.AlteradoPor = "usuario";
+            entidade.AlteradoPor = "Sistema";
             entidade.AlteradoRF = "123";
             entidade.Atualizar(2, "Atualizada", "legenda", "#fff", "#000");
+            var conextoBase = CriarConextoBase();
+            var repositorio = new RepositorioOpcaoResposta(contexto, servicoAuditoria, conextoBase);
 
-            var repositorio = new RepositorioOpcaoResposta(contexto);
+            var resultado = await repositorio.SalvarAsync(entidade);
 
-            var resultado = await repositorio.AtualizarAsync(entidade);
-
-            Assert.True(resultado);
+            Assert.True(resultado > 0);
 
             var atualizado = contexto.OpcoesResposta.Single();
             Assert.Equal("Atualizada", atualizado.DescricaoOpcaoResposta);
-            Assert.Equal("usuario", atualizado.AlteradoPor);
+            Assert.Equal("Sistema", atualizado.AlteradoPor);
         }
 
         [Fact]
@@ -122,9 +128,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var entidade = new OpcaoResposta(1, "Inexistente", null, null, null);
 
-            var resultado = await repositorio.AtualizarAsync(entidade);
+            var resultado = await repositorio.SalvarAsync(entidade);
 
-            Assert.False(resultado);
+            Assert.False(resultado == 0);
         }
 
         #endregion
@@ -136,16 +142,17 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var nomeBanco = Guid.NewGuid().ToString();
             using var contexto = CriarContexto(nomeBanco);
-
+            var servicoAuditoria = CriarServicoAuditoria();
+            var conextoBase = CriarConextoBase();
             var entidade = new OpcaoResposta(1, "Excluir", null, null, null);
             contexto.OpcoesResposta.Add(entidade);
             await contexto.SaveChangesAsync();
 
-            var repositorio = new RepositorioOpcaoResposta(contexto);
+            var repositorio = new RepositorioOpcaoResposta(contexto, servicoAuditoria, conextoBase);
 
-            var resultado = await repositorio.ExcluirAsync(entidade.Id);
+            var resultado = await repositorio.RemoverLogico(entidade.Id);
 
-            Assert.True(resultado);
+            Assert.True(resultado > 0);
             Assert.True(entidade.Excluido);
         }
 
@@ -154,11 +161,24 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var repositorio = CriarRepositorio(Guid.NewGuid().ToString());
 
-            var resultado = await repositorio.ExcluirAsync(999);
+            var resultado = await repositorio.RemoverLogico(999);
 
-            Assert.False(resultado);
+            Assert.False(resultado > 0);
         }
 
         #endregion
+
+        private ContextoFake CriarConextoBase()
+        {
+            var contexto = new ContextoFake();
+            contexto.AdicionarVariaveis(new Dictionary<string, object>
+                {
+                    { "NomeUsuario", "Usuario Teste" },
+                    { "RF", "123456" },
+                    { "Administrador", "true" }
+                });
+
+            return contexto;
+        }
     }
 }
