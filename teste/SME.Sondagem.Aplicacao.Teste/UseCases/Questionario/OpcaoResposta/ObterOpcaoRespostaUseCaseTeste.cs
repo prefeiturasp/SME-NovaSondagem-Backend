@@ -43,7 +43,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(opcoesResposta);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -74,7 +74,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.Equal("Usuario3", segunda.AlteradoPor);
         Assert.Equal("RF003", segunda.AlteradoRF);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         var opcoesRespostaVazias = new List<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>();
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(opcoesRespostaVazias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -91,7 +91,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.NotNull(resultado);
         Assert.Empty(resultado);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -100,13 +100,13 @@ public class ObterOpcoesRespostaUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCancelado))
+            .Setup(x => x.ListarAsync(cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(cancellationTokenCancelado));
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(cancellationTokenCancelado), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -116,26 +116,26 @@ public class ObterOpcoesRespostaUseCaseTeste
         var opcoesResposta = new List<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>();
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCustom))
+            .Setup(x => x.ListarAsync(cancellationTokenCustom))
             .ReturnsAsync(opcoesResposta);
 
         await _useCase.ExecutarAsync(cancellationTokenCustom);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(cancellationTokenCustom), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(cancellationTokenCustom), Times.Once);
     }
 
     [Fact]
     public async Task ExecutarAsync_QuandoRepositorioFalha_DevePropagar_Excecao()
     {
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(_cancellationToken));
 
         Assert.Equal("Erro do repositório", exception.Message);
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(opcoesResposta);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -199,7 +199,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         }
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(opcoesResposta);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -209,7 +209,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.Equal("Opção 1", resultadoList.First().DescricaoOpcaoResposta);
         Assert.Equal("Opção 1000", resultadoList.Last().DescricaoOpcaoResposta);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class ObterOpcoesRespostaUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(opcoesResposta);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -238,6 +238,6 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.Null(dto.CorFundo);
         Assert.Null(dto.CorTexto);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 }

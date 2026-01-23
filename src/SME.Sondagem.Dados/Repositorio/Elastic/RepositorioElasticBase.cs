@@ -24,6 +24,14 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             this.elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
 
+        // Hook de validação para facilitar testes
+        protected virtual bool EhRespostaValida<TResponse>(SearchResponse<TResponse> response) where TResponse : class
+            => response?.IsValidResponse == true;
+
+        // Hook de extração de documentos para facilitar testes
+        protected virtual IReadOnlyCollection<TResponse> ObterDocumentos<TResponse>(SearchResponse<TResponse> response) where TResponse : class
+            => response.Documents;
+
         public async Task<T?> ObterAsync(
             string indice,
             string id,
@@ -59,12 +67,13 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                             .Size(QuantidadeRetorno)),
                     NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
 
-            if (response is null || !response.IsValidResponse)
+            if (response is null || !EhRespostaValida(response))
                 throw new NegocioException(response?.ElasticsearchServerError?.ToString()!);
 
-            lista.AddRange(response.Documents);
+            var docs = ObterDocumentos(response);
+            lista.AddRange(docs);
 
-            while (response.Documents.Count > 0 && response.Documents.Count == QuantidadeRetorno)
+            while (docs.Count > 0 && docs.Count == QuantidadeRetorno)
             {
                 if (response.ScrollId is null)
                     break;
@@ -77,10 +86,11 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                     indice,
                     parametro?.ToString()!);
 
-                if (!response.IsValidResponse)
+                if (!EhRespostaValida(response))
                     throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
 
-                lista.AddRange(response.Documents);
+                docs = ObterDocumentos(response);
+                lista.AddRange(docs);
             }
 
             if (response.ScrollId is not null)
