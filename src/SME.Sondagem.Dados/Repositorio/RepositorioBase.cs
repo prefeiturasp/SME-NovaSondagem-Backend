@@ -206,7 +206,7 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
             agora.Year, agora.Month, agora.Day,
             agora.Hour, agora.Minute, agora.Second,
             DateTimeKind.Unspecified);
-        return atual.AddHours(-3);
+        return atual.AddHours(-6);
     }
     private void CriarDadosUsuarioCriacao(T entidade)
     {
