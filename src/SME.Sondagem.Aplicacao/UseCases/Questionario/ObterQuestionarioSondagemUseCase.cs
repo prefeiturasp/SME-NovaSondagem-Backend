@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -17,6 +18,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private readonly IRepositorioElasticTurma _repositorioElasticTurma;
     private readonly IRepositorioElasticAluno _repositorioElasticAluno;
     private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
+    private readonly IRepositorioBimestre _repositorioBimestre;
     private readonly IRepositorioSondagem _repositorioSondagem;
     private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IAlunoPapService _alunoPapService;
@@ -26,6 +28,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IRepositorioElasticTurma repositorioElasticTurma,
         IRepositorioElasticAluno repositorioElasticAluno,
         IRepositorioRespostaAluno repositorioRespostaAluno,
+        IRepositorioBimestre repositorioBimestre,
         IAlunoPapService alunoPapService,
         IRepositorioSondagem repositorioSondagem,
         IRepositorioQuestao repositorioQuestao,
@@ -34,6 +37,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         _repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
         _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));
         _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
+        _repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
         _repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
@@ -89,7 +93,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
 
-        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
+        var bimestresForaDoPadrao = await _repositorioBimestre.ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas));
+
+        var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
 
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
@@ -203,6 +209,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return questoesAtivas
             .Select(q => q.Id)
             .ToList();
+    }
+    private static int ObterIdQuestionario(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    {
+        var primeiraQuestao = questoesAtivas.FirstOrDefault();
+        if (primeiraQuestao == null)
+            return 0;
+        return primeiraQuestao.QuestionarioId;
     }
 
     private async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, CancellationToken cancellationToken)
