@@ -38,7 +38,6 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
             throw new ValidationException(validationResult.Errors);
         }
 
-        // Verifica se o questionário existe
         var questionarioExiste = await _repositorioQuestionario.ObterPorIdAsync(dto.QuestionarioId, cancellationToken);
         if (questionarioExiste == null)
         {
@@ -47,7 +46,6 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
                 HttpStatusCode.NotFound);
         }
 
-        // Verifica se todos os bimestres existem
         var bimestresParaVincular = new List<Dominio.Entidades.Questionario.QuestionarioBimestre>();
 
         foreach (var bimestreId in dto.BimestreIds.Distinct())
@@ -60,7 +58,6 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
                     HttpStatusCode.NotFound);
             }
 
-            // Verifica se já existe o vínculo
             var vinculoExiste = await _repositorio.ExisteVinculoAsync(dto.QuestionarioId, bimestreId, cancellationToken);
             if (!vinculoExiste)
             {
@@ -88,7 +85,6 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
             throw new ValidationException(validationResult.Errors);
         }
 
-        // Verifica se o questionário existe
         var questionarioExiste = await _repositorioQuestionario.ObterPorIdAsync(dto.QuestionarioId!.Value, cancellationToken);
         if (questionarioExiste == null)
         {
@@ -97,13 +93,11 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
                 HttpStatusCode.NotFound);
         }
 
-        // Se a lista está vazia, remove todos os vínculos
         if (dto.BimestreIds == null || !dto.BimestreIds.Any())
         {
             return await _repositorio.ExcluirPorQuestionarioIdAsync(dto.QuestionarioId.Value, cancellationToken);
         }
 
-        // Verifica se todos os bimestres existem
         foreach (var bimestreId in dto.BimestreIds.Distinct())
         {
             var bimestreExiste = await _repositorioBimestre.ObterPorIdAsync(bimestreId, cancellationToken);
@@ -115,22 +109,18 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
             }
         }
 
-        // Obtém vínculos atuais
         var vinculosAtuais = await _repositorio.ObterPorQuestionarioIdAsync(dto.QuestionarioId.Value, cancellationToken);
         var bimestresAtuais = vinculosAtuais.Select(v => v.BimestreId).ToList();
         var bimestresNovos = dto.BimestreIds.Distinct().ToList();
 
-        // Identifica bimestres a adicionar e remover
         var bimestresParaAdicionar = bimestresNovos.Except(bimestresAtuais).ToList();
         var bimestresParaRemover = bimestresAtuais.Except(bimestresNovos).ToList();
 
-        // Remove vínculos que não estão mais na lista
         foreach (var bimestreId in bimestresParaRemover)
         {
             await _repositorio.ExcluirPorQuestionarioEBimestreAsync(dto.QuestionarioId.Value, bimestreId, cancellationToken);
         }
 
-        // Adiciona novos vínculos
         if (bimestresParaAdicionar.Any())
         {
             var novosVinculos = bimestresParaAdicionar.Select(bimestreId =>

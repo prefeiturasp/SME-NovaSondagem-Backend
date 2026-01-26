@@ -4,7 +4,6 @@ using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
-using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -360,7 +359,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
-        // Arrange
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
 
         var questaoRespondidaId = 13;
@@ -423,10 +421,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
-        // Act
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
-        // Assert (simples e correto)
         var resposta = resultado.Estudantes!
             .SelectMany(e => e.Coluna!)
             .Select(c => c.Resposta)

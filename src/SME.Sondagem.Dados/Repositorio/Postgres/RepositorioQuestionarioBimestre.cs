@@ -49,6 +49,7 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
     public async Task<bool> ExisteVinculoAsync(int questionarioId, int bimestreId, CancellationToken cancellationToken = default)
     {
         return await _context.QuestionariosBimestres
+            .AsNoTracking()
             .AnyAsync(qb => qb.QuestionarioId == questionarioId
                          && qb.BimestreId == bimestreId
                          && !qb.Excluido, cancellationToken);
@@ -56,7 +57,7 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
 
     public async Task<bool> CriarMultiplosAsync(List<QuestionarioBimestre> questionariosBimestres, CancellationToken cancellationToken = default)
     {
-        if (!questionariosBimestres.Any())
+        if (questionariosBimestres == null || !questionariosBimestres.Any())
             return false;
 
         await _context.QuestionariosBimestres.AddRangeAsync(questionariosBimestres, cancellationToken);

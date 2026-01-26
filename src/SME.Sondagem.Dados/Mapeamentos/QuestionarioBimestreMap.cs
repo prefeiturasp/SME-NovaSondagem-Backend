@@ -29,15 +29,14 @@ public class QuestionarioBimestreMap : IEntityTypeConfiguration<QuestionarioBime
 
         ConfigurarAuditoria(builder);
 
-        // Relacionamentos
         builder.HasOne(qb => qb.Questionario)
-            .WithMany()
+            .WithMany(q => q.QuestionariosBimestres)
             .HasForeignKey(qb => qb.QuestionarioId)
             .HasConstraintName("fk_questionario_bimestre_questionario")
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(qb => qb.Bimestre)
-            .WithMany()
+            .WithMany(b => b.QuestionariosBimestres)
             .HasForeignKey(qb => qb.BimestreId)
             .HasConstraintName("fk_questionario_bimestre_bimestre")
             .OnDelete(DeleteBehavior.Restrict);

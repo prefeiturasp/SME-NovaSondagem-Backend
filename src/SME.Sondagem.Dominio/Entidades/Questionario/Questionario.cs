@@ -39,6 +39,7 @@ public class Questionario : EntidadeBase
     public virtual ComponenteCurricular ComponenteCurricular { get; private set; } = null!;
     public virtual Proficiencia Proficiencia { get; private set; } = null!;
     public virtual ICollection<Questao> Questoes { get; private set; } = new List<Questao>();
+    public virtual ICollection<QuestionarioBimestre> QuestionariosBimestres { get; private set; } = new List<QuestionarioBimestre>(); // NOVA PROPRIEDADE
 
     public void Atualizar(
         string nome,
