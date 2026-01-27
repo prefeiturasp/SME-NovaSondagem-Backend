@@ -17,7 +17,6 @@ namespace SME.Sondagem.API.Teste.Controller
         private readonly Mock<IObterQuestionariosBimestresUseCase> _obterTodosUseCaseMock;
         private readonly Mock<IObterBimestresPorQuestionarioUseCase> _obterPorQuestionarioUseCaseMock;
         private readonly Mock<IExcluirVinculosPorQuestionarioUseCase> _excluirPorQuestionarioUseCaseMock;
-        private readonly Mock<ILogger<QuestionarioBimestreIntegracaoController>> _loggerMock;
         private readonly QuestionarioBimestreIntegracaoController _controller;
 
         public QuestionarioBimestreIntegracaoControllerTeste()
@@ -26,14 +25,12 @@ namespace SME.Sondagem.API.Teste.Controller
             _obterTodosUseCaseMock = new Mock<IObterQuestionariosBimestresUseCase>();
             _obterPorQuestionarioUseCaseMock = new Mock<IObterBimestresPorQuestionarioUseCase>();
             _excluirPorQuestionarioUseCaseMock = new Mock<IExcluirVinculosPorQuestionarioUseCase>();
-            _loggerMock = new Mock<ILogger<QuestionarioBimestreIntegracaoController>>();
 
             _controller = new QuestionarioBimestreIntegracaoController(
                 _vincularBimestresUseCaseMock.Object,
                 _obterTodosUseCaseMock.Object,
                 _obterPorQuestionarioUseCaseMock.Object,
-                _excluirPorQuestionarioUseCaseMock.Object,
-                _loggerMock.Object);
+                _excluirPorQuestionarioUseCaseMock.Object);
         }
 
         #region Listar Tests
