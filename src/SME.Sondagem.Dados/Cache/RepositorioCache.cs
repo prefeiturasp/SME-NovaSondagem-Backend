@@ -13,7 +13,7 @@ namespace SME.Sondagem.Dados.Cache
         public RepositorioCache(IServicoLog servicoLog, IConnectionMultiplexer connectionMultiplexer)
         {
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
-            if (connectionMultiplexer == null) throw new ArgumentNullException(nameof(connectionMultiplexer));
+            ArgumentNullException.ThrowIfNull(connectionMultiplexer);
 
             database = connectionMultiplexer.GetDatabase();
         }
@@ -54,8 +54,8 @@ namespace SME.Sondagem.Dados.Cache
 
                 var dados = await buscarDados();
                 
-                if(dados != null)
-                    await SalvarRedisAsync(nomeChave, dados, minutosParaExpirar);
+                if(EqualityComparer<T>.Default.Equals(dados, default(T)))
+                    await SalvarRedisAsync(nomeChave, dados!, minutosParaExpirar);
 
                 return dados;
             }
