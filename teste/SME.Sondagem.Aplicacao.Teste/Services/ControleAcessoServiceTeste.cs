@@ -2,6 +2,7 @@
 using Moq;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using System.Net;
@@ -13,11 +14,13 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
     public class ControleAcessoServiceTeste
     {
         private readonly Mock<IHttpClientFactory> httpClientFactoryMock;
+        private readonly Mock<IRepositorioCache> repositorioCache;
         private const string TURMA_ID = "TURMA-TESTE";
 
         public ControleAcessoServiceTeste()
         {
             httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            repositorioCache = new Mock<IRepositorioCache>();
         }
 
         private static HttpContextAccessor CriarHttpContextAccessor(
@@ -50,8 +53,9 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             var accessor = CriarHttpContextAccessor(false);
 
             var service = new ControleAcessoService(
-                httpClientFactoryMock.Object,
-                accessor);
+                httpClientFactoryMock.Object,                
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -67,7 +71,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -81,7 +86,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -98,7 +104,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -115,7 +122,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -138,7 +146,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -161,7 +170,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -186,7 +196,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -214,7 +225,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
@@ -248,7 +260,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
-                accessor);
+                accessor,
+                repositorioCache.Object);
 
             // Act
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
