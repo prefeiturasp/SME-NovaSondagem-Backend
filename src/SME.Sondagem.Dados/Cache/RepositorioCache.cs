@@ -53,7 +53,7 @@ namespace SME.Sondagem.Dados.Cache
 
                 var dados = await buscarDados();
                 
-                if(EqualityComparer<T>.Default.Equals(dados, default(T)))
+                if(!EqualityComparer<T>.Default.Equals(dados, default))
                     await SalvarRedisAsync(nomeChave, dados!, minutosParaExpirar);
 
                 return dados;
