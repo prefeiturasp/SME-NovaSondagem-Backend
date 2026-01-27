@@ -14,10 +14,9 @@ public class Bimestre : EntidadeBase
     public string Descricao { get; private set; }
 
     // Navegação
-    public virtual ICollection<Questionario.Questionario> Questionarios { get; private set; } = new List<Questionario.Questionario>();
     public virtual ICollection<SondagemPeriodoBimestre> PeriodosBimestre { get; private set; } = new List<SondagemPeriodoBimestre>();
     public virtual ICollection<RespostaAluno> RespostaAlunos { get; private set; } = new List<RespostaAluno>();
-    public virtual ICollection<Questionario.QuestionarioBimestre> QuestionariosBimestres { get; private set; } = new List<Questionario.QuestionarioBimestre>(); // NOVA PROPRIEDADE
+    public virtual ICollection<Questionario.QuestionarioBimestre> QuestionariosBimestres { get; private set; } = new List<Questionario.QuestionarioBimestre>();
 
     public void AtualizarDescricao(string descricao)
     {
