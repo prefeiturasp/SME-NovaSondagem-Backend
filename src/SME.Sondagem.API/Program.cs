@@ -6,9 +6,12 @@ using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
 using System.Diagnostics.CodeAnalysis;
+using Npgsql;
 
 
 [assembly: ExcludeFromCodeCoverage]
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 var builder = WebApplication.CreateBuilder(args);
 
 var conexaoDadosVariaveis = new ConnectionStringOptions();

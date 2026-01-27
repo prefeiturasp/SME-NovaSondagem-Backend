@@ -2,6 +2,7 @@
 using SME.Sondagem.Aplicacao.UseCases.Turma;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
@@ -45,8 +46,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Turma
             var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
                 useCase.ObterPermissaoTurma(123456, CancellationToken.None));
 
-            Assert.Equal(400, exception.StatusCode);
-            Assert.Equal("Turma não localizada", exception.Message);
+            Assert.Equal(404, exception.StatusCode);
+            Assert.Equal(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, exception.Message);
         }
 
         [Fact]

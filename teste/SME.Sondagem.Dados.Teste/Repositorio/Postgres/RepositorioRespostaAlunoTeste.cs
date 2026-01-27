@@ -3,6 +3,7 @@ using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
@@ -61,10 +62,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             return resposta;
         }
 
-        private static RepositorioRespostaAluno CriarRepositorio(SondagemDbContext context)
+        private  static RepositorioRespostaAluno CriarRepositorio(SondagemDbContext context)
         {
             var auditoriaMock = new Mock<IServicoAuditoria>();
-            return new RepositorioRespostaAluno(context, auditoriaMock.Object);
+            var contextoBase = CriarConextoBase();
+            return new RepositorioRespostaAluno(context, auditoriaMock.Object, contextoBase);
         }
 
         #endregion
@@ -79,6 +81,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var servicoAuditoria = CriarServicoAuditoria();
             var questao = CriarQuestao(1, TipoQuestao.Combo);
+            var contextoBase = CriarConextoBase();
             context.Questoes.Add(questao);
 
             var resposta = CriarRespostaAluno(alunoId: 10, questaoId: 1);
@@ -87,7 +90,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria,contextoBase);
 
             var resultado = await repo.VerificarAlunoTemRespostaPorTipoQuestaoAsync(
                 alunoId: 10,
@@ -105,7 +108,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                     nameof(VerificarAlunoTemRespostaPorTipoQuestaoAsync_deve_retornar_false_quando_nao_existir));
 
             var servicoAuditoria = CriarServicoAuditoria();
-            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria, contextoBase);
 
             var resultado = await repo.VerificarAlunoTemRespostaPorTipoQuestaoAsync(
                 alunoId: 99,
@@ -147,8 +151,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
-
-            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria, contextoBase);
 
             var alunosIds = new List<int> { 1, 2 };
 
@@ -179,8 +183,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             context.RespostasAluno.AddRange(resposta1, resposta2);
             await context.SaveChangesAsync();
-
-            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria, contextoBase);
 
             var resultado = await repo.ObterRespostasAlunosPorQuestoesAsync(
                 codigosAlunos: new List<long> { 10, 20 },
@@ -204,8 +208,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             context.RespostasAluno.Add(resposta);
             await context.SaveChangesAsync();
-
-            var repo = new RepositorioRespostaAluno(context, servicoAuditoria);
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioRespostaAluno(context, servicoAuditoria, contextoBase);
 
             var resultado = await repo.ObterRespostasAlunosPorQuestoesAsync(
                 codigosAlunos: new List<long> { 10 },
@@ -315,6 +319,19 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
+        }
+
+        private static ContextoFake CriarConextoBase()
+        {
+            var contexto = new ContextoFake();
+            contexto.AdicionarVariaveis(new Dictionary<string, object>
+                {
+                    { "NomeUsuario", "Usuario Teste" },
+                    { "RF", "123456" },
+                    { "Administrador", "true" }
+                });
+
+            return contexto;
         }
     }
 }

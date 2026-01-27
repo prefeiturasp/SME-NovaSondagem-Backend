@@ -3,6 +3,7 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -154,7 +155,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             QuestaoId = questaoId,
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
-            PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(cancellationToken),
+            PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), cancellationToken),
             Estudantes = estudantes,
             InseridoPor = nomeInseridoPor,
             AlteradoPor = nomeAlteradoPor
@@ -223,7 +224,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         if (possuiSubperguntas)
         {
             if (!bimestreId.HasValue)
-                throw new ArgumentException("bimestreId é obrigatório quando existem subperguntas.");
+                throw new RegraNegocioException(MensagemNegocioComuns.BIMESTRE_OBRIGATORIO);
 
             var colunasPorQuestao = questoesAtivas
                 .Where(q => !q.Excluido && q.Tipo != TipoQuestao.QuestaoComSubpergunta)

@@ -1,8 +1,8 @@
-﻿using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
+﻿using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
-using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Exceptions;
@@ -15,18 +15,24 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     private readonly IRepositorioSondagem _repositorioSondagem;
     private readonly IRepositorioRespostaAluno _repositorioSondagemResposta;
     private readonly IRepositorioQuestao _repositorioQuestao;
+    private readonly IControleAcessoService _controleAcessoService;
 
     public SondagemSalvarRespostasUseCase(IRepositorioSondagem repositorioSondagem,
         IRepositorioRespostaAluno repositorioSondagemResposta,
-        IRepositorioQuestao repositorioQuestao)
+        IRepositorioQuestao repositorioQuestao,
+        IControleAcessoService controleAcessoService
+        )
     {
         _repositorioSondagem = repositorioSondagem;
         _repositorioSondagemResposta = repositorioSondagemResposta;
         _repositorioQuestao = repositorioQuestao;
+        _controleAcessoService = controleAcessoService;
     }
 
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
+        await ValidarSalvarSondagem(dto);
+
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
 
@@ -63,6 +69,21 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return questoes.Any(q => q.Questionario.ModalidadeId == (int)Modalidade.Fundamental 
                                  && q.Questionario.ComponenteCurricularId == 1   
                                  && q.Questionario.ProficienciaId == (int)Dominio.Enums.Proficiencia.Escrita);
+    }
+
+    private async Task<bool> ValidarSalvarSondagem(SondagemSalvarDto dto)
+    {
+        if(dto == null) return false;
+
+        if(string.IsNullOrEmpty(dto.TurmaId))
+            throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM);
+
+        bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId);
+
+        if (!retorno)
+            throw new RegraNegocioException(MensagemNegocioComuns.SEM_PERMISSAO_SALVAR_SONDAGEM);
+
+        return retorno;
     }
 
     private async Task<Dominio.Entidades.Sondagem.Sondagem> ObterEValidarSondagemAtiva(int sondagemId)

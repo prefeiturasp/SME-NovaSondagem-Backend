@@ -92,7 +92,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_herdar_propriedades_da_entidade_base()
         {
             var respostaAluno = new RespostaAluno(15, 20, 25, 30, DateTime.Now);
-
+            respostaAluno.CriadoEm = DateTime.UtcNow;
             Assert.Equal(0, respostaAluno.Id);
             Assert.Null(respostaAluno.AlteradoEm);
             Assert.Null(respostaAluno.AlteradoPor);

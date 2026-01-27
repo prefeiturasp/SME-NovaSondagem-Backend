@@ -4,7 +4,6 @@ public abstract class EntidadeBase
 {
     protected EntidadeBase()
     {
-        CriadoEm = DateTimeExtension.HorarioBrasilia();
     }
 
     public int Id { get; set; }

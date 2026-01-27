@@ -2,16 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dados.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Infra.Contexto;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
 public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricular>, IRepositorioComponenteCurricular
 {
-    public RepositorioComponenteCurricular(SondagemDbContext context, IServicoAuditoria servicoAuditoria) : base(
+    public RepositorioComponenteCurricular(SondagemDbContext context, IServicoAuditoria servicoAuditoria, ContextoBase contexto) : base(
         context,
-        servicoAuditoria)
+        servicoAuditoria, contexto)
     {
     }
 

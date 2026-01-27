@@ -43,7 +43,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         public void Deve_herdar_propriedades_da_entidade_base()
         {
             var sondagemPeriodoBimestre = new SondagemPeriodoBimestre(15, 2, DateTime.Now, DateTime.Now.AddDays(30));
-
+            sondagemPeriodoBimestre.CriadoEm = DateTime.UtcNow;
             Assert.Equal(0, sondagemPeriodoBimestre.Id);
             Assert.Null(sondagemPeriodoBimestre.AlteradoEm);
             Assert.Null(sondagemPeriodoBimestre.AlteradoPor);
