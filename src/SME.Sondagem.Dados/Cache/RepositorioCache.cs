@@ -14,7 +14,6 @@ namespace SME.Sondagem.Dados.Cache
         {
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
             ArgumentNullException.ThrowIfNull(connectionMultiplexer);
-
             database = connectionMultiplexer.GetDatabase();
         }
 
