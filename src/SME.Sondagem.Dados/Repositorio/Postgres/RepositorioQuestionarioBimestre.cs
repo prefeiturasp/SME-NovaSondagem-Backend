@@ -16,11 +16,11 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
 
     public async Task<IEnumerable<QuestionarioBimestre>> ObterTodosAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.QuestionariosBimestres
-            .Include(qb => qb.Questionario)
-            .Include(qb => qb.Bimestre)
+        return await _context.QuestionariosBimestres          
             .AsNoTracking()
             .Where(qb => !qb.Excluido)
+            .Include(qb => qb.Questionario)
+            .Include(qb => qb.Bimestre)
             .OrderBy(qb => qb.QuestionarioId)
             .ThenBy(qb => qb.BimestreId)
             .ToListAsync(cancellationToken);
@@ -29,9 +29,9 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
     public async Task<IEnumerable<QuestionarioBimestre>> ObterPorQuestionarioIdAsync(int questionarioId, CancellationToken cancellationToken = default)
     {
         return await _context.QuestionariosBimestres
-            .Include(qb => qb.Bimestre)
             .AsNoTracking()
             .Where(qb => qb.QuestionarioId == questionarioId && !qb.Excluido)
+            .Include(qb => qb.Bimestre)
             .OrderBy(qb => qb.BimestreId)
             .ToListAsync(cancellationToken);
     }
