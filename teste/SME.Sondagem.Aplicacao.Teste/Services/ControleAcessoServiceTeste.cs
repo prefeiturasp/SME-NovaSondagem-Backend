@@ -13,6 +13,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
     public class ControleAcessoServiceTeste
     {
         private readonly Mock<IHttpClientFactory> httpClientFactoryMock;
+        private const string TURMA_ID = "TURMA-TESTE";
 
         public ControleAcessoServiceTeste()
         {
@@ -52,7 +53,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -68,7 +69,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -82,7 +83,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -99,7 +100,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -116,7 +117,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -139,7 +140,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -162,7 +163,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -187,7 +188,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -215,7 +216,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
             Assert.False(result);
         }
@@ -223,14 +224,20 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task ValidarPermissaoAcessoAsync_ComComponentePermitido_DeveRetornarTrue()
         {
+            // Arrange
             var accessor = CriarHttpContextAccessor(
-                true,
+                autenticado: true,
                 rf: "123",
-                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString() // 👈 GUID correto
+            );
 
             var json = JsonConvert.SerializeObject(new[]
             {
-                new ControleAcessoDto { Codigo = 1113 }
+                new ControleAcessoDto
+                {
+                    Regencia = true,           
+                    TurmaCodigo = TURMA_ID
+                }
             });
 
             var httpClient = HttpClientMockHelper.Create(HttpStatusCode.OK, json);
@@ -243,8 +250,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 httpClientFactoryMock.Object,
                 accessor);
 
-            var result = await service.ValidarPermissaoAcessoAsync();
+            // Act
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
+            // Assert
             Assert.True(result);
         }
     }

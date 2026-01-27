@@ -1,6 +1,7 @@
 ﻿using SME.Sondagem.Aplicacao.Interfaces.Turma;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 
@@ -8,7 +9,6 @@ namespace SME.Sondagem.Aplicacao.UseCases.Turma
 {
     public class ObterPermissaoTurmaUseCase : IObterPermissaoTurmaUseCase
     {
-        private static readonly HashSet<int> MODALIDADES_PERMITIDAS = new() { (int)Modalidade.Fundamental, (int)Modalidade.EJA };
         private static readonly HashSet<int> SERIE_ANO_PERMITIDOS = new() { 1, 2, 3 };
 
         private readonly IRepositorioElasticTurma _repositorioElasticTurma;
@@ -23,13 +23,13 @@ namespace SME.Sondagem.Aplicacao.UseCases.Turma
             var filtro = new FiltroQuestionario(){ TurmaId = turmaId };
 
             var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
-            ?? throw new RegraNegocioException("Turma não localizada", 400);
+            ?? throw new RegraNegocioException(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, 404);
 
             if (!ValidarSerieAnoEModalidadeTurma(turma))
-                throw new RegraNegocioException("Somente é possível utilizar a Sondagem para turmas de 1° a 3º no do Ensino Fundamental e etapa de alfabetização da EJA."); 
+                throw new RegraNegocioException(MensagemNegocioComuns.MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA); 
 
             if (!ValidarAnoLetivoTurma(turma))
-                throw new RegraNegocioException("A Sondagem não se aplica para turmas deste ano letivo.");
+                throw new RegraNegocioException(MensagemNegocioComuns.ANO_LETIVO_TURMA_SONDAGEM_INVALIDA);
 
             return true;
         }
@@ -37,7 +37,10 @@ namespace SME.Sondagem.Aplicacao.UseCases.Turma
 
         private static bool ValidarSerieAnoEModalidadeTurma(TurmaElasticDto turma)
         {
-            if (MODALIDADES_PERMITIDAS.Contains(turma.Modalidade) && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma)))
+            if (turma.Modalidade == (int)Modalidade.Fundamental 
+                    && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma)) 
+                || turma.Modalidade == (int)Modalidade.EJA
+                    && turma.TipoTurma == 1 && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma)))
                 return true;
 
             return false;
