@@ -117,11 +117,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     respostasExistentes));
             }
 
-            // verificar se o aluno possui resposta para a questao questaoLinguaPortuguesaSegundaLinguaId
-            // caso possuo vamos apenas editar a resposta, senao vamos criar uma nova resposta para essa questaoLinguaPortuguesaSegundaLinguaId
-            // caso o aluno.LinguaPortuguesaSegundaLingua for true a opcaoRepostaId será a que a descricao for "Sim", senao será a que a descricao for "Nao"
-            // adicionar na lista de respostas
-
             foreach (var respostaDto in aluno.Respostas)
             {
                 var resposta = ProcessarRespostaIndividual(
