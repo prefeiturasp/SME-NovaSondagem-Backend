@@ -16,20 +16,17 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
     private readonly IObterQuestionariosBimestresUseCase _obterTodosUseCase;
     private readonly IObterBimestresPorQuestionarioUseCase _obterPorQuestionarioUseCase;
     private readonly IExcluirVinculosPorQuestionarioUseCase _excluirPorQuestionarioUseCase;
-    private readonly ILogger<QuestionarioBimestreIntegracaoController> _logger;
 
     public QuestionarioBimestreIntegracaoController(
         IVincularBimestresUseCase vincularBimestresUseCase,
         IObterQuestionariosBimestresUseCase obterTodosUseCase,
         IObterBimestresPorQuestionarioUseCase obterPorQuestionarioUseCase,
-        IExcluirVinculosPorQuestionarioUseCase excluirPorQuestionarioUseCase,
-        ILogger<QuestionarioBimestreIntegracaoController> logger)
+        IExcluirVinculosPorQuestionarioUseCase excluirPorQuestionarioUseCase)
     {
         _vincularBimestresUseCase = vincularBimestresUseCase;
         _obterTodosUseCase = obterTodosUseCase;
         _obterPorQuestionarioUseCase = obterPorQuestionarioUseCase;
         _excluirPorQuestionarioUseCase = excluirPorQuestionarioUseCase;
-        _logger = logger;
     }
 
     [HttpGet]
