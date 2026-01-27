@@ -28,6 +28,7 @@ using SME.Sondagem.Aplicacao.Validators.Bimestre;
 using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
 using SME.Sondagem.Aplicacao.Validators.Questao;
+using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -66,6 +67,7 @@ public static class RegistraDependencias
 
     private static void RegistrarRepositorios(IServiceCollection services)
     {
+        services.TryAddScoped<IRepositorioCache, RepositorioCache>();
         services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
