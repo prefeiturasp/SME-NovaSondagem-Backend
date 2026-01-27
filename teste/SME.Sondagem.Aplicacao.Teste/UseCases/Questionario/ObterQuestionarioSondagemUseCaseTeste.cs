@@ -1,10 +1,10 @@
 ﻿using Moq;
+using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
-using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -19,6 +19,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _mockRepositorioRespostaAluno;
     private readonly Mock<IRepositorioSondagem> _mockRepositorioSondagem;
     private readonly Mock<IRepositorioQuestao> _mockRepositorioQuestao;
+    private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
@@ -30,16 +31,27 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockRepositorioSondagem = new Mock<IRepositorioSondagem>();
         _mockRepositorioQuestao = new Mock<IRepositorioQuestao>();
+        _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
 
-        _useCase = new ObterQuestionarioSondagemUseCase(
+        // Criar os agregadores com os mocks
+        var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
-            _mockRepositorioElasticAluno.Object,
-            _mockRepositorioRespostaAluno.Object,
-            _mockAlunoPapService.Object,
+            _mockRepositorioElasticAluno.Object
+        );
+
+        var repositoriosSondagem = new RepositoriosSondagem(
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object
+        );
+
+        _useCase = new ObterQuestionarioSondagemUseCase(
+            repositoriosElastic,
+            repositoriosSondagem,
+            _mockAlunoPapService.Object,
             _mockControleAcessoService.Object
         );
     }
@@ -47,43 +59,35 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #region Testes do Construtor
 
     [Fact]
-    public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioElasticTurmaForNulo()
+    public void Construtor_DeveLancarArgumentNullException_QuandoRepositoriosElasticForNulo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
-            null!,
-            _mockRepositorioElasticAluno.Object,
-            _mockRepositorioRespostaAluno.Object,
-            _mockAlunoPapService.Object,
+        var repositoriosSondagem = new RepositoriosSondagem(
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object
+        );
+
+        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+            null!,
+            repositoriosSondagem,
+            _mockAlunoPapService.Object,
             _mockControleAcessoService.Object
         ));
     }
 
     [Fact]
-    public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioElasticAlunoForNulo()
+    public void Construtor_DeveLancarArgumentNullException_QuandoRepositoriosSondagemForNulo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+        var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
-            null!,
-            _mockRepositorioRespostaAluno.Object,
-            _mockAlunoPapService.Object,
-            _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object,
-            _mockControleAcessoService.Object
-        ));
-    }
+            _mockRepositorioElasticAluno.Object
+        );
 
-    [Fact]
-    public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioRespostaAlunoForNulo()
-    {
         Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
-            _mockRepositorioElasticTurma.Object,
-            _mockRepositorioElasticAluno.Object,
+            repositoriosElastic,
             null!,
             _mockAlunoPapService.Object,
-            _mockRepositorioSondagem.Object,
-            _mockRepositorioQuestao.Object,
             _mockControleAcessoService.Object
         ));
     }
@@ -91,42 +95,112 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public void Construtor_DeveLancarArgumentNullException_QuandoAlunoPapServiceForNulo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+        var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
-            _mockRepositorioElasticAluno.Object,
-            _mockRepositorioRespostaAluno.Object,
-            null!,
+            _mockRepositorioElasticAluno.Object
+        );
+
+        var repositoriosSondagem = new RepositoriosSondagem(
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object
+        );
+
+        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+            repositoriosElastic,
+            repositoriosSondagem,
+            null!,
             _mockControleAcessoService.Object
         ));
     }
 
     [Fact]
-    public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioSondagemForNulo()
+    public void Construtor_DeveLancarArgumentNullException_QuandoControleAcessoServiceForNulo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+        var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
-            _mockRepositorioElasticAluno.Object,
-            _mockRepositorioRespostaAluno.Object,
-            _mockAlunoPapService.Object,
-            null!,
+            _mockRepositorioElasticAluno.Object
+        );
+
+        var repositoriosSondagem = new RepositoriosSondagem(
+            _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
-            _mockControleAcessoService.Object
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object
+        );
+
+        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+            repositoriosElastic,
+            repositoriosSondagem,
+            _mockAlunoPapService.Object,
+            null!
+        ));
+    }
+
+    #endregion
+
+    #region Testes dos Agregadores
+
+    [Fact]
+    public void RepositoriosElastic_DeveLancarArgumentNullException_QuandoRepositorioElasticTurmaForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosElastic(
+            null!,
+            _mockRepositorioElasticAluno.Object
         ));
     }
 
     [Fact]
-    public void Construtor_DeveLancarArgumentNullException_QuandoRepositorioQuestaoForNulo()
+    public void RepositoriosElastic_DeveLancarArgumentNullException_QuandoRepositorioElasticAlunoForNulo()
     {
-        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
-            _mockRepositorioElasticAluno.Object,
+            null!
+        ));
+    }
+
+    [Fact]
+    public void RepositoriosSondagem_DeveLancarArgumentNullException_QuandoRepositorioSondagemForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosSondagem(
+            null!,
+            _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
-            _mockAlunoPapService.Object,
+            _mockRepositorioBimestre.Object
+        ));
+    }
+
+    [Fact]
+    public void RepositoriosSondagem_DeveLancarArgumentNullException_QuandoRepositorioQuestaoForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosSondagem(
             _mockRepositorioSondagem.Object,
             null!,
-            _mockControleAcessoService.Object
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object
+        ));
+    }
+
+    [Fact]
+    public void RepositoriosSondagem_DeveLancarArgumentNullException_QuandoRepositorioRespostaAlunoForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosSondagem(
+            _mockRepositorioSondagem.Object,
+            _mockRepositorioQuestao.Object,
+            null!,
+            _mockRepositorioBimestre.Object
+        ));
+    }
+
+    [Fact]
+    public void RepositoriosSondagem_DeveLancarArgumentNullException_QuandoRepositorioBimestreForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new RepositoriosSondagem(
+            _mockRepositorioSondagem.Object,
+            _mockRepositorioQuestao.Object,
+            _mockRepositorioRespostaAluno.Object,
+            null!
         ));
     }
 
@@ -192,9 +266,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #region Testes de Validação de Modalidade e Ano
 
     [Theory]
-    [InlineData(1)] 
-    [InlineData(4)] 
-    [InlineData(6)] 
+    [InlineData(1)]
+    [InlineData(4)]
+    [InlineData(6)]
     public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoModalidadeNaoForSuportada(int modalidade)
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
@@ -212,12 +286,12 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Theory]
-    [InlineData(5, "1")] 
-    [InlineData(5, "2")] 
-    [InlineData(5, "3")] 
-    [InlineData(3, "1")] 
-    [InlineData(3, "2")] 
-    [InlineData(3, "3")] 
+    [InlineData(5, "1")]
+    [InlineData(5, "2")]
+    [InlineData(5, "3")]
+    [InlineData(3, "1")]
+    [InlineData(3, "2")]
+    [InlineData(3, "3")]
     public async Task ObterQuestionarioSondagem_DeveRetornarQuestionarioComSucesso_ParaModalidadesEAnosValidos(
         int modalidade, string anoTurma)
     {
@@ -360,7 +434,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
-        // Arrange
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
 
         var questaoRespondidaId = 13;
@@ -423,10 +496,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
-        // Act
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
-        // Assert (simples e correto)
         var resposta = resultado.Estudantes!
             .SelectMany(e => e.Coluna!)
             .Select(c => c.Resposta)
@@ -449,7 +520,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
 
         var primeiroEstudante = resultado.Estudantes!.First();
-        var primeiraColuna = primeiroEstudante.Coluna!.First();        
+        var primeiraColuna = primeiroEstudante.Coluna!.First();
         Assert.Null(primeiraColuna.Resposta);
     }
 
@@ -564,6 +635,55 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
     #endregion
 
+    #region Testes para bimestresForaDoPadrao (repositorio de bimestres)
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_UsaBimestresDoRepositorio_QuandoExistir()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+
+        var sondagem = CriarSondagemMock();
+        var questoes = CriarQuestoesMock();
+        var alunos = CriarAlunosMock();
+
+        var periodoRepo = new Dominio.Entidades.Sondagem.SondagemPeriodoBimestre(1, 99, DateTime.Now.AddDays(-10), DateTime.Now.AddDays(10));
+        var bimestreRepo = new Dominio.Entidades.Bimestre(99, "Bimestre Repo");
+        periodoRepo.GetType().GetProperty("Bimestre")!.SetValue(periodoRepo, bimestreRepo);
+        var bimestresRepo = new List<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> { periodoRepo };
+
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos);
+
+        _mockRepositorioBimestre.Setup(x => x.ObterBimestresPorQuestionarioIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(bimestresRepo);
+
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var primeiraColuna = resultado.Estudantes!.First().Coluna!.First();
+        Assert.Equal("Bimestre Repo", primeiraColuna.DescricaoColuna);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveLancarErro_QuandoRepositorioRetornarListaVazia()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var sondagem = CriarSondagemMock();
+        var questoes = CriarQuestoesMock();
+        var alunos = CriarAlunosMock();
+
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos);
+
+        _mockRepositorioBimestre.Setup(x => x.ObterBimestresPorQuestionarioIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre>());
+
+        var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+        Assert.Equal("Não foi possível obter as colunas dos ciclos", exception.Message);
+    }
+
+    #endregion
+
     #region Métodos Auxiliares
     private static Dominio.Entidades.Sondagem.Sondagem CriarSondagemMock()
     {
@@ -670,7 +790,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         var bimestre1 = new Dominio.Entidades.Bimestre(1, "1º Bimestre");
         var bimestre2 = new Dominio.Entidades.Bimestre(2, "2º Bimestre");
 
-        var periodo1 = new Dominio.Entidades.Sondagem.SondagemPeriodoBimestre(  
+        var periodo1 = new Dominio.Entidades.Sondagem.SondagemPeriodoBimestre(
             1, 1, DateTime.Now.AddDays(-10), DateTime.Now.AddDays(10));
 
         var periodo2 = new Dominio.Entidades.Sondagem.SondagemPeriodoBimestre(

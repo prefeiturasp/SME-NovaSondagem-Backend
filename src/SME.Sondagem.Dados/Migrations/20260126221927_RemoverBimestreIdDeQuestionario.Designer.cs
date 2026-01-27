@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260126221927_RemoverBimestreIdDeQuestionario")]
+    partial class RemoverBimestreIdDeQuestionario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -809,6 +812,9 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("ano_letivo");
 
+                    b.Property<int?>("BimestreId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ComponenteCurricularId")
                         .HasColumnType("integer")
                         .HasColumnName("componente_curricular_id");
@@ -863,6 +869,8 @@ namespace SME.Sondagem.Dados.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_questionario");
+
+                    b.HasIndex("BimestreId");
 
                     b.HasIndex("ComponenteCurricularId");
 
@@ -1237,6 +1245,10 @@ namespace SME.Sondagem.Dados.Migrations
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Questionario.Questionario", b =>
                 {
+                    b.HasOne("SME.Sondagem.Dominio.Entidades.Bimestre", null)
+                        .WithMany("Questionarios")
+                        .HasForeignKey("BimestreId");
+
                     b.HasOne("SME.Sondagem.Dominio.Entidades.ComponenteCurricular", "ComponenteCurricular")
                         .WithMany("Questionarios")
                         .HasForeignKey("ComponenteCurricularId")
@@ -1350,6 +1362,8 @@ namespace SME.Sondagem.Dados.Migrations
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Bimestre", b =>
                 {
                     b.Navigation("PeriodosBimestre");
+
+                    b.Navigation("Questionarios");
 
                     b.Navigation("QuestionariosBimestres");
 

@@ -14,15 +14,15 @@ public class Bimestre : EntidadeBase
     public string Descricao { get; private set; }
 
     // Navegação
-    public virtual ICollection<Questionario.Questionario> Questionarios { get; private set; } = new List<Questionario.Questionario>();
     public virtual ICollection<SondagemPeriodoBimestre> PeriodosBimestre { get; private set; } = new List<SondagemPeriodoBimestre>();
     public virtual ICollection<RespostaAluno> RespostaAlunos { get; private set; } = new List<RespostaAluno>();
+    public virtual ICollection<Questionario.QuestionarioBimestre> QuestionariosBimestres { get; private set; } = new List<Questionario.QuestionarioBimestre>();
 
     public void AtualizarDescricao(string descricao)
     {
         if (string.IsNullOrWhiteSpace(descricao))
             throw new ArgumentException("Descrição do bimestre não pode ser vazia.", nameof(descricao));
-        
+
         Descricao = descricao;
     }
 
@@ -30,7 +30,7 @@ public class Bimestre : EntidadeBase
     {
         if (codBimestreEnsinoEol <= 0)
             throw new ArgumentException("Código do bimestre de ensino deve ser maior que zero.", nameof(codBimestreEnsinoEol));
-        
+
         CodBimestreEnsinoEol = codBimestreEnsinoEol;
     }
 
