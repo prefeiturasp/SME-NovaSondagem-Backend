@@ -43,7 +43,7 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         {
             return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao listar vínculos de questionário e bimestre" });
         }
@@ -63,7 +63,7 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         {
             return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao obter bimestres do questionário" });
         }
@@ -95,7 +95,7 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao vincular bimestres" });
         }
@@ -135,7 +135,7 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         {
             return StatusCode(ex.StatusCode, new { mensagem = ex.Message });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao atualizar vínculos" });
         }
@@ -162,7 +162,7 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         {
             return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(500, new { mensagem = "Erro ao excluir vínculos" });
         }
