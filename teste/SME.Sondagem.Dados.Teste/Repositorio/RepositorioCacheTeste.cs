@@ -48,7 +48,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio
         [Fact]
         public async Task SalvarRedisAsync_ValorNulo_NaoDeveSalvar()
         {
-            await repositorio.SalvarRedisAsync("chave", null);
+            await repositorio.SalvarRedisAsync("chave", null!);
 
             databaseMock.Verify(d =>
                 d.StringSetAsync(
