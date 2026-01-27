@@ -273,7 +273,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var questionarioBimestre = new QuestionarioBimestre(1, 1);
 
-            Assert.IsAssignableFrom<EntidadeBase>(questionarioBimestre);
+            Assert.IsType<EntidadeBase>(questionarioBimestre, exactMatch: false);
         }
 
         [Fact]

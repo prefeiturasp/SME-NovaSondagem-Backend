@@ -68,14 +68,13 @@ public class RepositorioBimestre : IRepositorioBimestre
 
     public async Task<ICollection<SondagemPeriodoBimestre>> ObterBimestresPorQuestionarioIdAsync(int questionarioId, CancellationToken cancellationToken = default)
     {
-        // Consulta a tabela questionario_bimestre para obter os bimestreIds associados ao questionario
         var bimestreIds = await context.QuestionariosBimestres
             .AsNoTracking()
             .Where(qb => qb.QuestionarioId == questionarioId && !qb.Excluido)
             .Select(qb => qb.BimestreId)
             .ToListAsync(cancellationToken);
 
-        if (!bimestreIds.Any())
+        if (bimestreIds.Count == 0)
             return new List<SondagemPeriodoBimestre>();
 
         var questionario = await context.Questionarios

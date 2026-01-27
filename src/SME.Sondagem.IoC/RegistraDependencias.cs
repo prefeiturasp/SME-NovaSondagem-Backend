@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
 using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
@@ -66,6 +67,7 @@ public static class RegistraDependencias
         RegistrarCasosDeUso(services);
         RegistrarValidadores(services);
         RegistrarContextos(services);
+        RegistrarAgregadores(services);
     }
 
     private static void RegistrarRepositorios(IServiceCollection services)
@@ -162,5 +164,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
         services.TryAddScoped<ContextoBase>(provider => 
             (ContextoBase)provider.GetRequiredService<IContextoAplicacao>());
+    }
+
+    private static void RegistrarAgregadores(IServiceCollection services)
+    {
+        services.AddScoped<RepositoriosElastic>();
+        services.AddScoped<RepositoriosSondagem>();
     }
 }

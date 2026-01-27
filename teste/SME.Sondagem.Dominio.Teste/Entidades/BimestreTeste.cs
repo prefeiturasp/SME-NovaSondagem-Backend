@@ -301,7 +301,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var bimestre = new Bimestre(1, "Primeiro Bimestre");
 
-            Assert.IsAssignableFrom<EntidadeBase>(bimestre);
+            Assert.IsType<EntidadeBase>(bimestre, exactMatch: false);
         }
 
         #endregion
@@ -347,7 +347,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var bimestre = new Bimestre(1, "Primeiro Bimestre");
 
             Assert.NotNull(bimestre.PeriodosBimestre);
-            Assert.IsAssignableFrom<ICollection<SondagemPeriodoBimestre>>(bimestre.PeriodosBimestre);
+            Assert.IsType<ICollection<SondagemPeriodoBimestre>>(bimestre.PeriodosBimestre, exactMatch: false);
             Assert.Empty(bimestre.PeriodosBimestre);
         }
 
@@ -357,7 +357,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var bimestre = new Bimestre(1, "Primeiro Bimestre");
 
             Assert.NotNull(bimestre.RespostaAlunos);
-            Assert.IsAssignableFrom<ICollection<RespostaAluno>>(bimestre.RespostaAlunos);
+            Assert.IsType<ICollection<RespostaAluno>>(bimestre.RespostaAlunos, exactMatch: false);
             Assert.Empty(bimestre.RespostaAlunos);
         }
 
@@ -367,7 +367,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var bimestre = new Bimestre(1, "Primeiro Bimestre");
 
             Assert.NotNull(bimestre.QuestionariosBimestres);
-            Assert.IsAssignableFrom<ICollection<SME.Sondagem.Dominio.Entidades.Questionario.QuestionarioBimestre>>(bimestre.QuestionariosBimestres);
+            Assert.IsType<ICollection<SME.Sondagem.Dominio.Entidades.Questionario.QuestionarioBimestre>>(bimestre.QuestionariosBimestres, exactMatch: false);
             Assert.Empty(bimestre.QuestionariosBimestres);
         }
 

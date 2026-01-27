@@ -23,7 +23,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             );
         }
 
-        private static Bimestre CriarBimestre(int codEol, string descricao = null)
+        private static Bimestre CriarBimestre(int codEol, string? descricao = null)
         {
             return new Bimestre(codEol, descricao ?? $"Bimestre {codEol}");
         }

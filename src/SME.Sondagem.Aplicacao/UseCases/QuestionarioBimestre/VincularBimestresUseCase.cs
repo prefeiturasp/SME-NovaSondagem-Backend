@@ -67,7 +67,7 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
             }
         }
 
-        if (!bimestresParaVincular.Any())
+        if (bimestresParaVincular.Count == 0)
         {
             throw new RegraNegocioException(
                 "Todos os bimestres informados já estão vinculados a este questionário",
@@ -93,7 +93,7 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
                 HttpStatusCode.NotFound);
         }
 
-        if (dto.BimestreIds == null || !dto.BimestreIds.Any())
+        if (dto.BimestreIds == null || dto.BimestreIds.Count == 0)
         {
             return await _repositorio.ExcluirPorQuestionarioIdAsync(dto.QuestionarioId.Value, cancellationToken);
         }
@@ -121,7 +121,7 @@ public class VincularBimestresUseCase : IVincularBimestresUseCase
             await _repositorio.ExcluirPorQuestionarioEBimestreAsync(dto.QuestionarioId.Value, bimestreId, cancellationToken);
         }
 
-        if (bimestresParaAdicionar.Any())
+        if (bimestresParaAdicionar.Count > 0)
         {
             var novosVinculos = bimestresParaAdicionar.Select(bimestreId =>
                 new Dominio.Entidades.Questionario.QuestionarioBimestre(dto.QuestionarioId.Value, bimestreId)

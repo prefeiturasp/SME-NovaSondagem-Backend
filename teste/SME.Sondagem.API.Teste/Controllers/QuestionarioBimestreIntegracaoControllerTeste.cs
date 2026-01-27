@@ -54,7 +54,8 @@ namespace SME.Sondagem.API.Teste.Controller
             var result = await _controller.Listar(CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<QuestionarioBimestreDto>>(okResult.Value);
+
+            var retorno = Assert.IsType<IEnumerable<QuestionarioBimestreDto>>(okResult.Value, exactMatch: false);
             Assert.Equal(2, retorno.Count());
         }
 
@@ -104,7 +105,8 @@ namespace SME.Sondagem.API.Teste.Controller
             var result = await _controller.ObterPorQuestionario(questionarioId, CancellationToken.None);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var retorno = Assert.IsAssignableFrom<IEnumerable<QuestionarioBimestreDto>>(okResult.Value);
+
+            var retorno = Assert.IsType<IEnumerable<QuestionarioBimestreDto>>(okResult.Value, exactMatch: false);
             Assert.Single(retorno);
         }
 

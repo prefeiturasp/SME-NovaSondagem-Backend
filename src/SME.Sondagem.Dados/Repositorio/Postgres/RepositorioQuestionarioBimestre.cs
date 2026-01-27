@@ -57,7 +57,7 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
 
     public async Task<bool> CriarMultiplosAsync(List<QuestionarioBimestre> questionariosBimestres, CancellationToken cancellationToken = default)
     {
-        if (questionariosBimestres == null || !questionariosBimestres.Any())
+        if (questionariosBimestres == null || questionariosBimestres.Count == 0)
             return false;
 
         await _context.QuestionariosBimestres.AddRangeAsync(questionariosBimestres, cancellationToken);
@@ -71,7 +71,7 @@ public class RepositorioQuestionarioBimestre : IRepositorioQuestionarioBimestre
             .Where(qb => qb.QuestionarioId == questionarioId && !qb.Excluido)
             .ToListAsync(cancellationToken);
 
-        if (!vinculos.Any())
+        if (vinculos.Count == 0)
             return false;
 
         foreach (var vinculo in vinculos)
