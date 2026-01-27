@@ -14,15 +14,6 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         public readonly static Guid PERFIL_PROFESSOR = Guid.Parse("40E1E074-37D6-E911-ABD6-F81654FE895D");
 
-        private static int COMPONENTE_CURRICULAR_REG_CLASSE_EJA_ETAPA_ALFAB = 1113;
-        private static int COMPONENTE_CURRICULAR_REG_CLASSE_SP_INTEGRAL_1A5_ANOS = 1213;
-
-        private static readonly HashSet<int> COMPONENTE_CURRICULARES_PERMITIDOS = new()
-        {
-            COMPONENTE_CURRICULAR_REG_CLASSE_EJA_ETAPA_ALFAB,
-            COMPONENTE_CURRICULAR_REG_CLASSE_SP_INTEGRAL_1A5_ANOS
-        };
-
         public ControleAcessoService(
             IHttpClientFactory httpClientFactory,
             IHttpContextAccessor httpContextAccessor)
@@ -31,8 +22,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             this.httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> ValidarPermissaoAcessoAsync(
-            CancellationToken cancellationToken = default)
+        public async Task<bool> ValidarPermissaoAcessoAsync(string turmaId, CancellationToken cancellationToken = default)
         {            
             var usuario = httpContextAccessor.HttpContext?.User;
 
@@ -42,11 +32,10 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var login = usuario.FindFirst("rf")?.Value;
             var perfil = usuario.FindFirst("perfil")?.Value;
 
-            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(perfil) 
-                                            || !Guid.TryParse(perfil, out var perfilGuid) 
-                                            || perfilGuid != PERFIL_PROFESSOR)
+            if (string.IsNullOrEmpty(turmaId) || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(perfil) 
+                                              || !Guid.TryParse(perfil, out var perfilGuid) 
+                                              || perfilGuid != PERFIL_PROFESSOR)
                 return false;
-
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 
@@ -63,7 +52,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 return false;
 
             var resultado = JsonConvert.DeserializeObject<IEnumerable<ControleAcessoDto>>(json);
-            var retorno = resultado?.Any(r => COMPONENTE_CURRICULARES_PERMITIDOS.Contains(r.Codigo)) ?? false;
+            var retorno = resultado?.Any(r => r.Regencia && r.TurmaCodigo == turmaId) ?? false;
 
             return retorno;
         }
