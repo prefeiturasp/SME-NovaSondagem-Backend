@@ -48,7 +48,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao listar vínculos de questionário e bimestre");
             return StatusCode(500, new { mensagem = "Erro ao listar vínculos de questionário e bimestre" });
         }
     }
@@ -69,7 +68,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter bimestres do questionário {QuestionarioId}", questionarioId);
             return StatusCode(500, new { mensagem = "Erro ao obter bimestres do questionário" });
         }
     }
@@ -102,7 +100,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro inesperado ao vincular bimestres ao questionário {QuestionarioId}", dto.QuestionarioId);
             return StatusCode(500, new { mensagem = "Erro ao vincular bimestres" });
         }
     }
@@ -117,7 +114,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
     {
         try
         {
-            // CORREÇÃO: Removidos os logs condicionais para reduzir a complexidade cognitiva
             if (dto.QuestionarioId.HasValue && dto.QuestionarioId.Value != questionarioId)
             {
                 return BadRequest(new { mensagem = "O ID do questionário na rota não corresponde ao informado no corpo da requisição" });
@@ -144,7 +140,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro inesperado ao atualizar vínculos do questionário {QuestionarioId}", questionarioId);
             return StatusCode(500, new { mensagem = "Erro ao atualizar vínculos" });
         }
     }
@@ -172,7 +167,6 @@ public class QuestionarioBimestreIntegracaoController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao excluir vínculos do questionário {QuestionarioId}", questionarioId);
             return StatusCode(500, new { mensagem = "Erro ao excluir vínculos" });
         }
     }
