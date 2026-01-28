@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -14,30 +12,21 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
 public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCase
 {
-    private readonly IRepositorioElasticTurma _repositorioElasticTurma;
-    private readonly IRepositorioElasticAluno _repositorioElasticAluno;
-    private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
-    private readonly IRepositorioSondagem _repositorioSondagem;
-    private readonly IRepositorioQuestao _repositorioQuestao;
+    private readonly RepositoriosElastic _repositoriosElastic;
+    private readonly RepositoriosSondagem _repositoriosSondagem;
     private readonly IAlunoPapService _alunoPapService;
     private readonly IControleAcessoService _controleAcessoService;
 
     public ObterQuestionarioSondagemUseCase(
-        IRepositorioElasticTurma repositorioElasticTurma,
-        IRepositorioElasticAluno repositorioElasticAluno,
-        IRepositorioRespostaAluno repositorioRespostaAluno,
+        RepositoriosElastic repositoriosElastic,
+        RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
-        IRepositorioSondagem repositorioSondagem,
-        IRepositorioQuestao repositorioQuestao,
         IControleAcessoService controleAcessoService)
     {
-        _repositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
-        _repositorioElasticAluno = repositorioElasticAluno ?? throw new ArgumentNullException(nameof(repositorioElasticAluno));
-        _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
+        _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
+        _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
-        _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
-        _repositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
-        _controleAcessoService = controleAcessoService;
+        _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
     }
 
     public async Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
@@ -53,7 +42,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
     private async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
-        var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
+        var turma = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
             ?? throw new RegraNegocioException("Turma não localizada", 400);
 
         if (filtro.ProficienciaId == 0)
@@ -64,7 +53,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
     private async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtivaOuLancarExcecao(CancellationToken cancellationToken)
     {
-        return await _repositorioSondagem.ObterSondagemAtiva(cancellationToken)
+        return await _repositoriosSondagem.RepositorioSondagem.ObterSondagemAtiva(cancellationToken)
             ?? throw new ErroInternoException("Não há sondagem ativa cadastrada no sistema");
     }
 
@@ -89,7 +78,10 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
 
-        var colunas = await ObterColunasOuLancarExcecao(sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
+        var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
+            .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
+
+        var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
 
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
@@ -98,13 +90,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             turma.AnoLetivo,
             cancellationToken);
 
-        var alunosComLinguaPortuguesaSegundaLingua = await _repositorioRespostaAluno
+        var alunosComLinguaPortuguesaSegundaLingua = await _repositoriosSondagem.RepositorioRespostaAluno
             .VerificarAlunosPossuiLinguaPortuguesaAsync(
                 codigosAlunos,
                 questaoLinguaPortuguesa,
                 cancellationToken);
 
-        var respostasAlunosPorQuestoes = await _repositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
+        var respostasAlunosPorQuestoes = await _repositoriosSondagem.RepositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
             codigosAlunos.Select(x => (long)x).ToList(),
             questoesIds.Select(x => (long)x).ToList(),
             sondagemAtiva.Id,
@@ -186,7 +178,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         int proficienciaId,
         CancellationToken cancellationToken)
     {
-        var questoesAtivas = await _repositorioQuestao.ObterQuestoesAtivasPorFiltroAsync(
+        var questoesAtivas = await _repositoriosSondagem.RepositorioQuestao.ObterQuestoesAtivasPorFiltroAsync(
             modalidade,
             anoLetivo,
             proficienciaId,
@@ -205,9 +197,17 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             .ToList();
     }
 
+    private static int ObterIdQuestionario(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    {
+        var primeiraQuestao = questoesAtivas.FirstOrDefault();
+        if (primeiraQuestao == null)
+            return 0;
+        return primeiraQuestao.QuestionarioId;
+    }
+
     private async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, CancellationToken cancellationToken)
     {
-        var alunos = await _repositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, cancellationToken);
+        var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, cancellationToken);
 
         return alunos != null && alunos.Any()
             ? alunos
@@ -219,7 +219,6 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas,
         int? bimestreId)
     {
-
         var possuiSubperguntas = PossuiQuestaoVinculo(questoesAtivas);
 
         if (possuiSubperguntas)
@@ -284,7 +283,6 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         return retorno;
     }
-
 
     private static bool PossuiQuestaoVinculo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
