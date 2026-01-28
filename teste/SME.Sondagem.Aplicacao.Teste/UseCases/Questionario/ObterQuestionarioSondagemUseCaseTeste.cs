@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
@@ -677,9 +678,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioBimestre.Setup(x => x.ObterBimestresPorQuestionarioIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre>());
 
-        var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
-            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Não foi possível obter as colunas dos ciclos", exception.Message);
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var primeiraColuna = resultado.Estudantes!.First().Coluna!.First();
+        Assert.Equal("1º Bimestre", primeiraColuna.DescricaoColuna);
     }
 
     #endregion
