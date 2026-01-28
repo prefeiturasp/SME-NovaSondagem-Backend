@@ -81,7 +81,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
             .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
 
-        var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
+        var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null && bimestresForaDoPadrao.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
 
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
