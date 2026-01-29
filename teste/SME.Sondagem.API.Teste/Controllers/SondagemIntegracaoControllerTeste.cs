@@ -7,7 +7,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste.Controller
+namespace SME.Sondagem.API.Teste.Controllers
 {
     public class SondagemIntegracaoControllerTeste
     {
