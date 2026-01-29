@@ -32,14 +32,14 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.True(resultado);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class ExcluirBimestreUseCaseTeste
 
         Assert.False(resultado);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -72,7 +72,7 @@ public class ExcluirBimestreUseCaseTeste
             () => _useCase.ExecutarAsync(id, cancellationTokenCancelado));
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCancelado), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null, It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -90,14 +90,14 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, cancellationTokenCancelado))
+            .Setup(x => x.RemoverLogico(id, null,cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(id, cancellationTokenCancelado));
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCancelado), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, cancellationTokenCancelado), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null, cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ExcluirBimestreUseCaseTeste
 
         Assert.Equal("Erro ao obter proficiência", exception.Message);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null, It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
+            .Setup(x => x.RemoverLogico(id, null, _cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro ao excluir proficiência"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -139,7 +139,7 @@ public class ExcluirBimestreUseCaseTeste
 
         Assert.Equal("Erro ao excluir proficiência", exception.Message);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null, _cancellationToken), Times.Once);
     }
 
     [Theory]
@@ -158,13 +158,13 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(id, _cancellationToken);
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -181,14 +181,14 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.True(resultado);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
         _repositorioBimestreMock.VerifyNoOtherCalls();
     }
 
@@ -206,13 +206,13 @@ public class ExcluirBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(false);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.False(resultado);
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
     }
 }

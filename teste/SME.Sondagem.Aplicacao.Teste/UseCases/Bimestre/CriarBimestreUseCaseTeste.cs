@@ -33,14 +33,14 @@ public class CriarBimestreUseCaseTeste
         const long expectedId = 123;
 
         _repositorioBimestreMock
-            .Setup(x => x.CriarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
             .ReturnsAsync(expectedId);
 
         var resultado = await _useCase.ExecutarAsync(bimestreDto, _cancellationToken);
 
         Assert.Equal(expectedId, resultado);
 
-        _repositorioBimestreMock.Verify(x => x.CriarAsync(
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(
             It.Is<Dominio.Entidades.Bimestre>(p => 
                 p.Descricao == bimestreDto.Descricao && 
                 p.CodBimestreEnsinoEol == bimestreDto.CodBimestreEnsinoEol),
@@ -59,7 +59,7 @@ public class CriarBimestreUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioBimestreMock
-            .Setup(x => x.CriarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), cancellationTokenCancelado))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -76,7 +76,7 @@ public class CriarBimestreUseCaseTeste
         };
 
         _repositorioBimestreMock
-            .Setup(x => x.CriarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -98,7 +98,7 @@ public class CriarBimestreUseCaseTeste
 
         Dominio.Entidades.Bimestre? bimestreCapturada = null;
         _repositorioBimestreMock
-            .Setup(x => x.CriarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
             .Callback<Dominio.Entidades.Bimestre, CancellationToken>((p, ct) => bimestreCapturada = p)
             .ReturnsAsync(1);
 
@@ -121,12 +121,12 @@ public class CriarBimestreUseCaseTeste
         var customCancellationToken = new CancellationTokenSource().Token;
 
         _repositorioBimestreMock
-            .Setup(x => x.CriarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), customCancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), customCancellationToken))
             .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(bimestreDto, customCancellationToken);
 
-        _repositorioBimestreMock.Verify(x => x.CriarAsync(
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(
             It.IsAny<Dominio.Entidades.Bimestre>(), 
             customCancellationToken), Times.Once);
     }

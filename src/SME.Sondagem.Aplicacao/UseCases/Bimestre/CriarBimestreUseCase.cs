@@ -19,6 +19,6 @@ public class CriarBimestreUseCase : ICriarBimestreUseCase
             bimestreDto.CodBimestreEnsinoEol,
             bimestreDto.Descricao);
 
-        return await bimestreRepositorio.CriarAsync(bimestre, cancellationToken: cancellationToken);
+        return await bimestreRepositorio.SalvarAsync(bimestre, cancellationToken: cancellationToken);
     }
 }
