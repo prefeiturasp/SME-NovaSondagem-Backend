@@ -46,9 +46,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var primeiroQuestionarioId = questoes.FirstOrDefault()!.QuestionarioId;
         var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(primeiroQuestionarioId, TipoQuestao.LinguaPortuguesaSegundaLingua);
 
-        if (questaoLinguaPortuguesaSegundaLingua == null && ExisteQuestaoLinguaPortuguesaSegundaLingua(questoes))
-            throw new NegocioException(MensagemNegocioComuns.QUESTAO_NAO_ENCONTRADA);
-
         var questoesIdsResposta = questoesId.ToList();
 
         if (questaoLinguaPortuguesaSegundaLingua is not null)
@@ -62,13 +59,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var respostas = ProcessarRespostasAlunos(dto, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua);
 
         return await _repositorioSondagemResposta.SalvarAsync(respostas);
-    }
-
-    private static bool ExisteQuestaoLinguaPortuguesaSegundaLingua(IEnumerable<Dominio.Entidades.Questionario.Questao> questoes)
-    {
-        return questoes.Any(q => q.Questionario.ModalidadeId == (int)Modalidade.Fundamental 
-                                 && q.Questionario.ComponenteCurricularId == 1   
-                                 && q.Questionario.ProficienciaId == (int)Dominio.Enums.Proficiencia.Escrita);
     }
 
     private async Task<bool> ValidarSalvarSondagem(SondagemSalvarDto dto)
