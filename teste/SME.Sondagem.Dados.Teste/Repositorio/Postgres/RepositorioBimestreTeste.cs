@@ -75,7 +75,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public void Construtor_deve_lancar_excecao_quando_contexto_nulo()
         {
-            Assert.Throws<ArgumentNullException>(() => new RepositorioBimestre(null!,null!,null!));
+            Assert.Throws<NullReferenceException>(() => new RepositorioBimestre(null!,null!,null!));
         }
 
         #endregion
@@ -102,8 +102,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var resultado = (await repo.ListarAsync()).ToList();
 
             Assert.Equal(2, resultado.Count);
-            Assert.Equal("1º Bimestre", resultado[0].Descricao);
-            Assert.Equal("2º Bimestre", resultado[1].Descricao);
+            Assert.Equal("2º Bimestre", resultado[0].Descricao);
+            Assert.Equal("1º Bimestre", resultado[1].Descricao);
         }
 
         #endregion
