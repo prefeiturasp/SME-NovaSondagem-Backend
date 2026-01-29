@@ -168,17 +168,5 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
         #endregion
 
-        private static ContextoFake CriarConextoBase()
-        {
-            var contexto = new ContextoFake();
-            contexto.AdicionarVariaveis(new Dictionary<string, object>
-                {
-                    { "NomeUsuario", "Usuario Teste" },
-                    { "RF", "123456" },
-                    { "Administrador", "true" }
-                });
-
-            return contexto;
-        }
     }
 }
