@@ -9,7 +9,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste.Controller
+namespace SME.Sondagem.API.Teste.Controllers
 {
     public class QuestaoIntegracaoControllerTeste
     {

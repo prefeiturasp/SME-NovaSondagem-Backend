@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using SME.Sondagem.API.Controllers;
 using SME.Sondagem.API.Controllers.Integracao;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Dominio;
@@ -9,7 +8,7 @@ using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste.Controller;
+namespace SME.Sondagem.API.Teste.Controllers;
 
 public class QuestionarioIntegracaoControllerTeste
 {
