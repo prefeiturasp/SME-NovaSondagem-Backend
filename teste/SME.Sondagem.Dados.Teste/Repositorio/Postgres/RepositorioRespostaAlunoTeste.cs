@@ -321,17 +321,5 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.Equal(respostaValida.Id, lista[0].Id);
         }
 
-        private static ContextoFake CriarConextoBase()
-        {
-            var contexto = new ContextoFake();
-            contexto.AdicionarVariaveis(new Dictionary<string, object>
-                {
-                    { "NomeUsuario", "Usuario Teste" },
-                    { "RF", "123456" },
-                    { "Administrador", "true" }
-                });
-
-            return contexto;
-        }
     }
 }

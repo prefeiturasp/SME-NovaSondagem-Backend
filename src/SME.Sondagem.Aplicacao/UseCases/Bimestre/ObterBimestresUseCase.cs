@@ -15,7 +15,7 @@ public class ObterBimestresUseCase : IObterBimestresUseCase
 
     public async Task<IEnumerable<BimestreDto>> ExecutarAsync(CancellationToken cancellationToken = default)
     {
-        var bimestres = await bimestreRepositorio.ObterTodosAsync(cancellationToken: cancellationToken);
+        var bimestres = await bimestreRepositorio.ListarAsync(cancellationToken: cancellationToken);
 
         return bimestres.Select(p => new BimestreDto
         {

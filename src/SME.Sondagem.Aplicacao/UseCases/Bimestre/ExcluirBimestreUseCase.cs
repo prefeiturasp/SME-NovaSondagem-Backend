@@ -19,6 +19,6 @@ public class ExcluirBimestreUseCase : IExcluirBimestreUseCase
         if (bimestreExistente == null)
             return false;
 
-        return await bimestreRepositorio.ExcluirAsync(id, cancellationToken: cancellationToken);
+        return await bimestreRepositorio.RemoverLogico(id, cancellationToken: cancellationToken) > 0;
     }
 }

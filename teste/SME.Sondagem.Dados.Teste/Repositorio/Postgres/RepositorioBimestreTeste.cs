@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio.Entidades;
-using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Entidades.Questionario;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
@@ -73,7 +75,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         [Fact]
         public void Construtor_deve_lancar_excecao_quando_contexto_nulo()
         {
-            Assert.Throws<ArgumentNullException>(() => new RepositorioBimestre(null!));
+            Assert.Throws<NullReferenceException>(() => new RepositorioBimestre(null!,null!,null!));
         }
 
         #endregion
@@ -93,13 +95,15 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
-            var resultado = (await repo.ObterTodosAsync()).ToList();
+            var resultado = (await repo.ListarAsync()).ToList();
 
             Assert.Equal(2, resultado.Count);
-            Assert.Equal("1º Bimestre", resultado[0].Descricao);
-            Assert.Equal("2º Bimestre", resultado[1].Descricao);
+            Assert.Equal("2º Bimestre", resultado[0].Descricao);
+            Assert.Equal("1º Bimestre", resultado[1].Descricao);
         }
 
         #endregion
@@ -114,7 +118,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Bimestres.Add(CriarBimestre(1));
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var resultado = await repo.ObterPorIdAsync(1);
 
@@ -130,7 +136,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Bimestres.Add(CriarBimestre(1, excluido: true));
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var resultado = await repo.ObterPorIdAsync(1);
 
@@ -145,11 +153,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task CriarAsync_deve_persistir_e_retornar_id()
         {
             var context = CriarContexto(nameof(CriarAsync_deve_persistir_e_retornar_id));
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var bimestre = new Bimestre(1, "1º Bimestre");
 
-            var id = await repo.CriarAsync(bimestre);
+            var id = await repo.SalvarAsync(bimestre);
 
             Assert.True(id > 0);
             Assert.Single(context.Bimestres);
@@ -163,13 +173,15 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task AtualizarAsync_deve_retornar_false_quando_nao_existir()
         {
             var context = CriarContexto(nameof(AtualizarAsync_deve_retornar_false_quando_nao_existir));
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var bimestre = CriarBimestre(99);
 
-            var resultado = await repo.AtualizarAsync(bimestre);
+            var resultado = await repo.SalvarAsync(bimestre);
 
-            Assert.False(resultado);
+            Assert.Equivalent(resultado,0);
         }
 
         [Fact]
@@ -185,11 +197,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             bimestre.AlteradoPor = "TESTE";
             bimestre.AlteradoRF = "123";
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
-            var resultado = await repo.AtualizarAsync(bimestre);
+            var resultado = await repo.SalvarAsync(bimestre);
 
-            Assert.True(resultado);
+            Assert.Equivalent(resultado, 1);
         }
 
         #endregion
@@ -197,14 +211,16 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         #region ExcluirAsync
 
         [Fact]
-        public async Task ExcluirAsync_deve_retornar_false_quando_nao_existir()
+        public async Task ExcluirAsync_deve_retornar_true_quando_nao_existir()
         {
-            var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_false_quando_nao_existir));
-            var repo = new RepositorioBimestre(context);
+            var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_true_quando_nao_existir));
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
-            var resultado = await repo.ExcluirAsync(1);
+            var resultado = await repo.RemoverLogico(1) == 0;
 
-            Assert.False(resultado);
+            Assert.True(resultado);
         }
 
         [Fact]
@@ -216,9 +232,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Bimestres.Add(bimestre);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
-            var resultado = await repo.ExcluirAsync(1);
+            var resultado = await repo.RemoverLogico(1)>0;
 
             var bimestreExcluido = await context.Bimestres
                 .IgnoreQueryFilters()
@@ -246,7 +264,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var resultado = await repo.ObterBimestresPorQuestionarioIdAsync(questionario.Id);
 
@@ -272,7 +292,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var resultado = await repo.ObterBimestresPorQuestionarioIdAsync(questionario.Id);
 
@@ -299,7 +321,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioBimestre(context);
+            var auditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioBimestre(context, auditoriaMock.Object, contextoBase);
 
             var resultado = (await repo.ObterBimestresPorQuestionarioIdAsync(questionario.Id)).ToList();
 
