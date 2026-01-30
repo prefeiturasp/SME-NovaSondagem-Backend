@@ -33,14 +33,14 @@ public class CriarProficienciaUseCaseTeste
         const long expectedId = 123;
 
         _repositorioProficienciaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
             .ReturnsAsync(expectedId);
 
         var resultado = await _useCase.ExecutarAsync(proficienciaDto, _cancellationToken);
 
         Assert.Equal(expectedId, resultado);
 
-        _repositorioProficienciaMock.Verify(x => x.CriarAsync(
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(
             It.Is<SME.Sondagem.Dominio.Entidades.Proficiencia>(p => 
                 p.Nome == proficienciaDto.Nome && 
                 p.ComponenteCurricularId == proficienciaDto.ComponenteCurricularId),
@@ -59,7 +59,7 @@ public class CriarProficienciaUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioProficienciaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), cancellationTokenCancelado))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -76,7 +76,7 @@ public class CriarProficienciaUseCaseTeste
         };
 
         _repositorioProficienciaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
@@ -98,7 +98,7 @@ public class CriarProficienciaUseCaseTeste
 
         SME.Sondagem.Dominio.Entidades.Proficiencia? proficienciaCapturada = null;
         _repositorioProficienciaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
             .Callback<SME.Sondagem.Dominio.Entidades.Proficiencia, CancellationToken>((p, ct) => proficienciaCapturada = p)
             .ReturnsAsync(1);
 
@@ -121,12 +121,12 @@ public class CriarProficienciaUseCaseTeste
         var customCancellationToken = new CancellationTokenSource().Token;
 
         _repositorioProficienciaMock
-            .Setup(x => x.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), customCancellationToken))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), customCancellationToken))
             .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(proficienciaDto, customCancellationToken);
 
-        _repositorioProficienciaMock.Verify(x => x.CriarAsync(
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(
             It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), 
             customCancellationToken), Times.Once);
     }

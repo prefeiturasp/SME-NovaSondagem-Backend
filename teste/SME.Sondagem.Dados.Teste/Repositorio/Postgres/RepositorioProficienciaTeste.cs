@@ -25,9 +25,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var resultado = await repositorio.ObterTodosAsync();
+            var resultado = await repositorio.ListarAsync();
 
             var lista = resultado.ToList();
 
@@ -45,7 +47,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
             var resultado = await repositorio.ObterPorIdAsync(proficiencia.Id);
 
@@ -57,7 +61,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ObterPorIdAsync_deve_retornar_null_quando_nao_existir()
         {
             var context = CriarContexto(nameof(ObterPorIdAsync_deve_retornar_null_quando_nao_existir));
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
             var resultado = await repositorio.ObterPorIdAsync(999);
 
@@ -77,7 +83,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
             var resultado = await repositorio.ObterPorIdAsync(proficiencia.Id);
 
@@ -90,9 +98,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var context = CriarContexto(nameof(CriarAsync_deve_persistir_proficiencia_e_retornar_id));
 
             var proficiencia = new Proficiencia("Avançado", 4);
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var id = await repositorio.CriarAsync(proficiencia);
+            var id = await repositorio.SalvarAsync(proficiencia);
 
             Assert.True(id > 0);
             Assert.Equal(1, await context.Proficiencias.CountAsync());
@@ -108,31 +118,35 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             await context.SaveChangesAsync();
 
             proficiencia.AlteradoEm = DateTime.UtcNow;
-            proficiencia.AlteradoPor = "TESTE";
+            proficiencia.AlteradoPor = "Sistema";
             proficiencia.AlteradoRF = "123456";
 
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var atualizado = await repositorio.AtualizarAsync(proficiencia);
+            var atualizado = await repositorio.SalvarAsync(proficiencia) > 0;
 
             Assert.True(atualizado);
 
             var proficienciaAtualizada = await context.Proficiencias.FindAsync(proficiencia.Id);
-            Assert.Equal("TESTE", proficienciaAtualizada!.AlteradoPor);
+            Assert.Equal("Sistema", proficienciaAtualizada!.AlteradoPor);
         }
 
         [Fact]
         public async Task AtualizarAsync_deve_retornar_false_quando_proficiencia_nao_existir()
         {
             var context = CriarContexto(nameof(AtualizarAsync_deve_retornar_false_quando_proficiencia_nao_existir));
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
             var proficiencia = new Proficiencia("Inexistente", 6)
             {
                 Id = 999
             };
 
-            var resultado = await repositorio.AtualizarAsync(proficiencia);
+            var resultado = await repositorio.SalvarAsync(proficiencia) > 0;
 
             Assert.False(resultado);
         }
@@ -146,9 +160,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var excluido = await repositorio.ExcluirAsync(proficiencia.Id);
+            var excluido = await repositorio.RemoverLogico(proficiencia.Id)>0;
 
             Assert.True(excluido);
 
@@ -160,9 +176,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ExcluirAsync_deve_retornar_false_quando_proficiencia_nao_existir()
         {
             var context = CriarContexto(nameof(ExcluirAsync_deve_retornar_false_quando_proficiencia_nao_existir));
-            var repositorio = new RepositorioProficiencia(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var resultado = await repositorio.ExcluirAsync(999);
+            var resultado = await repositorio.RemoverLogico(999) > 0;
 
             Assert.False(resultado);
         }
@@ -181,7 +199,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             contexto.Proficiencias.AddRange(prof1, prof2, prof3, prof4);
             await contexto.SaveChangesAsync();
 
-            var repositorio = new RepositorioProficiencia(contexto);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioProficiencia(contexto, servicoAuditoria, contextoBase);
 
             var resultado = await repositorio.ObterProeficienciaPorComponenteCurricular(1);
 

@@ -44,7 +44,7 @@ public class ObterProficienciasUseCaseTeste
         };
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(proficiencias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -71,7 +71,7 @@ public class ObterProficienciasUseCaseTeste
         Assert.Equal("Usuario3", segunda.AlteradoPor);
         Assert.Equal("RF003", segunda.AlteradoRF);
 
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public class ObterProficienciasUseCaseTeste
         var proficienciasVazias = new List<SME.Sondagem.Dominio.Entidades.Proficiencia>();
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(proficienciasVazias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -88,7 +88,7 @@ public class ObterProficienciasUseCaseTeste
         Assert.NotNull(resultado);
         Assert.Empty(resultado);
 
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -97,13 +97,13 @@ public class ObterProficienciasUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCancelado))
+            .Setup(x => x.ListarAsync(cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(cancellationTokenCancelado));
 
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(cancellationTokenCancelado), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -113,26 +113,26 @@ public class ObterProficienciasUseCaseTeste
         var proficiencias = new List<SME.Sondagem.Dominio.Entidades.Proficiencia>();
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCustom))
+            .Setup(x => x.ListarAsync(cancellationTokenCustom))
             .ReturnsAsync(proficiencias);
 
         await _useCase.ExecutarAsync(cancellationTokenCustom);
 
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(cancellationTokenCustom), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(cancellationTokenCustom), Times.Once);
     }
 
     [Fact]
     public async Task ExecutarAsync_QuandoRepositorioFalha_DevePropararExcecao()
     {
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(_cancellationToken));
 
         Assert.Equal("Erro do repositório", exception.Message);
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class ObterProficienciasUseCaseTeste
         };
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(proficiencias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -190,7 +190,7 @@ public class ObterProficienciasUseCaseTeste
         }
 
         _repositorioProficienciaMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(proficiencias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -200,6 +200,6 @@ public class ObterProficienciasUseCaseTeste
         Assert.Equal("Proficiência 1", resultadoList.First().Nome);
         Assert.Equal("Proficiência 1000", resultadoList.Last().Nome);
 
-        _repositorioProficienciaMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 }
