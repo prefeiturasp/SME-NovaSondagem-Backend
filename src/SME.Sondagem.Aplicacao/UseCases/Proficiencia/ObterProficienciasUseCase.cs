@@ -15,7 +15,7 @@ public class ObterProficienciasUseCase : IObterProficienciasUseCase
 
     public async Task<IEnumerable<ProficienciaDto>> ExecutarAsync(CancellationToken cancellationToken = default)
     {
-        var proficiencias = await proficienciaRepositorio.ObterTodosAsync(cancellationToken: cancellationToken);
+        var proficiencias = await proficienciaRepositorio.ListarAsync(cancellationToken: cancellationToken);
 
         return proficiencias.Select(p => new ProficienciaDto
         {
