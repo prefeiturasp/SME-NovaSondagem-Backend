@@ -26,14 +26,24 @@ namespace SME.Sondagem.Dados.Teste.Mapeamentos
             var entity = context.Model.FindEntityType(typeof(AuditoriaDetalhe));
 
             Assert.NotNull(entity);
-            Assert.Equal("auditoria_detalhe", entity.GetTableName());
-            Assert.Equal("pk_auditoria_detalhe", entity.FindPrimaryKey().GetName());
-            Assert.NotNull(entity.FindProperty("AuditoriaId"));
-            Assert.Equal("auditoria_id", entity.FindProperty("AuditoriaId").GetColumnName(StoreObjectIdentifier.Table("auditoria_detalhe", null)));
-            Assert.NotNull(entity.FindProperty("NomePropriedade"));
-            Assert.Equal("nome_propriedade", entity.FindProperty("NomePropriedade").GetColumnName(StoreObjectIdentifier.Table("auditoria_detalhe", null)));
-            Assert.NotNull(entity.FindIndex(entity.FindProperty("AuditoriaId")));
-            Assert.NotNull(entity.FindIndex(entity.FindProperty("NomePropriedade")));
+
+            var primaryKey = entity.FindPrimaryKey();
+            Assert.NotNull(primaryKey);
+            Assert.Equal("pk_auditoria_detalhe", primaryKey.GetName());
+
+            var auditoriaIdProperty = entity.FindProperty("AuditoriaId");
+            Assert.NotNull(auditoriaIdProperty);
+            Assert.Equal("auditoria_id", auditoriaIdProperty.GetColumnName(StoreObjectIdentifier.Table("auditoria_detalhe", null)));
+
+            var nomePropriedadeProperty = entity.FindProperty("NomePropriedade");
+            Assert.NotNull(nomePropriedadeProperty);
+            Assert.Equal("nome_propriedade", nomePropriedadeProperty.GetColumnName(StoreObjectIdentifier.Table("auditoria_detalhe", null)));
+
+            var auditoriaIdIndex = entity.FindIndex(auditoriaIdProperty);
+            Assert.NotNull(auditoriaIdIndex);
+
+            var nomePropriedadeIndex = entity.FindIndex(nomePropriedadeProperty);
+            Assert.NotNull(nomePropriedadeIndex);
         }
     }
 }

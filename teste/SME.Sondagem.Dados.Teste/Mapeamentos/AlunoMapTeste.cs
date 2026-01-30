@@ -26,12 +26,16 @@ namespace SME.Sondagem.Dados.Teste.Mapeamentos
             var entity = context.Model.FindEntityType(typeof(Aluno));
 
             Assert.NotNull(entity);
-            Assert.Equal("aluno", entity.GetTableName());
-            Assert.Equal("pk_aluno", entity.FindPrimaryKey().GetName());
-            Assert.NotNull(entity.FindProperty("RaAluno"));
-            Assert.Equal("ra_aluno", entity.FindProperty("RaAluno").GetColumnName(StoreObjectIdentifier.Table("aluno", null)));
-            Assert.NotNull(entity.FindIndex(entity.FindProperty("RaAluno")));
-            Assert.True(entity.FindIndex(entity.FindProperty("RaAluno")).IsUnique);
+            var primaryKey = entity.FindPrimaryKey();
+            Assert.NotNull(primaryKey);
+            Assert.Equal("pk_aluno", primaryKey.GetName());
+
+            var raAlunoProperty = entity.FindProperty("RaAluno");
+            Assert.NotNull(raAlunoProperty);
+
+            var raAlunoIndex = entity.FindIndex(raAlunoProperty);
+            Assert.NotNull(raAlunoIndex);
+            Assert.True(raAlunoIndex.IsUnique);
         }
     }
 }

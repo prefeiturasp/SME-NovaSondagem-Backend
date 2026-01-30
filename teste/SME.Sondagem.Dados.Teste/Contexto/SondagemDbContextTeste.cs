@@ -6,7 +6,7 @@ namespace SME.Sondagem.Dados.Teste.Contexto
 {
     public class SondagemDbContextTeste
     {
-        private SondagemDbContext CriarContextoInMemory()
+        private static SondagemDbContext CriarContextoInMemory()
         {
             var options = new DbContextOptionsBuilder<SondagemDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
