@@ -41,32 +41,37 @@ public class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     public virtual async Task<long> SalvarAsync(T entidade, CancellationToken cancellationToken = default)
     {
         var dataAtual = GerarDataHoraAtual();
+
         if (entidade.Id == 0)
         {
             CriarDadosUsuarioCriacao(entidade);
             await _dbSet.AddAsync(entidade, cancellationToken);
-            await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "I").WaitAsync(cancellationToken);
-        }
-        else
-        {
-            var entidadeExistente = await _dbSet.FindAsync([entidade.Id], cancellationToken);
-            CriarDadosUsuarioAlteracao(entidade,dataAtual);
-            if (entidadeExistente != null)
-            {
-                _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
-            }
-            else
-            {
-                _dbSet.Update(entidade);
-            }
 
-            await _servicoAuditoria.AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "A")
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await _servicoAuditoria
+                .AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "I")
                 .WaitAsync(cancellationToken);
+
+            return entidade.Id;
         }
+
+        var entidadeExistente = await _dbSet.FindAsync([entidade.Id], cancellationToken);
+        if (entidadeExistente is null)
+            return 0;
+
+        CriarDadosUsuarioAlteracao(entidade, dataAtual);
+        _context.Entry(entidadeExistente).CurrentValues.SetValues(entidade);
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        await _servicoAuditoria
+            .AuditarAsync(typeof(T).Name.ToLower(), entidade.Id, "A")
+            .WaitAsync(cancellationToken);
+
         return entidade.Id;
     }
+
 
     public virtual async Task<bool> SalvarAsync(List<T> entidades, CancellationToken cancellationToken = default)
     {

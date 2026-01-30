@@ -9,7 +9,7 @@ using SME.Sondagem.Infrastructure.Dtos.QuestionarioBimestre;
 using System.Net;
 using Xunit;
 
-namespace SME.Sondagem.API.Teste.Controller
+namespace SME.Sondagem.API.Teste.Controllers
 {
     public class QuestionarioBimestreIntegracaoControllerTeste
     {

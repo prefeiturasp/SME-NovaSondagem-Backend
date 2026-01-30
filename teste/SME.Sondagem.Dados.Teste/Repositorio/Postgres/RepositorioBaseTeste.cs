@@ -2,6 +2,7 @@
 using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
+using SME.Sondagem.Dados.Teste.Services.Auditoria;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
@@ -21,6 +22,18 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var mock = new Mock<IServicoAuditoria>();
             return mock.Object;
+        }
+        protected static ContextoFake CriarConextoBase()
+        {
+            var contexto = new ContextoFake();
+            contexto.AdicionarVariaveis(new Dictionary<string, object>
+                {
+                    { "NomeUsuario", "Usuario Teste" },
+                    { "RF", "123456" },
+                    { "Administrador", "true" }
+                });
+
+            return contexto;
         }
     }
 }

@@ -43,8 +43,8 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
@@ -57,7 +57,7 @@ public class AtualizarBimestreUseCaseTeste
         Assert.Equal(3, bimestreExistente.CodBimestreEnsinoEol);
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.AtualizarAsync(bimestreExistente, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(bimestreExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class AtualizarBimestreUseCaseTeste
         Assert.Null(resultado);
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -104,15 +104,15 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ReturnsAsync(false);
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
         Assert.Null(resultado);
 
         _repositorioBimestreMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioBimestreMock.Verify(x => x.AtualizarAsync(bimestreExistente, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(bimestreExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -136,8 +136,8 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
@@ -146,7 +146,7 @@ public class AtualizarBimestreUseCaseTeste
         Assert.Equal("Bimestre Atualizado", bimestreExistente.Descricao);
         Assert.Equal(2, bimestreExistente.CodBimestreEnsinoEol);
         
-        _repositorioBimestreMock.Verify(x => x.AtualizarAsync(bimestreExistente, _cancellationToken), Times.Once);
+        _repositorioBimestreMock.Verify(x => x.SalvarAsync(bimestreExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -163,7 +163,7 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), cancellationTokenCancelado))
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -190,8 +190,8 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
@@ -222,8 +222,8 @@ public class AtualizarBimestreUseCaseTeste
             .ReturnsAsync(bimestreExistente);
 
         _repositorioBimestreMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
