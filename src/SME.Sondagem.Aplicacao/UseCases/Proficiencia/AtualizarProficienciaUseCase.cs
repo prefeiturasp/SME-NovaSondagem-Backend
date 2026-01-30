@@ -22,9 +22,9 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
 
         proficienciaExistente.Atualizar(proficienciaDto.Nome, proficienciaDto.ComponenteCurricularId);
 
-        var sucesso = await proficienciaRepositorio.AtualizarAsync(proficienciaExistente, cancellationToken: cancellationToken);
+        var sucesso = await proficienciaRepositorio.SalvarAsync(proficienciaExistente, cancellationToken: cancellationToken);
         
-        if (!sucesso)
+        if (sucesso == 0)
             return null;
 
         return new ProficienciaDto

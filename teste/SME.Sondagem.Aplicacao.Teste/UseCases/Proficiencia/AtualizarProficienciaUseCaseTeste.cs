@@ -43,8 +43,8 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
@@ -57,7 +57,7 @@ public class AtualizarProficienciaUseCaseTeste
         Assert.Equal(3, proficienciaExistente.ComponenteCurricularId);
 
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioProficienciaMock.Verify(x => x.AtualizarAsync(proficienciaExistente, _cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(proficienciaExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class AtualizarProficienciaUseCaseTeste
         Assert.Null(resultado);
 
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioProficienciaMock.Verify(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -104,15 +104,15 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ReturnsAsync(false);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
         Assert.Null(resultado);
 
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioProficienciaMock.Verify(x => x.AtualizarAsync(proficienciaExistente, _cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(proficienciaExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
@@ -148,7 +148,7 @@ public class AtualizarProficienciaUseCaseTeste
         Assert.Equal("Proficiência Atualizada", proficienciaExistente.Nome);
         Assert.Equal(2, proficienciaExistente.ComponenteCurricularId);
         
-        _repositorioProficienciaMock.Verify(x => x.AtualizarAsync(proficienciaExistente, _cancellationToken), Times.Once);
+        _repositorioProficienciaMock.Verify(x => x.SalvarAsync(proficienciaExistente, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), cancellationTokenCancelado))
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
@@ -192,8 +192,8 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
@@ -224,8 +224,8 @@ public class AtualizarProficienciaUseCaseTeste
             .ReturnsAsync(proficienciaExistente);
 
         _repositorioProficienciaMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 

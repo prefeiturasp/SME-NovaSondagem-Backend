@@ -19,6 +19,6 @@ public class ExcluirProficienciaUseCase : IExcluirProficienciaUseCase
         if (proficienciaExistente == null)
             return false;
 
-        return await proficienciaRepositorio.ExcluirAsync(id, cancellationToken: cancellationToken);
+        return await proficienciaRepositorio.RemoverLogico(id, cancellationToken: cancellationToken) > 0;
     }
 }

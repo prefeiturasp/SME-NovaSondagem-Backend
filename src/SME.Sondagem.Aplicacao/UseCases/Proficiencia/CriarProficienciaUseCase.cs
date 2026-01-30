@@ -19,6 +19,6 @@ public class CriarProficienciaUseCase : ICriarProficienciaUseCase
             proficienciaDto.Nome,
             proficienciaDto.ComponenteCurricularId);
 
-        return await proficienciaRepositorio.CriarAsync(proficiencia, cancellationToken: cancellationToken);
+        return await proficienciaRepositorio.SalvarAsync(proficiencia, cancellationToken: cancellationToken);
     }
 }
