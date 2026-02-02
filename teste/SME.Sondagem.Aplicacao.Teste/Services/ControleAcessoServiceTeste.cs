@@ -122,6 +122,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task ValidarPermissaoAcessoAsync_PerfilNaoProfessor_SemUeNaAbrangencia_DeveRetornarFalse()
         {
+            // Arrange
             var perfil = ControleAcessoService.PERFIL_CP.ToString();
             var turmaId = "123456";
 
@@ -139,15 +140,15 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     CodigoEscola = "999999"
                 });
 
+            var cacheJsonEol = JsonConvert.SerializeObject(new
+            {
+                login = "123",
+                idUes = new[] { "111111", "222222" } // NÃO contém 999999
+            });
+
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject(new[]
-                {
-                    new ControleAcessoDto
-                    {
-                        IdUes = new[] { "111111", "222222" }
-                    }
-                }));
+                .ReturnsAsync(cacheJsonEol);
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
@@ -155,8 +156,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
+            // Act
             var result = await service.ValidarPermissaoAcessoAsync(turmaId);
 
+            // Assert
             Assert.False(result);
         }
 
@@ -193,21 +196,24 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task ValidarPermissaoAcessoAsync_Professor_ComTurmaPermitida_DeveRetornarTrue()
         {
+            // Arrange
             var accessor = CriarHttpContextAccessor(
                 true,
                 rf: "123",
                 perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
 
+            var cacheJsonEol = JsonConvert.SerializeObject(new[]
+            {
+                new
+                {
+                    regencia = true,
+                    turmaCodigo = TURMA_ID
+                }
+            });
+
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject(new[]
-                {
-                    new ControleAcessoDto
-                    {
-                        Regencia = true,
-                        TurmaCodigos = new[] { TURMA_ID }
-                    }
-                }));
+                .ReturnsAsync(cacheJsonEol);
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
@@ -215,8 +221,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
+            // Act
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
+            // Assert
             Assert.True(result);
         }
     }
