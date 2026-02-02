@@ -177,21 +177,24 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task ValidarPermissaoAcessoAsync_Professor_SemTurmaPermitida_DeveRetornarFalse()
         {
+            // Arrange
             var accessor = CriarHttpContextAccessor(
                 true,
                 rf: "123",
                 perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
 
+            var cacheJsonEol = JsonConvert.SerializeObject(new[]
+            {
+                new
+                {
+                    regencia = true,
+                    turmaCodigo = "999"
+                }
+            });
+
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject((new[]
-                            {
-                    new ControleAcessoDto
-                    {
-                        Regencia = true,
-                        TurmaCodigos = TURMA_NAO_PERMITIDA
-                    }
-                })));
+                .ReturnsAsync(cacheJsonEol);
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
@@ -199,8 +202,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
+            // Act
             var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
 
+            // Assert
             Assert.False(result);
         }
 
