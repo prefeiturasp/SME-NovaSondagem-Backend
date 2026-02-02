@@ -124,7 +124,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             return MapearControleAcesso(json, perfil);
         }
 
-        private IEnumerable<ControleAcessoDto> MapearControleAcesso(
+        private static IEnumerable<ControleAcessoDto> MapearControleAcesso(
             string json,
             string perfil)
         {
@@ -136,7 +136,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 var dados = JsonConvert.DeserializeObject<List<dynamic>>(json);
 
                 return dados!
-                    .Where(d => d.regencia == true)
+                    .Where(d => d.regencia)
                     .Select(d => new ControleAcessoDto
                     {
                         Regencia = true,

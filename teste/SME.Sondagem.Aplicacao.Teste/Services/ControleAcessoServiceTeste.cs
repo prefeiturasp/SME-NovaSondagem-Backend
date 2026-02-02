@@ -19,6 +19,17 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
         private const string TURMA_ID = "TURMA-TESTE";
 
+        private static readonly string[] UES_SEM_ABRANGENCIA =
+        {
+                "111111",
+                "222222"
+        };
+
+        private static readonly string[] TURMA_NAO_PERMITIDA =
+        {
+            "999"
+        };
+
         public ControleAcessoServiceTeste()
         {
             httpClientFactoryMock = new Mock<IHttpClientFactory>();
@@ -141,10 +152,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 });
 
             var cacheJsonEol = JsonConvert.SerializeObject(new
-            {
-                login = "123",
-                idUes = new[] { "111111", "222222" } // NÃO contém 999999
-            });
+                {
+                    login = "123",
+                    idUes = UES_SEM_ABRANGENCIA 
+                }); ;
 
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
@@ -173,14 +184,14 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
-                .ReturnsAsync(JsonConvert.SerializeObject(new[]
-                {
+                .ReturnsAsync(JsonConvert.SerializeObject((new[]
+                            {
                     new ControleAcessoDto
                     {
                         Regencia = true,
-                        TurmaCodigos = new[] { "999" }
+                        TurmaCodigos = TURMA_NAO_PERMITIDA
                     }
-                }));
+                })));
 
             var service = new ControleAcessoService(
                 httpClientFactoryMock.Object,
