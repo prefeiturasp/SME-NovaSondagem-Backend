@@ -49,8 +49,8 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
     private static string ObterNomeModalidade(int modalidadeId)
     {
         var nome = Enum
-            .GetValues<Modalidade>().FirstOrDefault(c => (int)c == modalidadeId);
+            .GetValues<Modalidade>()?.FirstOrDefault(c => (int)c == modalidadeId);
 
-        return nome.Nome();
+        return nome?.Nome() ?? string.Empty;
     }
 }
