@@ -52,7 +52,7 @@ public class SondagemDbContext : DbContext
             {
                 if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
                 {
-                    property.SetColumnType("timestamp");
+                    property.SetColumnType("timestamp with time zone");
                 }
             }
         }
