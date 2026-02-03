@@ -2,10 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
-using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infra.Extensions;
+using Proficiencia = SME.Sondagem.Dominio.Entidades.Proficiencia;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
@@ -30,6 +32,8 @@ public class RepositorioProficiencia : RepositorioBase<Proficiencia>, IRepositor
                 Id = p.Id,
                 Nome = p.Nome,
                 ComponenteCurricularId = p.ComponenteCurricularId,
+                ModalidadeId = p.ModalidadeId,
+                Modalidade = ObterNomeModalidade(p.ModalidadeId),
                 CriadoEm = p.CriadoEm,
                 CriadoPor = p.CriadoPor,
                 CriadoRF = p.CriadoRF,
@@ -56,5 +60,12 @@ public class RepositorioProficiencia : RepositorioBase<Proficiencia>, IRepositor
                 }).ToList()
             })
             .ToListAsync(cancellationToken);
+    }
+    private static string ObterNomeModalidade(int modalidadeId)
+    {
+        var nome = Enum
+            .GetValues<Modalidade>()?.FirstOrDefault(c => (int)c == modalidadeId);
+
+        return nome?.Nome() ?? string.Empty;
     }
 }
