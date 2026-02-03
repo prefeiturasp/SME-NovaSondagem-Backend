@@ -17,12 +17,15 @@ public class ObterProficienciasPorComponenteCurricularUseCase :IObterProficienci
             proficienciaRepositorio ?? throw new ArgumentNullException(nameof(proficienciaRepositorio));
     }
 
-    public async Task<IEnumerable<ProficienciaDto>> ExecutarAsync(long componenteCurricularId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ProficienciaDto>> ExecutarAsync(long componenteCurricularId, long modalidadeId,CancellationToken cancellationToken = default)
     {
-            if(componenteCurricularId == 0)
-                throw new NegocioException(MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO,HttpStatusCode.NotFound);
+        if(modalidadeId == 0)
+            throw new NegocioException(MensagemNegocioComuns.MODALIDADE_ID_MAIOR_QUE_ZERO,HttpStatusCode.NotFound);
+        
+        if(componenteCurricularId == 0)
+            throw new NegocioException(MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO,HttpStatusCode.NotFound);
             
-            var lista = await proficienciaRepositorio.ObterProeficienciaPorComponenteCurricular(componenteCurricularId,
+        var lista = await proficienciaRepositorio.ObterProeficienciaPorComponenteCurricular(componenteCurricularId,modalidadeId,
                 cancellationToken);
             return !lista.Any() ? throw new NegocioException(MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO,HttpStatusCode.NotFound) : lista;
     }

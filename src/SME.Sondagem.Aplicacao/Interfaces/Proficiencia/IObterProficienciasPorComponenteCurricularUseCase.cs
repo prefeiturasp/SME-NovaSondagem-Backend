@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 
 public interface IObterProficienciasPorComponenteCurricularUseCase
 {
-    Task<IEnumerable<ProficienciaDto>> ExecutarAsync(long componenteCurricularId,CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProficienciaDto>> ExecutarAsync(long componenteCurricularId,long modalidadeId,CancellationToken cancellationToken = default);
 }

@@ -1,13 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Repositorio.Postgres;
-using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Dominio.Enums;
 using Xunit;
+using Proficiencia = SME.Sondagem.Dominio.Entidades.Proficiencia;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioProficienciaTeste : RepositorioBaseTeste
     {
         private static readonly string[] NomesEsperadosComponente1 = ["Escrita", "Números"];
+        private const int ModalidadeId = (int)Modalidade.Fundamental;
 
         [Fact]
         public async Task ObterTodosAsync_deve_retornar_somente_proficiencias_nao_excluidas_ordenadas_por_nome()
@@ -15,9 +17,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var context = CriarContexto(nameof(ObterTodosAsync_deve_retornar_somente_proficiencias_nao_excluidas_ordenadas_por_nome));
 
             context.Proficiencias.AddRange(
-                new Proficiencia("Avançado", 1),
-                new Proficiencia("Básico", 1),
-                new Proficiencia("Intermediário", 1)
+                new Proficiencia("Avançado", 1,ModalidadeId),
+                new Proficiencia("Básico", 1,ModalidadeId),
+                new Proficiencia("Intermediário", 1,ModalidadeId)
                 {
                     Excluido = true
                 }
@@ -43,7 +45,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterPorIdAsync_deve_retornar_proficiencia_quando_existir_e_nao_estiver_excluida));
 
-            var proficiencia = new Proficiencia("Básico", 2);
+            var proficiencia = new Proficiencia("Básico", 2,ModalidadeId);
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
@@ -75,7 +77,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ObterPorIdAsync_deve_retornar_null_quando_estiver_excluida));
 
-            var proficiencia = new Proficiencia("Intermediário", 3)
+            var proficiencia = new Proficiencia("Intermediário", 3,ModalidadeId)
             {
                 Excluido = true
             };
@@ -97,7 +99,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(CriarAsync_deve_persistir_proficiencia_e_retornar_id));
 
-            var proficiencia = new Proficiencia("Avançado", 4);
+            var proficiencia = new Proficiencia("Avançado", 4,ModalidadeId);
             var servicoAuditoria = CriarServicoAuditoria();
             var contextoBase = CriarConextoBase();
             var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
@@ -113,7 +115,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(AtualizarAsync_deve_atualizar_dados_quando_proficiencia_existir));
 
-            var proficiencia = new Proficiencia("Básico", 5);
+            var proficiencia = new Proficiencia("Básico", 5,ModalidadeId);
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
@@ -141,7 +143,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var contextoBase = CriarConextoBase();
             var repositorio = new RepositorioProficiencia(context, servicoAuditoria, contextoBase);
 
-            var proficiencia = new Proficiencia("Inexistente", 6)
+            var proficiencia = new Proficiencia("Inexistente", 6,ModalidadeId)
             {
                 Id = 999
             };
@@ -156,7 +158,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var context = CriarContexto(nameof(ExcluirAsync_deve_marcar_proficiencia_como_excluida));
 
-            var proficiencia = new Proficiencia("Excluir", 7);
+            var proficiencia = new Proficiencia("Excluir", 7,ModalidadeId);
             context.Proficiencias.Add(proficiencia);
             await context.SaveChangesAsync();
 
@@ -190,10 +192,10 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var contexto = CriarContexto(nameof(ObterProeficienciaPorComponenteCurricular_DeveRetornarApenasProficienciasDoComponenteInformado));
 
-            var prof1 = new Proficiencia("Escrita", 1);
-            var prof2 = new Proficiencia("Números", 1);
-            var prof3 = new Proficiencia("Mapeamento dos saberes", 2);
-            var prof4 = new Proficiencia("Leitura", 1);
+            var prof1 = new Proficiencia("Escrita", 1,ModalidadeId);
+            var prof2 = new Proficiencia("Números", 1,ModalidadeId);
+            var prof3 = new Proficiencia("Mapeamento dos saberes", 2,ModalidadeId);
+            var prof4 = new Proficiencia("Leitura", 1,ModalidadeId);
             prof4.Excluido = true;
 
             contexto.Proficiencias.AddRange(prof1, prof2, prof3, prof4);
@@ -203,7 +205,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var contextoBase = CriarConextoBase();
             var repositorio = new RepositorioProficiencia(contexto, servicoAuditoria, contextoBase);
 
-            var resultado = await repositorio.ObterProeficienciaPorComponenteCurricular(1);
+            var resultado = await repositorio.ObterProeficienciaPorComponenteCurricular(1,ModalidadeId);
 
             var lista = resultado.ToList();
 

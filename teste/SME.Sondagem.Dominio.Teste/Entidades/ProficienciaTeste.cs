@@ -1,5 +1,6 @@
-﻿using SME.Sondagem.Dominio.Entidades;
+﻿using SME.Sondagem.Dominio.Enums;
 using Xunit;
+using Proficiencia = SME.Sondagem.Dominio.Entidades.Proficiencia;
 
 namespace SME.Sondagem.Dominio.Teste.Entidades
 {
@@ -10,8 +11,9 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var nome = "Leitura";
             var componenteCurricularId = 10;
+            var modalidade = (int)Modalidade.Fundamental;
 
-            var proficiencia = new Proficiencia(nome, componenteCurricularId);
+            var proficiencia = new Proficiencia(nome, componenteCurricularId,modalidade);
 
             Assert.Equal(nome, proficiencia.Nome);
             Assert.Equal(componenteCurricularId, proficiencia.ComponenteCurricularId);
@@ -20,7 +22,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_inicializar_colecao_de_questionarios()
         {
-            var proficiencia = new Proficiencia("Escrita", 5);
+            var modalidade = (int)Modalidade.Fundamental;
+            var proficiencia = new Proficiencia("Escrita", 5,modalidade);
 
             Assert.NotNull(proficiencia.Questionarios);
             Assert.Empty(proficiencia.Questionarios);
@@ -29,7 +32,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_componente_curricular()
         {
-            var proficiencia = new Proficiencia("Matemática", 3);
+            var modalidade = (int)Modalidade.Fundamental;
+            var proficiencia = new Proficiencia("Matemática", 3,modalidade);
 
             Assert.NotNull(proficiencia);
             Assert.Null(proficiencia.ComponenteCurricular);
