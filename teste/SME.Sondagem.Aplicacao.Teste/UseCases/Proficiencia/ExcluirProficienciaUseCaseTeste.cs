@@ -24,7 +24,7 @@ public class ExcluirProficienciaUseCaseTeste
     public async Task ExecutarAsync_ProficienciaExiste_DeveExcluirERetornarTrue()
     {
         const int id = 1;
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = id 
         };
@@ -82,7 +82,7 @@ public class ExcluirProficienciaUseCaseTeste
     {
         const int id = 1;
         var cancellationTokenCancelado = new CancellationToken(true);
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = id 
         };
@@ -109,12 +109,12 @@ public class ExcluirProficienciaUseCaseTeste
 
         _repositorioProficienciaMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro ao obter profici�ncia"));
+            .ThrowsAsync(new InvalidOperationException("Erro ao obter proficiência"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
-        Assert.Equal("Erro ao obter profici�ncia", exception.Message);
+        Assert.Equal("Erro ao obter proficiência", exception.Message);
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
         _repositorioProficienciaMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null, It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -123,7 +123,7 @@ public class ExcluirProficienciaUseCaseTeste
     public async Task ExecutarAsync_QuandoRepositorioFalhaAoExcluir_DevePropararExcecao()
     {
         const int id = 1;
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = id 
         };
@@ -134,12 +134,12 @@ public class ExcluirProficienciaUseCaseTeste
 
         _repositorioProficienciaMock
             .Setup(x => x.RemoverLogico(id, null, _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro ao excluir profici�ncia"));
+            .ThrowsAsync(new InvalidOperationException("Erro ao excluir Proficiência"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
-        Assert.Equal("Erro ao excluir profici�ncia", exception.Message);
+        Assert.Equal("Erro ao excluir proficiência", exception.Message);
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
         _repositorioProficienciaMock.Verify(x => x.RemoverLogico(id,null, _cancellationToken), Times.Once);
     }
@@ -150,7 +150,7 @@ public class ExcluirProficienciaUseCaseTeste
     [InlineData(999)]
     public async Task ExecutarAsync_ComDiferentesIds_DeveChamarRepositorioComIdCorreto(long id)
     {
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = (int)id 
         };
@@ -173,7 +173,7 @@ public class ExcluirProficienciaUseCaseTeste
     public async Task ExecutarAsync_DeveDelegarExclusaoParaRepositorio()
     {
         const int id = 5;
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = id 
         };
@@ -198,7 +198,7 @@ public class ExcluirProficienciaUseCaseTeste
     public async Task ExecutarAsync_RepositorioExcluirRetornaFalse_DeveRetornarFalse()
     {
         const int id = 1;
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste",1,ModalidadeId) 
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste",1,ModalidadeId) 
         { 
             Id = id 
         };

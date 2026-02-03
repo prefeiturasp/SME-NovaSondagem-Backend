@@ -24,7 +24,7 @@ public class ObterProficienciaPorIdUseCaseTeste
     public async Task ExecutarAsync_ProficienciaExiste_DeveRetornarProficienciaDto()
     {
         const int id = 1;
-        var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Profici�ncia Teste", 2,ModalidadeId)
+        var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste", 2,ModalidadeId)
         {
             Id = (int)id,
             CriadoEm = DateTime.Now,
@@ -43,7 +43,7 @@ public class ObterProficienciaPorIdUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Profici�ncia Teste", resultado.Nome);
+        Assert.Equal("Proficiência Teste", resultado.Nome);
         Assert.Equal(2, resultado.ComponenteCurricularId);
         Assert.Equal("Usuario1", resultado.CriadoPor);
         Assert.Equal("RF001", resultado.CriadoRF);

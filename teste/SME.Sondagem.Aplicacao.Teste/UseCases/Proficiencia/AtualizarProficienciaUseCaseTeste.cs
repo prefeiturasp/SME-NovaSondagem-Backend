@@ -28,7 +28,7 @@ public class AtualizarProficienciaUseCaseTeste
         var proficienciaDto = new ProficienciaDto
         {
             Id = 1,
-            Nome = "Profici�ncia Atualizada",
+            Nome = "Proficiência Atualizada",
             ComponenteCurricularId = 3,
             ModalidadeId = (int)Modalidade.Fundamental,
         };
@@ -53,10 +53,10 @@ public class AtualizarProficienciaUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Profici�ncia Atualizada", resultado.Nome);
+        Assert.Equal("Proficiência Atualizada", resultado.Nome);
         Assert.Equal(3, resultado.ComponenteCurricularId);
 
-        Assert.Equal("Profici�ncia Atualizada", proficienciaExistente.Nome);
+        Assert.Equal("Proficiência Atualizada", proficienciaExistente.Nome);
         Assert.Equal(3, proficienciaExistente.ComponenteCurricularId);
 
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
@@ -91,7 +91,7 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Nova Profici�ncia",
+            Nome = "Nova Proficiência",
             ComponenteCurricularId = 2,
             AlteradoPor = "Usuario",
             AlteradoRF = "RF001",
@@ -125,7 +125,7 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Profici�ncia Atualizada",
+            Nome = "Proficiência Atualizada",
             ComponenteCurricularId = 2,
             AlteradoPor = "Usuario",
             AlteradoRF = "RF001",
@@ -148,9 +148,9 @@ public class AtualizarProficienciaUseCaseTeste
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
-        // Verifica se a atualiza��o foi bem-sucedida
+        // Verifica se a atualização foi bem-sucedida
         Assert.NotNull(resultado);
-        Assert.Equal("Profici�ncia Atualizada", proficienciaExistente.Nome);
+        Assert.Equal("Proficiência Atualizada", proficienciaExistente.Nome);
         Assert.Equal(2, proficienciaExistente.ComponenteCurricularId);
         
         _repositorioProficienciaMock.Verify(x => x.SalvarAsync(proficienciaExistente, _cancellationToken), Times.Once);
@@ -213,7 +213,7 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Profici�ncia Teste",
+            Nome = "Proficiência Teste",
             ComponenteCurricularId = 2,
             ModalidadeId = (int)Modalidade.Fundamental,
         };
@@ -238,7 +238,7 @@ public class AtualizarProficienciaUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Profici�ncia Teste", resultado.Nome);
+        Assert.Equal("Proficiência Teste", resultado.Nome);
         Assert.Equal(2, resultado.ComponenteCurricularId);
     }
 
