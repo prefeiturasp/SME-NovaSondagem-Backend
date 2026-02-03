@@ -9,21 +9,20 @@ public static class EnumExtensao
         where TAttribute : Attribute
     {
         return enumValue.GetType()
-            .GetMember(enumValue.ToString())
-            .First()
+            .GetMember(enumValue.ToString())[0]
             .GetCustomAttribute<TAttribute>();
     }
 
-    public static string Nome(this Enum enumValue)
-        => enumValue.ObterAtributos<DisplayAttribute>().Name;
+    public static string? Nome(this Enum enumValue)
+        => enumValue.ObterAtributos<DisplayAttribute>()?.Name;
 
-    public static string NomeCurto(this Enum enumValue)
+    public static string? NomeCurto(this Enum enumValue)
         => enumValue.ObterAtributos<DisplayAttribute>()?.ShortName;
 
 
-    public static string Descricao(this Enum enumValue)
-        => enumValue.ObterAtributos<DisplayAttribute>().Description;
+    public static string? Descricao(this Enum enumValue)
+        => enumValue.ObterAtributos<DisplayAttribute>()?.Description;
 
-    public static string NomeGrupo(this Enum enumValue)
-        => enumValue.ObterAtributos<DisplayAttribute>().GroupName;
+    public static string? NomeGrupo(this Enum enumValue)
+        => enumValue.ObterAtributos<DisplayAttribute>()?.GroupName;
 }
