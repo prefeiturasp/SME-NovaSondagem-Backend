@@ -2,6 +2,7 @@
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Proficiencia;
@@ -11,6 +12,7 @@ public class ObterProficienciasUseCaseTeste
     private readonly Mock<IRepositorioProficiencia> _repositorioProficienciaMock;
     private readonly ObterProficienciasUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
+    private const int ModalidadeId = (int)Modalidade.Fundamental;
 
     public ObterProficienciasUseCaseTeste()
     {
@@ -24,14 +26,14 @@ public class ObterProficienciasUseCaseTeste
     { 
         var proficiencias = new List<SME.Sondagem.Dominio.Entidades.Proficiencia>
         {
-            new("Proficiência 1", 1)
+            new("Proficiência 1", 1,ModalidadeId)
             {
                 Id = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Usuario1",
                 CriadoRF = "RF001"
             },
-            new("Proficiência 2", 2)
+            new("Proficiência 2", 2,ModalidadeId)
             {
                 Id = 2,
                 CriadoEm = DateTime.Now.AddDays(-1),
@@ -143,7 +145,7 @@ public class ObterProficienciasUseCaseTeste
         
         var proficiencias = new List<SME.Sondagem.Dominio.Entidades.Proficiencia>
         {
-            new("Matemática Básica", 3)
+            new("Matemática Básica", 3,ModalidadeId)
             {
                 Id = 100,
                 CriadoEm = dataEspecifica,
@@ -180,7 +182,7 @@ public class ObterProficienciasUseCaseTeste
         
         for (int i = 1; i <= 1000; i++)
         {
-            proficiencias.Add(new SME.Sondagem.Dominio.Entidades.Proficiencia($"Proficiência {i}", i % 5 + 1)
+            proficiencias.Add(new SME.Sondagem.Dominio.Entidades.Proficiencia($"Proficiência {i}", i % 5 + 1,ModalidadeId)
             {
                 Id = i,
                 CriadoEm = DateTime.Now.AddDays(-i),

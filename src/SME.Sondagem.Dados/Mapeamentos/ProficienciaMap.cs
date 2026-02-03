@@ -24,6 +24,10 @@ public class ProficienciaMap : IEntityTypeConfiguration<Proficiencia>
             .HasColumnName("componente_curricular_id")
             .IsRequired();
 
+        builder.Property(x => x.ModalidadeId)
+            .HasColumnName("modalidade_id").HasDefaultValue(0);
+          
+
         builder.Property(x => x.Excluido)
             .HasColumnName("excluido")
             .HasDefaultValue(false);

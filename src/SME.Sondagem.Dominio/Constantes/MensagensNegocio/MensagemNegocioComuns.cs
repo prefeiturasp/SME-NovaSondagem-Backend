@@ -20,6 +20,7 @@ public static class MensagemNegocioComuns
     public const string SALVAR_SOMENTE_PARA_SONDAGEM_ATIVA = "As respostas só podem ser salvas para a sondagem ativa.";
     public const string NENHUM_REGISTRO_ENCONTRADO = "Nenhum registro encontrado";
     public const string INFORMAR_ID_MAIOR_QUE_ZERO = "Informe um valor maior que zero";
+    public const string MODALIDADE_ID_MAIOR_QUE_ZERO = "Modalidade deve ser maior que zero.";
     public const string QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO = "As questões informadas não pertencem a um questionário válido.";
     public const string TURMA_NAO_LOCALIZADA = "Turma não localizada";
     public const string INFORMAR_TURMA_SALVAR_SONDAGEM = "Informar a turma para salvar a Sondagem.";
