@@ -1,6 +1,7 @@
 using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Proficiencia;
@@ -10,6 +11,7 @@ public class ObterProficienciaPorIdUseCaseTeste
     private readonly Mock<IRepositorioProficiencia> _repositorioProficienciaMock;
     private readonly ObterProficienciaPorIdUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
+    private const int ModalidadeId = (int)Modalidade.Fundamental;
 
     public ObterProficienciaPorIdUseCaseTeste()
     {
@@ -22,7 +24,7 @@ public class ObterProficienciaPorIdUseCaseTeste
     public async Task ExecutarAsync_ProficienciaExiste_DeveRetornarProficienciaDto()
     {
         const int id = 1;
-        var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiência Teste", 2)
+        var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Proficiï¿½ncia Teste", 2,ModalidadeId)
         {
             Id = (int)id,
             CriadoEm = DateTime.Now,
@@ -41,7 +43,7 @@ public class ObterProficienciaPorIdUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Proficiência Teste", resultado.Nome);
+        Assert.Equal("Proficiï¿½ncia Teste", resultado.Nome);
         Assert.Equal(2, resultado.ComponenteCurricularId);
         Assert.Equal("Usuario1", resultado.CriadoPor);
         Assert.Equal("RF001", resultado.CriadoRF);

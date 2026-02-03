@@ -7,6 +7,7 @@ using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Exceptions;
 using Xunit;
@@ -23,6 +24,7 @@ public class ProficienciaControllerTeste
     private readonly Mock<IObterProficienciasPorComponenteCurricularUseCase> _obterProficienciasPorComponenteCurricularUseCaseMock;
     private readonly ProficienciaController _controller;
     private readonly CancellationToken _cancellationToken;
+    private const int ModalidadeId = (int)Modalidade.Fundamental;
 
     public ProficienciaControllerTeste()
     {
@@ -538,12 +540,12 @@ public class ProficienciaControllerTeste
         };
 
         _obterProficienciasPorComponenteCurricularUseCaseMock
-            .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+            .Setup(x => x.ExecutarAsync(componenteCurricularId,ModalidadeId, cancellationToken))
             .ReturnsAsync(proficienciasEsperadas);
 
         // Act
         var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
-            componenteCurricularId, 
+            componenteCurricularId, ModalidadeId,
             cancellationToken);
 
         // Assert
@@ -574,7 +576,7 @@ public class ProficienciaControllerTeste
         Assert.All(listaProficiencias, p => Assert.Equal(componenteCurricularId, p.ComponenteCurricularId));
 
         _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
-            x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+            x => x.ExecutarAsync(componenteCurricularId, ModalidadeId,cancellationToken), 
             Times.Once);
     }
 
@@ -587,14 +589,14 @@ public class ProficienciaControllerTeste
             var cancellationToken = CancellationToken.None;
 
             _obterProficienciasPorComponenteCurricularUseCaseMock
-                .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+                .Setup(x => x.ExecutarAsync(componenteCurricularId, ModalidadeId,cancellationToken))
                 .ThrowsAsync(new NegocioException(
                     MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO, 
                     HttpStatusCode.NotFound));
 
             // Act
             var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
-                componenteCurricularId, 
+                componenteCurricularId, ModalidadeId,
                 cancellationToken);
 
             // Assert
@@ -608,7 +610,7 @@ public class ProficienciaControllerTeste
             Assert.Equal(MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO, mensagem);
 
             _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
-                x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+                x => x.ExecutarAsync(componenteCurricularId,ModalidadeId, cancellationToken), 
                 Times.Once);
     }
 
@@ -620,14 +622,14 @@ public class ProficienciaControllerTeste
             var cancellationToken = CancellationToken.None;
 
             _obterProficienciasPorComponenteCurricularUseCaseMock
-                .Setup(x => x.ExecutarAsync(componenteCurricularId, cancellationToken))
+                .Setup(x => x.ExecutarAsync(componenteCurricularId, ModalidadeId,cancellationToken))
                 .ThrowsAsync(new NegocioException(
                     MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO, 
                     HttpStatusCode.NotFound));
 
             // Act
             var resultado = await _controller.ObterProeficienciaPorComponenteCurricular(
-                componenteCurricularId, 
+                componenteCurricularId, ModalidadeId,
                 cancellationToken);
 
             // Assert
@@ -641,7 +643,7 @@ public class ProficienciaControllerTeste
             Assert.Equal(MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO, mensagem);
 
             _obterProficienciasPorComponenteCurricularUseCaseMock.Verify(
-                x => x.ExecutarAsync(componenteCurricularId, cancellationToken), 
+                x => x.ExecutarAsync(componenteCurricularId, ModalidadeId,cancellationToken), 
                 Times.Once);
     }
     #endregion

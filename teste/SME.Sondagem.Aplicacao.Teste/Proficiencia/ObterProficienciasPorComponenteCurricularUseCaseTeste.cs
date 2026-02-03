@@ -5,6 +5,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Exceptions;
 using System.Net;
+using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
@@ -13,6 +14,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
     {
         private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorioMock;
         private readonly ObterProficienciasPorComponenteCurricularUseCase _useCase;
+        private const int ModalidadeId = (int)Modalidade.Fundamental;
 
         public ObterProficienciasPorComponenteCurricularUseCaseTeste()
         {
@@ -35,12 +37,12 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             var componenteCurricularId = 0L;
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() =>
-                _useCase.ExecutarAsync(componenteCurricularId));
+                _useCase.ExecutarAsync(componenteCurricularId,ModalidadeId));
 
             Assert.Equal(MensagemNegocioComuns.INFORMAR_ID_MAIOR_QUE_ZERO, exception.Message);
 
             _proficienciaRepositorioMock.Verify(
-                x => x.ObterProeficienciaPorComponenteCurricular(It.IsAny<long>(), It.IsAny<CancellationToken>()),
+                x => x.ObterProeficienciaPorComponenteCurricular(It.IsAny<long>(), ModalidadeId,It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -51,16 +53,16 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             var listaVazia = Enumerable.Empty<ProficienciaDto>();
 
             _proficienciaRepositorioMock
-                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,It.IsAny<CancellationToken>()))
                 .ReturnsAsync(listaVazia);
 
             var exception = await Assert.ThrowsAsync<NegocioException>(() =>
-                _useCase.ExecutarAsync(componenteCurricularId));
+                _useCase.ExecutarAsync(componenteCurricularId,ModalidadeId));
 
             Assert.Equal(MensagemNegocioComuns.NENHUM_REGISTRO_ENCONTRADO, exception.Message);
 
             _proficienciaRepositorioMock.Verify(
-                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, It.IsAny<CancellationToken>()),
+                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -75,17 +77,17 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             };
 
             _proficienciaRepositorioMock
-                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,It.IsAny<CancellationToken>()))
                 .ReturnsAsync(proficienciasEsperadas);
 
-            var resultado = await _useCase.ExecutarAsync(componenteCurricularId);
+            var resultado = await _useCase.ExecutarAsync(componenteCurricularId,ModalidadeId);
 
             Assert.NotNull(resultado);
             Assert.Equal(2, resultado.Count());
             Assert.Equal(proficienciasEsperadas, resultado);
 
             _proficienciaRepositorioMock.Verify(
-                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, It.IsAny<CancellationToken>()),
+                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId,ModalidadeId, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -100,14 +102,14 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             };
 
             _proficienciaRepositorioMock
-                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, cancellationToken))
+                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,cancellationToken))
                 .ReturnsAsync(proficiencias);
 
-            var resultado = await _useCase.ExecutarAsync(componenteCurricularId, cancellationToken);
+            var resultado = await _useCase.ExecutarAsync(componenteCurricularId, ModalidadeId,cancellationToken);
 
             Assert.NotNull(resultado);
             _proficienciaRepositorioMock.Verify(
-                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, cancellationToken),
+                x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,cancellationToken),
                 Times.Once);
         }
 
@@ -123,10 +125,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Proficiencia
             };
 
             _proficienciaRepositorioMock
-                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, It.IsAny<CancellationToken>()))
+                .Setup(x => x.ObterProeficienciaPorComponenteCurricular(componenteCurricularId, ModalidadeId,It.IsAny<CancellationToken>()))
                 .ReturnsAsync(proficiencias);
 
-            var resultado = await _useCase.ExecutarAsync(componenteCurricularId);
+            var resultado = await _useCase.ExecutarAsync(componenteCurricularId,ModalidadeId);
 
             Assert.NotNull(resultado);
             Assert.Single(resultado);

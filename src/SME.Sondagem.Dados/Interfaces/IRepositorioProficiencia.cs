@@ -6,5 +6,5 @@ namespace SME.Sondagem.Dados.Interfaces;
 
 public interface IRepositorioProficiencia : IRepositorioBase<Proficiencia>
 {
-    Task<IEnumerable<ProficienciaDto>> ObterProeficienciaPorComponenteCurricular(long componenteCurricularId,CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProficienciaDto>> ObterProeficienciaPorComponenteCurricular(long componenteCurricularId,long modalidadeId,CancellationToken cancellationToken = default);
 }

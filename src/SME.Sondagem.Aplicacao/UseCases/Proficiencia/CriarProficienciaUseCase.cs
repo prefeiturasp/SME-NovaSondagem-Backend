@@ -17,7 +17,7 @@ public class CriarProficienciaUseCase : ICriarProficienciaUseCase
     {
         var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia(
             proficienciaDto.Nome,
-            proficienciaDto.ComponenteCurricularId);
+            proficienciaDto.ComponenteCurricularId,proficienciaDto.ModalidadeId);
 
         return await proficienciaRepositorio.SalvarAsync(proficiencia, cancellationToken: cancellationToken);
     }

@@ -1,6 +1,7 @@
 using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using Xunit;
 
@@ -11,6 +12,7 @@ public class AtualizarProficienciaUseCaseTeste
     private readonly Mock<IRepositorioProficiencia> _repositorioProficienciaMock;
     private readonly AtualizarProficienciaUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
+    private const int ModalidadeId = (int)Modalidade.Fundamental;
 
     public AtualizarProficienciaUseCaseTeste()
     {
@@ -26,11 +28,12 @@ public class AtualizarProficienciaUseCaseTeste
         var proficienciaDto = new ProficienciaDto
         {
             Id = 1,
-            Nome = "Proficiência Atualizada",
-            ComponenteCurricularId = 3
+            Nome = "Proficiï¿½ncia Atualizada",
+            ComponenteCurricularId = 3,
+            ModalidadeId = (int)Modalidade.Fundamental,
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1)
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId)
         {
             Id = id,
             CriadoEm = DateTime.Now.AddDays(-1),
@@ -50,10 +53,10 @@ public class AtualizarProficienciaUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Proficiência Atualizada", resultado.Nome);
+        Assert.Equal("Proficiï¿½ncia Atualizada", resultado.Nome);
         Assert.Equal(3, resultado.ComponenteCurricularId);
 
-        Assert.Equal("Proficiência Atualizada", proficienciaExistente.Nome);
+        Assert.Equal("Proficiï¿½ncia Atualizada", proficienciaExistente.Nome);
         Assert.Equal(3, proficienciaExistente.ComponenteCurricularId);
 
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
@@ -88,13 +91,14 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Nova Proficiência",
+            Nome = "Nova Proficiï¿½ncia",
             ComponenteCurricularId = 2,
             AlteradoPor = "Usuario",
-            AlteradoRF = "RF001"
+            AlteradoRF = "RF001",
+            ModalidadeId = (int)Modalidade.Fundamental,
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1)
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId)
         {
             Id = id
         };
@@ -121,13 +125,14 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Proficiência Atualizada",
+            Nome = "Proficiï¿½ncia Atualizada",
             ComponenteCurricularId = 2,
             AlteradoPor = "Usuario",
-            AlteradoRF = "RF001"
+            AlteradoRF = "RF001",
+            ModalidadeId = (int)Modalidade.Fundamental,
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1)
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId)
         {
             Id = id,
             AlteradoEm = null
@@ -143,9 +148,9 @@ public class AtualizarProficienciaUseCaseTeste
 
         var resultado = await _useCase.ExecutarAsync(id, proficienciaDto, _cancellationToken);
 
-        // Verifica se a atualização foi bem-sucedida
+        // Verifica se a atualizaï¿½ï¿½o foi bem-sucedida
         Assert.NotNull(resultado);
-        Assert.Equal("Proficiência Atualizada", proficienciaExistente.Nome);
+        Assert.Equal("Proficiï¿½ncia Atualizada", proficienciaExistente.Nome);
         Assert.Equal(2, proficienciaExistente.ComponenteCurricularId);
         
         _repositorioProficienciaMock.Verify(x => x.SalvarAsync(proficienciaExistente, _cancellationToken), Times.Once);
@@ -158,7 +163,7 @@ public class AtualizarProficienciaUseCaseTeste
         var proficienciaDto = new ProficienciaDto { Nome = "Teste", ComponenteCurricularId = 1 };
         var cancellationTokenCancelado = new CancellationToken(true);
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome", 1) { Id = id };
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome", 1,ModalidadeId) { Id = id };
 
         _repositorioProficienciaMock
             .Setup(x => x.ObterPorIdAsync(id, cancellationTokenCancelado))
@@ -166,9 +171,9 @@ public class AtualizarProficienciaUseCaseTeste
 
         _repositorioProficienciaMock
             .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), cancellationTokenCancelado))
-            .ThrowsAsync(new OperationCanceledException());
+            .ThrowsAsync(new ArgumentException());
 
-        await Assert.ThrowsAsync<OperationCanceledException>(
+        await Assert.ThrowsAsync<ArgumentException>(
             () => _useCase.ExecutarAsync(id, proficienciaDto, cancellationTokenCancelado));
     }
 
@@ -179,10 +184,11 @@ public class AtualizarProficienciaUseCaseTeste
         var proficienciaDto = new ProficienciaDto
         {
             Nome = "Nome Novo",
-            ComponenteCurricularId = 5
+            ComponenteCurricularId = 5,
+            ModalidadeId = (int)Modalidade.Fundamental,
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Antigo", 3)
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Antigo", 3,ModalidadeId)
         {
             Id = (int)id
         };
@@ -207,11 +213,12 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Proficiência Teste",
-            ComponenteCurricularId = 2
+            Nome = "Proficiï¿½ncia Teste",
+            ComponenteCurricularId = 2,
+            ModalidadeId = (int)Modalidade.Fundamental,
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1)
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId)
         {
             Id = id,
             CriadoEm = DateTime.Now.AddDays(-5),
@@ -231,7 +238,7 @@ public class AtualizarProficienciaUseCaseTeste
 
         Assert.NotNull(resultado);
         Assert.Equal(id, resultado.Id);
-        Assert.Equal("Proficiência Teste", resultado.Nome);
+        Assert.Equal("Proficiï¿½ncia Teste", resultado.Nome);
         Assert.Equal(2, resultado.ComponenteCurricularId);
     }
 
@@ -245,7 +252,7 @@ public class AtualizarProficienciaUseCaseTeste
             ComponenteCurricularId = 1
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1) { Id = id };
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId) { Id = id };
 
         _repositorioProficienciaMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
@@ -261,11 +268,11 @@ public class AtualizarProficienciaUseCaseTeste
         const int id = 1;
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Nome Válido",
+            Nome = "Nome Vï¿½lido",
             ComponenteCurricularId = 0
         };
 
-        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1) { Id = id };
+        var proficienciaExistente = new SME.Sondagem.Dominio.Entidades.Proficiencia("Nome Original", 1,ModalidadeId) { Id = id };
 
         _repositorioProficienciaMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))

@@ -56,16 +56,16 @@ public class ProficienciaController : ControllerBase
         }
     }
 
-    [HttpGet("componente-curricular/{componenteCurricularId:long}")]
+    [HttpGet("componente-curricular/{componenteCurricularId:long}/modalidade/{modalidadeId:long}")]
     [ProducesResponseType(typeof(IEnumerable<ProficienciaDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterProeficienciaPorComponenteCurricular(long componenteCurricularId,
+    public async Task<IActionResult> ObterProeficienciaPorComponenteCurricular(long componenteCurricularId,long modalidadeId,
         CancellationToken cancellationToken)
     {
         try
         {
             var consulta =
-                await obterProficienciasPorComponenteCurricularUseCase.ExecutarAsync(componenteCurricularId,
+                await obterProficienciasPorComponenteCurricularUseCase.ExecutarAsync(componenteCurricularId,modalidadeId,
                     cancellationToken);
             return Ok(consulta);
         }
