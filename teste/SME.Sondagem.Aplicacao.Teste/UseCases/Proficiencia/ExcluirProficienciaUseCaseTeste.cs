@@ -139,7 +139,7 @@ public class ExcluirProficienciaUseCaseTeste
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
-        Assert.Equal("Erro ao excluir proficiência", exception.Message);
+        Assert.Equal("Erro ao excluir Proficiência", exception.Message);
         _repositorioProficienciaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
         _repositorioProficienciaMock.Verify(x => x.RemoverLogico(id,null, _cancellationToken), Times.Once);
     }
