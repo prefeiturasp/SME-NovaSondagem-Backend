@@ -19,7 +19,7 @@ public class ExcluirQuestaoUseCaseTeste
         _cancellationToken = CancellationToken.None;
     }
 
-    // Método auxiliar para criar instâncias de Questao nos testes
+    // Mï¿½todo auxiliar para criar instï¿½ncias de Questao nos testes
     private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
         int questionarioId = 1,
         int ordem = 1,
@@ -54,7 +54,7 @@ public class ExcluirQuestaoUseCaseTeste
             nomeComponente: nomeComponente
         );
 
-        // Usa reflexão para definir o Id se fornecido
+        // Usa reflexï¿½o para definir o Id se fornecido
         if (id.HasValue)
         {
             var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
@@ -91,14 +91,14 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id,null ,_cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.True(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ExcluirQuestaoUseCaseTeste
 
         Assert.False(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -131,7 +131,7 @@ public class ExcluirQuestaoUseCaseTeste
             () => _useCase.ExecutarAsync(id, cancellationTokenCancelado));
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCancelado), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -162,14 +162,14 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, cancellationTokenCancelado))
+            .Setup(x => x.RemoverLogico(id, null,cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(id, cancellationTokenCancelado));
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCancelado), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, cancellationTokenCancelado), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -179,14 +179,14 @@ public class ExcluirQuestaoUseCaseTeste
 
         _repositorioQuestaoMock
             .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro ao obter questão"));
+            .ThrowsAsync(new InvalidOperationException("Erro ao obter questï¿½o"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
-        Assert.Equal("Erro ao obter questão", exception.Message);
+        Assert.Equal("Erro ao obter questï¿½o", exception.Message);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -216,15 +216,15 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro ao excluir questão"));
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ThrowsAsync(new InvalidOperationException("Erro ao excluir questï¿½o"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
-        Assert.Equal("Erro ao excluir questão", exception.Message);
+        Assert.Equal("Erro ao excluir questï¿½o", exception.Message);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
     }
 
     [Theory]
@@ -256,13 +256,13 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(id, _cancellationToken);
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -292,14 +292,14 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.True(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
         _repositorioQuestaoMock.VerifyNoOtherCalls();
     }
 
@@ -330,13 +330,13 @@ public class ExcluirQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ExcluirAsync(id, _cancellationToken))
-            .ReturnsAsync(false);
+            .Setup(x => x.RemoverLogico(id, null,_cancellationToken))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.False(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.ExcluirAsync(id, _cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.RemoverLogico(id, null,_cancellationToken), Times.Once);
     }
 }

@@ -18,7 +18,7 @@ public class AtualizarQuestaoUseCaseTeste
         _useCase = new AtualizarQuestaoUseCase(_repositorioQuestaoMock.Object);
     }
 
-    // Método auxiliar para criar instâncias de Questao nos testes
+    // Mï¿½todo auxiliar para criar instï¿½ncias de Questao nos testes
     private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
         int questionarioId = 1,
         int ordem = 1,
@@ -59,7 +59,7 @@ public class AtualizarQuestaoUseCaseTeste
             nomeComponente: nomeComponente
         );
 
-        // Usa reflexão para definir propriedades da classe base
+        // Usa reflexï¿½o para definir propriedades da classe base
         if (id.HasValue)
         {
             var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
@@ -137,7 +137,7 @@ public class AtualizarQuestaoUseCaseTeste
 
         Assert.Null(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()), Times.Never);
+        _repositorioQuestaoMock.Verify(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -187,14 +187,14 @@ public class AtualizarQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto);
 
         Assert.Null(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.AtualizarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.SalvarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -247,8 +247,8 @@ public class AtualizarQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto);
 
@@ -273,7 +273,7 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.Equal("Usuario Criador", resultado.CriadoPor);
         Assert.Equal("RF001", resultado.CriadoRF);
 
-        // As propriedades de alteração permanecem null pois o use case atual não as define
+        // As propriedades de alteraï¿½ï¿½o permanecem null pois o use case atual nï¿½o as define
         Assert.Null(resultado.AlteradoEm);
         Assert.Null(resultado.AlteradoPor);
         Assert.Null(resultado.AlteradoRF);
@@ -285,7 +285,7 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.Equal("Questao Atualizada", questaoExistente.Nome);
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.AtualizarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.SalvarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -324,14 +324,14 @@ public class AtualizarQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: cancellationToken))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto, cancellationToken);
 
         Assert.NotNull(resultado);
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: cancellationToken), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.AtualizarAsync(questaoExistente, cancellationToken: cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.SalvarAsync(questaoExistente, cancellationToken: cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -383,8 +383,8 @@ public class AtualizarQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto);
 
@@ -435,21 +435,21 @@ public class AtualizarQuestaoUseCaseTeste
             .ReturnsAsync(questaoExistente);
 
         _repositorioQuestaoMock
-            .Setup(x => x.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto);
 
-        // Verifica se a atualização foi bem-sucedida
+        // Verifica se a atualizaï¿½ï¿½o foi bem-sucedida
         Assert.NotNull(resultado);
         Assert.Equal("Questao Atualizada", questaoExistente.Nome);
         Assert.Equal("Observacao Atualizada", questaoExistente.Observacao);
 
         // Verifica que as propriedades de auditoria permanecem como estavam
-        // pois o use case atual não as define automaticamente
+        // pois o use case atual nï¿½o as define automaticamente
         Assert.Null(questaoExistente.AlteradoEm);
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
-        _repositorioQuestaoMock.Verify(x => x.AtualizarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.SalvarAsync(questaoExistente, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);
     }
 }

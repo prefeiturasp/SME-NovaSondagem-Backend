@@ -32,6 +32,6 @@ public class CriarQuestaoUseCase : ICriarQuestaoUseCase
             nomeComponente: questaoDto.NomeComponente
         );
 
-        return await questaoRepositorio.CriarAsync(questao, cancellationToken: cancellationToken);
+        return await questaoRepositorio.SalvarAsync(questao, cancellationToken: cancellationToken);
     }
 }
