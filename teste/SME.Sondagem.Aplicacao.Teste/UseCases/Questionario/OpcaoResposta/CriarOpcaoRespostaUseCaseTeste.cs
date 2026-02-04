@@ -180,7 +180,7 @@ public class CriarOpcaoRespostaUseCaseTeste
     {
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "opção de Resposta Especifica",
+            DescricaoOpcaoResposta = "Opção de Resposta Específica",
             Legenda = "Legenda detalhada da opção",
             CorFundo = "#FF5733",
             CorTexto = "#FFFFFF"

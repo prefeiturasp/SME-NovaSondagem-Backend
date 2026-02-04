@@ -217,7 +217,7 @@ public class CriarQuestaoUseCaseTeste
             Observacao = "Observacao detalhada",
             Obrigatorio = true,
             Tipo = TipoQuestao.ComboMultiplaEscolha,
-            Opcionais = "{\"opcoes\": [\"Sim\", \"N�o\", \"Talvez\"]}",
+            Opcionais = "{\"opcoes\": [\"Sim\", \"Não\", \"Talvez\"]}",
             SomenteLeitura = true,
             Dimensao = 500,
             Tamanho = 250,

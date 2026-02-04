@@ -105,7 +105,7 @@ public class CriarBimestreUseCaseTeste
         await _useCase.ExecutarAsync(bimestreDto, _cancellationToken);
 
         Assert.NotNull(bimestreCapturada);
-        Assert.Equal("Proficiencia Especifica", bimestreCapturada.Descricao);
+        Assert.Equal("Proficiencia Específica", bimestreCapturada.Descricao);
         Assert.Equal(5, bimestreCapturada.CodBimestreEnsinoEol);
     }
 
