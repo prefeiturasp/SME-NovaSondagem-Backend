@@ -22,6 +22,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         public static readonly Guid PERFIL_AD = Guid.Parse("45e1e074-37d6-e911-abd6-f81654fe895d");
         public static readonly Guid PERFIL_DIRETOR = Guid.Parse("46e1e074-37d6-e911-abd6-f81654fe895d");
         public static readonly Guid PERFIL_PROFESSOR = Guid.Parse("40e1e074-37d6-e911-abd6-f81654fe895d");
+        public static readonly Guid PERFIL_ADM_SME = Guid.Parse("5ae1e074-37d6-e911-abd6-f81654fe895d");
+
+        private const int CACHE_TTL_TURMA_MINUTOS = 30;
 
         public ControleAcessoService(
             IHttpClientFactory httpClientFactory,
@@ -42,13 +45,22 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (string.IsNullOrWhiteSpace(turmaId))
                 return false;
 
-            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(cancellationToken);
-            if (!acessos.Any())
-                return false;
-
             var perfil = httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
 
             if (!Guid.TryParse(perfil, out var perfilGuid))
+                return false;
+
+            if (perfilGuid == PERFIL_ADM_SME)
+            {
+                if (!int.TryParse(turmaId, out var codigoTurma))
+                    return false;
+
+                var turmaElastic = await ObterTurmaComCacheAsync(codigoTurma, cancellationToken);
+                return turmaElastic is not null;
+            }
+
+            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(cancellationToken);
+            if (!acessos.Any())
                 return false;
 
             if (perfilGuid == PERFIL_PROFESSOR)
@@ -58,17 +70,44 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                     a.TurmaCodigos.Contains(turmaId));
             }
 
-            if (!int.TryParse(turmaId, out var codigoTurma))
+            if (!int.TryParse(turmaId, out var codigoTurmaValidacao))
                 return false;
 
-            var turmaElastic = await repositorioTurma
-                .ObterTurmaPorId(new FiltroQuestionario { TurmaId = codigoTurma }, cancellationToken);
+            var turmaElasticValidacao = await ObterTurmaComCacheAsync(
+                codigoTurmaValidacao,
+                cancellationToken);
 
-            if (turmaElastic == null)
+            if (turmaElasticValidacao is null)
                 return false;
 
             return acessos.Any(a =>
-                a.IdUes.Contains(turmaElastic.CodigoEscola));
+                a.IdUes.Contains(turmaElasticValidacao.CodigoEscola));
+        }
+
+        private async Task<TurmaElasticDto?> ObterTurmaComCacheAsync(
+            int codigoTurma,
+            CancellationToken cancellationToken)
+        {
+            var chaveCache = $"turma-elastic:{codigoTurma}";
+
+            var turmaCached = await repositorioCache.ObterRedisAsync<TurmaElasticDto>(chaveCache);
+
+            if (turmaCached is not null)
+                return turmaCached;
+
+            var turmaElastic = await repositorioTurma.ObterTurmaPorId(
+                new FiltroQuestionario { TurmaId = codigoTurma },
+                cancellationToken);
+
+            if (turmaElastic is not null)
+            {
+                await repositorioCache.SalvarRedisAsync(
+                    chaveCache,
+                    turmaElastic,
+                    CACHE_TTL_TURMA_MINUTOS);
+            }
+
+            return turmaElastic;
         }
 
         private async Task<IEnumerable<ControleAcessoDto>>
