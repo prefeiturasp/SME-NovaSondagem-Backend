@@ -19,7 +19,7 @@ public class ObterQuestaoPorIdUseCaseTeste
         _cancellationToken = CancellationToken.None;
     }
 
-    // Método auxiliar para criar instâncias de Questao nos testes
+    // MÃ©todo auxiliar para criar instÃ¢ncias de Questao nos testes
     private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
         int questionarioId = 1,
         int ordem = 1,
@@ -60,7 +60,7 @@ public class ObterQuestaoPorIdUseCaseTeste
             nomeComponente: nomeComponente
         );
 
-        // Usa reflexão para definir propriedades da classe base
+        // Usa reflexï¿½o para definir propriedades da classe base
         if (id.HasValue)
         {
             var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");

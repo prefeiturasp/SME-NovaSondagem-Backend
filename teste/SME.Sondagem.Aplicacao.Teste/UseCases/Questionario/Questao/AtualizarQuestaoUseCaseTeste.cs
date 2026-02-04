@@ -18,7 +18,7 @@ public class AtualizarQuestaoUseCaseTeste
         _useCase = new AtualizarQuestaoUseCase(_repositorioQuestaoMock.Object);
     }
 
-    // M�todo auxiliar para criar inst�ncias de Questao nos testes
+    // Método auxiliar para criar instâncias de Questao nos testes
     private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
         int questionarioId = 1,
         int ordem = 1,
@@ -273,7 +273,7 @@ public class AtualizarQuestaoUseCaseTeste
         Assert.Equal("Usuario Criador", resultado.CriadoPor);
         Assert.Equal("RF001", resultado.CriadoRF);
 
-        // As propriedades de altera��o permanecem null pois o use case atual n�o as define
+        // As propriedades de alteração permanecem null pois o use case atual não as define
         Assert.Null(resultado.AlteradoEm);
         Assert.Null(resultado.AlteradoPor);
         Assert.Null(resultado.AlteradoRF);
@@ -440,13 +440,13 @@ public class AtualizarQuestaoUseCaseTeste
 
         var resultado = await _useCase.ExecutarAsync(id, questaoDto);
 
-        // Verifica se a atualiza��o foi bem-sucedida
+        // Verifica se a atualização foi bem-sucedida
         Assert.NotNull(resultado);
         Assert.Equal("Questao Atualizada", questaoExistente.Nome);
         Assert.Equal("Observacao Atualizada", questaoExistente.Observacao);
 
         // Verifica que as propriedades de auditoria permanecem como estavam
-        // pois o use case atual n�o as define automaticamente
+        // pois o use case atual não as define automaticamente
         Assert.Null(questaoExistente.AlteradoEm);
 
         _repositorioQuestaoMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: It.IsAny<CancellationToken>()), Times.Once);

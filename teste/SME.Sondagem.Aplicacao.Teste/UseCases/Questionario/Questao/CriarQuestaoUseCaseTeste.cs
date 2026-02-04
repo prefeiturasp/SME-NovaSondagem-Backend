@@ -26,7 +26,7 @@ public class CriarQuestaoUseCaseTeste
             QuestionarioId = 1,
             GrupoQuestoesId = 1,
             Ordem = 1,
-            Nome = "Qual � a sua idade?",
+            Nome = "Qual é a sua idade?",
             Observacao = "Informar idade completa",
             Obrigatorio = true,
             Tipo = TipoQuestao.Numerico,
@@ -197,12 +197,12 @@ public class CriarQuestaoUseCaseTeste
 
         _repositorioQuestaoMock
             .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.Questao>(), cancellationToken: It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("Erro do reposit�rio"));
+            .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(questaoDto));
 
-        Assert.Equal("Erro do reposit�rio", exception.Message);
+        Assert.Equal("Erro do repositório", exception.Message);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class CriarQuestaoUseCaseTeste
             QuestionarioId = 5,
             GrupoQuestoesId = 3,
             Ordem = 10,
-            Nome = "Nome da Questao Espec�fica",
+            Nome = "Nome da Questao Específica",
             Observacao = "Observacao detalhada",
             Obrigatorio = true,
             Tipo = TipoQuestao.ComboMultiplaEscolha,
@@ -239,11 +239,11 @@ public class CriarQuestaoUseCaseTeste
         Assert.Equal(5, questaoCapturada.QuestionarioId);
         Assert.Equal(3, questaoCapturada.GrupoQuestoesId);
         Assert.Equal(10, questaoCapturada.Ordem);
-        Assert.Equal("Nome da Questao Espec�fica", questaoCapturada.Nome);
+        Assert.Equal("Nome da Questao Específica", questaoCapturada.Nome);
         Assert.Equal("Observacao detalhada", questaoCapturada.Observacao);
         Assert.True(questaoCapturada.Obrigatorio);
         Assert.Equal(TipoQuestao.ComboMultiplaEscolha, questaoCapturada.Tipo);
-        Assert.Equal("{\"opcoes\": [\"Sim\", \"N�o\", \"Talvez\"]}", questaoCapturada.Opcionais);
+        Assert.Equal("{\"opcoes\": [\"Sim\", \"Não\", \"Talvez\"]}", questaoCapturada.Opcionais);
         Assert.True(questaoCapturada.SomenteLeitura);
         Assert.Equal(500, questaoCapturada.Dimensao);
         Assert.Equal(250, questaoCapturada.Tamanho);
@@ -318,7 +318,7 @@ public class CriarQuestaoUseCaseTeste
             QuestionarioId = 1,
             Ordem = 1,
             Nome = "Questao Obrigatoria",
-            Observacao = "Campo obrigat�rio",
+            Observacao = "Campo obrigatório",
             Obrigatorio = true,
             Tipo = TipoQuestao.Texto,
             Opcionais = "{}",
@@ -345,7 +345,7 @@ public class CriarQuestaoUseCaseTeste
             QuestionarioId = 1,
             Ordem = 1,
             Nome = "Questao Somente Leitura",
-            Observacao = "N�o edit�vel",
+            Observacao = "Não editável",
             Obrigatorio = false,
             Tipo = TipoQuestao.Texto,
             Opcionais = "{}",

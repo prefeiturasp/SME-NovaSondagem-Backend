@@ -24,7 +24,7 @@ public class CriarBimestreUseCaseTeste
     {
         var bimestreDto = new BimestreDto
         {
-            Descricao = "Nova Proficiência",
+            Descricao = "Nova Proficiï¿½ncia",
             CodBimestreEnsinoEol = 1,
             CriadoPor = "Usuario1",
             CriadoRF = "RF001"
@@ -71,18 +71,18 @@ public class CriarBimestreUseCaseTeste
     {
         var bimestreDto = new BimestreDto
         {
-            Descricao = "Proficiência Teste",
+            Descricao = "Proficiï¿½ncia Teste",
             CodBimestreEnsinoEol = 1
         };
 
         _repositorioBimestreMock
             .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Bimestre>(), _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
+            .ThrowsAsync(new InvalidOperationException("Erro do repositÃ³rio"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(bimestreDto, _cancellationToken));
 
-        Assert.Equal("Erro do repositório", exception.Message);
+        Assert.Equal("Erro do repositÃ³rio", exception.Message);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class CriarBimestreUseCaseTeste
     {
         var bimestreDto = new BimestreDto
         {
-            Descricao = "Proficiência Específica",
+            Descricao = "Proficiencia EspecÃ­fica",
             CodBimestreEnsinoEol = 5,
             CriadoPor = "Testador",
             CriadoRF = "RF999"
@@ -105,7 +105,7 @@ public class CriarBimestreUseCaseTeste
         await _useCase.ExecutarAsync(bimestreDto, _cancellationToken);
 
         Assert.NotNull(bimestreCapturada);
-        Assert.Equal("Proficiência Específica", bimestreCapturada.Descricao);
+        Assert.Equal("Proficiencia Especifica", bimestreCapturada.Descricao);
         Assert.Equal(5, bimestreCapturada.CodBimestreEnsinoEol);
     }
 

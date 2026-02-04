@@ -19,7 +19,7 @@ public class ExcluirQuestaoUseCaseTeste
         _cancellationToken = CancellationToken.None;
     }
 
-    // M�todo auxiliar para criar inst�ncias de Questao nos testes
+    // Método auxiliar para criar instâncias de Questao nos testes
     private static SME.Sondagem.Dominio.Entidades.Questionario.Questao CriarQuestao(
         int questionarioId = 1,
         int ordem = 1,
@@ -54,7 +54,7 @@ public class ExcluirQuestaoUseCaseTeste
             nomeComponente: nomeComponente
         );
 
-        // Usa reflex�o para definir o Id se fornecido
+        // Usa reflexão para definir o Id se fornecido
         if (id.HasValue)
         {
             var idProp = typeof(SME.Sondagem.Dominio.Entidades.Questionario.Questao).GetProperty("Id");
