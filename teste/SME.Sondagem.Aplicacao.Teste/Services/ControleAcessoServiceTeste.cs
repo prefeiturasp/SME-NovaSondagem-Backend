@@ -409,7 +409,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 rf: RF_USUARIO,
                 perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
 
-            var cacheJsonEol = JsonConvert.SerializeObject(new object[] { });
+            var cacheJsonEol = JsonConvert.SerializeObject(Array.Empty<object>());
 
             repositorioCache
                 .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
