@@ -14,7 +14,6 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         servicoAuditoria, contextoBase)
     {
     }
-
     public async Task<bool> VerificarAlunoTemRespostaPorTipoQuestaoAsync(int alunoId, TipoQuestao tipoQuestao,
         CancellationToken cancellationToken)
     {

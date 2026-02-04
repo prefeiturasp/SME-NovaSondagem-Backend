@@ -30,7 +30,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
             };
 
             repositorioMock
-                .Setup(r => r.CriarAsync(
+                .Setup(r => r.SalvarAsync(
                     It.Is<SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta>(q =>
                         q.Ordem == dto.Ordem &&
                         q.OpcaoRespostaId == dto.OpcaoRespostaId &&
@@ -43,7 +43,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
             Assert.Equal(idEsperado, resultado);
 
             repositorioMock.Verify(
-                r => r.CriarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta>(), It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta>(), It.IsAny<CancellationToken>()),
                 Times.Once);
 
             repositorioMock.VerifyNoOtherCalls();
