@@ -34,7 +34,7 @@ public class ProficienciaMap : IEntityTypeConfiguration<Proficiencia>
 
         ConfigurarAuditoria(builder);
 
-        builder.HasIndex(x => new { x.Nome, x.ComponenteCurricularId })
+        builder.HasIndex(x => new { x.Nome, x.ComponenteCurricularId, x.ModalidadeId })
             .HasDatabaseName("uk_proficiencia_nome_componente")
             .IsUnique();
 
