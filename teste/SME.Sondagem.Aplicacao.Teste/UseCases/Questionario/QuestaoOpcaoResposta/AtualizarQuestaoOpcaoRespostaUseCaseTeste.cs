@@ -35,7 +35,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta>(), It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.QuestaoOpcaoResposta>(), It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -49,8 +49,8 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
                 .ReturnsAsync(entidade);
 
             repositorioMock
-                .Setup(r => r.AtualizarAsync(entidade, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+                .Setup(r => r.SalvarAsync(entidade, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(0);
 
             var dto = CriarDto();
 
@@ -59,7 +59,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
             Assert.Null(resultado);
 
             repositorioMock.Verify(
-                r => r.AtualizarAsync(entidade, It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(entidade, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -73,8 +73,8 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
                 .ReturnsAsync(entidade);
 
             repositorioMock
-                .Setup(r => r.AtualizarAsync(entidade, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(r => r.SalvarAsync(entidade, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var dto = CriarDto();
 

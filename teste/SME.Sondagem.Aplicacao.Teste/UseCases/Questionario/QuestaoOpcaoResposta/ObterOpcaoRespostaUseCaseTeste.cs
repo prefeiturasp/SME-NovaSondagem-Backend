@@ -34,7 +34,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
             };
 
             repositorioMock
-                .Setup(r => r.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(entidades);
 
             var resultado = await useCase.ExecutarAsync();
@@ -53,7 +53,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
             Assert.Equal(entidades[1].Ordem, lista[1].Ordem);
 
             repositorioMock.Verify(
-                r => r.ObterTodosAsync(It.IsAny<CancellationToken>()),
+                r => r.ListarAsync(It.IsAny<CancellationToken>()),
                 Times.Once);
         }
     }

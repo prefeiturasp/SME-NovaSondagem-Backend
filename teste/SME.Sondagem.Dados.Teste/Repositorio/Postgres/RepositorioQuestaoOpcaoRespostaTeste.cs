@@ -10,7 +10,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         private static RepositorioQuestaoOpcaoResposta CriarRepositorio(string nomeBanco)
         {
             var contexto = CriarContexto(nomeBanco);
-            return new RepositorioQuestaoOpcaoResposta(contexto);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            return new RepositorioQuestaoOpcaoResposta(contexto,servicoAuditoria,contextoBase);
         }
 
         #region ObterTodosAsync
@@ -28,14 +30,15 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             );
 
             await contexto.SaveChangesAsync();
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto,servicoAuditoria, contextoBase);
 
-            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto);
-
-            var resultado = (await repositorio.ObterTodosAsync()).ToList();
+            var resultado = (await repositorio.ListarAsync()).ToList();
 
             Assert.Equal(2, resultado.Count);
-            Assert.Equal(1, resultado[0].Ordem);
-            Assert.Equal(2, resultado[1].Ordem);
+            Assert.Equal(2, resultado[0].Ordem);
+            Assert.Equal(1, resultado[1].Ordem);
         }
 
         #endregion
@@ -51,8 +54,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var entidade = new QuestaoOpcaoResposta(1, 1, 1);
             contexto.QuestoesOpcoesResposta.Add(entidade);
             await contexto.SaveChangesAsync();
-
-            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto,servicoAuditoria, contextoBase);
 
             var resultado = await repositorio.ObterPorIdAsync(entidade.Id);
 
@@ -81,7 +85,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var entidade = new QuestaoOpcaoResposta(1, 1, 1);
 
-            var id = await repositorio.CriarAsync(entidade);
+            var id = await repositorio.SalvarAsync(entidade);
 
             Assert.True(id > 0);
         }
@@ -103,15 +107,16 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             entidade.AlteradoEm = DateTime.UtcNow;
             entidade.AlteradoPor = "usuario";
             entidade.AlteradoRF = "123456";
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto,servicoAuditoria, contextoBase);
 
-            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto);
+            var resultado = await repositorio.SalvarAsync(entidade);
 
-            var resultado = await repositorio.AtualizarAsync(entidade);
-
-            Assert.True(resultado);
+            Assert.True(resultado>0);
 
             var atualizado = contexto.QuestoesOpcoesResposta.Single();
-            Assert.Equal("usuario", atualizado.AlteradoPor);
+            Assert.Equal("Sistema", atualizado.AlteradoPor);
             Assert.Equal("123456", atualizado.AlteradoRF);
         }
 
@@ -121,10 +126,10 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var repositorio = CriarRepositorio(Guid.NewGuid().ToString());
 
             var entidade = new QuestaoOpcaoResposta(1, 1, 1);
+            entidade.Id = 100;
+            var resultado = await repositorio.SalvarAsync(entidade);
 
-            var resultado = await repositorio.AtualizarAsync(entidade);
-
-            Assert.False(resultado);
+            Assert.False(resultado >0);
         }
 
         #endregion
@@ -140,12 +145,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var entidade = new QuestaoOpcaoResposta(1, 1, 1);
             contexto.QuestoesOpcoesResposta.Add(entidade);
             await contexto.SaveChangesAsync();
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto,servicoAuditoria, contextoBase);
 
-            var repositorio = new RepositorioQuestaoOpcaoResposta(contexto);
+            var resultado = await repositorio.RemoverLogico(entidade.Id);
 
-            var resultado = await repositorio.ExcluirAsync(entidade.Id);
-
-            Assert.True(resultado);
+            Assert.True(resultado>0);
             Assert.True(entidade.Excluido);
         }
 
@@ -154,9 +160,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         {
             var repositorio = CriarRepositorio(Guid.NewGuid().ToString());
 
-            var resultado = await repositorio.ExcluirAsync(999);
+            var resultado = await repositorio.RemoverLogico(999);
 
-            Assert.False(resultado);
+            Assert.False(resultado>0);
         }
 
         #endregion
