@@ -35,9 +35,9 @@ public class AtualizarQuestaoUseCase : IAtualizarQuestaoUseCase
         questaoExistente.AtualizarPlaceHolder(questaoDto.PlaceHolder);
         questaoExistente.AtualizarNomeComponente(questaoDto.NomeComponente);
 
-        var sucesso = await questaoRepositorio.AtualizarAsync(questaoExistente, cancellationToken: cancellationToken);
+        var sucesso = await questaoRepositorio.SalvarAsync(questaoExistente, cancellationToken: cancellationToken);
         
-        if (!sucesso)
+        if (sucesso == 0)
             return null;
 
         return new QuestaoDto

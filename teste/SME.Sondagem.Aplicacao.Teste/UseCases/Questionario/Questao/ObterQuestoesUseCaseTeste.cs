@@ -51,7 +51,7 @@ public class ObterQuestoesUseCaseTeste
         };
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(questoes);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -68,7 +68,7 @@ public class ObterQuestoesUseCaseTeste
         Assert.Equal("Questao 2", segunda.Nome);
         Assert.Equal(2, segunda.QuestionarioId);
 
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class ObterQuestoesUseCaseTeste
         var questoesVazias = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>();
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(questoesVazias);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -85,7 +85,7 @@ public class ObterQuestoesUseCaseTeste
         Assert.NotNull(resultado);
         Assert.Empty(resultado);
 
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -94,13 +94,13 @@ public class ObterQuestoesUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCancelado))
+            .Setup(x => x.ListarAsync(cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(cancellationTokenCancelado));
 
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(cancellationTokenCancelado), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -110,26 +110,26 @@ public class ObterQuestoesUseCaseTeste
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao>();
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(cancellationTokenCustom))
+            .Setup(x => x.ListarAsync(cancellationTokenCustom))
             .ReturnsAsync(questoes);
 
         await _useCase.ExecutarAsync(cancellationTokenCustom);
 
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(cancellationTokenCustom), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(cancellationTokenCustom), Times.Once);
     }
 
     [Fact]
     public async Task ExecutarAsync_QuandoRepositorioFalha_DevePropararExcecao()
     {
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(_cancellationToken));
 
         Assert.Equal("Erro do repositório", exception.Message);
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class ObterQuestoesUseCaseTeste
         };
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(questoes);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -200,7 +200,7 @@ public class ObterQuestoesUseCaseTeste
         }
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(questoes);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);
@@ -210,7 +210,7 @@ public class ObterQuestoesUseCaseTeste
         Assert.Equal("Questao 1", resultadoList.First().Nome);
         Assert.Equal("Questao 1000", resultadoList.Last().Nome);
 
-        _repositorioQuestaoMock.Verify(x => x.ObterTodosAsync(_cancellationToken), Times.Once);
+        _repositorioQuestaoMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -234,7 +234,7 @@ public class ObterQuestoesUseCaseTeste
         var questoes = new List<SME.Sondagem.Dominio.Entidades.Questionario.Questao> { questao };
 
         _repositorioQuestaoMock
-            .Setup(x => x.ObterTodosAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(questoes);
 
         var resultado = await _useCase.ExecutarAsync(_cancellationToken);

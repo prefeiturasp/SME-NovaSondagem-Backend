@@ -15,7 +15,7 @@ public class ObterQuestoesUseCase : IObterQuestoesUseCase
 
     public async Task<IEnumerable<QuestaoDto>> ExecutarAsync(CancellationToken cancellationToken = default)
     {
-        var questoes = await questaoRepositorio.ObterTodosAsync(cancellationToken: cancellationToken);
+        var questoes = await questaoRepositorio.ListarAsync(cancellationToken: cancellationToken);
 
         return questoes.Select(p => new QuestaoDto
         {

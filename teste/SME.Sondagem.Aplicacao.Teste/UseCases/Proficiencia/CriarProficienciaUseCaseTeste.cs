@@ -24,7 +24,7 @@ public class CriarProficienciaUseCaseTeste
     {
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Nova Proficiência",
+            Nome = "Nova Proficiï¿½ncia",
             ComponenteCurricularId = 1,
             CriadoPor = "Usuario1",
             CriadoRF = "RF001"
@@ -71,18 +71,18 @@ public class CriarProficienciaUseCaseTeste
     {
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Proficiência Teste",
+            Nome = "Proficiï¿½ncia Teste",
             ComponenteCurricularId = 1
         };
 
         _repositorioProficienciaMock
             .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Proficiencia>(), _cancellationToken))
-            .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
+            .ThrowsAsync(new InvalidOperationException("Erro do repositÃ³rio"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(proficienciaDto, _cancellationToken));
 
-        Assert.Equal("Erro do repositório", exception.Message);
+        Assert.Equal("Erro do repositÃ³rio", exception.Message);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class CriarProficienciaUseCaseTeste
     {
         var proficienciaDto = new ProficienciaDto
         {
-            Nome = "Proficiência Específica",
+            Nome = "Proficiencia EspecÃ­fica",
             ComponenteCurricularId = 5,
             CriadoPor = "Testador",
             CriadoRF = "RF999"
@@ -105,7 +105,7 @@ public class CriarProficienciaUseCaseTeste
         await _useCase.ExecutarAsync(proficienciaDto, _cancellationToken);
 
         Assert.NotNull(proficienciaCapturada);
-        Assert.Equal("Proficiência Específica", proficienciaCapturada.Nome);
+        Assert.Equal("Proficiencia EspecÃ­fica", proficienciaCapturada.Nome);
         Assert.Equal(5, proficienciaCapturada.ComponenteCurricularId);
     }
 
