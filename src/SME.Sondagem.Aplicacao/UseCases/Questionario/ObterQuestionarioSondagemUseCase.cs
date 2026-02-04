@@ -226,6 +226,13 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             if (!bimestreId.HasValue)
                 throw new RegraNegocioException(MensagemNegocioComuns.BIMESTRE_OBRIGATORIO);
 
+            var periodo = periodosBimestre
+                .FirstOrDefault(p => !p.Excluido && p.BimestreId == bimestreId.Value)
+                ?? throw new ErroNaoEncontradoException("Período do bimestre não encontrado.");
+
+            var agora = DateTime.Now;
+            var periodoAtivo = agora >= periodo.DataInicio && agora <= periodo.DataFim;
+
             var colunasPorQuestao = questoesAtivas
                 .Where(q => !q.Excluido && q.Tipo != TipoQuestao.QuestaoComSubpergunta)
                 .OrderBy(q => q.Ordem)
@@ -233,12 +240,11 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
                 {
                     IdCiclo = bimestreId.Value,
                     DescricaoColuna = q.Nome,
-                    PeriodoBimestreAtivo = true,
+                    PeriodoBimestreAtivo = periodoAtivo,
                     QuestaoSubrespostaId = q.Id,
                     OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas)
                 })
                 .ToList();
-
             return colunasPorQuestao.Count != 0
                 ? Task.FromResult(colunasPorQuestao)
                 : throw new ErroNaoEncontradoException(
