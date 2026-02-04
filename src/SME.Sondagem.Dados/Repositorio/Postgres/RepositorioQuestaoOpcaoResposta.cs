@@ -7,12 +7,9 @@ using SME.Sondagem.Infra.Contexto;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
-public class RepositorioQuestaoOpcaoResposta : RepositorioBase<QuestaoOpcaoResposta>,IRepositorioQuestaoOpcaoResposta
-{
-    private readonly SondagemDbContext context;
-
-    public RepositorioQuestaoOpcaoResposta(SondagemDbContext context, IServicoAuditoria servicoAuditoria, ContextoBase contextoBase) : base(context,
-        servicoAuditoria, contextoBase)
-    {
-    }
-}
+public class RepositorioQuestaoOpcaoResposta(
+    SondagemDbContext context,
+    IServicoAuditoria servicoAuditoria,
+    ContextoBase contextoBase)
+    : RepositorioBase<QuestaoOpcaoResposta>(context,
+        servicoAuditoria, contextoBase), IRepositorioQuestaoOpcaoResposta;
