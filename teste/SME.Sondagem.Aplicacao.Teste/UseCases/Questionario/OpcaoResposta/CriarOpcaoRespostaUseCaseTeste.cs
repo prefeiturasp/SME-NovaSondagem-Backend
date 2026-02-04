@@ -23,7 +23,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
             DescricaoOpcaoResposta = "Sim",
-            Legenda = "Opção positiva",
+            Legenda = "Opï¿½ï¿½o positiva",
             CorFundo = "#00FF00",
             CorTexto = "#FFFFFF"
         };
@@ -52,7 +52,7 @@ public class CriarOpcaoRespostaUseCaseTeste
     {
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Não",
+            DescricaoOpcaoResposta = "Nï¿½o",
             Legenda = null,
             CorFundo = "#FF0000",
             CorTexto = "#FFFFFF"
@@ -79,7 +79,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
             DescricaoOpcaoResposta = "Talvez",
-            Legenda = "Opção neutra",
+            Legenda = "Opï¿½ï¿½o neutra",
             CorFundo = null,
             CorTexto = null
         };
@@ -104,7 +104,7 @@ public class CriarOpcaoRespostaUseCaseTeste
     [Fact]
     public async Task ExecutarAsync_ComDiferentesDescricoes_DeveCriarCorretamente()
     {
-        var descricoes = new[] { "Sim", "Não", "Talvez", "Não se aplica", "Prefiro não responder" };
+        var descricoes = new[] { "Sim", "Nï¿½o", "Talvez", "Nï¿½o se aplica", "Prefiro nï¿½o responder" };
         long idEsperado = 100;
 
         foreach (var descricao in descricoes)
@@ -159,7 +159,7 @@ public class CriarOpcaoRespostaUseCaseTeste
     {
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção Teste",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o Teste",
             Legenda = "Legenda Teste",
             CorFundo = "#AAAAAA",
             CorTexto = "#BBBBBB"
@@ -167,12 +167,12 @@ public class CriarOpcaoRespostaUseCaseTeste
 
         _repositorioOpcaoRespostaMock
             .Setup(x => x.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
+            .ThrowsAsync(new InvalidOperationException("Erro do repositÃ³rio"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(opcaoRespostaDto));
 
-        Assert.Equal("Erro do repositório", exception.Message);
+        Assert.Equal("Erro do repositÃ³rio", exception.Message);
     }
 
     [Fact]
@@ -180,8 +180,8 @@ public class CriarOpcaoRespostaUseCaseTeste
     {
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção de Resposta Específica",
-            Legenda = "Legenda detalhada da opção",
+            DescricaoOpcaoResposta = "OpÃ§Ã£o de Resposta EspecÃ­fica",
+            Legenda = "Legenda detalhada da opÃ§Ã£o",
             CorFundo = "#FF5733",
             CorTexto = "#FFFFFF"
         };
@@ -196,8 +196,8 @@ public class CriarOpcaoRespostaUseCaseTeste
         await _useCase.ExecutarAsync(opcaoRespostaDto);
 
         Assert.NotNull(opcaoRespostaCapturada);
-        Assert.Equal("Opção de Resposta Específica", opcaoRespostaCapturada.DescricaoOpcaoResposta);
-        Assert.Equal("Legenda detalhada da opção", opcaoRespostaCapturada.Legenda);
+        Assert.Equal("OpÃ§Ã£o de Resposta EspecÃ­fica", opcaoRespostaCapturada.DescricaoOpcaoResposta);
+        Assert.Equal("Legenda detalhada da opÃ§Ã£o", opcaoRespostaCapturada.Legenda);
         Assert.Equal("#FF5733", opcaoRespostaCapturada.CorFundo);
         Assert.Equal("#FFFFFF", opcaoRespostaCapturada.CorTexto);
     }
@@ -232,7 +232,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
             DescricaoOpcaoResposta = string.Empty,
-            Legenda = "Opção sem descrição",
+            Legenda = "Opï¿½ï¿½o sem descriï¿½ï¿½o",
             CorFundo = "#FFFFFF",
             CorTexto = "#000000"
         };
@@ -256,7 +256,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
             DescricaoOpcaoResposta = descricaoLonga,
-            Legenda = "Legenda para descrição longa",
+            Legenda = "Legenda para descriï¿½ï¿½o longa",
             CorFundo = "#EEEEEE",
             CorTexto = "#111111"
         };
@@ -283,7 +283,7 @@ public class CriarOpcaoRespostaUseCaseTeste
         {
             var opcaoRespostaDto = new OpcaoRespostaDto
             {
-                DescricaoOpcaoResposta = $"Opção com cor {cor}",
+                DescricaoOpcaoResposta = $"Opï¿½ï¿½o com cor {cor}",
                 Legenda = "Legenda",
                 CorFundo = cor,
                 CorTexto = "#FFFFFF"
@@ -310,7 +310,7 @@ public class CriarOpcaoRespostaUseCaseTeste
     {
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Descrição obrigatória",
+            DescricaoOpcaoResposta = "Descriï¿½ï¿½o obrigatï¿½ria",
             Legenda = null,
             CorFundo = null,
             CorTexto = null

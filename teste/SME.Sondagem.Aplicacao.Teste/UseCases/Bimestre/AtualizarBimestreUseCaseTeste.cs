@@ -141,7 +141,7 @@ public class AtualizarBimestreUseCaseTeste
 
         var resultado = await _useCase.ExecutarAsync(id, bimestreDto, _cancellationToken);
 
-        // Verifica se a atualização foi bem-sucedida
+        // Verifica se a atualizaÃ§Ã£o foi bem-sucedida
         Assert.NotNull(resultado);
         Assert.Equal("Bimestre Atualizado", bimestreExistente.Descricao);
         Assert.Equal(2, bimestreExistente.CodBimestreEnsinoEol);
@@ -259,7 +259,7 @@ public class AtualizarBimestreUseCaseTeste
         const int id = 1;
         var bimestreDto = new BimestreDto
         {
-            Descricao = "Nome Válido",
+            Descricao = "Nome Vï¿½lido",
             CodBimestreEnsinoEol = 0
         };
 

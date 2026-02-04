@@ -23,7 +23,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         const long id = 999;
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção A",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o A",
             Legenda = "Legenda teste",
             CorFundo = "#FFFFFF",
             CorTexto = "#000000"
@@ -46,7 +46,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         const long id = 1;
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção B Atualizada",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o B Atualizada",
             Legenda = "Nova Legenda",
             CorFundo = "#FF0000",
             CorTexto = "#FFFFFF"
@@ -54,7 +54,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
             1,
-            "Opção B Original",
+            "Opï¿½ï¿½o B Original",
             "Legenda Original",
             "#000000",
             "#FFFFFF"
@@ -82,7 +82,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção C Atualizada",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o C Atualizada",
             Legenda = "Legenda Atualizada",
             CorFundo = "#00FF00",
             CorTexto = "#000000"
@@ -90,7 +90,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
             1,
-            "Opção C Original",
+            "Opï¿½ï¿½o C Original",
             "Legenda Original",
             "#0000FF",
             "#FFFFFF"
@@ -107,13 +107,13 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
         Assert.NotNull(resultado);
-        Assert.Equal("Opção C Atualizada", resultado.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o C Atualizada", resultado.DescricaoOpcaoResposta);
         Assert.Equal("Legenda Atualizada", resultado.Legenda);
         Assert.Equal("#00FF00", resultado.CorFundo);
         Assert.Equal("#000000", resultado.CorTexto);
 
         // Verifica se os dados foram atualizados na entidade
-        Assert.Equal("Opção C Atualizada", opcaoRespostaExistente.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o C Atualizada", opcaoRespostaExistente.DescricaoOpcaoResposta);
         Assert.Equal("Legenda Atualizada", opcaoRespostaExistente.Legenda);
         Assert.Equal("#00FF00", opcaoRespostaExistente.CorFundo);
         Assert.Equal("#000000", opcaoRespostaExistente.CorTexto);
@@ -130,7 +130,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção D",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o D",
             Legenda = "Legenda D",
             CorFundo = "#FFFF00",
             CorTexto = "#000000"
@@ -138,7 +138,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
             1,
-            "Opção D Original",
+            "Opï¿½ï¿½o D Original",
             "Legenda Original",
             "#000000",
             "#FFFFFF"
@@ -166,7 +166,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção E",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o E",
             Legenda = null,
             CorFundo = null,
             CorTexto = null
@@ -174,7 +174,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
             1,
-            "Opção E Original",
+            "Opï¿½ï¿½o E Original",
             "Legenda Original",
             "#000000",
             "#FFFFFF"
@@ -191,13 +191,13 @@ public class AtualizarOpcaoRespostaUseCaseTeste
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
         Assert.NotNull(resultado);
-        Assert.Equal("Opção E", resultado.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o E", resultado.DescricaoOpcaoResposta);
         Assert.Null(resultado.Legenda);
         Assert.Null(resultado.CorFundo);
         Assert.Null(resultado.CorTexto);
 
         // Verifica se os campos nulos foram atualizados corretamente
-        Assert.Equal("Opção E", opcaoRespostaExistente.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o E", opcaoRespostaExistente.DescricaoOpcaoResposta);
         Assert.Null(opcaoRespostaExistente.Legenda);
         Assert.Null(opcaoRespostaExistente.CorFundo);
         Assert.Null(opcaoRespostaExistente.CorTexto);
@@ -210,7 +210,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaDto = new OpcaoRespostaDto
         {
-            DescricaoOpcaoResposta = "Opção F Atualizada",
+            DescricaoOpcaoResposta = "Opï¿½ï¿½o F Atualizada",
             Legenda = "Legenda F Atualizada",
             CorFundo = "#FF00FF",
             CorTexto = "#00FFFF"
@@ -218,7 +218,7 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var opcaoRespostaExistente = new SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta(
             1,
-            "Opção F Original",
+            "Opï¿½ï¿½o F Original",
             "Legenda F Original",
             "#123456",
             "#ABCDEF"
@@ -234,15 +234,15 @@ public class AtualizarOpcaoRespostaUseCaseTeste
 
         var resultado = await _useCase.ExecutarAsync(id, opcaoRespostaDto);
 
-        // Verifica se a atualização foi bem-sucedida
+        // Verifica se a atualizaÃ§Ã£o foi bem-sucedida
         Assert.NotNull(resultado);
-        Assert.Equal("Opção F Atualizada", resultado.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o F Atualizada", resultado.DescricaoOpcaoResposta);
         Assert.Equal("Legenda F Atualizada", resultado.Legenda);
         Assert.Equal("#FF00FF", resultado.CorFundo);
         Assert.Equal("#00FFFF", resultado.CorTexto);
 
         // Verifica se todas as propriedades da entidade foram atualizadas
-        Assert.Equal("Opção F Atualizada", opcaoRespostaExistente.DescricaoOpcaoResposta);
+        Assert.Equal("Opï¿½ï¿½o F Atualizada", opcaoRespostaExistente.DescricaoOpcaoResposta);
         Assert.Equal("Legenda F Atualizada", opcaoRespostaExistente.Legenda);
         Assert.Equal("#FF00FF", opcaoRespostaExistente.CorFundo);
         Assert.Equal("#00FFFF", opcaoRespostaExistente.CorTexto);
