@@ -56,8 +56,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
                 .ReturnsAsync(questionarioExistente);
 
             _questionarioRepositorioMock
-                .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var resultado = await _useCase.ExecutarAsync(questionarioId, questionarioDto);
 
@@ -69,7 +69,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             Assert.Equal(2, resultado.ModalidadeId);
             Assert.Equal(2, resultado.SerieAno);
             _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-            _questionarioRepositorioMock.Verify(x => x.AtualizarAsync(questionarioExistente, It.IsAny<CancellationToken>()), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.SalvarAsync(questionarioExistente, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
 
             Assert.Null(resultado);
             _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-            _questionarioRepositorioMock.Verify(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()), Times.Never);
+            _questionarioRepositorioMock.Verify(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -134,13 +134,13 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
                 .ReturnsAsync(questionarioExistente);
 
             _questionarioRepositorioMock
-                .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(0);
 
             var resultado = await _useCase.ExecutarAsync(questionarioId, questionarioDto);
 
             Assert.Null(resultado);
-            _questionarioRepositorioMock.Verify(x => x.AtualizarAsync(questionarioExistente, It.IsAny<CancellationToken>()), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.SalvarAsync(questionarioExistente, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -179,13 +179,13 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
                 .ReturnsAsync(questionarioExistente);
 
             _questionarioRepositorioMock
-                .Setup(x => x.AtualizarAsync(questionarioExistente, cancellationToken))
-                .ReturnsAsync(true);
+                .Setup(x => x.SalvarAsync(questionarioExistente, cancellationToken))
+                .ReturnsAsync(1);
 
             await _useCase.ExecutarAsync(questionarioId, questionarioDto, cancellationToken);
 
             _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, cancellationToken), Times.Once);
-            _questionarioRepositorioMock.Verify(x => x.AtualizarAsync(questionarioExistente, cancellationToken), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.SalvarAsync(questionarioExistente, cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -223,8 +223,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
                 .ReturnsAsync(questionarioExistente);
 
             _questionarioRepositorioMock
-                .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var resultado = await _useCase.ExecutarAsync(questionarioId, questionarioDto);
 
@@ -281,8 +281,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
                 .ReturnsAsync(questionarioExistente);
 
             _questionarioRepositorioMock
-                .Setup(x => x.AtualizarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(x => x.SalvarAsync(It.IsAny<Dominio.Entidades.Questionario.Questionario>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var resultado = await _useCase.ExecutarAsync(questionarioId, questionarioDto);
 

@@ -35,9 +35,12 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Questionarios.AddRange(q1, q2, q3);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioQuestionario(context);
+            
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
-            var result = (await repo.ObterTodosAsync()).ToList();
+            var result = (await repo.ListarAsync()).ToList();
 
             Assert.NotEmpty(result);
         }
@@ -51,7 +54,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Questionarios.Add(q);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
             var result = await repo.ObterPorIdAsync(q.Id);
 
@@ -63,7 +68,9 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ObterPorIdAsync_DeveRetornarNullQuandoNaoExiste()
         {
             var context = CriarContexto(nameof(ObterPorIdAsync_DeveRetornarNullQuandoNaoExiste));
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
             var result = await repo.ObterPorIdAsync(999);
 
@@ -74,11 +81,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task CriarAsync_DevePersistirERetornarId()
         {
             var context = CriarContexto(nameof(CriarAsync_DevePersistirERetornarId));
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
             var q = CriarQuestionarioValido();
 
-            var id = await repo.CriarAsync(q);
+            var id = await repo.SalvarAsync(q);
 
             Assert.True(id > 0);
             Assert.Single(context.Questionarios);
@@ -97,24 +106,28 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             q.AlteradoPor = "teste";
             q.AlteradoRF = "123";
 
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
-            var result = await repo.AtualizarAsync(q);
+            var result = await repo.SalvarAsync(q);
 
-            Assert.True(result);
+            Assert.True(result>0);
         }
 
         [Fact]
         public async Task AtualizarAsync_DeveRetornarFalseQuandoNaoExiste()
         {
             var context = CriarContexto(nameof(AtualizarAsync_DeveRetornarFalseQuandoNaoExiste));
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
             var q = CriarQuestionarioValido();
 
-            var result = await repo.AtualizarAsync(q);
+            var result = await repo.SalvarAsync(q);
 
-            Assert.False(result);
+            Assert.Equal(1, result);
         }
 
         [Fact]
@@ -126,11 +139,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.Questionarios.Add(q);
             await context.SaveChangesAsync();
 
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
-            var result = await repo.ExcluirAsync(q.Id);
+            var result = await repo.RemoverLogico(q.Id);
 
-            Assert.True(result);
+            Assert.True(result>0);
             Assert.True(q.Excluido);
         }
 
@@ -138,11 +153,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         public async Task ExcluirAsync_DeveRetornarFalseQuandoNaoExiste()
         {
             var context = CriarContexto(nameof(ExcluirAsync_DeveRetornarFalseQuandoNaoExiste));
-            var repo = new RepositorioQuestionario(context);
+            var servicoAuditoria = CriarServicoAuditoria();
+            var contextoBase = CriarConextoBase();
+            var repo = new RepositorioQuestionario(context,servicoAuditoria,contextoBase);
 
-            var result = await repo.ExcluirAsync(999);
+            var result = await repo.RemoverLogico(999);
 
-            Assert.False(result);
+            Assert.False(result>0);
         }
     }
 }

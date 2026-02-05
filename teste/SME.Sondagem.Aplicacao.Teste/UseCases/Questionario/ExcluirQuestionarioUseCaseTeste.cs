@@ -40,14 +40,14 @@ public class ExcluirQuestionarioUseCaseTeste
             .ReturnsAsync(questionario);
 
         _questionarioRepositorioMock
-            .Setup(x => x.ExcluirAsync(questionarioId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(questionarioId, null,It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
 
         var resultado = await _useCase.ExecutarAsync(questionarioId);
 
         Assert.True(resultado);
         _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-        _questionarioRepositorioMock.Verify(x => x.ExcluirAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
+        _questionarioRepositorioMock.Verify(x => x.RemoverLogico(questionarioId, null,It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class ExcluirQuestionarioUseCaseTeste
 
         Assert.False(resultado);
         _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-        _questionarioRepositorioMock.Verify(x => x.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        _questionarioRepositorioMock.Verify(x => x.RemoverLogico(It.IsAny<long>(),null, It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -89,14 +89,14 @@ public class ExcluirQuestionarioUseCaseTeste
             .ReturnsAsync(questionario);
 
         _questionarioRepositorioMock
-            .Setup(x => x.ExcluirAsync(questionarioId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
+            .Setup(x => x.RemoverLogico(questionarioId, null,It.IsAny<CancellationToken>()))
+            .ReturnsAsync(0);
 
         var resultado = await _useCase.ExecutarAsync(questionarioId);
 
         Assert.False(resultado);
         _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-        _questionarioRepositorioMock.Verify(x => x.ExcluirAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
+        _questionarioRepositorioMock.Verify(x => x.RemoverLogico(questionarioId, null,It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -123,13 +123,13 @@ public class ExcluirQuestionarioUseCaseTeste
             .ReturnsAsync(questionario);
 
         _questionarioRepositorioMock
-            .Setup(x => x.ExcluirAsync(questionarioId, cancellationToken))
-            .ReturnsAsync(true);
+            .Setup(x => x.RemoverLogico(questionarioId, null,cancellationToken))
+            .ReturnsAsync(1);
 
         await _useCase.ExecutarAsync(questionarioId, cancellationToken);
 
         _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, cancellationToken), Times.Once);
-        _questionarioRepositorioMock.Verify(x => x.ExcluirAsync(questionarioId, cancellationToken), Times.Once);
+        _questionarioRepositorioMock.Verify(x => x.RemoverLogico(questionarioId, null,cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ExcluirQuestionarioUseCaseTeste
 
         Assert.False(resultado);
         _questionarioRepositorioMock.Verify(x => x.ObterPorIdAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Once);
-        _questionarioRepositorioMock.Verify(x => x.ExcluirAsync(questionarioId, It.IsAny<CancellationToken>()), Times.Never, 
+        _questionarioRepositorioMock.Verify(x => x.RemoverLogico(questionarioId, null,It.IsAny<CancellationToken>()), Times.Never, 
             "Não deve tentar excluir se o questionário não existe");
     }
 }

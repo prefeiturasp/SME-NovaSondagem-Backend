@@ -32,7 +32,7 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()),
+                r => r.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -46,15 +46,15 @@ namespace SME.Sondagem.Aplicacao.Tests.UseCases.QuestaoOpcaoResposta
                 .ReturnsAsync(entidade);
 
             repositorioMock
-                .Setup(r => r.ExcluirAsync(entidade.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(r => r.RemoverLogico(entidade.Id, null,It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var resultado = await useCase.ExecutarAsync(entidade.Id);
 
             Assert.True(resultado);
 
             repositorioMock.Verify(
-                r => r.ExcluirAsync(entidade.Id, It.IsAny<CancellationToken>()),
+                r => r.RemoverLogico(entidade.Id, null,It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 

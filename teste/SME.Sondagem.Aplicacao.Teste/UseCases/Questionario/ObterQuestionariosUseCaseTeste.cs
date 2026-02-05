@@ -57,7 +57,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             };
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questionarios);
 
             var resultado = await _useCase.ExecutarAsync();
@@ -75,7 +75,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             Assert.Equal("Questionário 2", segundoQuestionario.Nome);
             Assert.Equal(TipoQuestionario.SondagemLeitura, segundoQuestionario.Tipo);
             
-            _questionarioRepositorioMock.Verify(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.ListarAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -84,14 +84,14 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             var questionariosVazio = new List<Dominio.Entidades.Questionario.Questionario>();
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questionariosVazio);
 
             var resultado = await _useCase.ExecutarAsync();
 
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
-            _questionarioRepositorioMock.Verify(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.ListarAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -101,12 +101,12 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             var questionarios = new List<Dominio.Entidades.Questionario.Questionario>();
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(cancellationToken))
+                .Setup(x => x.ListarAsync(cancellationToken))
                 .ReturnsAsync(questionarios);
 
             await _useCase.ExecutarAsync(cancellationToken);
 
-            _questionarioRepositorioMock.Verify(x => x.ObterTodosAsync(cancellationToken), Times.Once);
+            _questionarioRepositorioMock.Verify(x => x.ListarAsync(cancellationToken), Times.Once);
         }
 
         [Fact]
@@ -137,7 +137,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             };
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questionarios);
 
             var resultado = await _useCase.ExecutarAsync();
@@ -219,7 +219,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             };
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questionarios);
 
             var resultado = await _useCase.ExecutarAsync();
@@ -263,7 +263,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario
             };
 
             _questionarioRepositorioMock
-                .Setup(x => x.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(questionarios);
 
             var resultado = await _useCase.ExecutarAsync();

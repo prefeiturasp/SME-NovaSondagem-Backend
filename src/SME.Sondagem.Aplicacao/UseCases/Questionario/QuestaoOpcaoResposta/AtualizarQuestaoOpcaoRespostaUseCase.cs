@@ -24,9 +24,9 @@ public class AtualizarQuestaoOpcaoRespostaUseCase : IAtualizarQuestaoOpcaoRespos
         questaoOpcaoRespostaExistente.AtualizarOpcaoRespostaId(questaoOpcaoRespostaDto.OpcaoRespostaId);
         questaoOpcaoRespostaExistente.AtualizarOrdem(questaoOpcaoRespostaDto.Ordem);
 
-        var sucesso = await questaoOpcaoRespostaRepositorio.AtualizarAsync(questaoOpcaoRespostaExistente, cancellationToken: cancellationToken);
+        var sucesso = await questaoOpcaoRespostaRepositorio.SalvarAsync(questaoOpcaoRespostaExistente, cancellationToken: cancellationToken);
         
-        if (!sucesso)
+        if (sucesso == 0)
             return null;
 
         return new QuestaoOpcaoRespostaDto

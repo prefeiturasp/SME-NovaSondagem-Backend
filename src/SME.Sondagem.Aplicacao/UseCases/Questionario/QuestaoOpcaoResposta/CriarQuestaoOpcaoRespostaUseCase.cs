@@ -20,6 +20,6 @@ public class CriarQuestaoOpcaoRespostaUseCase : ICriarQuestaoOpcaoRespostaUseCas
             questaoOpcaoRespostaDto.OpcaoRespostaId,
             questaoOpcaoRespostaDto.Ordem);
 
-        return await questaoOpcaoRespostaRepositorio.CriarAsync(questaoOpcaoResposta, cancellationToken: cancellationToken);
+        return await questaoOpcaoRespostaRepositorio.SalvarAsync(questaoOpcaoResposta, cancellationToken: cancellationToken);
     }
 }

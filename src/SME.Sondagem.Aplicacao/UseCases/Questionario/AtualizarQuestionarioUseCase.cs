@@ -30,9 +30,9 @@ public class AtualizarQuestionarioUseCase : IAtualizarQuestionarioUseCase
             questionarioDto.ModalidadeId,
             questionarioDto.SerieAno);
 
-        var sucesso = await questionarioRepositorio.AtualizarAsync(questionarioExistente, cancellationToken: cancellationToken);
+        var sucesso = await questionarioRepositorio.SalvarAsync(questionarioExistente, cancellationToken: cancellationToken);
         
-        if (!sucesso)
+        if (sucesso == 0)
             return null;
 
         return new QuestionarioDto
