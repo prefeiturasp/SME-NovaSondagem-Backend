@@ -34,6 +34,6 @@ public class CriarQuestionarioUseCase : ICriarQuestionarioUseCase
             AlteradoRF = questionarioDto.AlteradoRF
         };
 
-        return await questionarioRepositorio.CriarAsync(questionario, cancellationToken: cancellationToken);
+        return await questionarioRepositorio.SalvarAsync(questionario, cancellationToken: cancellationToken);
     }
 }
