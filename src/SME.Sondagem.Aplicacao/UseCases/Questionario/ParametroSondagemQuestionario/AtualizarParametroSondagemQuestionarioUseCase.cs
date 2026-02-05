@@ -35,13 +35,7 @@ public class AtualizarParametroSondagemQuestionarioUseCase : IAtualizarParametro
             Id = parametroSondagemQuestionario.Id,
             IdParametroSondagem = parametroSondagemQuestionario.IdParametroSondagem,
             IdQuestionario = parametroSondagemQuestionario.IdQuestionario,
-            Valor = parametroSondagemQuestionario.Valor,
-            CriadoEm = parametroSondagemQuestionario.CriadoEm,
-            CriadoPor = parametroSondagemQuestionario.CriadoPor,
-            CriadoRF = parametroSondagemQuestionario.CriadoRF,
-            AlteradoEm = parametroSondagemQuestionario.AlteradoEm,
-            AlteradoPor = parametroSondagemQuestionario.AlteradoPor,
-            AlteradoRF = parametroSondagemQuestionario.AlteradoRF
+            Valor = parametroSondagemQuestionario.Valor
         };
     }
 }

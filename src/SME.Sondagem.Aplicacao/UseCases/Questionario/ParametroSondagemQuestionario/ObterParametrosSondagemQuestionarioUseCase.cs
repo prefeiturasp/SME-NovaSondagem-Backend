@@ -22,13 +22,7 @@ public class ObterParametrosSondagemQuestionarioUseCase : IObterParametrosSondag
             Id = p.Id,
             IdParametroSondagem = p.IdParametroSondagem,
             IdQuestionario = p.IdQuestionario,
-            Valor = p.Valor,
-            CriadoEm = p.CriadoEm,
-            CriadoPor = p.CriadoPor,
-            CriadoRF = p.CriadoRF,
-            AlteradoEm = p.AlteradoEm,
-            AlteradoPor = p.AlteradoPor,
-            AlteradoRF = p.AlteradoRF
+            Valor = p.Valor
         });
     }
 }

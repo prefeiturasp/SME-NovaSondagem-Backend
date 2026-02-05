@@ -100,13 +100,6 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.ParametroSondagem
             Assert.Equal(dto.Ativo, resultado.Ativo);
             Assert.Equal(dto.Tipo, resultado.Tipo);
 
-            Assert.Equal(entidade.CriadoEm, resultado.CriadoEm);
-            Assert.Equal(entidade.CriadoPor, resultado.CriadoPor);
-            Assert.Equal(entidade.CriadoRF, resultado.CriadoRF);
-            Assert.Equal(entidade.AlteradoEm, resultado.AlteradoEm);
-            Assert.Equal(entidade.AlteradoPor, resultado.AlteradoPor);
-            Assert.Equal(entidade.AlteradoRF, resultado.AlteradoRF);
-
             repositorioMock.Verify(r =>
                 r.ObterPorIdAsync(1, It.IsAny<CancellationToken>()),
                 Times.Once);

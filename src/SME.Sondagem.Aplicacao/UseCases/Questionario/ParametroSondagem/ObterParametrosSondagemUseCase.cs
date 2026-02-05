@@ -23,13 +23,7 @@ public class ObterParametrosSondagemUseCase : IObterParametrosSondagemUseCase
             Nome = p.Nome,
             Descricao = p.Descricao,
             Ativo = p.Ativo,
-            Tipo = p.Tipo,
-            CriadoEm = p.CriadoEm,
-            CriadoPor = p.CriadoPor,
-            CriadoRF = p.CriadoRF,
-            AlteradoEm = p.AlteradoEm,
-            AlteradoPor = p.AlteradoPor,
-            AlteradoRF = p.AlteradoRF
+            Tipo = p.Tipo
         });
     }
 }
