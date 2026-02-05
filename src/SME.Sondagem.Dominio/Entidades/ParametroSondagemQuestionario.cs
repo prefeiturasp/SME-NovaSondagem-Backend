@@ -5,6 +5,19 @@ namespace SME.Sondagem.Dominio.Entidades
     [ExcludeFromCodeCoverage]
     public class ParametroSondagemQuestionario : EntidadeBase
     {
+        public ParametroSondagemQuestionario()
+        {
+        }
+
+        public ParametroSondagemQuestionario(int idParametroSondagem, int idQuestionario, string valor, string criadoPor, string criadoRF)
+        {
+            IdParametroSondagem = idParametroSondagem;
+            IdQuestionario = idQuestionario;
+            Valor = valor;
+            CriadoPor = criadoPor;
+            CriadoRF = criadoRF;
+        }
+
         public int IdQuestionario { get; set; }
         public int IdParametroSondagem { get; set; }
         public string? Valor { get; set; }
