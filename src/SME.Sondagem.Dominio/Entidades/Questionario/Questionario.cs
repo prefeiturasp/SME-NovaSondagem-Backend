@@ -40,6 +40,7 @@ public class Questionario : EntidadeBase
     public virtual Proficiencia Proficiencia { get; private set; } = null!;
     public virtual ICollection<Questao> Questoes { get; private set; } = new List<Questao>();
     public virtual ICollection<QuestionarioBimestre> QuestionariosBimestres { get; private set; } = new List<QuestionarioBimestre>();
+    public virtual ICollection<ParametroQuestionario> ParametrosQuestionario { get; private set; } = new List<ParametroQuestionario>();
 
     public void Atualizar(
         string nome,

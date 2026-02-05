@@ -12,21 +12,23 @@ public class SondagemDbContext : DbContext
     {
     }
 
-    public DbSet<ComponenteCurricular> ComponentesCurriculares { get; set; }
-    public DbSet<Proficiencia> Proficiencias { get; set; }
-    public DbSet<Bimestre> Bimestres { get; set; }
-    public DbSet<Aluno> Alunos { get; set; }
-    public DbSet<Questionario> Questionarios { get; set; }
-    public DbSet<GrupoQuestoes> GruposQuestoes { get; set; }
-    public DbSet<OpcaoResposta> OpcoesResposta { get; set; }
-    public DbSet<Questao> Questoes { get; set; }
-    public DbSet<QuestaoOpcaoResposta> QuestoesOpcoesResposta { get; set; }
-    public DbSet<Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; set; }
-    public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
-    public DbSet<RespostaAluno> RespostasAluno { get; set; }
     public DbSet<Auditoria> Auditorias { get; set; }
     public DbSet<AuditoriaDetalhe> AuditoriasDetalhes { get; set; }
+    public DbSet<Aluno> Alunos { get; set; }
+    public DbSet<Bimestre> Bimestres { get; set; }
+    public DbSet<ComponenteCurricular> ComponentesCurriculares { get; set; }
+    public DbSet<GrupoQuestoes> GruposQuestoes { get; set; }
+    public DbSet<Proficiencia> Proficiencias { get; set; }
+    public DbSet<Questionario> Questionarios { get; set; }
+    public DbSet<OpcaoResposta> OpcoesResposta { get; set; }
+    public DbSet<ParametroQuestionario> ParametrosQuestionario { get; set; }
+    public DbSet<ParametroSondagem> ParametrosSondagem { get; set; }
+    public DbSet<Questao> Questoes { get; set; }
+    public DbSet<QuestaoOpcaoResposta> QuestoesOpcoesResposta { get; set; }
     public DbSet<QuestionarioBimestre> QuestionariosBimestres { get; set; }
+    public DbSet<RespostaAluno> RespostasAluno { get; set; }
+    public DbSet<Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; set; }
+    public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
