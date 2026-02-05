@@ -21,7 +21,7 @@ public class SondagemDbContext : DbContext
     public DbSet<Proficiencia> Proficiencias { get; set; }
     public DbSet<Questionario> Questionarios { get; set; }
     public DbSet<OpcaoResposta> OpcoesResposta { get; set; }
-    public DbSet<ParametroQuestionario> ParametrosQuestionario { get; set; }
+    public DbSet<ParametroSondagemQuestionario> ParametrosSondagemQuestionario { get; set; }
     public DbSet<ParametroSondagem> ParametrosSondagem { get; set; }
     public DbSet<Questao> Questoes { get; set; }
     public DbSet<QuestaoOpcaoResposta> QuestoesOpcoesResposta { get; set; }

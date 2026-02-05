@@ -7,6 +7,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
 using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
+using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagem;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
@@ -20,6 +21,7 @@ using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
+using SME.Sondagem.Aplicacao.UseCases.ParametroSondagem;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
@@ -31,8 +33,8 @@ using SME.Sondagem.Aplicacao.Validators.Bimestre;
 using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
 using SME.Sondagem.Aplicacao.Validators.Questao;
-using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Aplicacao.Validators.QuestionarioBimestre;
+using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -73,15 +75,16 @@ public static class RegistraDependencias
 
     private static void RegistrarRepositorios(IServiceCollection services)
     {
-        services.TryAddScoped<IRepositorioCache, RepositorioCache>();
         services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
         services.TryAddScoped<IRepositorioBimestre, RepositorioBimestre>();
+        services.TryAddScoped<IRepositorioCache, RepositorioCache>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
+        services.TryAddScoped<IRepositorioParametroSondagem, RepositorioParametroSondagem>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
         services.TryAddScoped<IRepositorioQuestaoOpcaoResposta, RepositorioQuestaoOpcaoResposta>();
+        services.TryAddScoped<IRepositorioQuestionarioBimestre, RepositorioQuestionarioBimestre>();
         services.TryAddScoped<IRepositorioQuestionario, RepositorioQuestionario>();
         services.TryAddScoped<IRepositorioSondagem, RepositorioSondagem>();
-        services.TryAddScoped<IRepositorioQuestionarioBimestre, RepositorioQuestionarioBimestre>();
 
         //repositórios do Elastic
         services.AddScoped<IRepositorioElasticAluno, RepositorioElasticAluno>();
@@ -145,6 +148,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionariosBimestresUseCase, ObterQuestionariosBimestresUseCase>();
         services.TryAddScoped<IVincularBimestresUseCase, VincularBimestresUseCase>();
         services.TryAddScoped<IExcluirVinculosPorQuestionarioUseCase, ExcluirVinculosPorQuestionarioUseCase>();
+        services.TryAddScoped<ICriarParametroSondagemUseCase, CriarParametroSondagemUseCase>();
+        services.TryAddScoped<IAtualizarParametroSondagemUseCase, AtualizarParametroSondagemUseCase>();
+        services.TryAddScoped<IExcluirParametroSondagemUseCase, ExcluirParametroSondagemUseCase>();
+        services.TryAddScoped<IObterParametrosSondagemUseCase, ObterParametrosSondagemUseCase>();
+        services.TryAddScoped<IObterParametroSondagemPorIdUseCase, ObterParametroSondagemPorIdUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)

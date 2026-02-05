@@ -6,11 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace SME.Sondagem.Dados.Mapeamentos;
 
 [ExcludeFromCodeCoverage]
-public class ParametroQuestionarioMap : IEntityTypeConfiguration<ParametroQuestionario>
+public class ParametroSondagemQuestionarioMap : IEntityTypeConfiguration<ParametroSondagemQuestionario>
 {
-    public void Configure(EntityTypeBuilder<ParametroQuestionario> builder)
+    public void Configure(EntityTypeBuilder<ParametroSondagemQuestionario> builder)
     {
-        builder.ToTable("parametro_questionario");
+        builder.ToTable("parametro_sondagem_questionario");
 
         builder.HasKey(x => x.Id).HasName("pk_parametro_questionario");
         builder.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
@@ -22,6 +22,11 @@ public class ParametroQuestionarioMap : IEntityTypeConfiguration<ParametroQuesti
         builder.Property(x => x.IdParametroSondagem)
             .HasColumnName("id_parametro_sondagem")
             .IsRequired();
+
+        builder.Property(x => x.Valor)
+            .IsRequired()
+            .HasColumnName("valor")
+            .HasMaxLength(1000);
 
         builder.Property(x => x.Excluido)
             .HasColumnName("excluido")
@@ -55,7 +60,7 @@ public class ParametroQuestionarioMap : IEntityTypeConfiguration<ParametroQuesti
             .HasFilter("excluido = false");
     }
 
-    private static void ConfigurarAuditoria(EntityTypeBuilder<ParametroQuestionario> builder)
+    private static void ConfigurarAuditoria(EntityTypeBuilder<ParametroSondagemQuestionario> builder)
     {
         builder.Property(x => x.CriadoEm).HasColumnName("criado_em").IsRequired();
         builder.Property(x => x.CriadoPor).HasColumnName("criado_por").HasMaxLength(200).IsRequired();

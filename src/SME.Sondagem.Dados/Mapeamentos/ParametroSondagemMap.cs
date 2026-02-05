@@ -29,11 +29,6 @@ public class ParametroSondagemMap : IEntityTypeConfiguration<ParametroSondagem>
             .HasColumnName("descricao")
             .HasMaxLength(500);
 
-        builder.Property(x => x.Valor)
-            .IsRequired()
-            .HasColumnName("valor")
-            .HasMaxLength(1000);
-
         builder.Property(x => x.Tipo)
             .HasColumnName("tipo")
             .HasConversion<int>()

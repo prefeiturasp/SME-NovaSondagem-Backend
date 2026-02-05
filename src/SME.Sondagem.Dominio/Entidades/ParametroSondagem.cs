@@ -10,6 +10,13 @@ namespace SME.Sondagem.Dominio.Entidades
         public string? Descricao { get; set; }
         public string? Nome { get; set; }
         public TipoParametroSondagem Tipo { get; set; }
-        public string? Valor { get; set; }
+
+        public void Atualizar(bool ativo, string? descricao, string? nome, TipoParametroSondagem tipo)
+        {
+            Ativo = ativo;
+            Descricao = descricao;
+            Nome = nome;
+            Tipo = tipo;
+        }
     }
 }
