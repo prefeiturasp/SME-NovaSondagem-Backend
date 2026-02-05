@@ -11,5 +11,12 @@ namespace SME.Sondagem.Dominio.Entidades
 
         public virtual Questionario.Questionario Questionario { get; set; } = null!;
         public virtual ParametroSondagem ParametroSondagem { get; set; } = null!;
+
+        public void Atualizar(int idParametroSondagem, int idQuestionario, string? valor)
+        {
+            IdParametroSondagem = idParametroSondagem;
+            IdQuestionario = idQuestionario;
+            Valor = valor;
+        }
     }
 }

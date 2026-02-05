@@ -8,6 +8,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagem;
+using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
@@ -22,6 +23,7 @@ using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.ParametroSondagem;
+using SME.Sondagem.Aplicacao.UseCases.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
@@ -80,6 +82,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IRepositorioCache, RepositorioCache>();
         services.TryAddScoped<IRepositorioProficiencia, RepositorioProficiencia>();
         services.TryAddScoped<IRepositorioParametroSondagem, RepositorioParametroSondagem>();
+        services.TryAddScoped<IRepositorioParametroSondagemQuestionario, RepositorioParametroSondagemQuestionario>();
         services.TryAddScoped<IRepositorioQuestao, RepositorioQuestao>();
         services.TryAddScoped<IRepositorioQuestaoOpcaoResposta, RepositorioQuestaoOpcaoResposta>();
         services.TryAddScoped<IRepositorioQuestionarioBimestre, RepositorioQuestionarioBimestre>();
@@ -153,6 +156,11 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirParametroSondagemUseCase, ExcluirParametroSondagemUseCase>();
         services.TryAddScoped<IObterParametrosSondagemUseCase, ObterParametrosSondagemUseCase>();
         services.TryAddScoped<IObterParametroSondagemPorIdUseCase, ObterParametroSondagemPorIdUseCase>();
+        services.TryAddScoped<ICriarParametroSondagemQuestionarioUseCase, CriarParametroSondagemQuestionarioUseCase>();
+        services.TryAddScoped<IAtualizarParametroSondagemQuestionarioUseCase, AtualizarParametroSondagemQuestionarioUseCase>();
+        services.TryAddScoped<IExcluirParametroSondagemQuestionarioUseCase, ExcluirParametroSondagemQuestionarioUseCase>();
+        services.TryAddScoped<IObterParametrosSondagemQuestionarioUseCase, ObterParametrosSondagemQuestionarioUseCase>();
+        services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdUseCase, ObterParametroSondagemQuestionarioPorIdUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
