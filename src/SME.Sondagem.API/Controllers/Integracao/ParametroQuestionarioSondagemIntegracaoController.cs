@@ -14,6 +14,7 @@ public class ParametroSondagemQuestionarioIntegracaoController : ControllerBase
 {
     private readonly IObterParametrosSondagemQuestionarioUseCase obterParametrosSondagensQuestionarioUseCase;
     private readonly IObterParametroSondagemQuestionarioPorIdUseCase obterParametroSondagemQuestionarioPorIdUseCase;
+    private readonly IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase obterParametroSondagemQuestionarioPorIdQuestionarioUseCase;
     private readonly ICriarParametroSondagemQuestionarioUseCase criarParametroSondagemQuestionarioUseCase;
     private readonly IAtualizarParametroSondagemQuestionarioUseCase atualizarParametroSondagemQuestionarioUseCase;
     private readonly IExcluirParametroSondagemQuestionarioUseCase excluirParametroSondagemQuestionarioUseCase;
@@ -21,12 +22,14 @@ public class ParametroSondagemQuestionarioIntegracaoController : ControllerBase
     public ParametroSondagemQuestionarioIntegracaoController(
         IObterParametrosSondagemQuestionarioUseCase obterParametrosSondagensQuestionarioUseCase,
         IObterParametroSondagemQuestionarioPorIdUseCase obterParametroSondagemQuestionarioPorIdUseCase,
+        IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase obterParametroSondagemQuestionarioPorIdQuestionarioUseCase,
         ICriarParametroSondagemQuestionarioUseCase criarParametroSondagemQuestionarioUseCase,
         IAtualizarParametroSondagemQuestionarioUseCase atualizarParametroSondagemQuestionarioUseCase,
         IExcluirParametroSondagemQuestionarioUseCase excluirParametroSondagemQuestionarioUseCase)
     {
         this.obterParametrosSondagensQuestionarioUseCase = obterParametrosSondagensQuestionarioUseCase;
         this.obterParametroSondagemQuestionarioPorIdUseCase = obterParametroSondagemQuestionarioPorIdUseCase;
+        this.obterParametroSondagemQuestionarioPorIdQuestionarioUseCase = obterParametroSondagemQuestionarioPorIdQuestionarioUseCase;
         this.criarParametroSondagemQuestionarioUseCase = criarParametroSondagemQuestionarioUseCase;
         this.atualizarParametroSondagemQuestionarioUseCase = atualizarParametroSondagemQuestionarioUseCase;
         this.excluirParametroSondagemQuestionarioUseCase = excluirParametroSondagemQuestionarioUseCase;
@@ -48,6 +51,18 @@ public class ParametroSondagemQuestionarioIntegracaoController : ControllerBase
 
         if (resultado == null)
             throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.PARAMETRO_SONDAGEM_NAO_ENCONTRADO, id));
+
+        return Ok(resultado);
+    }
+
+    [HttpGet("questionario/{idQuestionario}")]
+    [ProducesResponseType(typeof(ParametroSondagemQuestionarioCompletoDto), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetByIdQuestionario(long idQuestionario, CancellationToken cancellationToken)
+    {
+        var resultado = await obterParametroSondagemQuestionarioPorIdQuestionarioUseCase.ExecutarAsync(idQuestionario, cancellationToken);
+
+        if (resultado == null)
+            throw new ErroNaoEncontradoException(string.Format(MensagemNegocioComuns.QUESTIONARIO_NAO_ENCONTRADO, idQuestionario));
 
         return Ok(resultado);
     }

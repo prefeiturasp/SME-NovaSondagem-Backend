@@ -161,6 +161,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirParametroSondagemQuestionarioUseCase, ExcluirParametroSondagemQuestionarioUseCase>();
         services.TryAddScoped<IObterParametrosSondagemQuestionarioUseCase, ObterParametrosSondagemQuestionarioUseCase>();
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdUseCase, ObterParametroSondagemQuestionarioPorIdUseCase>();
+        services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase, ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
