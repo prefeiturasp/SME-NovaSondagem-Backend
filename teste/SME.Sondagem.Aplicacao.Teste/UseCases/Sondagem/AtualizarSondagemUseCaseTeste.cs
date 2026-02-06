@@ -40,7 +40,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.AtualizarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -54,8 +54,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 .ReturnsAsync(sondagem);
 
             repositorioMock
-                .Setup(r => r.AtualizarAsync(sondagem, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+                .Setup(r => r.SalvarAsync(sondagem, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(0);
 
             var dto = new SondagemDto
             {
@@ -68,7 +68,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             Assert.Null(resultado);
 
             repositorioMock.Verify(
-                r => r.AtualizarAsync(sondagem, It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(sondagem, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -82,8 +82,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 .ReturnsAsync(sondagem);
 
             repositorioMock
-                .Setup(r => r.AtualizarAsync(sondagem, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(r => r.SalvarAsync(sondagem, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var dto = new SondagemDto
             {
@@ -106,7 +106,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.AtualizarAsync(sondagem, It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(sondagem, It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 

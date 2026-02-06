@@ -28,9 +28,11 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem? sondagemInserida = null;
 
             repositorioMock
-                .Setup(r => r.InserirAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), It.IsAny<CancellationToken>()))
-                .Callback<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem, CancellationToken>((s, _) => sondagemInserida = s)
-                .Returns(Task.CompletedTask);
+                .Setup(r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem, CancellationToken>((s, _) =>
+                    sondagemInserida = s)
+                .ReturnsAsync(1);
 
             var resultado = await useCase.ExecutarAsync(dto);
 
@@ -41,7 +43,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             Assert.Equal(sondagemInserida.Id, resultado);
 
             repositorioMock.Verify(
-                r => r.InserirAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), It.IsAny<CancellationToken>()),
+                r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -57,13 +59,13 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             var cancellationToken = new CancellationTokenSource().Token;
 
             repositorioMock
-                .Setup(r => r.InserirAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), cancellationToken))
-                .Returns(Task.CompletedTask);
+                .Setup(r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), cancellationToken))
+                .ReturnsAsync(1);
 
             await useCase.ExecutarAsync(dto, cancellationToken);
 
             repositorioMock.Verify(
-                r => r.InserirAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), cancellationToken),
+                r => r.SalvarAsync(It.IsAny<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>(), cancellationToken),
                 Times.Once);
         }
     }

@@ -1,36 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Infra.Contexto;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
-public class RepositorioSondagem : IRepositorioSondagem
+public class RepositorioSondagem : RepositorioBase<Dominio.Entidades.Sondagem.Sondagem>,IRepositorioSondagem
 {
-    private readonly SondagemDbContext _context;
-    public RepositorioSondagem(SondagemDbContext context)
+    public RepositorioSondagem(SondagemDbContext context, IServicoAuditoria servicoAuditoria, ContextoBase database) : base(context, servicoAuditoria, database)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-    }
-
-    public async Task InserirAsync(Dominio.Entidades.Sondagem.Sondagem entidade, CancellationToken cancellationToken = default)
-    {
-        _context.Sondagens.Add(entidade);
-        await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task<Dominio.Entidades.Sondagem.Sondagem?> ObterPorIdAsync(long id, CancellationToken cancellationToken = default)
-    {
-        var sondagem = await _context.Sondagens
-            .AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
-
-        return sondagem!;
-    }
-
-    public async Task<IEnumerable<Dominio.Entidades.Sondagem.Sondagem>> ObterTodosAsync(CancellationToken cancellationToken = default)
-    {
-        return await _context.Sondagens.AsNoTracking().ToListAsync(cancellationToken);
     }
 
     public async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtiva(CancellationToken cancellationToken = default)
@@ -49,34 +29,5 @@ public class RepositorioSondagem : IRepositorioSondagem
             .FirstOrDefaultAsync(cancellationToken);
 
         return sondagem!;
-    }
-
-    public async Task<bool> ExcluirAsync(long id, CancellationToken cancellationToken)
-    {
-        var sondagem = await _context.Sondagens
-            .FirstOrDefaultAsync(p => p.Id == id && !p.Excluido, cancellationToken);
-
-        if (sondagem == null)
-            return false;
-
-        sondagem.Excluido = true;
-        await _context.SaveChangesAsync(cancellationToken);
-        return true;
-    }
-
-    public async Task<bool> AtualizarAsync(Dominio.Entidades.Sondagem.Sondagem sondagem, CancellationToken cancellationToken = default)
-    {
-        var sondagemExistente = await _context.Sondagens
-            .FirstOrDefaultAsync(p => p.Id == sondagem.Id && !p.Excluido, cancellationToken);
-
-        if (sondagemExistente == null)
-            return false;
-
-        sondagemExistente.AlteradoEm = sondagem.AlteradoEm;
-        sondagemExistente.AlteradoPor = sondagem.AlteradoPor;
-        sondagemExistente.AlteradoRF = sondagem.AlteradoRF;
-
-        await _context.SaveChangesAsync(cancellationToken);
-        return true;
     }
 }

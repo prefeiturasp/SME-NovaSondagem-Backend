@@ -15,7 +15,7 @@ public class ObterSondagemUseCase : IObterSondagensUseCase
 
     public async Task<IEnumerable<SondagemDto>> ExecutarAsync(CancellationToken cancellationToken = default)
     {
-        var questoes = await sondagemRepositorio.ObterTodosAsync(cancellationToken: cancellationToken);
+        var questoes = await sondagemRepositorio.ListarAsync(cancellationToken: cancellationToken);
 
         return questoes.Select(p => new SondagemDto
         {
