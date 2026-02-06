@@ -20,7 +20,7 @@ public class CriarSondagemUseCase : ICriarSondagemUseCase
             dataAplicacao: sondagemDto.DataAplicacao
         );
 
-        await sondagemRepositorio.InserirAsync(sondagem, cancellationToken: cancellationToken);
+        await sondagemRepositorio.SalvarAsync(sondagem, cancellationToken: cancellationToken);
         return sondagem.Id;
     }
 }
