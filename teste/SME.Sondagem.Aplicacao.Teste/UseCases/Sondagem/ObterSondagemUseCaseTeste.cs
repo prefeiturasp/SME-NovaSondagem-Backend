@@ -20,7 +20,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
         public async Task ExecutarAsync_DeveRetornarListaVazia_QuandoNaoExistiremSondagens()
         {
             repositorioMock
-                .Setup(r => r.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Empty<SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem>());
 
             var resultado = await useCase.ExecutarAsync();
@@ -29,7 +29,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             Assert.Empty(resultado);
 
             repositorioMock.Verify(
-                r => r.ObterTodosAsync(It.IsAny<CancellationToken>()),
+                r => r.ListarAsync(It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -39,7 +39,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             var sondagens = CriarListaSondagens();
 
             repositorioMock
-                .Setup(r => r.ObterTodosAsync(It.IsAny<CancellationToken>()))
+                .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(sondagens);
 
             var resultado = (await useCase.ExecutarAsync()).ToList();
@@ -60,7 +60,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
             }
 
             repositorioMock.Verify(
-                r => r.ObterTodosAsync(It.IsAny<CancellationToken>()),
+                r => r.ListarAsync(It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 

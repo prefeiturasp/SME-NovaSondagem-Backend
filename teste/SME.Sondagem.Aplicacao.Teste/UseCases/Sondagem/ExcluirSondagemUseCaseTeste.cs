@@ -32,7 +32,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.ExcluirAsync(It.IsAny<long>(), It.IsAny<CancellationToken>()),
+                r => r.RemoverLogico(It.IsAny<long>(), null,It.IsAny<CancellationToken>()),
                 Times.Never);
         }
 
@@ -46,8 +46,8 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 .ReturnsAsync(sondagem);
 
             repositorioMock
-                .Setup(r => r.ExcluirAsync(sondagem.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+                .Setup(r => r.RemoverLogico(sondagem.Id, null,It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             var resultado = await useCase.ExecutarAsync(sondagem.Id);
 
@@ -58,7 +58,7 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 Times.Once);
 
             repositorioMock.Verify(
-                r => r.ExcluirAsync(sondagem.Id, It.IsAny<CancellationToken>()),
+                r => r.RemoverLogico(sondagem.Id, null,It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -72,15 +72,15 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Sondagem
                 .ReturnsAsync(sondagem);
 
             repositorioMock
-                .Setup(r => r.ExcluirAsync(sondagem.Id, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+                .Setup(r => r.RemoverLogico(sondagem.Id, null,It.IsAny<CancellationToken>()))
+                .ReturnsAsync(0);
 
             var resultado = await useCase.ExecutarAsync(sondagem.Id);
 
             Assert.False(resultado);
 
             repositorioMock.Verify(
-                r => r.ExcluirAsync(sondagem.Id, It.IsAny<CancellationToken>()),
+                r => r.RemoverLogico(sondagem.Id, null,It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
