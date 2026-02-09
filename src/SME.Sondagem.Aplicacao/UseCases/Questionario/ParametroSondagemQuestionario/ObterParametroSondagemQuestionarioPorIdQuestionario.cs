@@ -7,22 +7,31 @@ namespace SME.Sondagem.Aplicacao.UseCases.ParametroSondagemQuestionario;
 public class ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase : IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase
 {
     private readonly IRepositorioParametroSondagemQuestionario parametroSondagemQuestionarioRepositorio;
+    private readonly IRepositorioCache repositorioCache;
 
-    public ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase(IRepositorioParametroSondagemQuestionario parametroSondagemQuestionarioRepositorio)
+    public ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase(
+        IRepositorioParametroSondagemQuestionario parametroSondagemQuestionarioRepositorio,
+        IRepositorioCache repositorioCache)
     {
         this.parametroSondagemQuestionarioRepositorio = parametroSondagemQuestionarioRepositorio;
+        this.repositorioCache = repositorioCache;
     }
 
     public async Task<IEnumerable<ParametroSondagemQuestionarioCompletoDto>> ExecutarAsync(long idQuestionario, CancellationToken cancellationToken = default)
     {
-        var parametros = await parametroSondagemQuestionarioRepositorio.ObterPorIdQuestionarioAsync(idQuestionario, cancellationToken);
+        var chaveCache = $"parametros-sondagem-questionario-{idQuestionario}";
 
-        return parametros.Select(p => new ParametroSondagemQuestionarioCompletoDto
+        return await repositorioCache.ObterRedisAsync(chaveCache, async () =>
         {
-            Id = p.Id,
-            IdQuestionario = p.IdQuestionario,
-            Valor = p.Valor,
-            Tipo = (int)p.ParametroSondagem.Tipo
+            var parametros = await parametroSondagemQuestionarioRepositorio.ObterPorIdQuestionarioAsync(idQuestionario, cancellationToken);
+
+            return parametros.Select(p => new ParametroSondagemQuestionarioCompletoDto
+            {
+                Id = p.Id,
+                IdQuestionario = p.IdQuestionario,
+                Valor = p.Valor,
+                Tipo = (int)p.ParametroSondagem.Tipo
+            });
         });
     }
 }
