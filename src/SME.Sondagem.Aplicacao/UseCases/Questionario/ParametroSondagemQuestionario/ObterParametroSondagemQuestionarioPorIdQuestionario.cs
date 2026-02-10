@@ -1,5 +1,6 @@
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagemQuestionario;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.ParametroSondagemQuestionario;
@@ -30,7 +31,7 @@ public class ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase : IObter
                 Id = p.Id,
                 IdQuestionario = p.IdQuestionario,
                 Valor = p.Valor,
-                Tipo = (int)p.ParametroSondagem.Tipo
+                Tipo = Enum.GetName(typeof(TipoParametroSondagem), p.IdParametroSondagem)
             });
         });
     }
