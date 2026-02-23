@@ -425,10 +425,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         };
     }
 
-    protected static RespostaDto? ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
+    protected static RespostaDto ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
     {
         if (!possuiResposta || resposta is null)
-            return null;
+            return new RespostaDto();
 
         var opcaoRespostaId = resposta.OpcaoRespostaId == 0 ? null : resposta.OpcaoRespostaId;
 

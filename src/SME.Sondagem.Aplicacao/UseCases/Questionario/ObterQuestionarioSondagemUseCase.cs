@@ -20,7 +20,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
 
     public async Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
-        return (QuestionarioSondagemDto)await ExecutarProcessamentoQuestionario(filtro, false, cancellationToken);
+        return (QuestionarioSondagemDto)await ExecutarProcessamentoQuestionario(filtro, cancellationToken);
     }
 
     protected override async Task<DadosAlunos> ObterDadosAlunos(
@@ -44,7 +44,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         {
             AlunosComPap = alunosComPap,
             AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua,
-            DadosRacaGenero = null 
+            DadosRacaGenero = null
         };
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -9,14 +9,14 @@ namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class QuestionarioController : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(QuestionarioDto), 200)]
-    public async Task<IActionResult> ObterQuestionario([FromQuery] FiltroQuestionario filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterQuestionarioSondagemUseCase, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObterQuestionario([FromQuery] FiltroQuestionario filtro, [FromServices] IObterQuestionarioSondagemUseCase obterQuestionarioSondagemUseCase, CancellationToken cancellationToken)
     {
-        return Ok(await obterQuestionarioSondagemUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+        return Ok(await obterQuestionarioSondagemUseCase.ObterQuestionarioSondagem(filtro, cancellationToken));
     }
 }

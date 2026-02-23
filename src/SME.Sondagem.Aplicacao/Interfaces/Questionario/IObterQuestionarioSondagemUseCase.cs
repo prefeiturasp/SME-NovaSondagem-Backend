@@ -5,5 +5,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Questionario;
 
 public interface IObterQuestionarioSondagemUseCase
 {
-    public Task<object> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken);
+    Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken);
 }

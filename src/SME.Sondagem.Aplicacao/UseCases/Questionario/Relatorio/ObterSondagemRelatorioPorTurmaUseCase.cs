@@ -8,11 +8,11 @@ using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
-public class ObterQuestionarioSondagemRelatorioUseCase : QuestionarioSondagemUseCaseBase, IObterQuestionarioSondagemRelatorioUseCase
+public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCaseBase, IObterSondagemRelatorioPorTurmaUseCase
 {
     private readonly IAlunoTurmaService _alunoTurmaService;
 
-    public ObterQuestionarioSondagemRelatorioUseCase(
+    public ObterSondagemRelatorioPorTurmaUseCase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
@@ -23,10 +23,10 @@ public class ObterQuestionarioSondagemRelatorioUseCase : QuestionarioSondagemUse
         _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
     }
 
-    public async Task<QuestionarioSondagemRelatorioDto> ObterQuestionarioSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
+    public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         await ValidarAnoRelatorio(filtro, cancellationToken);
-        
+
         var resultado = await ExecutarProcessamentoQuestionario(filtro, true, cancellationToken);
         return (QuestionarioSondagemRelatorioDto)resultado;
     }

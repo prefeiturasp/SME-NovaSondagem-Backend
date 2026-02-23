@@ -126,7 +126,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionariosUseCase, ObterQuestionariosUseCase>();
         services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
-        services.TryAddScoped<IObterQuestionarioSondagemRelatorioUseCase, ObterQuestionarioSondagemRelatorioUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioPorTurmaUseCase, ObterSondagemRelatorioPorTurmaUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
