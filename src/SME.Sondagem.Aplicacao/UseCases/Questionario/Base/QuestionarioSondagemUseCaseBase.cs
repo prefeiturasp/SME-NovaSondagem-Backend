@@ -345,7 +345,6 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             .OrderBy(qo => qo.Ordem)
             .Select(qo => new OpcaoRespostaDto
             {
-                Id = qo.OpcaoRespostaId,
                 Ordem = qo.Ordem,
                 DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
                 Legenda = qo.OpcaoResposta.Legenda,

@@ -613,7 +613,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
         Assert.Equal(2, primeiraColuna.OpcaoResposta.Count());
 
         var primeiraOpcao = primeiraColuna.OpcaoResposta.First();
-        Assert.Equal(1, primeiraOpcao.Id);
         Assert.Equal(1, primeiraOpcao.Ordem);
         Assert.Equal("Opção 1", primeiraOpcao.DescricaoOpcaoResposta);
         Assert.Equal("A", primeiraOpcao.Legenda);

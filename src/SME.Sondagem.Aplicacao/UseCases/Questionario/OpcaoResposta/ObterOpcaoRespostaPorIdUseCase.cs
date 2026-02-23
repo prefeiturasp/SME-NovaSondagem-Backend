@@ -22,18 +22,11 @@ public class ObterOpcaoRespostaPorIdUseCase : IObterOpcaoRespostaPorIdUseCase
 
         return new OpcaoRespostaDto
         {
-            Id = opcaoResposta.Id,
             Ordem = opcaoResposta.Ordem,
             DescricaoOpcaoResposta = opcaoResposta.DescricaoOpcaoResposta,
             Legenda = opcaoResposta.Legenda,
             CorFundo = opcaoResposta.CorFundo,
-            CorTexto = opcaoResposta.CorTexto,
-            CriadoEm = opcaoResposta.CriadoEm,
-            CriadoPor = opcaoResposta.CriadoPor,
-            CriadoRF = opcaoResposta.CriadoRF,
-            AlteradoEm = opcaoResposta.AlteradoEm,
-            AlteradoPor = opcaoResposta.AlteradoPor,
-            AlteradoRF = opcaoResposta.AlteradoRF
+            CorTexto = opcaoResposta.CorTexto
         };
     }
 }

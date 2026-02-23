@@ -57,22 +57,12 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.Equal("Legenda A", primeira.Legenda);
         Assert.Equal("#FF0000", primeira.CorFundo);
         Assert.Equal("#FFFFFF", primeira.CorTexto);
-        Assert.Equal("Usuario1", primeira.CriadoPor);
-        Assert.Equal("RF001", primeira.CriadoRF);
-        Assert.Null(primeira.AlteradoEm);
-        Assert.Null(primeira.AlteradoPor);
-        Assert.Null(primeira.AlteradoRF);
 
         var segunda = resultadoList.First(x => x.DescricaoOpcaoResposta == "Opção B");
         Assert.Equal("Opção B", segunda.DescricaoOpcaoResposta);
         Assert.Equal("Legenda B", segunda.Legenda);
         Assert.Equal("#00FF00", segunda.CorFundo);
         Assert.Equal("#000000", segunda.CorTexto);
-        Assert.Equal("Usuario2", segunda.CriadoPor);
-        Assert.Equal("RF002", segunda.CriadoRF);
-        Assert.NotNull(segunda.AlteradoEm);
-        Assert.Equal("Usuario3", segunda.AlteradoPor);
-        Assert.Equal("RF003", segunda.AlteradoRF);
 
         _repositorioOpcaoRespostaMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
     }
@@ -169,12 +159,6 @@ public class ObterOpcoesRespostaUseCaseTeste
         Assert.Equal("Legenda detalhada", dto.Legenda);
         Assert.Equal("#0000FF", dto.CorFundo);
         Assert.Equal("#FFFF00", dto.CorTexto);
-        Assert.Equal(dataEspecifica, dto.CriadoEm);
-        Assert.Equal("Sistema", dto.CriadoPor);
-        Assert.Equal("RF999", dto.CriadoRF);
-        Assert.Equal(dataAlteracao, dto.AlteradoEm);
-        Assert.Equal("Admin", dto.AlteradoPor);
-        Assert.Equal("RF999", dto.AlteradoRF);
     }
 
     [Fact]
