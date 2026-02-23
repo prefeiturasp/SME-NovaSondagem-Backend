@@ -83,7 +83,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var respostasProcessadas = ProcessarRespostas(contextoProcesamento.RespostasAlunosPorQuestoes);
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas, ehRelatorio);
 
         var questaoId = contextoProcesamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
@@ -171,7 +171,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
         DadosAlunos dadosAlunos,
         ContextoProcesamento contexto,
-        RespostasProcessadas respostasProcessadas)
+        RespostasProcessadas respostasProcessadas,
+        bool ehRelatorio)
     {
         var estudantes = new List<EstudanteQuestionarioDto>();
 
@@ -180,7 +181,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             var codigoAluno = (int)aluno.CodigoAluno;
 
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, codigoAluno, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas))
+                .Select(c => ConstruirColunaAluno(c, codigoAluno, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas, ehRelatorio))
                 .ToList();
 
             var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, codigoAluno);
@@ -405,7 +406,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         ColunaQuestionarioDto colunaBase,
         int codigoAluno,
         long questaoIdPrincipal,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes)
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        bool ehRelatorio = false)
     {
         long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? questaoIdPrincipal;
         int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
@@ -419,7 +421,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             DescricaoColuna = colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = colunaBase.OpcaoResposta,
+            OpcaoResposta = ehRelatorio ? null : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
     }

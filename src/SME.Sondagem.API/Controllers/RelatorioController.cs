@@ -12,7 +12,7 @@ namespace SME.Sondagem.API.Controllers;
 [Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class RelatorioController : ControllerBase
 {
-    [HttpGet("sondagemPorTurma")]
+    [HttpGet("sondagem-por-turma")]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(QuestionarioSondagemRelatorioDto), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTurma([FromQuery] FiltroQuestionario filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterRelatorioSondagemPorTurmaUseCase, CancellationToken cancellationToken)
