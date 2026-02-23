@@ -83,7 +83,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var respostasProcessadas = ProcessarRespostas(contextoProcesamento.RespostasAlunosPorQuestoes);
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas, cancellationToken);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas);
 
         var questaoId = contextoProcesamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
@@ -171,8 +171,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
         DadosAlunos dadosAlunos,
         ContextoProcesamento contexto,
-        RespostasProcessadas respostasProcessadas,
-        CancellationToken cancellationToken)
+        RespostasProcessadas respostasProcessadas)
     {
         var estudantes = new List<EstudanteQuestionarioDto>();
 

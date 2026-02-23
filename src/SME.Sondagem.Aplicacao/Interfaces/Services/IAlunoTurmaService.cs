@@ -4,6 +4,6 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Services
 {
     public interface IAlunoTurmaService
     {
-        Task<IEnumerable<DadosAlunoPorTurmaDTO>> InformacoesAlunosPorTurma(long codigoTurma, CancellationToken cancellationToken = default);
+        Task<IEnumerable<DadosAlunoPorTurmaDto>> InformacoesAlunosPorTurma(long codigoTurma, CancellationToken cancellationToken = default);
     }
 }

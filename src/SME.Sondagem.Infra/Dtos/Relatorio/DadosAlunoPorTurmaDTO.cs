@@ -1,6 +1,6 @@
 ﻿namespace SME.Sondagem.Infrastructure.Dtos.Relatorio
 {
-    public class DadosAlunoPorTurmaDTO
+    public class DadosAlunoPorTurmaDto
     {
         public long NumeroChamada { get; set; }
         public long CodigoAluno { get; set; }

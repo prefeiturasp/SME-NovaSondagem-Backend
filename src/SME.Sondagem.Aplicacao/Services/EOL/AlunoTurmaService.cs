@@ -15,9 +15,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<DadosAlunoPorTurmaDTO>> InformacoesAlunosPorTurma(long codigoTurma, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<DadosAlunoPorTurmaDto>> InformacoesAlunosPorTurma(long codigoTurma, CancellationToken cancellationToken = default)
         {
-            var resultado = new List<DadosAlunoPorTurmaDTO>();
+            var resultado = new List<DadosAlunoPorTurmaDto>();
 
             if (codigoTurma == 0)
                 return resultado;
@@ -37,7 +37,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
                 if (!string.IsNullOrEmpty(alunosTurmaJson))
                 {
-                    var alunosTurma = JsonConvert.DeserializeObject<IEnumerable<DadosAlunoPorTurmaDTO>>(alunosTurmaJson);
+                    var alunosTurma = JsonConvert.DeserializeObject<IEnumerable<DadosAlunoPorTurmaDto>>(alunosTurmaJson);
                     return alunosTurma ?? resultado;
                 }
             }
