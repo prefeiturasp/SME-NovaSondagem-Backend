@@ -79,7 +79,9 @@ namespace SME.Sondagem.Infra.Services
 
         public const string URL_ALUNOS_INFORMACOES = "alunos/{0}/informacoes";
 
-        public const string URL_ALUNOS_ALUNOS_PAP = "alunos/alunos-pap/{0}";
+        public const string URL_ALUNOS_ALUNOS_PAP = "alunos/alunos-pap/{0}"; 
+
+        public const string URL_ALUNOS_TURMA_INFORMACOES = "alunos/{0}/turma/informacoes";
 
         public const string URL_ALUNOS_TURMAS = "alunos/{0}/turmas";
 

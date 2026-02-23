@@ -27,4 +27,16 @@ public static class MensagemNegocioComuns
     public const string SEM_PERMISSAO_SALVAR_SONDAGEM = "Você não possui permissão para salvar a Sondagem.";
     public const string MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA = "Somente é possível utilizar a Sondagem para turmas de 1° a 3º no do Ensino Fundamental e etapa de alfabetização da EJA.";
     public const string ANO_LETIVO_TURMA_SONDAGEM_INVALIDA = "A Sondagem não se aplica para turmas deste ano letivo.";
+
+    // Questionário
+    public const string PROFICIENCIA_OBRIGATORIA_NO_FILTRO = "A proficiência é obrigatória no filtro";
+    public const string SONDAGEM_ATIVA_NAO_CADASTRADA = "Não há sondagem ativa cadastrada no sistema";
+    public const string MODALIDADE_SEM_QUESTIONARIO = "Não há questionário para a modalidade informada";
+    public const string SERIE_SEM_QUESTIONARIO = "Não há questionário para a série informada";
+    public const string QUESTOES_ATIVAS_NAO_ENCONTRADAS = "Não há questões ativas para o questionário com os filtros informados";
+    public const string ALUNOS_NAO_CADASTRADOS_TURMA = "Não há alunos cadastrados para a turma informada";
+    public const string PERIODO_BIMESTRE_NAO_ENCONTRADO = "Período do bimestre não encontrado.";
+    public const string COLUNAS_SUBPERGUNTAS_NAO_OBTIDAS = "Não foi possível obter as colunas das subperguntas";
+    public const string QUESTAO_PRINCIPAL_NAO_ENCONTRADA = "Questão principal não encontrada";
+    public const string COLUNAS_CICLOS_NAO_OBTIDAS = "Não foi possível obter as colunas dos ciclos";
 }

@@ -4,8 +4,8 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -225,7 +225,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Turma não localizada", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, exception.Message);
     }
 
     [Fact]
@@ -239,10 +239,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("A proficiência é obrigatória no filtro", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.PROFICIENCIA_OBRIGATORIA_NO_FILTRO, exception.Message);
     }
 
-    #endregion
+   #endregion
 
     #region Testes de Validação de Sondagem
 
@@ -259,7 +259,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Não há sondagem ativa cadastrada no sistema", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
     }
 
     #endregion
@@ -283,7 +283,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Não há questionário para a modalidade informada", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.MODALIDADE_SEM_QUESTIONARIO, exception.Message);
     }
 
     [Theory]
@@ -296,7 +296,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     public async Task ObterQuestionarioSondagem_DeveRetornarQuestionarioComSucesso_ParaModalidadesEAnosValidos(
         int modalidade, string anoTurma)
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = modalidade, AnoTurma = anoTurma, AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -315,7 +315,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarQuestionarioComEstudantesComPropriedadesCorretas()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -337,7 +337,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarEstudantesComPap_QuandoAlunosEstiveremNoProgramaPap()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -369,7 +369,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarEstudantesComLinguaPortuguesaSegundaLingua()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -401,7 +401,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarEstudantesComDeficiencia()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -435,13 +435,13 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
 
         var questaoRespondidaId = 13;
 
         ConfigurarMocksBase(
             filtro,
-            new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 },
+            new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2026 },
             CriarSondagemMock(),
             CriarQuestoesMockComSubResposta(questaoRespondidaId)
         );
@@ -510,7 +510,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarColunaSemResposta_QuandoAlunoNaoTiverResposta()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -522,14 +522,16 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var primeiroEstudante = resultado.Estudantes!.First();
         var primeiraColuna = primeiroEstudante.Coluna!.First();
-        Assert.Null(primeiraColuna.Resposta);
+        Assert.NotNull(primeiraColuna.Resposta);
+        Assert.Equal(0, primeiraColuna.Resposta.Id);
+        Assert.Null(primeiraColuna.Resposta.OpcaoRespostaId);
     }
 
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveFiltrarApenasQuestoesDoTipoComboELinguaPortuguesa()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
-        var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
+        var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2026 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesVariadasMock();
         var alunos = CriarAlunosMock();
@@ -563,7 +565,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarTituloVazio_QuandoNaoHouverQuestoes()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoesSemNome = CriarQuestoesSemNomeMock();
@@ -579,7 +581,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarColunasComPeriodoBimestreAtivo()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagemComPeriodoAtivo = CriarSondagemComPeriodoAtivoMock();
         var questoes = CriarQuestoesMock();
@@ -596,7 +598,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarColunasComOpcoesResposta()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();
@@ -611,7 +613,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
         Assert.Equal(2, primeiraColuna.OpcaoResposta.Count());
 
         var primeiraOpcao = primeiraColuna.OpcaoResposta.First();
-        Assert.Equal(1, primeiraOpcao.Id);
         Assert.Equal(1, primeiraOpcao.Ordem);
         Assert.Equal("Opção 1", primeiraOpcao.DescricaoOpcaoResposta);
         Assert.Equal("A", primeiraOpcao.Legenda);
@@ -620,7 +621,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveIgnorarPeriodosBimestresExcluidos()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagemComExcluidos = CriarSondagemComBimestresExcluidosMock();
         var questoes = CriarQuestoesMock();
@@ -641,7 +642,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_UsaBimestresDoRepositorio_QuandoExistir()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
 
         var sondagem = CriarSondagemMock();
@@ -667,7 +668,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [Fact]
     public async Task ObterQuestionarioSondagem_DeveLancarErro_QuandoRepositorioRetornarListaVazia()
     {
-        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
         var sondagem = CriarSondagemMock();
         var questoes = CriarQuestoesMock();

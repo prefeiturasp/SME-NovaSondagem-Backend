@@ -59,7 +59,6 @@ namespace SME.Sondagem.API.Teste.Controllers
                                 {
                                     new OpcaoRespostaDto
                                     {
-                                        Id = 1,
                                         Ordem = 1,
                                         DescricaoOpcaoResposta = "Sim",
                                         Legenda = "S",

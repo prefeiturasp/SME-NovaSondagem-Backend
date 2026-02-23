@@ -24,13 +24,7 @@ public class ObterOpcaoRespostasUseCase : IObterOpcaoRespostaUseCase
             DescricaoOpcaoResposta = p.DescricaoOpcaoResposta,
             Legenda = p.Legenda,
             CorFundo = p.CorFundo,
-            CorTexto = p.CorTexto,
-            CriadoEm = p.CriadoEm,
-            CriadoPor = p.CriadoPor,
-            CriadoRF = p.CriadoRF,
-            AlteradoEm = p.AlteradoEm,
-            AlteradoPor = p.AlteradoPor,
-            AlteradoRF = p.AlteradoRF
+            CorTexto = p.CorTexto
         });
     }
 }
