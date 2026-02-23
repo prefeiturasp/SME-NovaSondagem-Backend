@@ -4,8 +4,8 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Elastic;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -225,7 +225,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Turma não localizada", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, exception.Message);
     }
 
     [Fact]
@@ -239,10 +239,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("A proficiência é obrigatória no filtro", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.PROFICIENCIA_OBRIGATORIA_NO_FILTRO, exception.Message);
     }
 
-    #endregion
+   #endregion
 
     #region Testes de Validação de Sondagem
 
@@ -259,7 +259,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Não há sondagem ativa cadastrada no sistema", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
     }
 
     #endregion
@@ -283,7 +283,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var exception = await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
-        Assert.Equal("Não há questionário para a modalidade informada", exception.Message);
+        Assert.Equal(MensagemNegocioComuns.MODALIDADE_SEM_QUESTIONARIO, exception.Message);
     }
 
     [Theory]

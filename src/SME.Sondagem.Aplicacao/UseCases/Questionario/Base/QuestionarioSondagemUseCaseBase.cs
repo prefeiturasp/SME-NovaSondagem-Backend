@@ -15,7 +15,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly RepositoriosSondagem _repositoriosSondagem;
     protected readonly IAlunoPapService _alunoPapService;
     protected readonly IControleAcessoService _controleAcessoService;
-
+            
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
@@ -56,20 +56,20 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected async Task<TurmaElasticDto> ValidarFiltroEModalidade(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         var turma = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
-            ?? throw new RegraNegocioException("Turma não localizada", 400);
+            ?? throw new RegraNegocioException(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, 400);
 
         if (filtro.ProficienciaId == 0)
-            throw new RegraNegocioException("A proficiência é obrigatória no filtro", 400);
+            throw new RegraNegocioException(MensagemNegocioComuns.PROFICIENCIA_OBRIGATORIA_NO_FILTRO, 400);
 
         return turma;
     }
-    
+
     protected async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtivaOuLancarExcecao(CancellationToken cancellationToken)
     {
         return await _repositoriosSondagem.RepositorioSondagem.ObterSondagemAtiva(cancellationToken)
-            ?? throw new ErroInternoException("Não há sondagem ativa cadastrada no sistema");
+            ?? throw new ErroInternoException(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA);
     }
-    
+
     private async Task<object> ProcessarQuestionario(
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
@@ -220,12 +220,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected static void ValidarModalidadeEAno(int modalidade, int ano)
     {
         if (modalidade != (int)Modalidade.Fundamental && modalidade != (int)Modalidade.EJA)
-            throw new ErroNaoEncontradoException("Não há questionário para a modalidade informada");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.MODALIDADE_SEM_QUESTIONARIO);
 
         if (ano is < 1 or > 3)
-            throw new ErroNaoEncontradoException("Não há questionário para a série informada");
+            throw new ErroNaoEncontradoException(MensagemNegocioComuns.SERIE_SEM_QUESTIONARIO);
     }
-    
+
     protected async Task<IEnumerable<Dominio.Entidades.Questionario.Questao>> ObterQuestoesAtivasOuLancarExcecao(
         int modalidade,
         int ano,
@@ -242,7 +242,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return questoesAtivas?.Any() == true
             ? questoesAtivas
-            : throw new ErroNaoEncontradoException("Não há questões ativas para o questionário com os filtros informados");
+            : throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTOES_ATIVAS_NAO_ENCONTRADAS);
     }
 
     protected static List<int> ObterQuestoesIdsPorTipo(IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
@@ -261,7 +261,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return alunos?.Any() == true
             ? alunos
-            : throw new ErroNaoEncontradoException("Não há alunos cadastrados para a turma informada");
+            : throw new ErroNaoEncontradoException(MensagemNegocioComuns.ALUNOS_NAO_CADASTRADOS_TURMA);
     }
 
     protected static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecao(
@@ -289,7 +289,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var periodo = periodosBimestre
             .FirstOrDefault(p => !p.Excluido && p.BimestreId == bimestreId)
-            ?? throw new ErroNaoEncontradoException("Período do bimestre não encontrado.");
+            ?? throw new ErroNaoEncontradoException(MensagemNegocioComuns.PERIODO_BIMESTRE_NAO_ENCONTRADO);
 
         var agora = DateTime.Now;
         var periodoAtivo = agora >= periodo.DataInicio && agora <= periodo.DataFim;
@@ -309,7 +309,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return colunasPorQuestao.Count != 0
             ? Task.FromResult(colunasPorQuestao)
-            : throw new ErroNaoEncontradoException("Não foi possível obter as colunas das subperguntas");
+            : throw new ErroNaoEncontradoException(MensagemNegocioComuns.COLUNAS_SUBPERGUNTAS_NAO_OBTIDAS);
     }
 
     private static Task<List<ColunaQuestionarioDto>> ObterColunasPorBimestres(
@@ -317,7 +317,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
     {
         var questaoBimestre = questoesAtivas.FirstOrDefault(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
-            ?? throw new ErroNaoEncontradoException("Questão principal não encontrada");
+            ?? throw new ErroNaoEncontradoException(MensagemNegocioComuns.QUESTAO_PRINCIPAL_NAO_ENCONTRADA);
 
         var opcoesResposta = ObterOpcoesRespostasPorQuestao(questaoBimestre.Id, questoesAtivas);
 
@@ -334,7 +334,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return bimestresAtivos.Count != 0
             ? Task.FromResult(bimestresAtivos)
-            : throw new ErroNaoEncontradoException("Não foi possível obter as colunas dos ciclos");
+            : throw new ErroNaoEncontradoException(MensagemNegocioComuns.COLUNAS_CICLOS_NAO_OBTIDAS);
     }
 
     protected static List<OpcaoRespostaDto> ObterOpcoesRespostasPorQuestao(int questaoId, IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
