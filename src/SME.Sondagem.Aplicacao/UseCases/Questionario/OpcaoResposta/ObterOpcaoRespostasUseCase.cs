@@ -19,6 +19,7 @@ public class ObterOpcaoRespostasUseCase : IObterOpcaoRespostaUseCase
 
         return opcaoRespostas.Select(p => new OpcaoRespostaDto
         {
+            Id = p.Id,
             Ordem = p.Ordem,
             DescricaoOpcaoResposta = p.DescricaoOpcaoResposta,
             Legenda = p.Legenda,

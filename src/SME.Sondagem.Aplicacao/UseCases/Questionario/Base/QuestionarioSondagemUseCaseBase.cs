@@ -349,7 +349,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 DescricaoOpcaoResposta = qo.OpcaoResposta.DescricaoOpcaoResposta,
                 Legenda = qo.OpcaoResposta.Legenda,
                 CorFundo = qo.OpcaoResposta.CorFundo,
-                CorTexto = qo.OpcaoResposta.CorTexto
+                CorTexto = qo.OpcaoResposta.CorTexto,
+                Id = qo.OpcaoResposta.Id
             })
             .ToList();
     }
@@ -420,7 +421,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             DescricaoColuna = colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = ehRelatorio ? null : colunaBase.OpcaoResposta,
+            OpcaoResposta = ehRelatorio ? colunaBase?.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId) : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
     }
