@@ -4,6 +4,6 @@ namespace SME.Sondagem.Dados.Interfaces.Elastic
 {
     public interface IRepositorioElasticTurma : IRepositorioElasticBase<TurmaElasticDto>
     {
-        Task<TurmaElasticDto> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken);
+        Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken);
     }
 }

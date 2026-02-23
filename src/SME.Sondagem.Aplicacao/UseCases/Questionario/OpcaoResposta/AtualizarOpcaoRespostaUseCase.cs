@@ -29,17 +29,10 @@ public class AtualizarOpcaoRespostaUseCase : IAtualizarOpcaoRespostaUseCase
 
         return new OpcaoRespostaDto
         {
-            Id = opcaoRespostaExistente.Id,
             DescricaoOpcaoResposta = opcaoRespostaExistente.DescricaoOpcaoResposta,
             Legenda = opcaoRespostaExistente.Legenda,
             CorFundo = opcaoRespostaExistente.CorFundo,
-            CorTexto = opcaoRespostaExistente.CorTexto,
-            CriadoEm = opcaoRespostaExistente.CriadoEm,
-            CriadoPor = opcaoRespostaExistente.CriadoPor,
-            CriadoRF = opcaoRespostaExistente.CriadoRF,
-            AlteradoEm = opcaoRespostaExistente.AlteradoEm,
-            AlteradoPor = opcaoRespostaExistente.AlteradoPor,
-            AlteradoRF = opcaoRespostaExistente.AlteradoRF
+            CorTexto = opcaoRespostaExistente.CorTexto
         };
     }
 }

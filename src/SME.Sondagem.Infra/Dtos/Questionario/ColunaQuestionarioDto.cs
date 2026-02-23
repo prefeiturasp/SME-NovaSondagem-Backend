@@ -10,5 +10,5 @@ public class ColunaQuestionarioDto
     public bool PeriodoBimestreAtivo { get; set; }
     public int? QuestaoSubrespostaId { get; set; }
     public IEnumerable<OpcaoRespostaDto>? OpcaoResposta { get; set; }
-    public RespostaDto? Resposta { get; set; }
+    public RespostaDto Resposta { get; set; } = new();
 }

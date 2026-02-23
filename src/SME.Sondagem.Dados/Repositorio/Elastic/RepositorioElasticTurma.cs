@@ -13,21 +13,19 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         {
         }
 
-        public async Task<TurmaElasticDto> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
+        public async Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
         {
             if (filtro.TurmaId == 0)
-            {
-                return null!;
-            }
+                return null;
 
             var retorno = await ObterAsync(
                 IndicesElastic.INDICE_TURMA,
                 filtro.TurmaId.ToString(),
                 "Obter turma por código",
-                new { filtro.TurmaId }
+                new { filtro.TurmaId, filtro.AnoLetivo, filtro.Semestre, filtro.Ano, filtro.Modalidade, filtro.UeCodigo }
             );
 
-            return retorno!;
+            return retorno;
         }
     }
 }

@@ -42,7 +42,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
+            .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
             .ReturnsAsync(opcaoResposta);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
@@ -51,15 +51,9 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         Assert.Equal("Opção A - Resposta correta", resultado.DescricaoOpcaoResposta);
         Assert.Equal("Legenda explicativa", resultado.Legenda);
         Assert.Equal("#00FF00", resultado.CorFundo);
-        Assert.Equal("#000000", resultado.CorTexto);
-        Assert.Equal("Usuario1", resultado.CriadoPor);
-        Assert.Equal("RF001", resultado.CriadoRF);
-        Assert.Equal(dataCriacao, resultado.CriadoEm);
-        Assert.Equal(dataAlteracao, resultado.AlteradoEm);
-        Assert.Equal("Usuario2", resultado.AlteradoPor);
-        Assert.Equal("RF002", resultado.AlteradoRF);
+        Assert.Equal("#000000", resultado.CorTexto);       
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -68,14 +62,14 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         const long id = 999;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
+            .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
             .ReturnsAsync((SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta?)null);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.Null(resultado);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -85,12 +79,12 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         var cancellationTokenCustom = new CancellationToken(false);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: cancellationTokenCustom))
+            .Setup(x => x.ObterPorIdAsync(id, cancellationTokenCustom))
             .ReturnsAsync((SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta?)null);
 
         await _useCase.ExecutarAsync(id, cancellationTokenCustom);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: cancellationTokenCustom), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCustom), Times.Once);
     }
 
     [Fact]
@@ -100,13 +94,13 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         var cancellationTokenCancelado = new CancellationToken(true);
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: cancellationTokenCancelado))
+            .Setup(x => x.ObterPorIdAsync(id, cancellationTokenCancelado))
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
             () => _useCase.ExecutarAsync(id, cancellationTokenCancelado));
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: cancellationTokenCancelado), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationTokenCancelado), Times.Once);
     }
 
     [Fact]
@@ -129,7 +123,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
+            .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
             .ReturnsAsync(opcaoResposta);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
@@ -140,7 +134,7 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         Assert.Null(resultado.CorFundo);
         Assert.Null(resultado.CorTexto);
 
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -149,14 +143,14 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         const long id = 1;
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
+            .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
             .ThrowsAsync(new InvalidOperationException("Erro ao obter opção de resposta"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _useCase.ExecutarAsync(id, _cancellationToken));
 
         Assert.Equal("Erro ao obter opção de resposta", exception.Message);
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
     }
 
     [Theory]
@@ -179,12 +173,12 @@ public class ObterOpcaoRespostaPorIdUseCaseTeste
         };
 
         _repositorioOpcaoRespostaMock
-            .Setup(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken))
+            .Setup(x => x.ObterPorIdAsync(id, _cancellationToken))
             .ReturnsAsync(opcaoResposta);
 
         var resultado = await _useCase.ExecutarAsync(id, _cancellationToken);
 
         Assert.NotNull(resultado);
-        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, cancellationToken: _cancellationToken), Times.Once);
+        _repositorioOpcaoRespostaMock.Verify(x => x.ObterPorIdAsync(id, _cancellationToken), Times.Once);
     }
 }

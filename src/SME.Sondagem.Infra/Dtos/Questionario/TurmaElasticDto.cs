@@ -26,7 +26,10 @@ public class TurmaElasticDto
 
     [JsonPropertyName("Modalidade")]
     public int Modalidade { get; set; }
-    
+
+    [JsonPropertyName("Semestre")]
+    public int Semestre { get; set; }
+
     [JsonPropertyName("AnoTurma")]
     public string AnoTurma { get; set; } = string.Empty;
 
