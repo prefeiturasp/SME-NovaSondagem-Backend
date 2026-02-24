@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 

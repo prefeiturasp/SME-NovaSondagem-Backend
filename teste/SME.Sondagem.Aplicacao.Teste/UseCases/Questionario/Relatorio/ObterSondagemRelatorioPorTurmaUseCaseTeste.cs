@@ -8,6 +8,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 

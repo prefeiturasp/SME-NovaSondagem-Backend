@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
@@ -85,6 +86,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas, ehRelatorio);
 
+        var legenda = await ConstruirLegenda(contextoProcesamento, respostasProcessadas, ehRelatorio);
+
         var questaoId = contextoProcesamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
@@ -107,7 +110,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                Estudantes = estudantes.OrderBy(e => e.Nome).ToList()
+                Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
+                Legenda = legenda
             };
         }
     }
@@ -189,6 +193,41 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         }
 
         return estudantes;
+    }
+
+    private async Task<List<LegendaQuestionarioDto>> ConstruirLegenda(
+        ContextoProcesamento contexto,
+        RespostasProcessadas respostasProcessadas,
+        bool ehRelatorio)
+    {
+        var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
+            .Where(resposta => resposta.OpcaoRespostaId.HasValue && resposta.OpcaoRespostaId != 1 && resposta.OpcaoRespostaId != 2)
+            .Select(resposta => resposta.OpcaoRespostaId!.Value)
+            .Distinct()
+            .ToHashSet();
+
+        var todasOpcoesResposta = contexto.QuestoesAtivas
+            .SelectMany(q => q.QuestaoOpcoes)
+            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id))
+            .Select(qo => qo.OpcaoResposta)
+            .DistinctBy(or => or.Id)
+            .OrderBy(or => or.Ordem)
+            .ToList();
+
+        var legendas = todasOpcoesResposta
+            .Select(opcao => new LegendaQuestionarioDto
+            {
+                Id = opcao.Id,
+                Ordem = opcao.Ordem,
+                DescricaoOpcaoResposta = opcao.DescricaoOpcaoResposta,
+                Legenda = opcao.Legenda,
+                CorFundo = opcao.CorFundo,
+                CorTexto = opcao.CorTexto
+            })
+            .OrderBy(l => l.Id)
+            .ToList();
+
+        return legendas;
     }
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
