@@ -119,7 +119,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
-        int ano = filtro.Ano;
+        int ano = int.TryParse(turma.AnoTurma, out int anoTurma) ? anoTurma : filtro.Ano;
 
         ValidarModalidadeEAno(modalidade, ano);
 
