@@ -30,7 +30,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
-        _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(_servicoUsuario));
+        _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(
