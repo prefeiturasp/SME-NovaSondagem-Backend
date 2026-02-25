@@ -10,6 +10,7 @@ using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
+using SME.Sondagem.Infrastructure.Interfaces;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
@@ -25,6 +26,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
+    private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
@@ -38,6 +40,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
+        _mockServicoUsuario = new Mock<IServicoUsuario>();
 
         var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -56,7 +59,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             _mockAlunoTurmaService.Object,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object
         );
     }
 
@@ -82,7 +86,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             null!,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object 
         ))
 ;
     }

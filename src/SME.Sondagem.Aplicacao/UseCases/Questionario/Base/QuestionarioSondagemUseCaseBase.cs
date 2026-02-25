@@ -253,6 +253,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             NumeroAlunoChamada = aluno.NumeroAlunoChamada,
             Codigo = codigoAluno,
             Nome = aluno.NomeAluno ?? string.Empty,
+            NomeRelatorio = (aluno.NomeAluno + " (" + codigoAluno + ")") ?? string.Empty,
             LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
             Pap = dadosAlunos.AlunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
