@@ -3,6 +3,7 @@ using Moq;
 using SME.Sondagem.API.Controllers;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using Xunit;
 
 namespace SME.Sondagem.API.Teste.Controllers;

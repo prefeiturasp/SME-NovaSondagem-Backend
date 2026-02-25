@@ -26,7 +26,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
     protected override async Task<DadosAlunos> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
