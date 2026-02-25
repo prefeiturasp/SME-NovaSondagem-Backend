@@ -44,7 +44,7 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
     protected override async Task<DadosAlunos> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(

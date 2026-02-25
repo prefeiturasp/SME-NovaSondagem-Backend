@@ -78,20 +78,20 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         bool ehRelatorio,
         CancellationToken cancellationToken)
     {
-        var contextoProcesamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, cancellationToken);
+        var contextoProcessamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, cancellationToken);
 
-        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcesamento, cancellationToken);
+        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
-        var respostasProcessadas = ProcessarRespostas(contextoProcesamento.RespostasAlunosPorQuestoes);
+        var respostasProcessadas = ProcessarRespostas(contextoProcessamento.RespostasAlunosPorQuestoes);
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas, ehRelatorio);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcessamento, respostasProcessadas, ehRelatorio);
 
-        var legenda = await ConstruirLegenda(contextoProcesamento, respostasProcessadas, ehRelatorio);
+        var legenda = ConstruirLegenda(contextoProcessamento, respostasProcessadas);
 
-        var questaoId = contextoProcesamento.QuestoesAtivas
+        var questaoId = contextoProcessamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
-        var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcesamento.QuestoesAtivas);
+        var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcessamento.QuestoesAtivas);
         if (!ehRelatorio)
         {
             return new QuestionarioSondagemDto
@@ -116,7 +116,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         }
     }
 
-    private async Task<ContextoProcesamento> ConstruirContextoProcesamento(
+    private async Task<ContextoProcessamento> ConstruirContextoProcesamento(
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
@@ -151,7 +151,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
-        return new ContextoProcesamento
+        return new ContextoProcessamento
         {
             QuestoesAtivas = questoesAtivas,
             QuestaoLinguaPortuguesa = questaoLinguaPortuguesa,
@@ -169,12 +169,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected abstract Task<DadosAlunos> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         CancellationToken cancellationToken);
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
         DadosAlunos dadosAlunos,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         RespostasProcessadas respostasProcessadas,
         bool ehRelatorio)
     {
@@ -195,10 +195,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return estudantes;
     }
 
-    private async Task<List<LegendaQuestionarioDto>> ConstruirLegenda(
-        ContextoProcesamento contexto,
-        RespostasProcessadas respostasProcessadas,
-        bool ehRelatorio)
+    private static List<LegendaQuestionarioDto> ConstruirLegenda(
+        ContextoProcessamento contexto,
+        RespostasProcessadas respostasProcessadas)
     {
         var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
         { 
@@ -493,7 +492,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 }
 
-public class ContextoProcesamento
+public class ContextoProcessamento
 {
     public required IEnumerable<Dominio.Entidades.Questionario.Questao> QuestoesAtivas { get; set; }
     public Dominio.Entidades.Questionario.Questao? QuestaoLinguaPortuguesa { get; set; }
