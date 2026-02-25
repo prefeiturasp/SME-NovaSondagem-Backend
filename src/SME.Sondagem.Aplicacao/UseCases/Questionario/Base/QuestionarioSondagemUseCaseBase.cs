@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
@@ -77,18 +78,20 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         bool ehRelatorio,
         CancellationToken cancellationToken)
     {
-        var contextoProcesamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, cancellationToken);
+        var contextoProcessamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, cancellationToken);
 
-        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcesamento, cancellationToken);
+        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
-        var respostasProcessadas = ProcessarRespostas(contextoProcesamento.RespostasAlunosPorQuestoes);
+        var respostasProcessadas = ProcessarRespostas(contextoProcessamento.RespostasAlunosPorQuestoes);
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcesamento, respostasProcessadas, ehRelatorio);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcessamento, respostasProcessadas, ehRelatorio);
 
-        var questaoId = contextoProcesamento.QuestoesAtivas
+        var legenda = ConstruirLegenda(contextoProcessamento, respostasProcessadas);
+
+        var questaoId = contextoProcessamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
-        var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcesamento.QuestoesAtivas);
+        var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcessamento.QuestoesAtivas);
         if (!ehRelatorio)
         {
             return new QuestionarioSondagemDto
@@ -107,12 +110,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                Estudantes = estudantes.OrderBy(e => e.Nome).ToList()
+                Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
+                Legenda = legenda
             };
         }
     }
 
-    private async Task<ContextoProcesamento> ConstruirContextoProcesamento(
+    private async Task<ContextoProcessamento> ConstruirContextoProcesamento(
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
@@ -147,7 +151,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
-        return new ContextoProcesamento
+        return new ContextoProcessamento
         {
             QuestoesAtivas = questoesAtivas,
             QuestaoLinguaPortuguesa = questaoLinguaPortuguesa,
@@ -165,12 +169,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected abstract Task<DadosAlunos> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         CancellationToken cancellationToken);
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
         DadosAlunos dadosAlunos,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         RespostasProcessadas respostasProcessadas,
         bool ehRelatorio)
     {
@@ -190,6 +194,44 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return estudantes;
     }
+
+    private static List<LegendaQuestionarioDto> ConstruirLegenda(
+        ContextoProcessamento contexto,
+        RespostasProcessadas respostasProcessadas)
+    {
+        var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
+        { 
+            "Sim", "Não", "Nao" 
+        };
+
+        var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
+            .Where(resposta => resposta.OpcaoRespostaId.HasValue)
+            .Select(resposta => resposta.OpcaoRespostaId!.Value)
+            .Distinct()
+            .ToHashSet();
+
+        var todasOpcoesResposta = contexto.QuestoesAtivas
+            .SelectMany(q => q.QuestaoOpcoes)
+            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) && 
+                        !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
+            .Select(qo => qo.OpcaoResposta)
+            .DistinctBy(or => or.Id)
+            .OrderBy(or => or.Ordem)
+            .ToList();
+
+        return todasOpcoesResposta
+            .Select(opcao => new LegendaQuestionarioDto
+            {
+                Id = opcao.Id,
+                Ordem = opcao.Ordem,
+                DescricaoOpcaoResposta = opcao.DescricaoOpcaoResposta,
+                Legenda = opcao.Legenda,
+                CorFundo = opcao.CorFundo,
+                CorTexto = opcao.CorTexto
+            })
+            .OrderBy(l => l.Id)
+            .ToList();
+    }   
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
         dynamic aluno,
@@ -450,7 +492,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 }
 
-public class ContextoProcesamento
+public class ContextoProcessamento
 {
     public required IEnumerable<Dominio.Entidades.Questionario.Questao> QuestoesAtivas { get; set; }
     public Dominio.Entidades.Questionario.Questao? QuestaoLinguaPortuguesa { get; set; }

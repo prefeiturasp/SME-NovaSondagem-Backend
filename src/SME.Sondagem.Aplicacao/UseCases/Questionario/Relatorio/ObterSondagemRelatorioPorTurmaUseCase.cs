@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
@@ -43,7 +44,7 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
     protected override async Task<DadosAlunos> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcesamento contexto,
+        ContextoProcessamento contexto,
         CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(

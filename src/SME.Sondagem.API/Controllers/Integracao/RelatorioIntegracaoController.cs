@@ -3,6 +3,7 @@ using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Infra.Dtos;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.API.Controllers;
 
