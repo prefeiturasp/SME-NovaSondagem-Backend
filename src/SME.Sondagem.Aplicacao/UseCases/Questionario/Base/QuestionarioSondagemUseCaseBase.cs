@@ -200,21 +200,27 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         RespostasProcessadas respostasProcessadas,
         bool ehRelatorio)
     {
+        var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
+        { 
+            "Sim", "Não", "Nao" 
+        };
+
         var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
-            .Where(resposta => resposta.OpcaoRespostaId.HasValue && resposta.OpcaoRespostaId != 1 && resposta.OpcaoRespostaId != 2)
+            .Where(resposta => resposta.OpcaoRespostaId.HasValue)
             .Select(resposta => resposta.OpcaoRespostaId!.Value)
             .Distinct()
             .ToHashSet();
 
         var todasOpcoesResposta = contexto.QuestoesAtivas
             .SelectMany(q => q.QuestaoOpcoes)
-            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id))
+            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) && 
+                        !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
             .Select(qo => qo.OpcaoResposta)
             .DistinctBy(or => or.Id)
             .OrderBy(or => or.Ordem)
             .ToList();
 
-        var legendas = todasOpcoesResposta
+        return todasOpcoesResposta
             .Select(opcao => new LegendaQuestionarioDto
             {
                 Id = opcao.Id,
@@ -226,9 +232,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             })
             .OrderBy(l => l.Id)
             .ToList();
-
-        return legendas;
-    }
+    }   
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
         dynamic aluno,
