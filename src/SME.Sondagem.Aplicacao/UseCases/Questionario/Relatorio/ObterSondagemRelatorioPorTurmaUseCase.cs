@@ -6,6 +6,7 @@ using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
+using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
@@ -18,8 +19,9 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
         IAlunoTurmaService alunoTurmaService,
-        IControleAcessoService controleAcessoService)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService)
+        IControleAcessoService controleAcessoService,
+        IServicoUsuario servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
     {
         _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
     }
