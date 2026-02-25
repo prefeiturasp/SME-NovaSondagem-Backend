@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
@@ -13,8 +14,9 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
-        IControleAcessoService controleAcessoService)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService)
+        IControleAcessoService controleAcessoService,
+        IServicoUsuario servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
     {
     }
 

@@ -7,6 +7,7 @@ using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
+using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
@@ -16,17 +17,20 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly RepositoriosSondagem _repositoriosSondagem;
     protected readonly IAlunoPapService _alunoPapService;
     protected readonly IControleAcessoService _controleAcessoService;
-            
+    protected readonly IServicoUsuario _servicoUsuario;
+
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
-        IControleAcessoService controleAcessoService)
+        IControleAcessoService controleAcessoService,
+        IServicoUsuario servicoUsuario)
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
+        _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(_servicoUsuario));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(
@@ -91,6 +95,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var questaoId = contextoProcessamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
+        var nomeUsuarioLogado = _servicoUsuario.ObterUsuarioLogado();
+        var rfUsuarioLogado = _servicoUsuario.ObterRFUsuarioLogado();
+
         var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcessamento.QuestoesAtivas);
         if (!ehRelatorio)
         {
@@ -110,8 +117,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
+                Semestre = (turma.Semestre == 0 ? "1º" : "2º") + " semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
-                Legenda = legenda
+                Legenda = legenda,
+                UsuarioLogado = { Nome = nomeUsuarioLogado, Rf = rfUsuarioLogado }
             };
         }
     }
@@ -199,9 +208,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         ContextoProcessamento contexto,
         RespostasProcessadas respostasProcessadas)
     {
-        var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase) 
-        { 
-            "Sim", "Não", "Nao" 
+        var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Sim", "Não", "Nao"
         };
 
         var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
@@ -212,7 +221,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var todasOpcoesResposta = contexto.QuestoesAtivas
             .SelectMany(q => q.QuestaoOpcoes)
-            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) && 
+            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) &&
                         !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
             .Select(qo => qo.OpcaoResposta)
             .DistinctBy(or => or.Id)
@@ -231,7 +240,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             })
             .OrderBy(l => l.Id)
             .ToList();
-    }   
+    }
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
         dynamic aluno,
