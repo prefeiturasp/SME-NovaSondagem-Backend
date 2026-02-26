@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
@@ -22,13 +23,13 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
 
     public async Task<QuestionarioSondagemDto> ObterQuestionarioSondagem([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
-        return (QuestionarioSondagemDto)await ExecutarProcessamentoQuestionario(filtro, cancellationToken);
+        return (QuestionarioSondagemDto)await ExecutarProcessamentoQuestionario(filtro, false, cancellationToken);
     }
 
-    protected override async Task<DadosAlunos> ObterDadosAlunos(
+    protected override async Task<DadosAlunosDto> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcessamento contexto,
+        ContextoProcessamentoDto contexto,
         CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
@@ -42,7 +43,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
                 contexto.QuestaoLinguaPortuguesa,
                 cancellationToken);
 
-        return new DadosAlunos
+        return new DadosAlunosDto
         {
             AlunosComPap = alunosComPap,
             AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua,
