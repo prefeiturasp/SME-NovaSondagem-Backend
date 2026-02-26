@@ -119,8 +119,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 TituloTabelaRespostas = tituloTabelaRespostas,
                 Semestre = (turma.Semestre == 0 ? "1º" : "2º") + " semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
-                Legenda = legenda,
-                UsuarioLogado = { Nome = nomeUsuarioLogado, Rf = rfUsuarioLogado }
+                Legenda = legenda
             };
         }
     }
