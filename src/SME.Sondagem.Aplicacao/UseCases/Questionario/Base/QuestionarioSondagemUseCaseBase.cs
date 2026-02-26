@@ -117,10 +117,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                Semestre = (turma.Semestre == 0 ? "1º" : "2º") + " semestre",
+                Semestre = (turma.Semestre == 0 ? "1Âº" : "2Âº") + " semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
-                Legenda = legenda,
-                UsuarioLogado = { Nome = nomeUsuarioLogado, Rf = rfUsuarioLogado }
+                Legenda = legenda
             };
         }
     }
@@ -210,7 +209,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Sim", "Não", "Nao"
+            "Sim", "NÃ£o", "Nao"
         };
 
         var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
