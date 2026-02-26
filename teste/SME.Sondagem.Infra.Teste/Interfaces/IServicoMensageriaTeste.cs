@@ -14,12 +14,11 @@ public class IServicoMensageriaTeste
         public string? UltimaAcao { get; private set; }
         public bool Retorno { get; set; } = true;
 
-        public Task<bool> Publicar(MensagemRabbit mensagemRabbit, string rota, string exchange, string nomeAcao)
+        public Task<bool> Publicar(MensagemRabbit mensagemRabbit, string rota, string exchange)
         {
             UltimaMensagem = mensagemRabbit;
             UltimaRota = rota;
             UltimoExchange = exchange;
-            UltimaAcao = nomeAcao;
             return Task.FromResult(Retorno);
         }
     }
@@ -30,7 +29,7 @@ public class IServicoMensageriaTeste
         var mock = new ServicoMensageriaMock();
         var mensagem = new MensagemRabbit("teste", Guid.NewGuid());
 
-        var resultado = await mock.Publicar(mensagem, "rota", "exchange", "acao");
+        var resultado = await mock.Publicar(mensagem, "rota", "exchange");
 
         Assert.True(resultado);
         Assert.Equal(mensagem, mock.UltimaMensagem);
@@ -45,7 +44,7 @@ public class IServicoMensageriaTeste
         var mock = new ServicoMensageriaMock { Retorno = false };
         var mensagem = new MensagemRabbit("falha", Guid.NewGuid());
 
-        var resultado = await mock.Publicar(mensagem, "rota2", "exchange2", "acao2");
+        var resultado = await mock.Publicar(mensagem, "rota2", "exchange2");
 
         Assert.False(resultado);
         Assert.Equal(mensagem, mock.UltimaMensagem);

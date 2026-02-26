@@ -3,6 +3,7 @@
 public static class ExchangeRabbit
 {
     public static string Sondagem => "Sondagem.workers";
+    public static string WorkerRelatorios => "sme.sr.workers.relatorios";
     public static string SondagemEstudante => "Sondagem.estudante.workers";
     public static string SondagemDeadLetter => "Sondagem.workers.deadletter";
     public static string Logs => "EnterpriseApplicationLog";

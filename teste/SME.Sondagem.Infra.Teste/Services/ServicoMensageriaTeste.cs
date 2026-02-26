@@ -49,8 +49,6 @@ namespace SME.Sondagem.Infra.Teste.Services
 
             servico = new ServicoMensageria(
                 rabbitOptions,
-                telemetriaMock.Object,
-                registryMock.Object,
                 loggerMock.Object
             );
         }
@@ -63,8 +61,7 @@ namespace SME.Sondagem.Infra.Teste.Services
             var resultado = await servico.Publicar(
                 mensagem,
                 "rota.teste",
-                "exchange.teste",
-                "Publicar Mensagem");
+                "exchange.teste");
 
             Assert.True(resultado);
         }
@@ -77,8 +74,7 @@ namespace SME.Sondagem.Infra.Teste.Services
             await servico.Publicar(
                 mensagem,
                 "rota",
-                "exchange",
-                "acao");
+                "exchange");
 
             telemetriaMock.Verify(t =>
                 t.RegistrarAsync(
@@ -110,8 +106,7 @@ namespace SME.Sondagem.Infra.Teste.Services
             await servico.Publicar(
                 mensagem,
                 "rota",
-                "exchange",
-                "acao");
+                "exchange");
 
             Assert.NotNull(delegateExecutado);
 
@@ -136,8 +131,7 @@ namespace SME.Sondagem.Infra.Teste.Services
                 servico.Publicar(
                     mensagem,
                     "rota",
-                    "exchange",
-                    "acao"));
+                    "exchange"));
 
             Assert.Null(ex);
         }

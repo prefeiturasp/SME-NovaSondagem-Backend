@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Registry;
 using RabbitMQ.Client;
 using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infra.Fila;
 using SME.Sondagem.Infra.Interfaces;
-using SME.Sondagem.Infra.Policies;
 using System.Text;
 
 namespace SME.Sondagem.Infra.Services;
@@ -14,28 +11,20 @@ namespace SME.Sondagem.Infra.Services;
 public class ServicoMensageria : IServicoMensageria
 {
     private readonly RabbitOptions rabbitOptions;
-    private readonly IServicoTelemetria servicoTelemetria;
-    private readonly IAsyncPolicy policy;
     private readonly ILogger<ServicoMensageria> logger;
 
     public ServicoMensageria(RabbitOptions rabbitOptions,
-        IServicoTelemetria servicoTelemetria,
-        IReadOnlyPolicyRegistry<string> registry,
         ILogger<ServicoMensageria> logger)
     {
         this.rabbitOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
-        this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
-        policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> Publicar(MensagemRabbit mensagemRabbit, string rota, string exchange, string nomeAcao)
+    public async Task<bool> Publicar(MensagemRabbit mensagemRabbit, string rota, string exchange)
     {
         var body = Encoding.UTF8.GetBytes(mensagemRabbit.ConverterObjectParaJson());
 
-        await servicoTelemetria.RegistrarAsync(
-            async () => await policy.ExecuteAsync(async () =>
-                await PublicarMensagem(rota, body, exchange)), nomeAcao, rota, string.Empty);
+        await PublicarMensagem(rota, body, exchange);
 
         return true;
     }
