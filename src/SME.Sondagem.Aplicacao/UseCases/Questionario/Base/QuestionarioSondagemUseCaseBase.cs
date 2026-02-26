@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Interfaces;
 
@@ -35,25 +36,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     public async Task<object> ExecutarProcessamentoQuestionario(
         FiltroQuestionario filtro,
-        CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(filtro);
-
-        var turma = await ValidarFiltroEModalidade(filtro, cancellationToken);
-        var sondagemAtiva = await ObterSondagemAtivaOuLancarExcecao(cancellationToken);
-
-        return await ProcessarQuestionario(filtro, turma, sondagemAtiva, false, cancellationToken);
-    }
-
-    public async Task<object> ExecutarProcessamentoQuestionario(
-        FiltroQuestionario filtro,
         bool ehRelatorio,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);
 
         var turma = await ValidarFiltroEModalidade(filtro, cancellationToken);
-        var sondagemAtiva = await ObterSondagemAtivaOuLancarExcecao(cancellationToken);
+        var sondagemAtiva = await ObterSondagemAtiva(cancellationToken);
 
         return await ProcessarQuestionario(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
     }
@@ -69,7 +58,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return turma;
     }
 
-    protected async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtivaOuLancarExcecao(CancellationToken cancellationToken)
+    protected async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtiva(CancellationToken cancellationToken)
     {
         return await _repositoriosSondagem.RepositorioSondagem.ObterSondagemAtiva(cancellationToken)
             ?? throw new ErroInternoException(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA);
@@ -125,7 +114,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         }
     }
 
-    private async Task<ContextoProcessamento> ConstruirContextoProcesamento(
+    private async Task<ContextoProcessamentoDto> ConstruirContextoProcesamento(
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
@@ -160,7 +149,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
-        return new ContextoProcessamento
+        return new ContextoProcessamentoDto
         {
             QuestoesAtivas = questoesAtivas,
             QuestaoLinguaPortuguesa = questaoLinguaPortuguesa,
@@ -175,16 +164,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         };
     }
 
-    protected abstract Task<DadosAlunos> ObterDadosAlunos(
+    protected abstract Task<DadosAlunosDto> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcessamento contexto,
+        ContextoProcessamentoDto contexto,
         CancellationToken cancellationToken);
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
-        DadosAlunos dadosAlunos,
-        ContextoProcessamento contexto,
-        RespostasProcessadas respostasProcessadas,
+        DadosAlunosDto dadosAlunos,
+        ContextoProcessamentoDto contexto,
+        RespostasProcessadasDto respostasProcessadas,
         bool ehRelatorio)
     {
         var estudantes = new List<EstudanteQuestionarioDto>();
@@ -205,8 +194,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     private static List<LegendaQuestionarioDto> ConstruirLegenda(
-        ContextoProcessamento contexto,
-        RespostasProcessadas respostasProcessadas)
+        ContextoProcessamentoDto contexto,
+        RespostasProcessadasDto respostasProcessadas)
     {
         var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -244,7 +233,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
         dynamic aluno,
-        DadosAlunos dadosAlunos,
+        DadosAlunosDto dadosAlunos,
         List<ColunaQuestionarioDto> colunasAluno,
         int codigoAluno)
     {
@@ -412,7 +401,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return questoesAtivas.Any(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta);
     }
 
-    protected static RespostasProcessadas ProcessarRespostas(
+    protected static RespostasProcessadasDto ProcessarRespostas(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes)
     {
         var respostas = respostasAlunosPorQuestoes.Values;
@@ -446,7 +435,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 g => g.Select(x => x.Value!).First()
             );
 
-        return new RespostasProcessadas
+        return new RespostasProcessadasDto
         {
             InseridoPor = nomeInseridoPor,
             AlteradoPor = nomeAlteradoPor,
@@ -500,29 +489,4 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             ? questoesAtivas.FirstOrDefault(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta)?.QuestaoVinculo?.Nome!
             : primeiraQuestao?.Nome ?? string.Empty;
     }
-}
-
-public class ContextoProcessamento
-{
-    public required IEnumerable<Dominio.Entidades.Questionario.Questao> QuestoesAtivas { get; set; }
-    public Dominio.Entidades.Questionario.Questao? QuestaoLinguaPortuguesa { get; set; }
-    public required List<ColunaQuestionarioDto> Colunas { get; set; }
-    public required IEnumerable<dynamic> Alunos { get; set; }
-    public required List<int> CodigosAlunos { get; set; }
-    public required Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> RespostasAlunosPorQuestoes { get; set; }
-    public required long QuestaoIdPrincipal { get; set; }
-}
-
-public class DadosAlunos
-{
-    public required Dictionary<int, bool> AlunosComPap { get; set; }
-    public required Dictionary<int, bool> AlunosComLinguaPortuguesaSegundaLingua { get; set; }
-    public Dictionary<long, (string Raca, string Sexo)>? DadosRacaGenero { get; set; }
-}
-
-public class RespostasProcessadas
-{
-    public string? InseridoPor { get; set; }
-    public string? AlteradoPor { get; set; }
-    public required Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> RespostasConvertidas { get; set; }
 }
