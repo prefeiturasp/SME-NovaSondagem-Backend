@@ -13,11 +13,13 @@ using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.Interfaces.QuestionarioBimestre;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Aplicacao.Interfaces.Turma;
 using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Aplicacao.Services.SGP;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
@@ -28,6 +30,7 @@ using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.UseCases.QuestionarioBimestre;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.UseCases.Turma;
@@ -101,6 +104,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IServicoLog, ServicoLog>();
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
         services.AddScoped<IServicoAuditoria, ServicoAuditoria>();
+        services.AddScoped<ISolicitacaoRelatorioService, SolicitacaoRelatorioService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -151,6 +155,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionariosBimestresUseCase, ObterQuestionariosBimestresUseCase>();
         services.TryAddScoped<IVincularBimestresUseCase, VincularBimestresUseCase>();
         services.TryAddScoped<IExcluirVinculosPorQuestionarioUseCase, ExcluirVinculosPorQuestionarioUseCase>();
+        services.TryAddScoped<IExportarSondagemRelatorioPorTurmaUseCase, ExportarSondagemRelatorioPorTurmaUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
