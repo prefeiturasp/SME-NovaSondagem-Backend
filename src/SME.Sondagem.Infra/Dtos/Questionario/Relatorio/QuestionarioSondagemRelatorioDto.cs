@@ -10,5 +10,4 @@ public class QuestionarioSondagemRelatorioDto
     public string Semestre {  get; set; } = string.Empty;
     public IEnumerable<EstudanteQuestionarioDto>? Estudantes { get; set; }
     public IEnumerable<LegendaQuestionarioDto>? Legenda { get; set; }
-    public UsuarioLogadoDto UsuarioLogado { get; set; } = new UsuarioLogadoDto();
 }
