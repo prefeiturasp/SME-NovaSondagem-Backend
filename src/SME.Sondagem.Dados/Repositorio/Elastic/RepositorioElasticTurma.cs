@@ -22,7 +22,16 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 IndicesElastic.INDICE_TURMA,
                 filtro.TurmaId.ToString(),
                 "Obter turma por código",
-                new { filtro.TurmaId, filtro.AnoLetivo, filtro.Semestre, filtro.Ano, filtro.Modalidade, filtro.UeCodigo }
+                new
+                {
+                    filtro.TurmaId,
+                    AnoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : (int?)null,
+                    BimestreId = filtro.BimestreId != 0 ? filtro.BimestreId : (int?)null,
+                    SemestreId = filtro.SemestreId != 0 ? filtro.SemestreId : (int?)null,
+                    Ano = filtro.Ano != 0 ? filtro.Ano : (int?)null,
+                    filtro.Modalidade,
+                    filtro.UeCodigo
+                }
             );
 
             return retorno;
