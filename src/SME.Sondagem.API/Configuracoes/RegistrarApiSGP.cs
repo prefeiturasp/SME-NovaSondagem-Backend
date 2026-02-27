@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace SME.Sondagem.API.Configuracoes;
 
 [ExcludeFromCodeCoverage]
-public static class RegistrarApiSGP
+public static class RegistrarApiSgp
 {
     public static void Registrar(IServiceCollection services, IConfiguration configuration)
     {
@@ -19,7 +19,7 @@ public static class RegistrarApiSGP
             client.DefaultRequestHeaders.Add("x-sgp-api-key", configuration.GetSection("ApiKeySGPApi").Value);
         });
 
-        services.AddHttpClient(ServicoSGPConstants.SERVICO, client =>
+        services.AddHttpClient(ServicoSgpConstants.SERVICO, client =>
         {
             client.BaseAddress = new Uri(urlApiSGP);
             client.DefaultRequestHeaders.Add("Accept", "application/json");

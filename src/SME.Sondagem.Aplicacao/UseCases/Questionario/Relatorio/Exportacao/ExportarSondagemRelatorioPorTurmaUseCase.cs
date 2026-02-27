@@ -25,16 +25,16 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
         _servicoUsuario = servicoUsuario;
     }
 
-    public async Task ExportarSondagemRelatorio(FiltroRelatorio filtroRelatorio, CancellationToken cancellationToken)
+    public async Task ExportarSondagemRelatorio(FiltroRelatorio filtro, CancellationToken cancellationToken)
     {
-        var filtroSgp = MapearParaFiltroSgp(filtroRelatorio);
+        var filtroSgp = MapearParaFiltroSgp(filtro);
 
         var (jaSolicitado, solicitacaoRelatorioId) = await RelatorioJaSolicitado(filtroSgp, cancellationToken);
 
         if (jaSolicitado)
             return;
 
-        await PublicarMensagemExportacao(filtroRelatorio, solicitacaoRelatorioId);
+        await PublicarMensagemExportacao(filtro, solicitacaoRelatorioId);
     }
 
     private async Task<(bool, long)> RelatorioJaSolicitado(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtro, CancellationToken ct)

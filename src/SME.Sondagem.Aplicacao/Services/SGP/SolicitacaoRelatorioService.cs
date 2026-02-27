@@ -18,12 +18,12 @@ public class SolicitacaoRelatorioService : ISolicitacaoRelatorioService
 
     public async Task<long> ObterSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default)
     {
-        var httpClient = _httpClientFactory.CreateClient(ServicoSGPConstants.SERVICO);
+        var httpClient = _httpClientFactory.CreateClient(ServicoSgpConstants.SERVICO);
 
-        var url = ServicoSGPConstants.URL_SOLICITACAO_RELATORIO;
+        var url = ServicoSgpConstants.URL_SOLICITACAO_RELATORIO;
 
         var body = JsonConvert.SerializeObject(filtroRelatorio, new JsonSerializerSettings());
-        var resposta = await httpClient.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
+        var resposta = await httpClient.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"), cancellationToken);
 
         if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             return 0;
@@ -37,12 +37,12 @@ public class SolicitacaoRelatorioService : ISolicitacaoRelatorioService
 
     public async Task<long> RegistrarSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default)
     {
-        var httpClient = _httpClientFactory.CreateClient(ServicoSGPConstants.SERVICO);
+        var httpClient = _httpClientFactory.CreateClient(ServicoSgpConstants.SERVICO);
 
-        var url = ServicoSGPConstants.URL_REGISTRAR_SOLICITACAO_RELATORIO;
+        var url = ServicoSgpConstants.URL_REGISTRAR_SOLICITACAO_RELATORIO;
 
         var body = JsonConvert.SerializeObject(filtroRelatorio, new JsonSerializerSettings());
-        var resposta = await httpClient.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
+        var resposta = await httpClient.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"), cancellationToken);
 
         if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             return 0;
