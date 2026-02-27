@@ -31,7 +31,7 @@ public class RelatorioIntegracaoControllerTeste
             Modalidade = 5,
             Ano = 1,
             AnoLetivo = 2024,
-            Semestre = 1,
+            SemestreId = 1,
             UeCodigo = "123456",
             BimestreId = 1
         };
@@ -122,7 +122,7 @@ public class RelatorioIntegracaoControllerTeste
             Modalidade = 5,
             Ano = 2,
             AnoLetivo = 2024,
-            Semestre = 1,
+            SemestreId = 1,
             UeCodigo = "654321"
         };
         var cancellationToken = CancellationToken.None;
