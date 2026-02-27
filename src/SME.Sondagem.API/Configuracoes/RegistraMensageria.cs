@@ -1,5 +1,7 @@
 ﻿using RabbitMQ.Client;
 using SME.Sondagem.Infra.EnvironmentVariables;
+using SME.Sondagem.Infra.Interfaces;
+using SME.Sondagem.Infra.Services;
 
 namespace SME.Sondagem.API.Configuracoes
 {
@@ -9,6 +11,8 @@ namespace SME.Sondagem.API.Configuracoes
         {
             services.AddSingleton(_ =>
                 CreateRabbitMqConnection(rabbitOptions));
+           
+            services.AddSingleton<IServicoMensageria, ServicoMensageria>();
         }
 
         private static IConnection CreateRabbitMqConnection(RabbitOptions rabbitOptions)
