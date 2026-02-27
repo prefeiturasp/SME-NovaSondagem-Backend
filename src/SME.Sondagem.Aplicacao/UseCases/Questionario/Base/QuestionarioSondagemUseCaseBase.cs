@@ -71,7 +71,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         bool ehRelatorio,
         CancellationToken cancellationToken)
     {
-        var contextoProcessamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, cancellationToken);
+        var contextoProcessamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
 
         var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
@@ -103,7 +103,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                Semestre = (turma.Semestre == 0 ? "1º" : "2º") + " semestre",
+                Semestre = turma.Semestre.ToString() + "º semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
                 Legenda = legenda
             };
@@ -114,6 +114,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+        bool ehRelatorio,
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
@@ -129,10 +130,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
             .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
 
+
+        var periodosBimestre = bimestresForaDoPadrao?.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre;
+
         var colunas = await ObterColunasOuLancarExcecao(
-            bimestresForaDoPadrao?.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre,
+            ehRelatorio && filtro.BimestreId.HasValue
+                ? periodosBimestre.Where(p => p.BimestreId == filtro.BimestreId.Value).ToList()
+                : periodosBimestre,
             questoesAtivas,
-            filtro.BimestreId);
+            filtro.BimestreId
+        );
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
