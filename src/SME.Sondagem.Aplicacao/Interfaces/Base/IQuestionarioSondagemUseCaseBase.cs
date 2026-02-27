@@ -6,6 +6,7 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Base
     {
         Task<object> ExecutarProcessamentoQuestionario(
             FiltroQuestionario filtro,
+            bool ehRelatorio,
             CancellationToken cancellationToken);
     }
 }
