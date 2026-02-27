@@ -4,6 +4,6 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Services;
 
 public interface ISolicitacaoRelatorioService
 {
-    Task<bool> ObterSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default);
-    Task<bool> RegistrarSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default);
+    Task<long> ObterSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default);
+    Task<long> RegistrarSolicitacaoRelatorioAsync(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtroRelatorio, CancellationToken cancellationToken = default);
 }

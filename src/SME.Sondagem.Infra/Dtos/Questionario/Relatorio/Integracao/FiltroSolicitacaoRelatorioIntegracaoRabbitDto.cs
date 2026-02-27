@@ -3,4 +3,5 @@
 public class FiltroSolicitacaoRelatorioIntegracaoRabbitDto : FiltroSolicitacaoRelatorioIntegracaoSgpBaseDto
 {
     public FiltroRelatorio FiltrosUsados { get; set; }
+    public long SolicitacaoRelatorioId { get; set; }
 }

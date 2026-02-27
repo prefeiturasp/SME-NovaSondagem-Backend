@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dominio.Enums;
@@ -26,34 +25,51 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
         _servicoUsuario = servicoUsuario;
     }
 
-    public async Task ExportarSondagemRelatorio([FromQuery] FiltroRelatorio filtroRelatorio, CancellationToken cancellationToken)
+    public async Task ExportarSondagemRelatorio(FiltroRelatorio filtroRelatorio, CancellationToken cancellationToken)
     {
-        var filtro = CriarFiltroSolicitacaoRelatorioIntegracaoSgpDto(filtroRelatorio);
+        var filtroSgp = MapearParaFiltroSgp(filtroRelatorio);
+
+        var (jaSolicitado, solicitacaoRelatorioId) = await RelatorioJaSolicitado(filtroSgp, cancellationToken);
+
+        if (jaSolicitado)
+            return;
+
+        await PublicarMensagemExportacao(filtroRelatorio, solicitacaoRelatorioId);
+    }
+
+    private async Task<(bool, long)> RelatorioJaSolicitado(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtro, CancellationToken ct)
+    {
+        long solicitacaoRelatorioId = 0;
+
         try
         {
-            var possuiRelatorioSolicitado = await _solicitacaoRelatorioService.ObterSolicitacaoRelatorioAsync(filtro, cancellationToken);
+            solicitacaoRelatorioId = await _solicitacaoRelatorioService.ObterSolicitacaoRelatorioAsync(filtro, ct);
+            if (solicitacaoRelatorioId != 0) return (true, solicitacaoRelatorioId);
 
-            if (possuiRelatorioSolicitado)
-                return;
-
-            await _solicitacaoRelatorioService.RegistrarSolicitacaoRelatorioAsync(filtro, cancellationToken);
+            solicitacaoRelatorioId = await _solicitacaoRelatorioService.RegistrarSolicitacaoRelatorioAsync(filtro, ct);
+            return (false, solicitacaoRelatorioId);
         }
         catch (Exception ex)
         {
-            _servicoLog.Registrar($"ExportarSondagemRelatorioPorTurmaUseCase - Erro ao verificar controle de acesso no relatório para o filtro: {filtro}", ex);
+            _servicoLog.Registrar($"ExportarSondagemRelatorioPorTurmaUseCase - Falha ao controlar duplicidade de relatório: {filtro.TipoRelatorio}", ex);
         }
 
-        var menssagemRabbit = new MensagemRabbit(CriarFiltroSolicitacaoRelatorioIntegracaoRabbitDto(filtroRelatorio), Guid.NewGuid())
+        return (false, solicitacaoRelatorioId);
+    }
+
+    private async Task PublicarMensagemExportacao(FiltroRelatorio filtro, long solicitacaoRelatorioId)
+    {
+        var mensagem = new MensagemRabbit(MapearParaFiltroRabbit(filtro, solicitacaoRelatorioId), Guid.NewGuid())
         {
             Action = RotasRabbit.RelatorioSondagemPorTurmaAction,
             RotaErro = RotasRabbit.RelatorioSondagemPorTurmaError,
             UsuarioLogadoRF = _servicoUsuario.ObterRFUsuarioLogado()
         };
 
-        await _servicoMensageria.Publicar(menssagemRabbit, RotasRabbit.RelatorioSondagemPorTurma, ExchangeRabbit.WorkerRelatorios);
+        await _servicoMensageria.Publicar(mensagem, RotasRabbit.RelatorioSondagemPorTurma, ExchangeRabbit.WorkerRelatorios);
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto CriarFiltroSolicitacaoRelatorioIntegracaoRabbitDto(FiltroRelatorio filtroRelatorio)
+    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto MapearParaFiltroRabbit(FiltroRelatorio filtroRelatorio, long solicitacaoRelatorioId)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoRabbitDto
         {
@@ -61,11 +77,12 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
             TipoRelatorio = TipoRelatorio.SondagemPorTurma,
             UsuarioQueSolicitou = _servicoUsuario.ObterRFUsuarioLogado(),
             FiltrosUsados = filtroRelatorio,
-            StatusSolicitacao = StatusSolicitacao.Solicitado
+            StatusSolicitacao = StatusSolicitacao.Solicitado,
+            SolicitacaoRelatorioId = solicitacaoRelatorioId
         };
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoSgpDto CriarFiltroSolicitacaoRelatorioIntegracaoSgpDto(FiltroRelatorio filtroRelatorio)
+    private FiltroSolicitacaoRelatorioIntegracaoSgpDto MapearParaFiltroSgp(FiltroRelatorio filtroRelatorio)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoSgpDto
         {
