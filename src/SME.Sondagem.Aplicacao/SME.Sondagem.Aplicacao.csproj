@@ -21,7 +21,6 @@
 
     <ItemGroup>
         <Folder Include="Interfaces\Services\Auditoria\" />
-        <Folder Include="Services\SGP\" />
     </ItemGroup>
 
 </Project>

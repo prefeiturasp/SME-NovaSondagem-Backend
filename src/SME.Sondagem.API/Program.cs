@@ -51,6 +51,7 @@ RegistraDependencias.Registrar(builder.Services, builder.Configuration);
 RegistraRepositorios.Registrar(builder.Services);
 RegistraConfiguracaoCors.Registrar(builder);
 RegistraApiEol.Registrar(builder.Services, builder.Configuration);
+RegistrarApiSgp.Registrar(builder.Services, builder.Configuration);
 
 builder.Services.AddAuthorization();
 
