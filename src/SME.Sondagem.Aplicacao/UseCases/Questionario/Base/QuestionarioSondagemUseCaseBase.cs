@@ -84,9 +84,6 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var questaoId = contextoProcessamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
-        var nomeUsuarioLogado = _servicoUsuario.ObterUsuarioLogado();
-        var rfUsuarioLogado = _servicoUsuario.ObterRFUsuarioLogado();
-
         var tituloTabelaRespostas = ObterTituloTabelaRespostas(contextoProcessamento.QuestoesAtivas);
         if (!ehRelatorio)
         {
