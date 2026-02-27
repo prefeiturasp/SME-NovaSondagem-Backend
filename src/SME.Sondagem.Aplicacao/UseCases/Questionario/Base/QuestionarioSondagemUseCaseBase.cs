@@ -106,7 +106,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             return new QuestionarioSondagemRelatorioDto
             {
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                Semestre = (turma.Semestre == 0 ? "1º" : "2º") + " semestre",
+                Semestre = turma.Semestre.ToString() + "º semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
                 Legenda = legenda
             };
@@ -142,7 +142,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 : periodosBimestre,
             questoesAtivas,
             filtro.BimestreId
-            );
+        );
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
