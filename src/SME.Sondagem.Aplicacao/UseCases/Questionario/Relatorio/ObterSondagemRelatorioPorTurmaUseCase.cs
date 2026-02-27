@@ -5,7 +5,9 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
+using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
@@ -18,8 +20,9 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
         IAlunoTurmaService alunoTurmaService,
-        IControleAcessoService controleAcessoService)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService)
+        IControleAcessoService controleAcessoService,
+        IServicoUsuario servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
     {
         _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
     }
@@ -41,10 +44,10 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
             throw new RegraNegocioException("Relatórios só podem ser extraídos para anos letivos a partir de 2025", 400);
     }
 
-    protected override async Task<DadosAlunos> ObterDadosAlunos(
+    protected override async Task<DadosAlunosDto> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
-        ContextoProcessamento contexto,
+        ContextoProcessamentoDto contexto,
         CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
@@ -60,7 +63,7 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
 
         var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmaId, cancellationToken);
 
-        return new DadosAlunos
+        return new DadosAlunosDto
         {
             AlunosComPap = alunosComPap,
             AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua,
