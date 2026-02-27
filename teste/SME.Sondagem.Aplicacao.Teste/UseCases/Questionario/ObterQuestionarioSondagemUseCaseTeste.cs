@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Interfaces;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario;
@@ -23,6 +24,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
+    private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
     public ObterQuestionarioSondagemUseCaseTeste()
@@ -35,6 +37,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
+        _mockServicoUsuario = new Mock<IServicoUsuario>();
 
         // Criar os agregadores com os mocks
         var repositoriosElastic = new RepositoriosElastic(
@@ -53,7 +56,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object
         );
     }
 
@@ -73,7 +77,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object
         ));
     }
 
@@ -89,7 +94,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             null!,
             _mockAlunoPapService.Object,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object
         ));
     }
 
@@ -112,7 +118,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             null!,
-            _mockControleAcessoService.Object
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object
         ));
     }
 
@@ -135,7 +142,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
-            null!
+            null!,
+            _mockServicoUsuario.Object
         ));
     }
 

@@ -7,6 +7,7 @@ namespace SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 public class QuestionarioSondagemRelatorioDto
 {
     public string TituloTabelaRespostas { get; set; } = string.Empty;
+    public string Semestre {  get; set; } = string.Empty;
     public IEnumerable<EstudanteQuestionarioDto>? Estudantes { get; set; }
     public IEnumerable<LegendaQuestionarioDto>? Legenda { get; set; }
 }
