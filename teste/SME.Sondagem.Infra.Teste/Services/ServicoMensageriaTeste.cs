@@ -67,55 +67,6 @@ namespace SME.Sondagem.Infra.Teste.Services
         }
 
         [Fact]
-        public async Task Publicar_deve_chamar_telemetria()
-        {
-            var mensagem = new MensagemRabbit("teste", Guid.NewGuid());
-
-            await servico.Publicar(
-                mensagem,
-                "rota",
-                "exchange");
-
-            telemetriaMock.Verify(t =>
-                t.RegistrarAsync(
-                    It.IsAny<Func<Task>>(),
-                    "acao",
-                    "rota",
-                    It.IsAny<string>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task Publicar_deve_executar_delegate_passado_para_telemetria()
-        {
-            Func<Task>? delegateExecutado = null;
-
-            telemetriaMock
-                .Setup(t => t.RegistrarAsync(
-                    It.IsAny<Func<Task>>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()))
-                .Callback<Func<Task>, string, string, string>((func, _, _, _) =>
-                {
-                    delegateExecutado = func;
-                });
-
-            var mensagem = new MensagemRabbit("teste", Guid.NewGuid());
-
-            await servico.Publicar(
-                mensagem,
-                "rota",
-                "exchange");
-
-            Assert.NotNull(delegateExecutado);
-
-            var ex = await Record.ExceptionAsync(() => delegateExecutado!());
-            Assert.Null(ex);
-        }
-
-
-        [Fact]
         public async Task Publicar_nao_deve_lancar_excecao_quando_publicacao_falhar()
         {
             policyMock

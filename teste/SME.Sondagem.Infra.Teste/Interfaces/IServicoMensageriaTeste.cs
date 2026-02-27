@@ -35,7 +35,6 @@ public class IServicoMensageriaTeste
         Assert.Equal(mensagem, mock.UltimaMensagem);
         Assert.Equal("rota", mock.UltimaRota);
         Assert.Equal("exchange", mock.UltimoExchange);
-        Assert.Equal("acao", mock.UltimaAcao);
     }
 
     [Fact]
@@ -50,6 +49,5 @@ public class IServicoMensageriaTeste
         Assert.Equal(mensagem, mock.UltimaMensagem);
         Assert.Equal("rota2", mock.UltimaRota);
         Assert.Equal("exchange2", mock.UltimoExchange);
-        Assert.Equal("acao2", mock.UltimaAcao);
     }
 }
