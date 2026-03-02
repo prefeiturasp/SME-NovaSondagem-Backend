@@ -54,7 +54,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
     private async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtivaOuLancarExcecao(CancellationToken cancellationToken)
     {
         return await _repositoriosSondagem.RepositorioSondagem.ObterSondagemAtiva(cancellationToken)
-            ?? throw new ErroInternoException("Não há sondagem ativa cadastrada no sistema");
+            ?? throw new RegraNegocioException("Não há sondagem ativa cadastrada no sistema");
     }
 
     private async Task<QuestionarioSondagemDto> ProcessarQuestionario(
@@ -66,7 +66,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         var modalidade = turma.Modalidade;
 
         if (!int.TryParse(turma.AnoTurma, out int ano))
-            throw new ErroInternoException("Ano da turma inválido");
+            throw new RegraNegocioException("Ano da turma inválido");
 
         ValidarModalidadeEAno(modalidade, ano);
 
