@@ -13,6 +13,7 @@ public static class MensagemNegocioComuns
     public const string OPCAO_RESPOSTA_NAO_ENCONTRADA = "Opção resposta com ID {0} não encontrada";
     public const string PROEFICIENCIA_NAO_ENCONTRADA = "Proficiência com ID {0} não encontrada";
     public const string QUESTIONARIO_NAO_ENCONTRADO = "Questionário com ID {0} não encontrado";
+    public const string PARAMETRO_SONDAGEM_NAO_ENCONTRADO = "Parâmetro com ID {0} não encontrado";
     public const string QUESTAO_NAO_ENCONTRADA = "Questão com ID {0} não encontrada";
     public const string SONDAGEM_NAO_ENCONTRADA = "Sondagem com id {0} não encontrada";
     public const string QUESTAO_OPCAO_RESPOSTA_NAO_ENCONTRADA = "Questão opção resposta com ID {0} não encontrada";

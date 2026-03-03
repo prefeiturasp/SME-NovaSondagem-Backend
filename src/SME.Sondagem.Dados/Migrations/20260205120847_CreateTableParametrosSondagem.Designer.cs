@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260205120847_CreateTableParametrosSondagem")]
+    partial class CreateTableParametrosSondagem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -379,6 +382,76 @@ namespace SME.Sondagem.Dados.Migrations
                     b.ToTable("componente_curricular", (string)null);
                 });
 
+            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ParametroQuestionario", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AlteradoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("alterado_em");
+
+                    b.Property<string>("AlteradoPor")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("alterado_por");
+
+                    b.Property<string>("AlteradoRF")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("alterado_rf");
+
+                    b.Property<DateTime>("CriadoEm")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("criado_em");
+
+                    b.Property<string>("CriadoPor")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("criado_por");
+
+                    b.Property<string>("CriadoRF")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("criado_rf");
+
+                    b.Property<bool>("Excluido")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("excluido");
+
+                    b.Property<int>("IdParametroSondagem")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_parametro_sondagem");
+
+                    b.Property<int>("IdQuestionario")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_questionario");
+
+                    b.HasKey("Id")
+                        .HasName("pk_parametro_questionario");
+
+                    b.HasIndex("IdParametroSondagem")
+                        .HasDatabaseName("ix_parametro_questionario_parametro_sondagem_id");
+
+                    b.HasIndex("IdQuestionario")
+                        .HasDatabaseName("ix_parametro_questionario_questionario_id");
+
+                    b.HasIndex("IdQuestionario", "IdParametroSondagem")
+                        .IsUnique()
+                        .HasDatabaseName("uk_parametro_questionario_questionario_parametro_sondagem")
+                        .HasFilter("excluido = false");
+
+                    b.ToTable("parametro_questionario", (string)null);
+                });
+
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ParametroSondagem", b =>
                 {
                     b.Property<int>("Id")
@@ -445,6 +518,12 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("tipo");
 
+                    b.Property<string>("Valor")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("valor");
+
                     b.HasKey("Id")
                         .HasName("pk_parametro_sondagem");
 
@@ -459,82 +538,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasFilter("excluido = false");
 
                     b.ToTable("parametro_sondagem", (string)null);
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ParametroSondagemQuestionario", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("AlteradoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("alterado_em");
-
-                    b.Property<string>("AlteradoPor")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_por");
-
-                    b.Property<string>("AlteradoRF")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_rf");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("criado_em");
-
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_por");
-
-                    b.Property<string>("CriadoRF")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_rf");
-
-                    b.Property<bool>("Excluido")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("excluido");
-
-                    b.Property<int>("IdParametroSondagem")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_parametro_sondagem");
-
-                    b.Property<int>("IdQuestionario")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_questionario");
-
-                    b.Property<string>("Valor")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("valor");
-
-                    b.HasKey("Id")
-                        .HasName("pk_parametro_questionario");
-
-                    b.HasIndex("IdParametroSondagem")
-                        .HasDatabaseName("ix_parametro_questionario_parametro_sondagem_id");
-
-                    b.HasIndex("IdQuestionario")
-                        .HasDatabaseName("ix_parametro_questionario_questionario_id");
-
-                    b.HasIndex("IdQuestionario", "IdParametroSondagem")
-                        .IsUnique()
-                        .HasDatabaseName("uk_parametro_questionario_questionario_parametro_sondagem")
-                        .HasFilter("excluido = false");
-
-                    b.ToTable("parametro_sondagem_questionario", (string)null);
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Proficiencia", b =>
@@ -1340,7 +1343,7 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("Auditoria");
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ParametroSondagemQuestionario", b =>
+            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ParametroQuestionario", b =>
                 {
                     b.HasOne("SME.Sondagem.Dominio.Entidades.ParametroSondagem", "ParametroSondagem")
                         .WithMany()
