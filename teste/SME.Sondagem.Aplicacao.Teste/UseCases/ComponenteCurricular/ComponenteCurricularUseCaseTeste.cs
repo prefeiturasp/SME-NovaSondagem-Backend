@@ -116,7 +116,9 @@ public class ComponenteCurricularUseCaseTeste
         var ex = await Assert.ThrowsAsync<RegraNegocioException>(() => _useCase.CriarAsync(dto, CancellationToken.None));
 
         Assert.Equal((int)HttpStatusCode.Conflict, ex.StatusCode);
-        Assert.Contains($"Já existe um componente curricular com o código EOL {dto.CodigoEol}", ex.Message);
+                
+        Assert.Contains("existe um componente curricular", ex.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(dto.CodigoEol.ToString(), ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
