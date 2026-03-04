@@ -10,7 +10,7 @@ namespace SME.Sondagem.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
+[Authorize(AuthenticationSchemes = AutenticacaoSettingsApi.BearerTokenSondagem)]
 public class RelatorioController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
