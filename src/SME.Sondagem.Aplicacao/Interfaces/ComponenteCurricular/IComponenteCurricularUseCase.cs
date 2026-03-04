@@ -10,4 +10,5 @@ public interface IComponenteCurricularUseCase
     Task<IEnumerable<ComponenteCurricularDto>> ListarAsync(CancellationToken cancellationToken = default);
     Task<bool> ExcluirAsync(int id, CancellationToken cancellationToken = default);
     Task<ComponenteCurricularDto?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default);
+    Task<IEnumerable<ComponenteCurricularDto>> ObterPorModalidadeAsync(string modalidade, CancellationToken cancellationToken = default);
 }
