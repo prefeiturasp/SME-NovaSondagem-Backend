@@ -2,7 +2,7 @@
 
 public class ComponenteCurricular : EntidadeBase
 {
-    public ComponenteCurricular(string nome, int? ano, string? modalidade, int codigoEol)
+    public ComponenteCurricular(string nome, int? ano, string modalidade, int codigoEol)
     {
         Nome = nome;
         Ano = ano;
