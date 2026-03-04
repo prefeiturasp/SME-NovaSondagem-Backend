@@ -217,7 +217,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                         !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
             .Select(qo => qo.OpcaoResposta)
             .DistinctBy(or => or.Id)
-            .OrderBy(or => or.Ordem)
+            .OrderBy(l => l.Ordem)
+            .ThenBy(l => l.Id)
             .ToList();
 
         return todasOpcoesResposta
@@ -229,9 +230,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 Legenda = opcao.Legenda,
                 CorFundo = opcao.CorFundo,
                 CorTexto = opcao.CorTexto
-            })
-            .OrderBy(l => l.Id)
-            .ToList();
+            }).ToList();
     }
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
