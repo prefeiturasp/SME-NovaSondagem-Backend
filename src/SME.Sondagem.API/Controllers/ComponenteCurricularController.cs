@@ -89,6 +89,30 @@ public class ComponenteCurricularController : ControllerBase
         }
     }
 
+    [HttpGet("modalidade/{modalidade}")]
+    [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterPorModalidade(string modalidade, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var componentes = (await _useCase.ObterPorModalidadeAsync(modalidade, cancellationToken))?.ToList();
+
+            if (componentes is null || componentes.Count == 0)
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_MODALIDADE_NAO_ENCONTRADO, modalidade) });
+
+            return Ok(componentes);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { mensagem = "Erro ao obter componente curricular" });
+        }
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(ComponenteCurricularDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Criar([FromBody] CriarComponenteCurricularDto dto, CancellationToken cancellationToken)
