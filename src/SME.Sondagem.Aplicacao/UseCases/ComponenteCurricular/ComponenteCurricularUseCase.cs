@@ -120,6 +120,12 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         return entidade != null ? MapearParaDto(entidade) : null;
     }
 
+    public async Task<IEnumerable<ComponenteCurricularDto>> ObterPorModalidadeAsync(string modalidade, CancellationToken cancellationToken = default)
+    {
+        var entidades = await _repositorio.ObterPorModalidadeAsync(modalidade, cancellationToken);
+        return entidades.Select(MapearParaDto).ToList();
+    }
+
     private static ComponenteCurricularDto MapearParaDto(Dominio.Entidades.ComponenteCurricular entidade)
     {
         return new ComponenteCurricularDto

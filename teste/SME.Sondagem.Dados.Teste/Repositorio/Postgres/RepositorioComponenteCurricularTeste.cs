@@ -1,5 +1,4 @@
 ﻿using SME.Sondagem.Dados.Repositorio.Postgres;
-using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades;
 using Xunit;
 
@@ -43,6 +42,52 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var resultado = await repositorio.ObterPorCodigoEolAsync(999);
 
             Assert.Null(resultado);
+        }
+
+        [Fact]
+        public async Task ObterPorModalidadeAsync_deve_retornar_somente_componentes_da_modalidade_informada()
+        {
+            var context = CriarContexto(nameof(ObterPorModalidadeAsync_deve_retornar_somente_componentes_da_modalidade_informada));
+            var servicoAuditoria = CriarServicoAuditoria();
+            var conextoBase = CriarConextoBase();
+
+            context.ComponentesCurriculares.AddRange(
+                new ComponenteCurricular("Língua Portuguesa", 1, "EF", 10),
+                new ComponenteCurricular("Língua Portuguesa", 1, "EJA", 10),
+                new ComponenteCurricular("Matemática", 1, "EF", 20)
+            );
+
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
+
+            var resultado = await repositorio.ObterPorModalidadeAsync("EJA");
+
+            var lista = resultado.ToList();
+            Assert.Single(lista);
+            Assert.Equal("EJA", lista[0].Modalidade);
+            Assert.Equal("Língua Portuguesa", lista[0].Nome);
+        }
+
+        [Fact]
+        public async Task ObterPorModalidadeAsync_deve_retornar_lista_vazia_quando_nao_existir()
+        {
+            var context = CriarContexto(nameof(ObterPorModalidadeAsync_deve_retornar_lista_vazia_quando_nao_existir));
+            var servicoAuditoria = CriarServicoAuditoria();
+            var conextoBase = CriarConextoBase();
+
+            context.ComponentesCurriculares.AddRange(
+                new ComponenteCurricular("Língua Portuguesa", 1, "EF", 10),
+                new ComponenteCurricular("Matemática", 1, "EF", 20)
+            );
+
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
+
+            var resultado = await repositorio.ObterPorModalidadeAsync("EJA");
+
+            Assert.Empty(resultado);
         }
 
         [Fact]

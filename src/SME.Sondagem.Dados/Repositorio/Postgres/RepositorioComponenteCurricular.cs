@@ -23,6 +23,15 @@ public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricu
             .FirstOrDefaultAsync(c => c.CodigoEol == codigoEol, cancellationToken);
     }
 
+    public async Task<IEnumerable<ComponenteCurricular>> ObterPorModalidadeAsync(string modalidade,
+       CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(c => c.Modalidade == modalidade)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<ComponenteCurricular>> ObterPorAnoAsync(int ano,
         CancellationToken cancellationToken = default)
     {

@@ -18,7 +18,13 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.Equal(nome, componente.Nome);
             Assert.Equal(ano, componente.Ano);
             Assert.Equal(modalidade, componente.Modalidade);
-            Assert.Equal(codigoEol, componente.CodigoEol);
+        }
+
+        [Fact]
+        public void Construtor_DeveAtribuirCodigoEolCorretamente()
+        {
+            var componente = new ComponenteCurricular("Matemática", 5, "Ensino Fundamental", 123);
+            Assert.Equal(123, componente.CodigoEol);
         }
 
         [Fact]
@@ -54,12 +60,24 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.Empty(componente.Questionarios);
         }
 
-        [Fact]
-        public void Nome_NaoDeveSerNuloOuVazio()
+        [Theory]
+        [InlineData("Ciências")]
+        [InlineData("Língua Portuguesa")]
+        public void Nome_NaoDeveSerNuloOuVazio(string nome)
         {
-            var componente = new ComponenteCurricular("Ciências", 7, "Fundamental", 654);
+            var componente = new ComponenteCurricular(nome, 7, "Fundamental", 654);
 
             Assert.False(string.IsNullOrWhiteSpace(componente.Nome));
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CodigoEol_NaoDeveSerMenorOuIgualAZero(int codigoEol)
+        {
+            var componente = new ComponenteCurricular("Matéria", 1, "EF", codigoEol);
+
+            Assert.True(componente.CodigoEol <= 0);
         }
     }
 }
