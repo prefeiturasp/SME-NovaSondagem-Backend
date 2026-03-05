@@ -174,8 +174,6 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
                 LinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
                 Pap = alunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
                 PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
-                SituacaoMatricula = aluno.SituacaoMatricula,
-                DataSituacao = aluno.DataSituacao,
                 Coluna = colunasAluno
             });
         }

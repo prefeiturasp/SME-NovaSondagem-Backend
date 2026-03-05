@@ -77,16 +77,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
-        var codigoAlunosAtivosNoAnoAtual = contextoProcessamento.Alunos
-            .Where(a => a.SituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo
-              && a.DataSituacao == DateTime.UtcNow)
-            .Select(a => (int)a.CodigoAluno)
-            .ToList();
-
         var respostasProcessadas = ProcessarRespostas(
             contextoProcessamento.RespostasAlunosPorQuestoes,
             linguaPortuguesaSegundaLingua!,
-            codigoAlunosAtivosNoAnoAtual
+            contextoProcessamento.CodigosAlunos
         );
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
@@ -143,7 +137,6 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
             .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
 
-
         var periodosBimestre = bimestresForaDoPadrao?.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre;
 
         var colunas = await ObterColunasOuLancarExcecao(
@@ -199,7 +192,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         foreach (var aluno in contexto.Alunos)
         {
             var codigoAluno = (int)aluno.CodigoAluno;
-            int situacaoMatricula = aluno.SituacaoMatricula;
+            int situacaoMatricula = aluno.CodigoSituacaoMatricula;
             DateTime dataSituacao = aluno.DataSituacao;
 
             var colunasAluno = contexto.Colunas
@@ -265,8 +258,6 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
             Pap = dadosAlunos.AlunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
-            SituacaoMatricula = aluno.SituacaoMatricula,
-            DataSituacao = aluno.DataSituacao,
             Coluna = colunasAluno
         };
 

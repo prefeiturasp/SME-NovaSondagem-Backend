@@ -637,8 +637,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     {
         return new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NumeroAlunoChamada = "1", NomeAluno = "João Silva", PossuiDeficiencia = 0 },
-            new AlunoElasticDto { CodigoAluno = 1002, NumeroAlunoChamada = "2", NomeAluno = "Maria Santos", PossuiDeficiencia = 0 }
+            new AlunoElasticDto { CodigoAluno = 1001, NumeroAlunoChamada = "1", NomeAluno = "João Silva", PossuiDeficiencia = 0, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo, DataSituacao = DateTime.Today.AddDays(-30) },
+            new AlunoElasticDto { CodigoAluno = 1002, NumeroAlunoChamada = "2", NomeAluno = "Maria Santos", PossuiDeficiencia = 0, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo, DataSituacao = DateTime.Today.AddDays(-30) }
         };
     }
 

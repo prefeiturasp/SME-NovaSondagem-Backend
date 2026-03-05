@@ -10,8 +10,6 @@ public class EstudanteQuestionarioDto
     public int Codigo { get; set; }
     public string Raca { get; set; } = string.Empty;
     public string Genero { get; set; } = string.Empty;
-    public DateTime DataSituacao { get; set; } 
-    public string SituacaoMatricula { get; set; } = string.Empty;
     public string Nome { get; set; } = string.Empty;
     public string NomeRelatorio { get; set; } = string.Empty;
     public bool Pap { get; set; }

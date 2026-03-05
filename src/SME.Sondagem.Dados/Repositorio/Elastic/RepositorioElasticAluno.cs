@@ -38,11 +38,14 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 new { idTurma, anoLetivo }
             );
 
+            var hoje = DateTime.UtcNow;
+
             var resultado = alunosTurma?.GroupBy(aluno => aluno.CodigoMatricula)
                             .Select(agrupado => agrupado.OrderByDescending(aluno => aluno.DataSituacao)
                                                         .ThenByDescending(aluno => aluno.NumeroAlunoChamada)
                                                         .First())
-                            .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo);
+                            .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo
+                                         && aluno.DataSituacao.Date <= hoje);
 
             var lista = resultado?.ToList() ?? [];
             return lista;
