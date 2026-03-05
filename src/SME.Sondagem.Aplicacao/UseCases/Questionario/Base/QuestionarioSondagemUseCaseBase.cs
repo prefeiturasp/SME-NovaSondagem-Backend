@@ -77,10 +77,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
+        var codigoAlunosAtivosNoAnoAtual = contextoProcessamento.Alunos
+            .Where(a => a.SituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo
+              && a.DataSituacao == DateTime.UtcNow)
+            .Select(a => (int)a.CodigoAluno)
+            .ToList();
+
         var respostasProcessadas = ProcessarRespostas(
             contextoProcessamento.RespostasAlunosPorQuestoes,
             linguaPortuguesaSegundaLingua!,
-            contextoProcessamento.CodigosAlunos
+            codigoAlunosAtivosNoAnoAtual
         );
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
@@ -487,7 +493,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p => dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio);
+        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p => dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
+                 && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         return new ColunaQuestionarioDto
         {

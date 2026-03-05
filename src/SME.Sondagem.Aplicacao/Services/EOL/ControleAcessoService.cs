@@ -171,7 +171,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (!Guid.TryParse(perfil, out var perfilGuid))
                 return Enumerable.Empty<ControleAcessoDto>();
 
-            if (perfilGuid == PERFIL_PROFESSOR || perfilGuid == PERFIL_ADM_COTIC)
+            if (perfilGuid == PERFIL_PROFESSOR)
             {
                 var dados = JsonConvert.DeserializeObject<List<dynamic>>(json);
 
