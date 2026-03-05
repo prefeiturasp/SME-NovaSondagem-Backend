@@ -48,19 +48,20 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
+        int anoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : turma.AnoLetivo;
 
         if (!int.TryParse(turma.AnoTurma, out int ano))
             throw new ErroInternoException("Ano da turma inválido");
 
         ValidarModalidadeEAno(modalidade, ano);
 
-        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, turma.AnoLetivo, filtro.ProficienciaId, cancellationToken);
+        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, anoLetivo, filtro.ProficienciaId, cancellationToken);
 
         var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
 
         var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
 
-        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
 
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
             .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
@@ -71,7 +72,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
 
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
             codigosAlunos,
-            turma.AnoLetivo,
+            anoLetivo,
             cancellationToken);
 
         var alunosComLinguaPortuguesaSegundaLingua = await _repositoriosSondagem.RepositorioRespostaAluno
@@ -173,6 +174,8 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
                 LinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
                 Pap = alunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
                 PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
+                SituacaoMatricula = aluno.SituacaoMatricula,
+                DataSituacao = aluno.DataSituacao,
                 Coluna = colunasAluno
             });
         }

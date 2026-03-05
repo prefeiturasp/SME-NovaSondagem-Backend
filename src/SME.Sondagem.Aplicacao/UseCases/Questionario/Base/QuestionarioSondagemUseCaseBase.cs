@@ -75,9 +75,15 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
-        var respostasProcessadas = ProcessarRespostas(contextoProcessamento.RespostasAlunosPorQuestoes);
+        var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, contextoProcessamento, respostasProcessadas, ehRelatorio);
+        var respostasProcessadas = ProcessarRespostas(
+            contextoProcessamento.RespostasAlunosPorQuestoes,
+            linguaPortuguesaSegundaLingua!,
+            contextoProcessamento.CodigosAlunos
+        );
+
+        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
 
         var legenda = ConstruirLegenda(contextoProcessamento, respostasProcessadas);
 
@@ -119,10 +125,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var modalidade = turma.Modalidade;
         int ano = int.TryParse(turma.AnoTurma, out int anoTurma) ? anoTurma : filtro.Ano;
+        int anoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : turma.AnoLetivo;
 
         ValidarModalidadeEAno(modalidade, ano);
 
-        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, turma.AnoLetivo, filtro.ProficienciaId, cancellationToken);
+        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, anoLetivo, filtro.ProficienciaId, cancellationToken);
 
         var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
         var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
@@ -141,7 +148,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             filtro.BimestreId
         );
 
-        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
+
         var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
         var respostasAlunosPorQuestoes = await _repositoriosSondagem.RepositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
@@ -175,6 +183,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
         DadosAlunosDto dadosAlunos,
+        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         ContextoProcessamentoDto contexto,
         RespostasProcessadasDto respostasProcessadas,
         bool ehRelatorio)
@@ -184,9 +193,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         foreach (var aluno in contexto.Alunos)
         {
             var codigoAluno = (int)aluno.CodigoAluno;
+            int situacaoMatricula = aluno.SituacaoMatricula;
+            DateTime dataSituacao = aluno.DataSituacao;
 
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, codigoAluno, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas, ehRelatorio))
+                .Select(c => ConstruirColunaAluno(c, codigoAluno, situacaoMatricula, sondagemAtiva, dataSituacao, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas, ehRelatorio))
                 .ToList();
 
             var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, codigoAluno);
@@ -248,6 +259,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
             Pap = dadosAlunos.AlunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
+            SituacaoMatricula = aluno.SituacaoMatricula,
+            DataSituacao = aluno.DataSituacao,
             Coluna = colunasAluno
         };
 
@@ -298,9 +311,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return questoesAtivas.FirstOrDefault()?.QuestionarioId ?? 0;
     }
 
-    protected async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, CancellationToken cancellationToken)
+    protected async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, int anoLetivo, CancellationToken cancellationToken)
     {
-        var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, cancellationToken);
+        var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, anoLetivo, cancellationToken);
 
         return alunos?.Any() == true
             ? alunos
@@ -404,15 +417,28 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     protected static RespostasProcessadasDto ProcessarRespostas(
-        Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes)
+        Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        SME.Sondagem.Dominio.Entidades.Questionario.Questao linguaPortuguesaSegundaLingua,
+        IEnumerable<int> codigosAlunosAtivos)
     {
         var respostas = respostasAlunosPorQuestoes.Values;
 
-        var criadoMaisAntigo = respostas
+        var codigosAtivosHashSet = codigosAlunosAtivos.ToHashSet();
+
+        var respostasAuditoria = respostas
+            .Where(r => r.AlunoId.HasValue && codigosAtivosHashSet.Contains(r.AlunoId.Value))
+            .ToList();
+
+        if (linguaPortuguesaSegundaLingua != null)
+            respostasAuditoria = respostasAuditoria
+                .Where(x => x.QuestaoId != linguaPortuguesaSegundaLingua.Id)
+                .ToList();
+
+        var criadoMaisAntigo = respostasAuditoria
             .OrderBy(r => r.CriadoEm)
             .FirstOrDefault();
 
-        var alteradoMaisRecente = respostas
+        var alteradoMaisRecente = respostasAuditoria
             .Where(r => r.AlteradoEm.HasValue)
             .OrderByDescending(r => r.AlteradoEm)
             .FirstOrDefault();
@@ -426,7 +452,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             : null;
 
         var respostasConvertidas = respostasAlunosPorQuestoes
-            .Where(x => x.Value?.OpcaoRespostaId is not null)
+            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAtivosHashSet.Contains((int)x.Key.CodigoAluno))
             .GroupBy(x => (
                 CodigoAluno: (int)x.Key.CodigoAluno,
                 x.Key.BimestreId,
@@ -448,6 +474,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected static ColunaQuestionarioDto ConstruirColunaAluno(
         ColunaQuestionarioDto colunaBase,
         int codigoAluno,
+        int situacaoMatricula,
+        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+        DateTime dataSituacaoMatricula,
         long questaoIdPrincipal,
         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
         bool ehRelatorio = false)
@@ -458,11 +487,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
+        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p => dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio);
+
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             DescricaoColuna = colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = colunaBase.PeriodoBimestreAtivo,
+            PeriodoBimestreAtivo = podeLancarSondagem ? podeLancarSondagem : colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = ehRelatorio ? colunaBase?.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId) : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)

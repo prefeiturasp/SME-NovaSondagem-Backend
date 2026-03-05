@@ -477,7 +477,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService
@@ -519,7 +519,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService
@@ -686,7 +686,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService
