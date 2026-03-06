@@ -43,6 +43,16 @@ public class TurmaElasticDto
 [ExcludeFromCodeCoverage]
 public class ComponenteCurricularElasticDto
 {
+    public ComponenteCurricularElasticDto(string nome, int codigo)
+    {
+        Nome = nome;
+        Codigo = codigo;
+    }
+    public ComponenteCurricularElasticDto()
+    {
+
+    }
+
     [JsonPropertyName("NomeComponenteCurricular")]
     public string Nome { get; set; } = string.Empty;
 
