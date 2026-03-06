@@ -477,7 +477,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService
@@ -519,7 +519,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService
@@ -637,8 +637,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     {
         return new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NumeroAlunoChamada = "1", NomeAluno = "João Silva", PossuiDeficiencia = 0 },
-            new AlunoElasticDto { CodigoAluno = 1002, NumeroAlunoChamada = "2", NomeAluno = "Maria Santos", PossuiDeficiencia = 0 }
+            new AlunoElasticDto { CodigoAluno = 1001, NumeroAlunoChamada = "1", NomeAluno = "João Silva", PossuiDeficiencia = 0, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo, DataSituacao = DateTime.Today.AddDays(-30) },
+            new AlunoElasticDto { CodigoAluno = 1002, NumeroAlunoChamada = "2", NomeAluno = "Maria Santos", PossuiDeficiencia = 0, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo, DataSituacao = DateTime.Today.AddDays(-30) }
         };
     }
 
@@ -686,7 +686,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         _mockAlunoTurmaService

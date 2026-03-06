@@ -352,7 +352,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         var alunos = CriarAlunosMock();
 
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
-        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         var alunosComPap = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
@@ -384,7 +384,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         var alunos = CriarAlunosMock();
 
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
-        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         var alunosComLingua = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
@@ -455,7 +455,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         );
 
         _mockRepositorioElasticAluno
-            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[]
             {
             new AlunoElasticDto
@@ -554,7 +554,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(questoes);
 
-        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         ConfigurarMocksComplementares();
@@ -940,7 +940,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     {
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
-        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+        _mockRepositorioElasticAluno.Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
         ConfigurarMocksComplementares();
