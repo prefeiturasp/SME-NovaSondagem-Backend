@@ -80,7 +80,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var respostasProcessadas = ProcessarRespostas(
             contextoProcessamento.RespostasAlunosPorQuestoes,
             linguaPortuguesaSegundaLingua!,
-            contextoProcessamento.Alunos
+            contextoProcessamento.Alunos,
+            sondagemAtiva.PeriodosBimestre.OrderBy(c => c.DataInicio).FirstOrDefault()!.DataInicio
         );
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
@@ -412,9 +413,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected static RespostasProcessadasDto ProcessarRespostas(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
         Dominio.Entidades.Questionario.Questao linguaPortuguesaSegundaLingua,
-        IEnumerable<AlunoElasticDto> alunosAtivos)
+        IEnumerable<AlunoElasticDto> alunosAtivos,
+        DateTime dataInicioSondagem)
     {
         var codigosAlunosAtivos = alunosAtivos
+            .Where(a => a.DataSituacao >= dataInicioSondagem)
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
