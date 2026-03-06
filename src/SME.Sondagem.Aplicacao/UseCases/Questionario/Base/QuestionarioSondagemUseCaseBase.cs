@@ -71,7 +71,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         bool ehRelatorio,
         CancellationToken cancellationToken)
     {
-        var contextoProcessamento = await ConstruirContextoProcesamento(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
+        var contextoProcessamento = await ConstruirContextoProcessamento(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
 
         var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
@@ -80,7 +80,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var respostasProcessadas = ProcessarRespostas(
             contextoProcessamento.RespostasAlunosPorQuestoes,
             linguaPortuguesaSegundaLingua!,
-            contextoProcessamento.CodigosAlunos
+            contextoProcessamento.Alunos
         );
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
@@ -116,7 +116,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         }
     }
 
-    private async Task<ContextoProcessamentoDto> ConstruirContextoProcesamento(
+    private async Task<ContextoProcessamentoDto> ConstruirContextoProcessamento(
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
@@ -149,7 +149,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
 
-        var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
+        var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
 
         var respostasAlunosPorQuestoes = await _repositoriosSondagem.RepositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
             codigosAlunos.Select(x => (long)x).ToList(),
@@ -191,15 +191,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         foreach (var aluno in contexto.Alunos)
         {
-            var codigoAluno = (int)aluno.CodigoAluno;
-            int situacaoMatricula = aluno.CodigoSituacaoMatricula;
-            DateTime dataSituacao = aluno.DataSituacao;
-
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, codigoAluno, situacaoMatricula, sondagemAtiva, dataSituacao, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas, ehRelatorio))
+                .Select(c => ConstruirColunaAluno(c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas, ehRelatorio))
                 .ToList();
 
-            var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, codigoAluno);
+            var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, aluno.CodigoAluno);
             estudantes.Add(estudante);
         }
 
@@ -244,7 +240,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
-        dynamic aluno,
+        AlunoElasticDto aluno,
         DadosAlunosDto dadosAlunos,
         List<ColunaQuestionarioDto> colunasAluno,
         int codigoAluno)
@@ -308,7 +304,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return questoesAtivas.FirstOrDefault()?.QuestionarioId ?? 0;
     }
 
-    protected async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, int anoLetivo, CancellationToken cancellationToken)
+    protected async Task<IEnumerable<AlunoElasticDto>> ObterAlunosOuLancarExcecao(int turmaId, int anoLetivo, CancellationToken cancellationToken)
     {
         var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, anoLetivo, cancellationToken);
 
@@ -415,15 +411,15 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     protected static RespostasProcessadasDto ProcessarRespostas(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
-        SME.Sondagem.Dominio.Entidades.Questionario.Questao linguaPortuguesaSegundaLingua,
-        IEnumerable<int> codigosAlunosAtivos)
+        Dominio.Entidades.Questionario.Questao linguaPortuguesaSegundaLingua,
+        IEnumerable<AlunoElasticDto> alunosAtivos)
     {
-        var respostas = respostasAlunosPorQuestoes.Values;
+        var codigosAlunosAtivos = alunosAtivos
+            .Select(a => a.CodigoAluno)
+            .ToHashSet();
 
-        var codigosAtivosHashSet = codigosAlunosAtivos.ToHashSet();
-
-        var respostasAuditoria = respostas
-            .Where(r => r.AlunoId.HasValue && codigosAtivosHashSet.Contains(r.AlunoId.Value))
+        var respostasAuditoria = respostasAlunosPorQuestoes.Values
+            .Where(r => r.AlunoId.HasValue && codigosAlunosAtivos.Contains(r.AlunoId.Value))
             .ToList();
 
         if (linguaPortuguesaSegundaLingua != null)
@@ -449,7 +445,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             : null;
 
         var respostasConvertidas = respostasAlunosPorQuestoes
-            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAtivosHashSet.Contains((int)x.Key.CodigoAluno))
+            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAlunosAtivos.Contains((int)x.Key.CodigoAluno))
             .GroupBy(x => (
                 CodigoAluno: (int)x.Key.CodigoAluno,
                 x.Key.BimestreId,
@@ -470,30 +466,35 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     protected static ColunaQuestionarioDto ConstruirColunaAluno(
         ColunaQuestionarioDto colunaBase,
-        int codigoAluno,
-        int situacaoMatricula,
+        AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        DateTime dataSituacaoMatricula,
         long questaoIdPrincipal,
         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
         bool ehRelatorio = false)
     {
-        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? questaoIdPrincipal;
+        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)questaoIdPrincipal;
         int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
+
+        int codigoAluno = aluno.CodigoAluno;
+        int situacaoMatricula = aluno.CodigoSituacaoMatricula;
+        DateTime dataSituacaoMatricula = aluno.DataSituacao;
 
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p => dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
-                 && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p =>
+                dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
+            && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             DescricaoColuna = colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = podeLancarSondagem ? podeLancarSondagem : colunaBase.PeriodoBimestreAtivo,
+            PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = ehRelatorio ? colunaBase?.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId) : colunaBase.OpcaoResposta,
+            OpcaoResposta = ehRelatorio
+                ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
+                : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
     }

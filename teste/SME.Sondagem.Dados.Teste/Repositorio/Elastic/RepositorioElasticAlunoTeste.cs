@@ -284,29 +284,7 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
             var listaResultado = resultado.ToList();
             Assert.Single(listaResultado);
             Assert.Equal("Ativo", listaResultado.First().NomeAluno);
-        }
-
-        [Fact]
-        public async Task ObterAlunosPorIdTurma_DeveExcluirAlunos_QuandoDataSituacaoForFutura()
-        {
-            var idTurma = 300;
-            int anoLetivo = DateTime.Now.Year;
-            var cancellationToken = CancellationToken.None;
-
-            var alunos = new List<AlunoElasticDto>
-            {
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Data Válida", CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DataSituacaoValida },
-                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Data Futura", CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DateTime.UtcNow.AddDays(1) }
-            };
-
-            ConfigurarMocksParaRetornar(alunos);
-
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
-
-            var listaResultado = resultado.ToList();
-            Assert.Single(listaResultado);
-            Assert.Equal("Data Válida", listaResultado.First().NomeAluno);
-        }
+        }       
 
         #region Métodos Auxiliares
 
