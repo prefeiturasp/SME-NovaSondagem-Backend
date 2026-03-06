@@ -68,7 +68,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
 
         var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null && bimestresForaDoPadrao.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
 
-        var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
+        var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
 
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
             codigosAlunos,
