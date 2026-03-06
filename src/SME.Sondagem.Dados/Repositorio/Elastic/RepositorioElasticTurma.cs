@@ -14,6 +14,15 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         }
 
         public async Task<TurmaElasticDto> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TurmaElasticDto>> ObterTodasTurma()
+        {
+
+            var retorno = await ObterTodosAsync<TurmaElasticDto>(IndicesElastic.INDICE_TURMA,"Obter turma por código");
+
+            return (IEnumerable<TurmaElasticDto>)(retorno.Any() ? retorno : []);
+        }
+
+        public async Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
         {
             if (filtro.TurmaId == 0)
             {
