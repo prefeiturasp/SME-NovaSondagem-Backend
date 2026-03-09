@@ -87,22 +87,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
 
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
-            .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
+            .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);       
 
-        var colunas = await ObterColunasOuLancarExcecao(bimestresForaDoPadrao != null && bimestresForaDoPadrao.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre, questoesAtivas, filtro.BimestreId);
-
-        var codigosAlunos = alunos.Select(a => (int)a.CodigoAluno).ToList();
-
-        var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
-            codigosAlunos,
-            turma.AnoLetivo,
-            cancellationToken);
-
-        var alunosComLinguaPortuguesaSegundaLingua = await _repositoriosSondagem.RepositorioRespostaAluno
-            .VerificarAlunosPossuiLinguaPortuguesaAsync(
-                codigosAlunos,
-                questaoLinguaPortuguesa,
-                cancellationToken);
+        var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
 
         var respostasAlunosPorQuestoes = await _repositoriosSondagem.RepositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
             codigosAlunos.Select(x => (long)x).ToList(),
@@ -127,22 +114,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var nomeAlteradoPor = alteradoMaisRecente is not null
             ? $"Alterado por {alteradoMaisRecente.AlteradoPor} ({alteradoMaisRecente.AlteradoRF}) em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
-            : null;
-
-        var respostasAlunosPorQuestoesConvertido =
-            respostasAlunosPorQuestoes
-                .Where(x => x.Value?.OpcaoRespostaId is not null)
-                .GroupBy(x => (
-                    CodigoAluno: (int)x.Key.CodigoAluno, x.Key.BimestreId, x.Key.QuestaoId
-                ))
-                .ToDictionary(
-                    g => g.Key,
-                    g => g
-                        .Select(x => x.Value!)
-                        .First()
-                );
-
-        var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
+            : null;       
 
         var respostasProcessadas = ProcessarRespostas(
            contextoProcessamento.RespostasAlunosPorQuestoes,
