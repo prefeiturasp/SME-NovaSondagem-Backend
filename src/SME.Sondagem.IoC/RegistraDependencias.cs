@@ -120,7 +120,6 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirQuestionarioUseCase, ExcluirQuestionarioUseCase>();
         services.TryAddScoped<IObterQuestionariosUseCase, ObterQuestionariosUseCase>();
         services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
-        services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
@@ -145,6 +144,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionariosBimestresUseCase, ObterQuestionariosBimestresUseCase>();
         services.TryAddScoped<IVincularBimestresUseCase, VincularBimestresUseCase>();
         services.TryAddScoped<IExcluirVinculosPorQuestionarioUseCase, ExcluirVinculosPorQuestionarioUseCase>();
+        services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)

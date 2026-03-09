@@ -73,22 +73,23 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveRetornarAlunosDistintos_QuandoExistiremAlunos()
         {
             var idTurma = 123;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             var alunosEsperados = new List<AlunoElasticDto>
             {
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 102, NomeAluno = "Aluno 2", CodigoTurma = idTurma }
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 102, NomeAluno = "Aluno 2", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 }
             };
 
             ConfigurarMocksParaRetornar(alunosEsperados);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             Assert.NotNull(resultado);
             var listaResultado = resultado.ToList();
-            Assert.Equal(2, listaResultado.Count); 
+            Assert.Equal(2, listaResultado.Count);
             Assert.Contains(listaResultado, a => a.CodigoAluno == 1);
             Assert.Contains(listaResultado, a => a.CodigoAluno == 2);
 
@@ -99,11 +100,12 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveRetornarListaVazia_QuandoNaoExistiremAlunos()
         {
             var idTurma = 999;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             Assert.NotNull(resultado);
             Assert.Empty(resultado);
@@ -113,11 +115,12 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveChamarTelemetriaComParametrosCorretos()
         {
             var idTurma = 456;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             ConfigurarMocksParaRetornar(new List<AlunoElasticDto>());
 
-            await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             _mockServicoTelemetria.Verify(
                 x => x.RegistrarComRetornoAsync<SearchResponse<AlunoElasticDto>>(
@@ -133,16 +136,17 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveAplicarFiltroCorreto()
         {
             var idTurma = 789;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             var alunosDaTurma = new List<AlunoElasticDto>
             {
-                new AlunoElasticDto { CodigoAluno = 10, CodigoTurma = idTurma, NomeAluno = "Aluno Turma Correta" }
+                new AlunoElasticDto { CodigoAluno = 10, CodigoTurma = idTurma, NomeAluno = "Aluno Turma Correta", CodigoSituacaoMatricula = 1 }
             };
 
             ConfigurarMocksParaRetornar(alunosDaTurma);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             Assert.NotNull(resultado);
             Assert.All(resultado, aluno => Assert.Equal(idTurma, aluno.CodigoTurma));
@@ -152,20 +156,21 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveManterApenasUmRegistroPorCodigoAluno()
         {
             var idTurma = 100;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             var alunosComDuplicatas = new List<AlunoElasticDto>
             {
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 102, NomeAluno = "Aluno 1", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Aluno 2", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 201, NomeAluno = "Aluno 2", CodigoTurma = idTurma }
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Aluno 1", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Aluno 2", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Aluno 2", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1 }
             };
 
             ConfigurarMocksParaRetornar(alunosComDuplicatas);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             var listaResultado = resultado.ToList();
             Assert.Equal(2, listaResultado.Count);
@@ -180,14 +185,15 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveFuncionarComDiferentesIdsTurma(int idTurma)
         {
             var cancellationToken = CancellationToken.None;
+            int anoLetivo = 2026;
             var alunos = new List<AlunoElasticDto>
             {
-                new AlunoElasticDto { CodigoAluno = 1, CodigoTurma = idTurma, NomeAluno = "Aluno Teste" }
+                new AlunoElasticDto { CodigoAluno = 1, CodigoTurma = idTurma, NomeAluno = "Aluno Teste", CodigoSituacaoMatricula = 1 }
             };
 
             ConfigurarMocksParaRetornar(alunos);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             Assert.NotNull(resultado);
             Assert.Single(resultado);
@@ -197,28 +203,30 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         public async Task ObterAlunosPorIdTurma_DeveRetornarPrimeiroRegistro_QuandoHouverDuplicatas()
         {
             var idTurma = 555;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
 
             var alunosComDuplicatas = new List<AlunoElasticDto>
             {
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Primeiro Registro", CodigoTurma = idTurma },
-                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, NomeAluno = "Segundo Registro", CodigoTurma = idTurma }
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Registro DataSituacao Mais Recente", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1, DataSituacao = new DateTime(2024, 6, 1) },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Registro DataSituacao Mais Antigo", CodigoTurma = idTurma, CodigoSituacaoMatricula = 1, DataSituacao = new DateTime(2024, 1, 1) }
             };
 
             ConfigurarMocksParaRetornar(alunosComDuplicatas);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             var listaResultado = resultado.ToList();
             Assert.Single(listaResultado);
             Assert.Equal(100, listaResultado.First().CodigoMatricula);
-            Assert.Equal("Primeiro Registro", listaResultado.First().NomeAluno);
+            Assert.Equal("Registro DataSituacao Mais Recente", listaResultado.First().NomeAluno);
         }
 
         [Fact]
         public async Task ObterAlunosPorIdTurma_DevePreservarDadosCompletos_DosPrimeiroRegistros()
         {
             var idTurma = 888;
+            int anoLetivo = 2026;
             var cancellationToken = CancellationToken.None;
             var dataEsperada = new DateTime(2024, 1, 15);
 
@@ -232,13 +240,14 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
                     NomeSocialAluno = "João",
                     NumeroAlunoChamada = "10",
                     DataNascimento = dataEsperada,
-                    CodigoTurma = idTurma
+                    CodigoTurma = idTurma,
+                    CodigoSituacaoMatricula = 1
                 }
             };
 
             ConfigurarMocksParaRetornar(alunos);
 
-            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, cancellationToken);
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
 
             var aluno = resultado.First();
             Assert.Equal(5, aluno.CodigoAluno);
