@@ -23,6 +23,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         public static readonly Guid PERFIL_DIRETOR = Guid.Parse("46e1e074-37d6-e911-abd6-f81654fe895d");
         public static readonly Guid PERFIL_PROFESSOR = Guid.Parse("40e1e074-37d6-e911-abd6-f81654fe895d");
         public static readonly Guid PERFIL_ADM_SME = Guid.Parse("5ae1e074-37d6-e911-abd6-f81654fe895d");
+        public static readonly Guid PERFIL_ADM_COTIC = Guid.Parse("5be1e074-37d6-e911-abd6-f81654fe895d");
 
         private const int CACHE_TTL_TURMA_MINUTOS = 30;
 
@@ -50,7 +51,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (!Guid.TryParse(perfil, out var perfilGuid))
                 return false;
 
-            if (perfilGuid == PERFIL_ADM_SME)
+            if (perfilGuid == PERFIL_ADM_SME || perfilGuid == PERFIL_ADM_COTIC)
             {
                 if (!int.TryParse(turmaId, out var codigoTurma))
                     return false;

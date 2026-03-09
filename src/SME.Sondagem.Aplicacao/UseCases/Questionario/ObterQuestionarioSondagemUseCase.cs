@@ -7,6 +7,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario;
 
@@ -64,6 +65,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         CancellationToken cancellationToken)
     {
         var modalidade = turma.Modalidade;
+        int anoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : turma.AnoLetivo;
 
         if (!int.TryParse(turma.AnoTurma, out int ano))
             throw new RegraNegocioException("Ano da turma inválido");
@@ -72,11 +74,17 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, turma.AnoLetivo, filtro.ProficienciaId, cancellationToken);
 
+        var contextoProcessamento = await ConstruirContextoProcessamento(filtro, turma, sondagemAtiva, cancellationToken);
+
+        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
+
         var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
+
+        var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
         var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
 
-        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, cancellationToken);
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
 
         var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
             .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
@@ -136,15 +144,14 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
 
-        var estudantes = ConstruirEstudantes(
-            alunos,
-            colunas,
-            respostasAlunosPorQuestoesConvertido,
-            questaoIdPrincipal,
-            alunosComLinguaPortuguesaSegundaLingua,
-            alunosComPap)
-        .OrderBy(e => e.Nome)
-        .ToList();
+        var respostasProcessadas = ProcessarRespostas(
+           contextoProcessamento.RespostasAlunosPorQuestoes,
+           linguaPortuguesaSegundaLingua!,
+           contextoProcessamento.Alunos,
+           sondagemAtiva.PeriodosBimestre.OrderBy(c => c.DataInicio).FirstOrDefault()!.DataInicio
+       );
+
+        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas);
 
         var questaoId = questoesAtivas.FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
 
@@ -161,7 +168,33 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             AlteradoPor = nomeAlteradoPor
         };
     }
+    protected virtual async Task<DadosAlunosDto> ObterDadosAlunos(
+        int turmaId,
+        int anoLetivo,
+        ContextoProcessamentoDto contexto,
+        CancellationToken cancellationToken)
+    {
+        var codigosAlunos = contexto.CodigosAlunos;
 
+        var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
+            codigosAlunos,
+            anoLetivo,
+            cancellationToken);
+
+        var questaoLinguaPortuguesa = contexto.QuestaoLinguaPortuguesa;
+
+        var alunosComLinguaPortuguesaSegundaLingua = await _repositoriosSondagem.RepositorioRespostaAluno
+            .VerificarAlunosPossuiLinguaPortuguesaAsync(
+                codigosAlunos,
+                questaoLinguaPortuguesa,
+                cancellationToken);
+
+        return new DadosAlunosDto
+        {
+            AlunosComPap = alunosComPap,
+            AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua
+        };
+    }
     private static void ValidarModalidadeEAno(int modalidade, int ano)
     {
         if (modalidade != (int)Modalidade.Fundamental && modalidade != (int)Modalidade.EJA)
@@ -205,9 +238,9 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return primeiraQuestao.QuestionarioId;
     }
 
-    private async Task<IEnumerable<dynamic>> ObterAlunosOuLancarExcecao(int turmaId, CancellationToken cancellationToken)
+    private async Task<IEnumerable<AlunoElasticDto>> ObterAlunosOuLancarExcecao(int turmaId, int anoLetivo, CancellationToken cancellationToken)
     {
-        var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, cancellationToken);
+        var alunos = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, anoLetivo, cancellationToken);
 
         return alunos != null && alunos.Any()
             ? alunos
@@ -295,70 +328,80 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         return questoesAtivas.Any(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta);
     }
 
-    private static List<EstudanteQuestionarioDto> ConstruirEstudantes(
-        IEnumerable<dynamic> alunos,
-        List<ColunaQuestionarioDto> colunas,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
-        long questaoIdPrincipal,
-        Dictionary<int, bool> alunosComLinguaPortuguesaSegundaLingua,
-        Dictionary<int, bool> alunosComPap)
+    private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
+         DadosAlunosDto dadosAlunos,
+         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+         ContextoProcessamentoDto contexto,
+         RespostasProcessadasDto respostasProcessadas)
     {
         var estudantes = new List<EstudanteQuestionarioDto>();
 
-        foreach (var aluno in alunos)
+        foreach (var aluno in contexto.Alunos)
         {
-            var codigoAluno = (int)aluno.CodigoAluno;
-
-            var colunasAluno = colunas
-                .Select(c => ConstruirColunaAluno(c, codigoAluno, questaoIdPrincipal, respostasAlunosPorQuestoes))
+            var colunasAluno = contexto.Colunas
+                .Select(c => ConstruirColunaAluno(c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal, respostasProcessadas.RespostasConvertidas))
                 .ToList();
 
-            estudantes.Add(new EstudanteQuestionarioDto
-            {
-                NumeroAlunoChamada = aluno.NumeroAlunoChamada,
-                Codigo = codigoAluno,
-                Nome = aluno.NomeAluno ?? string.Empty,
-                LinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
-                Pap = alunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
-                PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
-                Coluna = colunasAluno
-            });
+            var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, aluno.CodigoAluno);
+            estudantes.Add(estudante);
         }
 
-        return estudantes;
+        return [.. estudantes.OrderBy(e => e.Nome)];
     }
 
-    private static ColunaQuestionarioDto ConstruirColunaAluno(
-        ColunaQuestionarioDto colunaBase,
-        int codigoAluno,
-        long questaoIdPrincipal,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes)
+    protected virtual Task<EstudanteQuestionarioDto> ConstruirEstudante(
+        AlunoElasticDto aluno,
+        DadosAlunosDto dadosAlunos,
+        List<ColunaQuestionarioDto> colunasAluno,
+        int codigoAluno)
     {
-        long questaoIdChave = colunaBase.QuestaoSubrespostaId.HasValue
-            ? colunaBase.QuestaoSubrespostaId.Value
-            : questaoIdPrincipal;
+        var estudante = new EstudanteQuestionarioDto
+        {
+            NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+            Codigo = codigoAluno,
+            Nome = aluno.NomeAluno ?? string.Empty,
+            LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(codigoAluno, out var lingua) && lingua,
+            Pap = dadosAlunos.AlunosComPap.TryGetValue(codigoAluno, out var pap) && pap,
+            PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
+            Coluna = colunasAluno
+        };
 
-        int? bimestreIdChave = colunaBase.IdCiclo == 0 ? (int?)null : colunaBase.IdCiclo;
+        return Task.FromResult(estudante);
+    }
+    protected static ColunaQuestionarioDto ConstruirColunaAluno(
+         ColunaQuestionarioDto colunaBase,
+         AlunoElasticDto aluno,
+         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+         long questaoIdPrincipal,
+         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+         bool ehRelatorio = false)
+    {
+        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)questaoIdPrincipal;
+        int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
 
-        var chave = (
-            CodigoAluno: codigoAluno,
-            BimestreId: bimestreIdChave,
-            QuestaoId: questaoIdChave
-        );
+        int codigoAluno = aluno.CodigoAluno;
+        int situacaoMatricula = aluno.CodigoSituacaoMatricula;
+        DateTime dataSituacaoMatricula = aluno.DataSituacao;
 
+        var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
+
+        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p =>
+                dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
+            && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             DescricaoColuna = colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = colunaBase.PeriodoBimestreAtivo,
+            PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = colunaBase.OpcaoResposta,
+            OpcaoResposta = ehRelatorio
+                ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
+                : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
     }
-
     private static RespostaDto? ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
     {
         if (!possuiResposta || resposta is null)
@@ -381,4 +424,119 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             ? questoesAtivas.FirstOrDefault(q => q.QuestaoVinculo?.Tipo == TipoQuestao.QuestaoComSubpergunta)?.QuestaoVinculo?.Nome!
             : primeiraQuestao?.Nome ?? string.Empty;
     }
+
+    private async Task<ContextoProcessamentoDto> ConstruirContextoProcessamento(
+      FiltroQuestionario filtro,
+      TurmaElasticDto turma,
+      Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+      CancellationToken cancellationToken)
+    {
+        var modalidade = turma.Modalidade;
+        int ano = int.TryParse(turma.AnoTurma, out int anoTurma) ? anoTurma : filtro.Ano;
+        int anoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : turma.AnoLetivo;
+
+        ValidarModalidadeEAno(modalidade, ano);
+
+        var questoesAtivas = await ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, anoLetivo, filtro.ProficienciaId, cancellationToken);
+
+        var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
+        var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
+
+        var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
+            .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);
+
+        var periodosBimestre = bimestresForaDoPadrao?.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre;
+
+        var colunas = await ObterColunasOuLancarExcecao(
+            filtro.BimestreId.HasValue
+                ? periodosBimestre.Where(p => p.BimestreId == filtro.BimestreId.Value).ToList()
+                : periodosBimestre,
+            questoesAtivas,
+            filtro.BimestreId
+        );
+
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
+
+        var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
+
+        var respostasAlunosPorQuestoes = await _repositoriosSondagem.RepositorioRespostaAluno.ObterRespostasAlunosPorQuestoesAsync(
+            codigosAlunos.Select(x => (long)x).ToList(),
+            questoesIds.Select(x => (long)x).ToList(),
+            sondagemAtiva.Id,
+            cancellationToken);
+
+        var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
+
+        return new ContextoProcessamentoDto
+        {
+            QuestoesAtivas = questoesAtivas,
+            QuestaoLinguaPortuguesa = questaoLinguaPortuguesa,
+            Colunas = colunas,
+            Alunos = alunos,
+            CodigosAlunos = codigosAlunos,
+            RespostasAlunosPorQuestoes = respostasAlunosPorQuestoes.ToDictionary(
+                x => (x.Key.CodigoAluno, x.Key.BimestreId, x.Key.QuestaoId),
+                x => x.Value
+            ),
+            QuestaoIdPrincipal = questaoIdPrincipal
+        };
+    }
+
+    protected static RespostasProcessadasDto ProcessarRespostas(
+        Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        Dominio.Entidades.Questionario.Questao linguaPortuguesaSegundaLingua,
+        IEnumerable<AlunoElasticDto> alunosAtivos,
+        DateTime dataInicioSondagem)
+    {
+        var codigosAlunosAtivos = alunosAtivos
+            .Where(a => a.DataSituacao <= dataInicioSondagem)
+            .Select(a => a.CodigoAluno)
+            .ToHashSet();
+
+        var respostasAuditoria = respostasAlunosPorQuestoes.Values
+            .Where(r => r.AlunoId.HasValue && codigosAlunosAtivos.Contains(r.AlunoId.Value))
+            .ToList();
+
+        if (linguaPortuguesaSegundaLingua != null)
+            respostasAuditoria = respostasAuditoria
+                .Where(x => x.QuestaoId != linguaPortuguesaSegundaLingua.Id)
+                .ToList();
+
+        var criadoMaisAntigo = respostasAuditoria
+            .OrderBy(r => r.CriadoEm)
+            .FirstOrDefault();
+
+        var alteradoMaisRecente = respostasAuditoria
+            .Where(r => r.AlteradoEm.HasValue)
+            .OrderByDescending(r => r.AlteradoEm)
+            .FirstOrDefault();
+
+        var nomeInseridoPor = criadoMaisAntigo is not null
+            ? $"Inserido por {criadoMaisAntigo.CriadoPor} ({criadoMaisAntigo.CriadoRF}) em {criadoMaisAntigo.CriadoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
+        var nomeAlteradoPor = alteradoMaisRecente is not null
+            ? $"Alterado por {alteradoMaisRecente.AlteradoPor} ({alteradoMaisRecente.AlteradoRF}) em {alteradoMaisRecente.AlteradoEm:dd/MM/yyyy HH:mm}"
+            : null;
+
+        var respostasConvertidas = respostasAlunosPorQuestoes
+            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAlunosAtivos.Contains((int)x.Key.CodigoAluno))
+            .GroupBy(x => (
+                CodigoAluno: (int)x.Key.CodigoAluno,
+                x.Key.BimestreId,
+                x.Key.QuestaoId
+            ))
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(x => x.Value!).First()
+            );
+
+        return new RespostasProcessadasDto
+        {
+            InseridoPor = nomeInseridoPor,
+            AlteradoPor = nomeAlteradoPor,
+            RespostasConvertidas = respostasConvertidas
+        };
+    }
+
 }
