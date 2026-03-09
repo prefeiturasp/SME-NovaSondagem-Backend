@@ -78,16 +78,11 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
 
         var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
-        var questaoLinguaPortuguesa = questoesAtivas.FirstOrDefault(x => x.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua);
-
         var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
         var questoesIds = ObterQuestoesIdsPorTipo(questoesAtivas);
 
-        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);
-
-        var bimestresForaDoPadrao = await _repositoriosSondagem.RepositorioBimestre
-            .ObterBimestresPorQuestionarioIdAsync(ObterIdQuestionario(questoesAtivas), cancellationToken);       
+        var alunos = await ObterAlunosOuLancarExcecao(filtro.TurmaId, anoLetivo, cancellationToken);     
 
         var codigosAlunos = alunos.Select(a => a.CodigoAluno).ToList();
 
