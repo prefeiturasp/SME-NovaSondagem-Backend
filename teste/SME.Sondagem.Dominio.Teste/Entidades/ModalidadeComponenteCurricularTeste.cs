@@ -58,7 +58,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         {
             var entidade = new ModalidadeComponenteCurricular(Modalidade.Fundamental, 10);
 
-            Assert.IsAssignableFrom<EntidadeBase>(entidade);
+            Assert.IsType<EntidadeBase>(entidade, exactMatch: false);
         }
     }
 }
