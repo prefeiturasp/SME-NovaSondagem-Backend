@@ -86,7 +86,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio);
 
-        var legenda = ConstruirLegenda(contextoProcessamento, respostasProcessadas);
+        var legenda = ConstruirLegenda(contextoProcessamento);
 
         var questaoId = contextoProcessamento.QuestoesAtivas
             .FirstOrDefault(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)?.Id ?? 0;
@@ -204,8 +204,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     private static List<LegendaQuestionarioDto> ConstruirLegenda(
-        ContextoProcessamentoDto contexto,
-        RespostasProcessadasDto respostasProcessadas)
+        ContextoProcessamentoDto contexto)
     {
         var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
