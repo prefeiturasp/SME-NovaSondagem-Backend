@@ -6,6 +6,8 @@ namespace SME.Sondagem.Dados.Interfaces.Elastic
     {
         Task<TurmaElasticDto> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken);
         Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken);
-        Task<IEnumerable<TurmaElasticDto>> ObterTodasTurma();
+        Task<IEnumerable<TurmaElasticDto>> ObterTurmasPorIds(
+            IEnumerable<int> turmaIds,
+            CancellationToken cancellationToken);
     }
 }

@@ -21,6 +21,7 @@ namespace SME.Sondagem.API.Controllers;
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(QuestionarioSondagemRelatorioDto), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTurma([FromQuery] FiltroQuestionario filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterRelatorioSondagemPorTurmaUseCase, CancellationToken cancellationToken)
@@ -33,8 +34,12 @@ public class RelatorioIntegracaoController : ControllerBase
     [ProducesResponseType(typeof(MemoryStream), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
     {
-        await useCase.ObterSondagemRelatorioTodas(cancellationToken);
-        return Ok();
+        var csvStream = await useCase.ObterSondagemRelatorio(cancellationToken);
+        return File(
+                csvStream,
+                "text/csv",
+                $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.csv"
+            );
     }
 }
 

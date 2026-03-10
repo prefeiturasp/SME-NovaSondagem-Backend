@@ -6,13 +6,15 @@ namespace SME.Sondagem.Infrastructure.Dtos
 {
     public class TurmaCodigoElasticDto
     {
-        public TurmaCodigoElasticDto(int? codigoTurma, string nomeTurma)
+        public TurmaCodigoElasticDto(int? codigoTurma, string nomeTurma, string anoTurma)
         {
-            CodigoTurma = codigoTurma ?? throw new ArgumentNullException(nameof(codigoTurma));
-            NomeTurma = nomeTurma ?? throw new ArgumentNullException(nameof(nomeTurma));
+            CodigoTurma = codigoTurma;
+            NomeTurma = nomeTurma;
+            AnoTurma = anoTurma;
         }
 
-        public int CodigoTurma { get; set; }
+        public int? CodigoTurma { get; set; }
         public string NomeTurma { get; set; }
+        public string AnoTurma { get; set; }
     }
 }

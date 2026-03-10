@@ -7,4 +7,7 @@ public interface IRepositorioComponenteCurricular : IRepositorioBase<ComponenteC
     Task<ComponenteCurricular?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default);
     Task<IEnumerable<ComponenteCurricular>> ObterPorAnoAsync(int ano, CancellationToken cancellationToken = default);
     Task<bool> ExisteComCodigoEolAsync(int codigoEol, int? idIgnorar = null, CancellationToken cancellationToken = default);
+
+    Task<ComponenteCurricular?> ObterPorNomeModalidade(string nome, string modalidadeId,
+        CancellationToken cancellationToken = default);
 }

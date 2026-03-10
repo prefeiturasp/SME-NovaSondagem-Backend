@@ -14,6 +14,6 @@ namespace SME.Sondagem.Aplicacao.Queries.ObterTodasTurmaElastic
         }
 
         public async Task<IEnumerable<TurmaElasticDto>> Handle(ObterTodasTurmaElasticQuery request, CancellationToken cancellationToken)
-           => await _repositoriosElastic.RepositorioElasticTurma.ObterTodasTurma();
+           => await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(request.TurmasId,cancellationToken);
     }
 }

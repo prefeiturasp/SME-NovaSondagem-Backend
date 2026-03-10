@@ -2,15 +2,13 @@ namespace SME.Sondagem.Infrastructure.Dtos
 {
     public class AlunoEolDto
     {
-        public int CodigoAluno { get; set; }   
-        public int codigoTurma { get; set; }   
-        public string NomeAluno { private get; set; }   
-        public string NomeSocialAluno { get; set; }
-        public string NomeResponsavel { get; set; }
+        public string? NomeAluno { get; set; }
+        public string? SituacaoMatricula { get; set; }
+        public string? CodigoEscola { get; set; }
+        public DateTime DataMatricula { get; set; }
+        public int CodigoAluno { get; set; }
+        public int CodigoTurma { get; set; }
+        public int CodigoSituacaoMatricula { get; set; }
 
-        public string NomeCompleto()
-        {
-            return NomeSocialAluno ?? NomeAluno;
-        }
     }
 }
