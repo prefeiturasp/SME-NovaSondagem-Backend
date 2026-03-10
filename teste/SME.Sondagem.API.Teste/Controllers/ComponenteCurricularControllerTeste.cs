@@ -34,10 +34,10 @@ public class ComponenteCurricularControllerTeste
         };
 
         _useCaseMock
-            .Setup(x => x.ListarAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(Dominio.Enums.Modalidade.EJA, _cancellationToken))
             .ReturnsAsync(lista);
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(Dominio.Enums.Modalidade.EJA, _cancellationToken);
 
         var ok = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, ok.StatusCode);
@@ -48,10 +48,10 @@ public class ComponenteCurricularControllerTeste
     public async Task Listar_OperationCanceledException_DeveRetornar499()
     {
         _useCaseMock
-            .Setup(x => x.ListarAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(Dominio.Enums.Modalidade.EJA, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(Dominio.Enums.Modalidade.EJA, _cancellationToken);
 
         var obj = Assert.IsType<ObjectResult>(result);
         Assert.Equal(499, obj.StatusCode);
@@ -64,10 +64,10 @@ public class ComponenteCurricularControllerTeste
     public async Task Listar_Exception_DeveRetornar500()
     {
         _useCaseMock
-            .Setup(x => x.ListarAsync(_cancellationToken))
+            .Setup(x => x.ListarAsync(Dominio.Enums.Modalidade.EJA, _cancellationToken))
             .ThrowsAsync(new Exception("erro"));
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(Dominio.Enums.Modalidade.EJA, _cancellationToken);
 
         var obj = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status500InternalServerError, obj.StatusCode);

@@ -169,5 +169,45 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.False(existe);
         }
+
+        [Fact]
+        public async Task ListarAsync_deve_retornar_componentes_com_modalidades_ordenados_por_nome()
+        {
+            var context = CriarContexto(nameof(ListarAsync_deve_retornar_componentes_com_modalidades_ordenados_por_nome));
+            var servicoAuditoria = CriarServicoAuditoria();
+            var conextoBase = CriarConextoBase();
+
+            var portugues = new ComponenteCurricular("Português", 5, "EF", 10);
+            var matematica = new ComponenteCurricular("Matemática", 5, "EF", 20);
+
+            context.ComponentesCurriculares.AddRange(portugues, matematica);
+            await context.SaveChangesAsync();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
+
+            var resultado = await repositorio.ListarAsync();
+
+            var lista = resultado.ToList();
+
+            Assert.Equal(2, lista.Count);
+            Assert.Equal("Matemática", lista[0].Nome);
+            Assert.Equal("Português", lista[1].Nome);
+            Assert.NotNull(lista[0].ModalidadeComponenteCurricular);
+            Assert.NotNull(lista[1].ModalidadeComponenteCurricular);
+        }
+
+        [Fact]
+        public async Task ListarAsync_deve_retornar_lista_vazia_quando_nao_houver_componentes()
+        {
+            var context = CriarContexto(nameof(ListarAsync_deve_retornar_lista_vazia_quando_nao_houver_componentes));
+            var servicoAuditoria = CriarServicoAuditoria();
+            var conextoBase = CriarConextoBase();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoria, conextoBase);
+
+            var resultado = await repositorio.ListarAsync();
+
+            Assert.Empty(resultado);
+        }
     }
 }
