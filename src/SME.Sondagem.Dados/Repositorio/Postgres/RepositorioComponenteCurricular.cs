@@ -52,4 +52,12 @@ public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricu
 
         return await query.AnyAsync(c => c.CodigoEol == codigoEol, cancellationToken);
     }
+
+    public override async Task<IEnumerable<ComponenteCurricular>> ListarAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.AsNoTracking()
+            .Include(c => c.ModalidadeComponenteCurricular)
+            .OrderBy(c => c.Nome)
+            .ToListAsync(cancellationToken);        
+    }
 }
