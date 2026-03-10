@@ -211,16 +211,9 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             "Sim", "Não", "Nao"
         };
 
-        var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
-            .Where(resposta => resposta.OpcaoRespostaId.HasValue)
-            .Select(resposta => resposta.OpcaoRespostaId!.Value)
-            .Distinct()
-            .ToHashSet();
-
         var todasOpcoesResposta = contexto.QuestoesAtivas
             .SelectMany(q => q.QuestaoOpcoes)
-            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) &&
-                        !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
+            .Where(qo => !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
             .Select(qo => qo.OpcaoResposta)
             .DistinctBy(or => or.Id)
             .OrderBy(l => l.Ordem)
