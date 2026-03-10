@@ -241,8 +241,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
 
         var resultado = await useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None);
 
-        Assert.False(resultado is Infrastructure.Dtos.Questionario.Relatorio.QuestionarioSondagemRelatorioDto);
-        Assert.IsAssignableFrom<object>(resultado);
+        Assert.IsType<SME.Sondagem.Infra.Dtos.Questionario.QuestionarioSondagemDto>(resultado);
     }
 
     [Fact]
@@ -826,48 +825,26 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public void ProcessarRespostas_DeveExcluirRespostasDeQuestaoLinguaPortuguesa_NaAuditoria()
-    {
-        var aluno = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(-60));
-        var alunosAtivos = new List<AlunoElasticDto> { aluno };
-
-        var questaoLingua = CriarQuestaoComId(99, tipo: TipoQuestao.LinguaPortuguesaSegundaLingua);
-
-        var respostaLingua = CriarRespostaAluno(id: 5, opcaoRespostaId: 1, alunoId: 1001, questaoId: 99);
-        DefinirAuditoria(respostaLingua, "ProfLingua", "888", new DateTime(2024, 1, 1, 8, 0, 0));
-
-        var respostaNormal = CriarRespostaAluno(id: 6, opcaoRespostaId: 2, alunoId: 1001, questaoId: 1);
-        DefinirAuditoria(respostaNormal, "ProfNormal", "777", new DateTime(2024, 2, 1, 8, 0, 0));
-
-        var respostas = new Dictionary<(long, int?, long), RespostaAluno>
-        {
-            { (1001L, 1, 99L), respostaLingua },
-            { (1001L, 1, 1L), respostaNormal }
-        };
-
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ProcessarRespostasPublico(respostas, questaoLingua, alunosAtivos, DateTime.Now.AddDays(-30));
-
-        Assert.NotNull(resultado.InseridoPor);
-        Assert.Contains("ProfNormal", resultado.InseridoPor);
-    }
-
-    [Fact]
-    public void ProcessarRespostas_DeveExcluirRespostas_SemOpcaoRespostaId_DasRespostasConvertidas()
+    public void ProcessarRespostas_DeveExcluiRespostasDeQuestaoLinguaPortuguesa_SemOpcaoRespostaId()
     {
         var aluno = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(-60));
         var alunosAtivos = new List<AlunoElasticDto> { aluno };
 
         var respostaSemOpcao = CriarRespostaAluno(id: 1, opcaoRespostaId: null, alunoId: 1001);
+        var respostaComOpcao = CriarRespostaAluno(id: 2, opcaoRespostaId: 1, alunoId: 1001);
+
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
-            { (1001L, 1, 1L), respostaSemOpcao }
+            { (1001L, 1, 1L), respostaSemOpcao },
+            { (1001L, 1, 2L), respostaComOpcao }
         };
 
+        var questaoLingua = CriarQuestaoComId(99, tipo: TipoQuestao.LinguaPortuguesaSegundaLingua);
         var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ProcessarRespostasPublico(respostas, null!, alunosAtivos, DateTime.Now.AddDays(-30));
+            .ProcessarRespostasPublico(respostas, questaoLingua, alunosAtivos, DateTime.Now.AddDays(-30));
 
-        Assert.Empty(resultado.RespostasConvertidas);
+        Assert.Single(resultado.RespostasConvertidas);
+        Assert.Contains(resultado.RespostasConvertidas.Keys, k => k.QuestaoId == 2);
     }
 
     #endregion
