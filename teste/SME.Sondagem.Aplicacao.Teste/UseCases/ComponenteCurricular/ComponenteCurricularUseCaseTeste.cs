@@ -81,12 +81,12 @@ public class ComponenteCurricularUseCaseTeste
 
     private static List<Dominio.Entidades.ModalidadeComponenteCurricular> CriarVinculoModalidade(Modalidade modalidade)
     {
-        var instancia = Activator.CreateInstance(typeof(Dominio.Entidades.ModalidadeComponenteCurricular), nonPublic: true)!;
-        typeof(Dominio.Entidades.ModalidadeComponenteCurricular)
-            .GetProperty("ModalidadeId")!
-            .SetValue(instancia, modalidade);
+        var instancia = (Dominio.Entidades.ModalidadeComponenteCurricular)Activator.CreateInstance(
+            typeof(Dominio.Entidades.ModalidadeComponenteCurricular),
+            modalidade,
+            0)!;
 
-        return [(Dominio.Entidades.ModalidadeComponenteCurricular)instancia];
+        return [instancia];
     }
 
     [Fact]
