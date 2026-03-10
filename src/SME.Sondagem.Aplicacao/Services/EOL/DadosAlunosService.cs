@@ -15,15 +15,16 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(string codigoUe, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, CancellationToken cancellationToken = default)
         {
             var resultado = new List<AlunoEolDto>();
 
-            if (string.IsNullOrEmpty(codigoUe)) return resultado;
+            if (!codigoAlunos.Any()) return resultado;
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
-            var url = $"alunos/ues/{codigoUe}/anosLetivos/{DateTime.Now.Year}";
-            var resposta = await httpClient.GetAsync(url, cancellationToken);
+            var url = $"alunos/obter-nomes-alunos";
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(codigoAlunos), Encoding.UTF8, "application/json");
+            var resposta = await httpClient.PostAsync(url, jsonParaPost, cancellationToken);
 
             if (!resposta.IsSuccessStatusCode) return resultado;
             var json = await resposta.Content.ReadAsStringAsync(cancellationToken);

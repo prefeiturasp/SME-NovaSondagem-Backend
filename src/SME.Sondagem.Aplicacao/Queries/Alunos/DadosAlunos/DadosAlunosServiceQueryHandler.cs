@@ -14,7 +14,7 @@ namespace SME.Sondagem.Aplicacao.Queries.Alunos.DadosAlunos
         }
 
         public Task<IEnumerable<AlunoEolDto>> Handle(DadosAlunosServiceQuery request, CancellationToken cancellationToken)
-                => _alunosService.ObterDadosAlunosPorCodigoUe(request.CodigoUe, cancellationToken);
+                => _alunosService.ObterDadosAlunosPorCodigoUe(request.CodigoAlunos, cancellationToken);
         
     }
 }
