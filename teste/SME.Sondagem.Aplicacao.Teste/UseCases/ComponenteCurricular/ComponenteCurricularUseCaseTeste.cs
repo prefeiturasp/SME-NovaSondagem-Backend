@@ -4,6 +4,7 @@ using Moq;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using System.Net;
 using Xunit;
@@ -49,25 +50,43 @@ public class ComponenteCurricularUseCaseTeste
         var entidades = new List<Dominio.Entidades.ComponenteCurricular>
         {
             new(nome: "Língua Portuguesa", ano: null, modalidade: "Fundamental", codigoEol: 1),
-            new(nome: "Língua Portuguesa", ano: null, modalidade: "EJA", codigoEol: 1)
+            new(nome: "Matemática", ano: null, modalidade: "Fundamental", codigoEol: 2)
         };
 
         typeof(Dominio.Entidades.ComponenteCurricular).GetProperty("Id")!.SetValue(entidades[0], 1);
         typeof(Dominio.Entidades.ComponenteCurricular).GetProperty("Id")!.SetValue(entidades[1], 3);
 
+        var vinculo0 = CriarVinculoModalidade(Modalidade.Fundamental);
+        var vinculo1 = CriarVinculoModalidade(Modalidade.Fundamental);
+
+        typeof(Dominio.Entidades.ComponenteCurricular).GetProperty("ModalidadeComponenteCurricular")!.SetValue(entidades[0], vinculo0);
+        typeof(Dominio.Entidades.ComponenteCurricular).GetProperty("ModalidadeComponenteCurricular")!.SetValue(entidades[1], vinculo1);
+
         _repositorioMock
             .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(entidades);
 
-        var resultado = (await _useCase.ListarAsync(CancellationToken.None)).ToList();
+        var resultado = (await _useCase.ListarAsync(Modalidade.Fundamental, CancellationToken.None)).ToList();
 
         Assert.Equal(2, resultado.Count);
+
         Assert.Equal(1, resultado[0].Id);
         Assert.Equal("Língua Portuguesa", resultado[0].Nome);
         Assert.Equal("Fundamental", resultado[0].Modalidade);
 
         Assert.Equal(3, resultado[1].Id);
-        Assert.Equal("EJA", resultado[1].Modalidade);
+        Assert.Equal("Matemática", resultado[1].Nome);
+        Assert.Equal("Fundamental", resultado[1].Modalidade);
+    }
+
+    private static List<Dominio.Entidades.ModalidadeComponenteCurricular> CriarVinculoModalidade(Modalidade modalidade)
+    {
+        var instancia = Activator.CreateInstance(typeof(Dominio.Entidades.ModalidadeComponenteCurricular), nonPublic: true)!;
+        typeof(Dominio.Entidades.ModalidadeComponenteCurricular)
+            .GetProperty("ModalidadeId")!
+            .SetValue(instancia, modalidade);
+
+        return [(Dominio.Entidades.ModalidadeComponenteCurricular)instancia];
     }
 
     [Fact]

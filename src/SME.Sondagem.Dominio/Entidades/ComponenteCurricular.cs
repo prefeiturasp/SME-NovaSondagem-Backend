@@ -18,4 +18,5 @@ public class ComponenteCurricular : EntidadeBase
     // Navegação
     public virtual ICollection<Proficiencia> Proficiencias { get; private set; } = new List<Proficiencia>();
     public virtual ICollection<Questionario.Questionario> Questionarios { get; private set; } = new List<Questionario.Questionario>();
+    public virtual ICollection<ModalidadeComponenteCurricular> ModalidadeComponenteCurricular { get; private set; } = new List<ModalidadeComponenteCurricular>();
 }
