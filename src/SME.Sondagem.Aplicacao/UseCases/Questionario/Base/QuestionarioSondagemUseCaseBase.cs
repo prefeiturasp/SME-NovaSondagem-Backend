@@ -212,16 +212,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             "Sim", "Não", "Nao"
         };
 
-        var opcoesUtilizadas = respostasProcessadas.RespostasConvertidas.Values
-            .Where(resposta => resposta.OpcaoRespostaId.HasValue)
-            .Select(resposta => resposta.OpcaoRespostaId!.Value)
-            .Distinct()
-            .ToHashSet();
-
         var todasOpcoesResposta = contexto.QuestoesAtivas
+            .Where(q => q.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
             .SelectMany(q => q.QuestaoOpcoes)
-            .Where(qo => opcoesUtilizadas.Contains(qo.OpcaoResposta.Id) &&
-                        !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
+            .Where(qo => !descricoesExcluidas.Contains(qo.OpcaoResposta.DescricaoOpcaoResposta?.Trim() ?? ""))
             .Select(qo => qo.OpcaoResposta)
             .DistinctBy(or => or.Id)
             .OrderBy(l => l.Ordem)
@@ -323,13 +317,44 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         if (possuiSubperguntas)
         {
-            if (!bimestreId.HasValue)
-                throw new RegraNegocioException(MensagemNegocioComuns.BIMESTRE_OBRIGATORIO);
-
-            return ObterColunasPorSubperguntas(periodosBimestre, questoesAtivas, bimestreId.Value);
+            return bimestreId.HasValue
+                ? ObterColunasPorSubperguntas(periodosBimestre, questoesAtivas, bimestreId.Value)
+                : ObterColunasPorSubperguntasParaTodosBimestres(periodosBimestre, questoesAtivas);
         }
 
         return ObterColunasPorBimestres(periodosBimestre, questoesAtivas);
+    }
+
+    private static Task<List<ColunaQuestionarioDto>> ObterColunasPorSubperguntasParaTodosBimestres(
+        ICollection<Dominio.Entidades.Sondagem.SondagemPeriodoBimestre> periodosBimestre,
+        IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas)
+    {
+        var agora = DateTime.Now;
+
+        var colunas = periodosBimestre
+            .Where(p => !p.Excluido)
+            .OrderBy(p => p.DataInicio)
+            .SelectMany(p =>
+            {
+                var periodoAtivo = agora >= p.DataInicio && agora <= p.DataFim;
+
+                return questoesAtivas
+                    .Where(q => !q.Excluido && q.Tipo != TipoQuestao.QuestaoComSubpergunta)
+                    .OrderBy(q => q.Ordem)
+                    .Select(q => new ColunaQuestionarioDto
+                    {
+                        IdCiclo = p.BimestreId,
+                        DescricaoColuna = q.Nome,
+                        PeriodoBimestreAtivo = periodoAtivo,
+                        QuestaoSubrespostaId = q.Id,
+                        OpcaoResposta = ObterOpcoesRespostasPorQuestao(q.Id, questoesAtivas)
+                    });
+            })
+            .ToList();
+
+        return colunas.Count != 0
+            ? Task.FromResult(colunas)
+            : throw new ErroNaoEncontradoException(MensagemNegocioComuns.COLUNAS_SUBPERGUNTAS_NAO_OBTIDAS);
     }
 
     private static Task<List<ColunaQuestionarioDto>> ObterColunasPorSubperguntas(
@@ -417,7 +442,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         DateTime dataInicioSondagem)
     {
         var codigosAlunosAtivos = alunosAtivos
-            .Where(a => a.DataSituacao >= dataInicioSondagem)
+            .Where(a => a.DataSituacao <= dataInicioSondagem)
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
