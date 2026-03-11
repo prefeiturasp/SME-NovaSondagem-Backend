@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -63,6 +64,7 @@ using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace SME.Sondagem.IoC;
 
@@ -80,6 +82,7 @@ public static class RegistraDependencias
         RegistrarValidadores(services);
         RegistrarContextos(services);
         RegistrarAgregadores(services);
+        RegistrarMediator(services);
     }
 
     private static void RegistrarRepositorios(IServiceCollection services)
@@ -111,6 +114,8 @@ public static class RegistraDependencias
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
         services.AddScoped<IServicoAuditoria, ServicoAuditoria>();
         services.AddScoped<ISolicitacaoRelatorioService, SolicitacaoRelatorioService>();
+        services.AddScoped<IUeComDreEolService, UeComDreEolService>();
+        services.AddScoped<IDadosAlunosService, DadosAlunosService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -137,6 +142,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionarioPorIdUseCase, ObterQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioPorTurmaUseCase, ObterSondagemRelatorioPorTurmaUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioPorTodasTurmaUseCase, ObterSondagemRelatorioPorTodasTurmaUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
@@ -200,5 +206,12 @@ public static class RegistraDependencias
     {
         services.AddScoped<RepositoriosElastic>();
         services.AddScoped<RepositoriosSondagem>();
+    }
+    private static void RegistrarMediator(IServiceCollection services)
+    {
+        services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssemblies(
+                    AppDomain.CurrentDomain.GetAssemblies()
+                ));
     }
 }
