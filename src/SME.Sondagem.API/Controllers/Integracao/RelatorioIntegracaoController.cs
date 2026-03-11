@@ -14,7 +14,6 @@ namespace SME.Sondagem.API.Controllers;
 /// Este controller deve ser utilizado única e exclusivamente pelo servidor de relatórios.
 /// Não deve ser consumido por outras aplicações ou serviços.
 /// </remarks>
-//[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/relatorio-integracao")]
 [ApiController]
 [ChaveIntegracaoApiAttribute]
