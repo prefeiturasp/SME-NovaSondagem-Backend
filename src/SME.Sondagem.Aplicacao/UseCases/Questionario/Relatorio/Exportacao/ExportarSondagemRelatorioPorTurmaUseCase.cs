@@ -27,14 +27,15 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
 
     public async Task ExportarSondagemRelatorio(FiltroRelatorio filtro, CancellationToken cancellationToken)
     {
-        var filtroSgp = MapearParaFiltroSgp(filtro);
+        var codigoCorrelacao = Guid.NewGuid();
+        var filtroSgp = MapearParaFiltroSgp(filtro, codigoCorrelacao);
 
         var (jaSolicitado, solicitacaoRelatorioId) = await RelatorioJaSolicitado(filtroSgp, cancellationToken);
 
         if (jaSolicitado)
             return;
 
-        await PublicarMensagemExportacao(filtro, solicitacaoRelatorioId);
+        await PublicarMensagemExportacao(filtro, solicitacaoRelatorioId, codigoCorrelacao);
     }
 
     private async Task<(bool, long)> RelatorioJaSolicitado(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtro, CancellationToken ct)
@@ -57,19 +58,17 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
         return (false, solicitacaoRelatorioId);
     }
 
-    private async Task PublicarMensagemExportacao(FiltroRelatorio filtro, long solicitacaoRelatorioId)
+    private async Task PublicarMensagemExportacao(FiltroRelatorio filtro, long solicitacaoRelatorioId, Guid codigoCorrelacao)
     {
-        var mensagem = new MensagemRabbit(MapearParaFiltroRabbit(filtro, solicitacaoRelatorioId), Guid.NewGuid())
+        var mensagem = new MensagemRabbit(MapearParaFiltroRabbit(filtro, solicitacaoRelatorioId, codigoCorrelacao), codigoCorrelacao)
         {
-            Action = RotasRabbit.RelatorioSondagemPorTurmaAction,
-            RotaErro = RotasRabbit.RelatorioSondagemPorTurmaError,
             UsuarioLogadoRF = _servicoUsuario.ObterRFUsuarioLogado()
         };
 
-        await _servicoMensageria.Publicar(mensagem, RotasRabbit.RelatorioSondagemPorTurma, ExchangeRabbit.WorkerRelatorios);
+        await _servicoMensageria.Publicar(mensagem, RotasRabbit.RelatorioSondagemPorTurma, ExchangeRabbit.Sgp);
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto MapearParaFiltroRabbit(FiltroRelatorio filtroRelatorio, long solicitacaoRelatorioId)
+    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto MapearParaFiltroRabbit(FiltroRelatorio filtroRelatorio, long solicitacaoRelatorioId, Guid codigoCorrelacao)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoRabbitDto
         {
@@ -78,11 +77,12 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
             UsuarioQueSolicitou = _servicoUsuario.ObterRFUsuarioLogado(),
             FiltrosUsados = filtroRelatorio,
             StatusSolicitacao = StatusSolicitacao.Solicitado,
-            SolicitacaoRelatorioId = solicitacaoRelatorioId
+            SolicitacaoRelatorioId = solicitacaoRelatorioId,
+            CodigoCorrelacao = codigoCorrelacao
         };
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoSgpDto MapearParaFiltroSgp(FiltroRelatorio filtroRelatorio)
+    private FiltroSolicitacaoRelatorioIntegracaoSgpDto MapearParaFiltroSgp(FiltroRelatorio filtroRelatorio, Guid codigoCorrelacao)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoSgpDto
         {
@@ -90,7 +90,8 @@ public class ExportarSondagemRelatorioPorTurmaUseCase : IExportarSondagemRelator
             TipoRelatorio = TipoRelatorio.SondagemPorTurma,
             UsuarioQueSolicitou = _servicoUsuario.ObterRFUsuarioLogado(),
             FiltrosUsados = JsonConvert.SerializeObject(filtroRelatorio),
-            StatusSolicitacao = StatusSolicitacao.Solicitado
+            StatusSolicitacao = StatusSolicitacao.Solicitado,
+            CodigoCorrelacao = codigoCorrelacao
         };
     }
 }
