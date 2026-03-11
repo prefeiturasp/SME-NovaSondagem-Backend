@@ -37,7 +37,6 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
                 throw;
             }
         }
