@@ -8,4 +8,5 @@ public class FiltroSolicitacaoRelatorioIntegracaoSgpBaseDto
     public FormatoRelatorio ExtensaoRelatorio { get; set; }
     public string UsuarioQueSolicitou { get; set; }
     public StatusSolicitacao StatusSolicitacao { get; set; }
+    public Guid CodigoCorrelacao { get; set; }
 }
