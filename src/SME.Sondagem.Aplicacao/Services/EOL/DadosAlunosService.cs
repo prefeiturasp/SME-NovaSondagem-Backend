@@ -19,7 +19,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         {
             var resultado = new List<AlunoEolDto>();
 
-            if (!codigoAlunos.Any()) return resultado;
+            if (codigoAlunos.Count == 0) return resultado;
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
             var url = $"alunos/obter-nomes-alunos";
