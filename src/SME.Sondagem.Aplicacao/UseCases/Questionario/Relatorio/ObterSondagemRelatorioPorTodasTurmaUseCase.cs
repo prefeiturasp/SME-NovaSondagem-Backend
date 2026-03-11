@@ -33,7 +33,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
-        public async Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken)
+        public async Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken = default)
         {
             const string NOME_COMPONENTE = "Língua Portuguesa";
             const int modalidadeIdFundamental = (int)Modalidade.Fundamental;
