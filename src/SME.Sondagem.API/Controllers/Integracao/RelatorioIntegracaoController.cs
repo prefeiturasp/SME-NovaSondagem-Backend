@@ -14,17 +14,27 @@ namespace SME.Sondagem.API.Controllers;
 /// Este controller deve ser utilizado única e exclusivamente pelo servidor de relatórios.
 /// Não deve ser consumido por outras aplicações ou serviços.
 /// </remarks>
-[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/relatorio-integracao")]
 [ApiController]
 [ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(QuestionarioSondagemRelatorioDto), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTurma([FromQuery] FiltroQuestionario filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterRelatorioSondagemPorTurmaUseCase, CancellationToken cancellationToken)
     {
         return Ok(await obterRelatorioSondagemPorTurmaUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
+
+    [HttpGet("sondagem-por-todas-turma")]
+    [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+    [ProducesResponseType(typeof(MemoryStream), 200)]
+    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
+    {
+       var resultado = await useCase.ObterSondagemRelatorio(cancellationToken);
+        return File(resultado.Content, resultado.ContentType, resultado.FileName);
+    }
 }
+

@@ -1,17 +1,44 @@
 ﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Entidades.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio.Elastic
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioElasticTurma : RepositorioElasticBase<TurmaElasticDto>, IRepositorioElasticTurma
     {
         public RepositorioElasticTurma(IServicoTelemetria servicoTelemetria, ElasticsearchClient elasticClient) : base(
             servicoTelemetria, elasticClient)
         {
         }
+
+        public async Task<IEnumerable<TurmaElasticDto>> ObterTurmasPorIds(
+            IEnumerable<int> turmaIds,
+            CancellationToken cancellationToken)
+        {
+            var ids = turmaIds?.ToList() ?? [];
+
+            if (ids.Count == 0)
+                return [];
+
+            Func<QueryDescriptor<TurmaElasticDto>, Query> query = q =>
+                q.Terms(t => t
+                    .Field(f => f.CodigoTurma)
+                    .Terms(new TermsQueryField(ids.Select(id => FieldValue.Long(id)).ToArray()))
+                );
+
+            return await ObterListaAsync(
+                IndicesElastic.INDICE_TURMA,
+                query,
+                "Obter turmas por lista de IDs",
+                new { turmaIds = ids }
+            );
+        }
+
 
         public async Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
         {
