@@ -1,4 +1,5 @@
-﻿using Amazon.Runtime.Internal;
+﻿using CsvHelper;
+using CsvHelper.Configuration;
 using MediatR;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -8,11 +9,6 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infrastructure.Dtos;
-using System.Formats.Asn1;
-using System.Globalization;
-using System.Text;
-using CsvHelper;
-using CsvHelper.Configuration;
 using System.Globalization;
 using System.Text;
 
@@ -37,25 +33,54 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
-        public async Task<MemoryStream> ObterSondagemRelatorio(CancellationToken cancellationToken)
+        public async Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken)
         {
             const string NOME_COMPONENTE = "Língua Portuguesa";
             const int modalidadeIdFundamental = (int)Modalidade.Fundamental;
-            
+
             var lista = new List<ExtracaoSondagemLpEscritaDto>();
-            
-            var componenteLp = await _repositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
-
-            var responstas = await _repositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!.Id, cancellationToken);
-            var codigoAlunos = responstas.Select(x => x.CodigoEolEstudante!).ToList() ?? new List<string>();
+            var componenteLp = await ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental, cancellationToken);
+            var responstas = await ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!, cancellationToken);
+            var codigoAlunos = ObterCodigosAlunos(responstas);
             var dadosAlunos = await ObterAlunos(codigoAlunos, cancellationToken);
-            var dadosCompletosTurmas = await _mediator.Send(new ObterTodasTurmaElasticQuery(dadosAlunos.Select(x =>x.CodigoTurma)), cancellationToken);
-
-            var turmasCodigoNome = dadosCompletosTurmas.Select(x => new TurmaCodigoElasticDto(x.CodigoTurma, x.NomeTurma,x.AnoTurma)).Distinct();
-            var codigoUes = dadosAlunos.Select(x => x.CodigoEscola!).Distinct();
+            var dadosCompletosTurmas = await ObterTurmasPorCodigosNoElastic(dadosAlunos, cancellationToken);
+            var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
+            var codigoUes = ObterCodigosUes(dadosAlunos);
             var uesComDre = await BuscarUesDres(codigoUes);
-            var dadosArquivo = MapearAquivo(lista, responstas,uesComDre,turmasCodigoNome,dadosAlunos);
-            return GerarCsv(dadosArquivo);
+            var dadosArquivo = MapearAquivo(lista, responstas, uesComDre, turmasCodigoNome, dadosAlunos);
+            var csvStream = GerarCsv(dadosArquivo);
+
+            return new FileResultDto(csvStream, "text/csv", $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.csv");
+        }
+
+        private static IEnumerable<string> ObterCodigosUes(IEnumerable<AlunoEolDto> dadosAlunos)
+        {
+            return dadosAlunos.Select(x => x.CodigoEscola!).Distinct();
+        }
+
+        private static IEnumerable<TurmaCodigoElasticDto> MapearTurma(IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto> dadosCompletosTurmas)
+        {
+            return dadosCompletosTurmas.Select(x => new TurmaCodigoElasticDto(x.CodigoTurma, x.NomeTurma, x.AnoTurma)).Distinct();
+        }
+
+        private async Task<IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto>> ObterTurmasPorCodigosNoElastic(IEnumerable<AlunoEolDto> dadosAlunos, CancellationToken cancellationToken)
+        {
+            return await _mediator.Send(new ObterTodasTurmaElasticQuery(dadosAlunos.Select(x => x.CodigoTurma)), cancellationToken);
+        }
+
+        private static List<string> ObterCodigosAlunos(IEnumerable<ExtracaoSondagemLpEscritaDto> responstas)
+        {
+            return responstas.Select(x => x.CodigoEolEstudante!).ToList() ?? new List<string>();
+        }
+
+        private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(int modalidadeIdFundamental, Dominio.Entidades.ComponenteCurricular componenteLp, CancellationToken cancellationToken)
+        {
+            return await _repositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!.Id, cancellationToken);
+        }
+
+        private async Task<Dominio.Entidades.ComponenteCurricular?> ObterPorNomeModalidade(string NOME_COMPONENTE, int modalidadeIdFundamental, CancellationToken cancellationToken)
+        {
+            return await _repositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
         }
 
         private IEnumerable<ExtracaoSondagemLpEscritaDto> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
@@ -96,7 +121,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             }
 
 
-            return lista;
+            return lista.OrderBy(x => x.NomeEstudanteEstudante);
         }
 
         private MemoryStream GerarCsv(IEnumerable<ExtracaoSondagemLpEscritaDto> dados)
