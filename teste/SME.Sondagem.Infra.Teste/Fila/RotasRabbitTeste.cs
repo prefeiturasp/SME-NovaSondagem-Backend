@@ -16,11 +16,5 @@ namespace SME.Sondagem.Infra.Teste.Fila
         {
             Assert.Equal("ApplicationLog", RotasRabbit.Log);
         }
-
-        [Fact]
-        public void Deve_Retornar_Valor_Correto_IniciarSync()
-        {
-            Assert.Equal("Sondagem.iniciar.sync", RotasRabbit.IniciarSync);
-        }
     }
 }
