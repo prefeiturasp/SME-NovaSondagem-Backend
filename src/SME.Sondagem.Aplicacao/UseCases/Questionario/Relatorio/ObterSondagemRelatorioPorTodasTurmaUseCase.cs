@@ -40,14 +40,14 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
             var lista = new List<ExtracaoSondagemLpEscritaDto>();
             var componenteLp = await ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental, cancellationToken);
-            var responstas = await ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!, cancellationToken);
-            var codigoAlunos = ObterCodigosAlunos(responstas);
+            var respostas = await ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!, cancellationToken);
+            var codigoAlunos = ObterCodigosAlunos(respostas);
             var dadosAlunos = await ObterAlunos(codigoAlunos, cancellationToken);
             var dadosCompletosTurmas = await ObterTurmasPorCodigosNoElastic(dadosAlunos, cancellationToken);
             var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
             var codigoUes = ObterCodigosUes(dadosAlunos);
             var uesComDre = await BuscarUesDres(codigoUes);
-            var dadosArquivo = MapearAquivo(lista, responstas, uesComDre, turmasCodigoNome, dadosAlunos);
+            var dadosArquivo = MapearAquivo(lista, respostas, uesComDre, turmasCodigoNome, dadosAlunos);
             var csvStream = GerarCsv(dadosArquivo);
 
             return new FileResultDto(csvStream, "text/csv", $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.csv");
@@ -83,7 +83,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return await _repositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
         }
 
-        private IEnumerable<ExtracaoSondagemLpEscritaDto> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
+        private static IEnumerable<ExtracaoSondagemLpEscritaDto> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
             IEnumerable<TurmaCodigoElasticDto> turmasCodigoNome, IEnumerable<AlunoEolDto> dadosAlunos)
         {
 
@@ -124,7 +124,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return lista.OrderBy(x => x.NomeEstudanteEstudante);
         }
 
-        private MemoryStream GerarCsv(IEnumerable<ExtracaoSondagemLpEscritaDto> dados)
+        private static MemoryStream GerarCsv(IEnumerable<ExtracaoSondagemLpEscritaDto> dados)
         {
             var memoryStream = new MemoryStream();
 
@@ -158,7 +158,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos,CancellationToken cancellationToken)
         {
             var retorno = new List<AlunoEolDto>();
-            if(!codigoAlunos.Any())
+            if(codigoAlunos.Count == 0)
                 return retorno;
 
                var dados =  await _mediator.Send(new DadosAlunosServiceQuery(codigoAlunos), cancellationToken);
