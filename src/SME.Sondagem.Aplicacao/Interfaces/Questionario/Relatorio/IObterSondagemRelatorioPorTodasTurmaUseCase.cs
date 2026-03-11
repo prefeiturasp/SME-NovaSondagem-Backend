@@ -1,7 +1,9 @@
-﻿namespace SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio
+﻿using SME.Sondagem.Infrastructure.Dtos;
+
+namespace SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio
 {
     public interface IObterSondagemRelatorioPorTodasTurmaUseCase
     {
-        public Task<MemoryStream> ObterSondagemRelatorio(CancellationToken cancellationToken);
+        Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken);
     }
 }
