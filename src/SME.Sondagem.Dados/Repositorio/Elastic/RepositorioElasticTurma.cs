@@ -4,9 +4,11 @@ using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Entidades.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Dados.Repositorio.Elastic
 {
+    [ExcludeFromCodeCoverage]
     public class RepositorioElasticTurma : RepositorioElasticBase<TurmaElasticDto>, IRepositorioElasticTurma
     {
         public RepositorioElasticTurma(IServicoTelemetria servicoTelemetria, ElasticsearchClient elasticClient) : base(

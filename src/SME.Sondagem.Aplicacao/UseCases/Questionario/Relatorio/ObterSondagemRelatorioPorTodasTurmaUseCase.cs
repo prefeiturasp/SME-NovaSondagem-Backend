@@ -75,6 +75,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
         private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(int modalidadeIdFundamental, Dominio.Entidades.ComponenteCurricular componenteLp, CancellationToken cancellationToken)
         {
+            if (componenteLp == null) return new List<ExtracaoSondagemLpEscritaDto>();
             return await _repositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!.Id, cancellationToken);
         }
 
