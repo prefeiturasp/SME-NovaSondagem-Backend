@@ -42,6 +42,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             catch (Exception e)
             {
                 _servicoLog.Registrar($"Erro ao executar UeComDreEolService",e);
+                return [];
+                
             }
         }
     }
