@@ -23,7 +23,6 @@ public class ServicoMensageria : IServicoMensageria
     public async Task<bool> Publicar(MensagemRabbit mensagemRabbit, string rota, string exchange)
     {
         var body = Encoding.UTF8.GetBytes(mensagemRabbit.ConverterObjectParaJson());
-        var teste = mensagemRabbit.ConverterObjectParaJson();
 
         await PublicarMensagem(rota, body, exchange);
 
