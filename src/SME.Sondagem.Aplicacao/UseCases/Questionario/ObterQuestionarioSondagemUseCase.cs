@@ -353,15 +353,14 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p =>
-                dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
+        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p => dataSituacaoMatricula <= p.DataInicio)
             && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             DescricaoColuna = colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
+            PeriodoBimestreAtivo = podeLancarSondagem && colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = ehRelatorio
                 ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)

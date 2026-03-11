@@ -878,14 +878,16 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 CodigoAluno = 1001,
                 NumeroAlunoChamada = "1",
                 NomeAluno = "João Silva",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             },
             new AlunoElasticDto
             {
                 CodigoAluno = 1002,
                 NumeroAlunoChamada = "2",
                 NomeAluno = "Maria Santos",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             }
         };
     }
