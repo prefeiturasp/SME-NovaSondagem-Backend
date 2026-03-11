@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using System.Diagnostics.CodeAnalysis;
@@ -11,10 +12,13 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
     public class UeComDreEolService : IUeComDreEolService
     {
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IServicoLog _servicoLog;
 
-        public UeComDreEolService(IHttpClientFactory httpClientFactory)
+
+        public UeComDreEolService(IHttpClientFactory httpClientFactory, IServicoLog servicoLog)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
         public async Task<IEnumerable<UeComDreEolDto>> ObterUesComDrePorCodigosUes(IEnumerable<string> codigosUes,CancellationToken cancellationToken = default)
@@ -37,7 +41,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }
             catch (Exception e)
             {
-                throw;
+                _servicoLog.Registrar($"Erro ao executar UeComDreEolService",e);
             }
         }
     }
