@@ -1,8 +1,13 @@
+using MediatR;
 using Moq;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -27,6 +32,14 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IControleAcessoService> _controleAcessoService;
     private readonly Mock<IRepositorioElasticTurma> _repositorioElasticTurma;
     private readonly SondagemSalvarRespostasUseCase _useCase;
+    private readonly CancellationToken _cancellationToken;
+
+
+
+    private readonly Mock<IMediator> _mediator;
+    private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
+    private readonly Mock<IUeComDreEolService> _ueComDreEolService;
+    private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
 
     public SondagemSalvarRespostasUseCaseTeste()
     {
@@ -35,6 +48,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
         _repositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
+        _cancellationToken = CancellationToken.None;
 
         _useCase = new SondagemSalvarRespostasUseCase(
             _repositorioSondagem.Object,
@@ -43,6 +57,11 @@ public class SondagemSalvarRespostasUseCaseTeste
             _controleAcessoService.Object,
             _repositorioElasticTurma.Object
         );
+
+        _mediator = new Mock<IMediator>();
+        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _ueComDreEolService = new Mock<IUeComDreEolService>();
+        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_mediator.Object, _ueComDreEolService.Object, _repositorioSondagemResposta.Object, _repositorioComponenteCurricular.Object);
     }
 
     private void ConfigurarMockTurmaSucesso()
@@ -237,12 +256,27 @@ public class SondagemSalvarRespostasUseCaseTeste
             exception.Message);
     }
 
+    [Fact]
+    public async Task DeveRetornarArrayVazioNoObterExtracaoDadosRespostasAsync()
+    {
+        var modalidadeId = 1;
+        var componenteCurricularId = 1;
+        _repositorioSondagemResposta
+                .Setup(x => x.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricularId))
+                .ReturnsAsync([]);
+
+        var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(_cancellationToken);
+        Assert.NotNull(uc);
+        Assert.NotNull(uc.FileName);
+
+    }
+
     private static Questao CriarQuestaoLinguaPortuguesaSegundaLingua(int questionarioId)
     {
         var questao = new Questao(
             questionarioId,
             1,
-            "Língua Portuguesa é Segunda Língua?",
+            "Lï¿½ngua Portuguesa ï¿½ Segunda Lï¿½ngua?",
             string.Empty,
             false,
             TipoQuestao.LinguaPortuguesaSegundaLingua,
@@ -259,7 +293,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         };
 
         var opcaoSim = new OpcaoResposta(1, "Sim", "S", null, null) { Id = 1 };
-        var opcaoNao = new OpcaoResposta(2, "Não", "N", null, null) { Id = 2 };
+        var opcaoNao = new OpcaoResposta(2, "Nï¿½o", "N", null, null) { Id = 2 };
 
         var questaoOpcaoSim = new QuestaoOpcaoResposta(questao.Id, opcaoSim.Id, 1);
         typeof(QuestaoOpcaoResposta)
