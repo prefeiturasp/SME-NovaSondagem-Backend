@@ -29,13 +29,13 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
 
     public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
-        await ValidarAnoRelatorio(filtro, cancellationToken);
+        await ValidarAnoETurmaRelatorio(filtro, cancellationToken);
 
         var resultado = await ExecutarProcessamentoQuestionario(filtro, true, cancellationToken);
         return (QuestionarioSondagemRelatorioDto)resultado;
     }
 
-    private async Task ValidarAnoRelatorio(FiltroQuestionario filtro, CancellationToken cancellationToken)
+    private async Task ValidarAnoETurmaRelatorio(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         var turma = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
             ?? throw new RegraNegocioException("Turma não localizada", 400);
