@@ -39,29 +39,54 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             );
         }
 
-
         public async Task<TurmaElasticDto?> ObterTurmaPorId(FiltroQuestionario filtro, CancellationToken cancellationToken)
         {
             if (filtro.TurmaId == 0)
                 return null;
 
-            var retorno = await ObterAsync(
-                IndicesElastic.INDICE_TURMA,
-                filtro.TurmaId.ToString(),
-                "Obter turma por código",
-                new
+            Func<QueryDescriptor<TurmaElasticDto>, Query> query = q => q
+                .Bool(b =>
                 {
-                    filtro.TurmaId,
-                    AnoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : (int?)null,
-                    BimestreId = filtro.BimestreId != 0 ? filtro.BimestreId : (int?)null,
-                    SemestreId = filtro.SemestreId != 0 ? filtro.SemestreId : (int?)null,
-                    Ano = filtro.Ano != 0 ? filtro.Ano : (int?)null,
-                    filtro.Modalidade,
-                    filtro.UeCodigo
-                }
-            );
+                    var filters = new List<Action<QueryDescriptor<TurmaElasticDto>>>
+                    {
+                f => f.Term(t => t.Field(ff => ff.CodigoTurma).Value(filtro.TurmaId))
+                    };
 
-            return retorno;
+                    if (filtro.AnoLetivo != 0)
+                        filters.Add(f => f.Term(t => t.Field(ff => ff.AnoLetivo).Value(filtro.AnoLetivo)));
+
+                    if (filtro.SemestreId != 0)
+                        filters.Add(f => f.Term(t => t.Field(ff => ff.Semestre).Value(filtro.SemestreId)));
+
+                    if (filtro.Modalidade != 0)
+                        filters.Add(f => f.Term(t => t.Field(ff => ff.Modalidade).Value(filtro.Modalidade)));
+
+                    if (!string.IsNullOrEmpty(filtro.UeCodigo))
+                        filters.Add(f => f.Term(t => t.Field(ff => ff.CodigoEscola).Value(filtro.UeCodigo)));
+
+                    b.Filter(filters.Select<Action<QueryDescriptor<TurmaElasticDto>>, Query>(f =>
+                    {
+                        var qd = new QueryDescriptor<TurmaElasticDto>();
+                        f(qd);
+                        return qd;
+                    }).ToArray());
+                });
+
+                var resultado = await ObterListaAsync(
+                    IndicesElastic.INDICE_TURMA,
+                    query,
+                    "Obter turma por código",
+                    new
+                    {
+                        filtro.TurmaId,
+                        AnoLetivo = filtro.AnoLetivo != 0 ? filtro.AnoLetivo : (int?)null,
+                        Semestre = filtro.SemestreId != 0 ? filtro.SemestreId : (int?)null,
+                        filtro.Modalidade,
+                        filtro.UeCodigo
+                    }
+                );
+
+            return resultado.FirstOrDefault();
         }
     }
 }
