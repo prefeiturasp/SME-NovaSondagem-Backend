@@ -198,15 +198,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
     ContextoProcessamentoDto contexto,
     RespostasProcessadasDto respostasProcessadas,
-    bool ehRelatorio, bool exibirBimestreNaDescricaoColuna)
+    bool ehRelatorio,
+    bool exibirBimestreNaDescricaoColuna)
     {
         var descricoesBimestre = new Dictionary<int, string>();
         if (exibirBimestreNaDescricaoColuna)
         {
             var bimestreIds = contexto.Colunas
-                     .Where(c => c.IdCiclo != 0)
-                     .Select(c => c.IdCiclo)
-                     .Distinct();
+                .Where(c => c.IdCiclo != 0)
+                .Select(c => c.IdCiclo)
+                .Distinct();
 
             foreach (var id in bimestreIds)
             {
@@ -215,18 +216,28 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             }
         }
 
+        var contextoColunaDto = new ContextoColunaDto(
+            sondagemAtiva,
+            contexto.QuestaoIdPrincipal,
+            exibirBimestreNaDescricaoColuna,
+            respostasProcessadas.RespostasConvertidas,
+            descricoesBimestre,
+            ehRelatorio
+        );
+
         var estudantes = new List<EstudanteQuestionarioDto>();
 
         foreach (var aluno in contexto.Alunos)
         {
-            var colunasAluno =contexto.Colunas
-                .Select(c => ConstruirColunaAluno(
-                    c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal,
-                    exibirBimestreNaDescricaoColuna, respostasProcessadas.RespostasConvertidas,
-                    descricoesBimestre, ehRelatorio))
+            var colunasAluno = contexto.Colunas
+                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto))
                 .ToList();
 
-            var estudante = await ConstruirEstudante(aluno, dadosAlunos, [.. colunasAluno.OrderBy(x => x.BimestreId)], aluno.CodigoAluno);
+            var estudante = await ConstruirEstudante(
+                aluno, dadosAlunos,
+                [.. colunasAluno.OrderBy(x => x.BimestreId)],
+                aluno.CodigoAluno);
+
             estudantes.Add(estudante);
         }
 
@@ -522,16 +533,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     protected static ColunaQuestionarioDto ConstruirColunaAluno(
-        ColunaQuestionarioDto colunaBase,
-        AlunoElasticDto aluno,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        long questaoIdPrincipal,
-        bool exibirBimestreNaDescricaoColuna,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
-        Dictionary<int, string> descricoesBimestre,
-        bool ehRelatorio = false)
+    ColunaQuestionarioDto colunaBase,
+    AlunoElasticDto aluno,
+    ContextoColunaDto contexto)
     {
-        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)questaoIdPrincipal;
+        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)contexto.QuestaoIdPrincipal;
         int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
 
         int codigoAluno = aluno.CodigoAluno;
@@ -539,29 +545,30 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         DateTime dataSituacaoMatricula = aluno.DataSituacao;
 
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
-        var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
+        var possuiResposta = contexto.RespostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p =>
+        var podeLancarSondagem = contexto.SondagemAtiva.PeriodosBimestre.Any(p =>
                 dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
             && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         string? descricaoBimestre = string.Empty;
-        if (exibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
-            descricoesBimestre.TryGetValue(bimestreIdChave.Value, out descricaoBimestre);
+        if (contexto.ExibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
+            contexto.DescricoesBimestre.TryGetValue(bimestreIdChave.Value, out descricaoBimestre);
 
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             BimestreId = bimestreIdChave,
-            DescricaoColuna = exibirBimestreNaDescricaoColuna ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}" : colunaBase.DescricaoColuna,
+            DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna
+                ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}"
+                : colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = ehRelatorio
+            OpcaoResposta = contexto.EhRelatorio
                 ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
                 : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
-
     }
 
     protected static RespostaDto ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)

@@ -645,7 +645,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     #region ConstruirColunaAluno
 
     [Fact]
-    public async Task ConstruirColunaAluno_DeveConstruirColunaCorreta_SemResposta()
+    public void ConstruirColunaAluno_DeveConstruirColunaCorreta_SemResposta()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1);
         var aluno = CriarAlunoElastic(codigo: 100);
@@ -661,7 +661,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ConstruirColunaAluno_DeveSetarPeriodoBimestreAtivo_QuandoAlunoEstaAtivo()
+    public void ConstruirColunaAluno_DeveSetarPeriodoBimestreAtivo_QuandoAlunoEstaAtivo()
     {
         var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
         var sondagem = CriarSondagemComPeriodo(periodoAtivo);
@@ -676,7 +676,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ConstruirColunaAluno_DeveFiltrarOpcaoResposta_QuandoEhRelatorioForTrue()
+    public void ConstruirColunaAluno_DeveFiltrarOpcaoResposta_QuandoEhRelatorioForTrue()
     {
         var opcaoRespostaId = 7;
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, opcaoRespostaId: opcaoRespostaId);
@@ -697,7 +697,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ConstruirColunaAluno_NaoDeveFiltrarOpcaoResposta_QuandoEhRelatorioForFalse()
+    public void ConstruirColunaAluno_NaoDeveFiltrarOpcaoResposta_QuandoEhRelatorioForFalse()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, incluirDuasOpcoes: true);
         var aluno = CriarAlunoElastic(codigo: 100);
@@ -711,7 +711,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ConstruirColunaAluno_DeveUsarQuestaoSubrespostaId_QuandoDefinido()
+    public void ConstruirColunaAluno_DeveUsarQuestaoSubrespostaId_QuandoDefinido()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, questaoSubrespostaId: 55);
         var aluno = CriarAlunoElastic(codigo: 200);
@@ -729,7 +729,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ConstruirColunaAluno_DeveTratarIdCicloZeroComoBimestreIdNulo()
+    public void ConstruirColunaAluno_DeveTratarIdCicloZeroComoBimestreIdNulo()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 0);
         var aluno = CriarAlunoElastic(codigo: 300);
@@ -1469,9 +1469,20 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         long questaoIdPrincipal,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
         bool ehRelatorio = false)
-        => ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, false,respostasAlunosPorQuestoes, new Dictionary<int, string>(), ehRelatorio);
+    {
+        var contexto = new ContextoColunaDto(
+            sondagemAtiva,
+            questaoIdPrincipal,
+            false,
+            respostas,
+            new Dictionary<int, string>(),
+            ehRelatorio
+        );
+
+        return ConstruirColunaAluno(colunaBase, aluno, contexto);
+    }
 
     public static RespostasProcessadasDto ProcessarRespostasPublico(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
