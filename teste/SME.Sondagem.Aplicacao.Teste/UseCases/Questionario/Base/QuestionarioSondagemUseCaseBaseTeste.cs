@@ -1464,7 +1464,7 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
     public static RespostaDto ConstruirRespostaPublico(bool possuiResposta, RespostaAluno? resposta)
         => ConstruirResposta(possuiResposta, resposta);
 
-    public ColunaQuestionarioDto ConstruirColunaAlunoPublico(
+    public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
