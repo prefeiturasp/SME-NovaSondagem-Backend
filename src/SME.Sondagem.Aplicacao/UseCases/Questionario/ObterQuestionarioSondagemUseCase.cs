@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -21,12 +22,10 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
-        IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio,
-        IRepositorioBimestre repositorioBimestre
+        IMediator mediator
         )
         : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, 
-            servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio, repositorioBimestre)
+            servicoUsuario, mediator)
     {
     }
 
