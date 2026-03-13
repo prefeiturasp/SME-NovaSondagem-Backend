@@ -223,12 +223,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         foreach (var aluno in contexto.Alunos)
         {
-            var colunasAluno = await Task.WhenAll(contexto.Colunas
+            var colunasAluno =contexto.Colunas
                 .Select(c => ConstruirColunaAluno(
                     c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal,
                     exibirBimestreNaDescricaoColuna, respostasProcessadas.RespostasConvertidas,
                     descricoesBimestre, ehRelatorio))
-                .ToList());
+                .ToList();
 
             var estudante = await ConstruirEstudante(aluno, dadosAlunos, [.. colunasAluno], aluno.CodigoAluno);
             estudantes.Add(estudante);
@@ -525,7 +525,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         };
     }
 
-    protected async Task<ColunaQuestionarioDto> ConstruirColunaAluno(
+    protected static ColunaQuestionarioDto ConstruirColunaAluno(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
@@ -551,7 +551,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         string? descricaoBimestre = string.Empty;
         if (exibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
-            descricoesBimestre.TryGetValue((int)bimestreIdChave.Value, out descricaoBimestre);
+            descricoesBimestre.TryGetValue(bimestreIdChave.Value, out descricaoBimestre);
 
         return new ColunaQuestionarioDto
         {
