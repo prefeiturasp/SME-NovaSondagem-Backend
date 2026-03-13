@@ -182,8 +182,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _mockControleAcessoService.Object,
                  _mockServicoUsuario.Object,
                 _repositorioComponenteCurricular.Object,
-                _proficienciaRepositorio.Object,
-                null!
+                null!,
+                null
                 ));
     }
 
