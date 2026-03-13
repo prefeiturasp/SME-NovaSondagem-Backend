@@ -3,6 +3,7 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
@@ -19,8 +20,12 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
-        IServicoUsuario servicoUsuario)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
+        IServicoUsuario servicoUsuario,
+        IRepositorioComponenteCurricular repositorioComponenteCurricular,
+        IRepositorioProficiencia proficienciaRepositorio
+        )
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, 
+            servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
     {
     }
 

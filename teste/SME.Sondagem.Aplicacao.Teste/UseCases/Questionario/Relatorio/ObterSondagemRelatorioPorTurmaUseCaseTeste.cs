@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
@@ -27,6 +28,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
+    private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
+    private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
@@ -41,6 +44,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
+        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
 
         var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -60,7 +65,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoPapService.Object,
             _mockAlunoTurmaService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _repositorioComponenteCurricular.Object,
+            _proficienciaRepositorio.Object
         );
     }
 
@@ -87,7 +94,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoPapService.Object,
             null!,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object 
+            _mockServicoUsuario.Object ,
+            _repositorioComponenteCurricular.Object,
+            _proficienciaRepositorio.Object
         ))
 ;
     }
