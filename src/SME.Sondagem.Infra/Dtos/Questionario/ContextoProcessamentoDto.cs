@@ -12,5 +12,6 @@ namespace SME.Sondagem.Infrastructure.Dtos.Questionario
         public required List<int> CodigosAlunos { get; set; }
         public required Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> RespostasAlunosPorQuestoes { get; set; }
         public required long QuestaoIdPrincipal { get; set; }
+        public int? QuestionarioId { get; set; }
     }
 }
