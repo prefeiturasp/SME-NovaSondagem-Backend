@@ -653,7 +653,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
         var useCase = CriarUseCase();
 
-        var resultado = useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(1, resultado.IdCiclo);
         Assert.NotNull(resultado.Resposta);
@@ -670,7 +670,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
         var useCase = CriarUseCase();
 
-        var resultado = useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.True(resultado.PeriodoBimestreAtivo);
     }
@@ -689,7 +689,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     };
         var useCase = CriarUseCase();
 
-        var resultado = useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
 
         Assert.NotNull(resultado.OpcaoResposta);
         Assert.Single(resultado.OpcaoResposta!);
@@ -705,7 +705,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
         var useCase = CriarUseCase();
 
-        var resultado = useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
 
         Assert.Equal(2, resultado.OpcaoResposta!.Count());
     }
@@ -723,7 +723,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         };
         var useCase = CriarUseCase();
 
-        var resultado = useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
 
         Assert.Equal(99, resultado.Resposta.Id);
     }
@@ -741,7 +741,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         };
         var useCase = CriarUseCase();
 
-        var resultado =  useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(50, resultado.Resposta.Id);
     }
@@ -1484,7 +1484,7 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
         return ConstruirColunaAluno(colunaBase, aluno, contexto);
     }
 
-    public ColunaQuestionarioDto ConstruirColunaAlunoPublico(
+    public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
