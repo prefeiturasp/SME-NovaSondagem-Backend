@@ -569,12 +569,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var componentes = new List<string> { "LÍNGUA PORTUGUESA", "MATEMÁTICA" };
         var componente = await _repositorioComponenteCurricular.ObterPorIdAsync(componenteCurricularId);
-        return componente != null ? componentes.Contains(componente.Nome.ToUpper()) : false;
+        return componente != null && componentes.Contains(componente.Nome.ToUpper());
     }
     private async Task<bool> EhProficienciaLeituraMapSaberes(int proficienciaId)
     {
         var proficienciaLeitura = new List<string> { "LEITURA" , "MAPEAMENTO DOS SABERES" };
         var proficiencia = await _proficienciaRepositorio.ObterPorIdAsync(proficienciaId);
-        return proficiencia != null ? proficienciaLeitura.Contains(proficiencia.Nome.ToUpper()) : false;
+        return proficiencia != null && proficienciaLeitura.Contains(proficiencia.Nome.ToUpper());
     }
 }
