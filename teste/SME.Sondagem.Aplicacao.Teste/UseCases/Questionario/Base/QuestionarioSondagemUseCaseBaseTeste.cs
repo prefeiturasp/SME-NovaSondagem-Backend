@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -26,8 +27,10 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
+        IRepositorioComponenteCurricular repositorioComponenteCurricular,
+        IRepositorioProficiencia proficienciaRepositorio,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -58,6 +61,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
+    private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
+    private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -75,6 +80,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
+        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -94,6 +101,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
+            _repositorioComponenteCurricular.Object,
+            _proficienciaRepositorio.Object,
             dadosAlunos);
 
     #region Construtor
@@ -107,7 +116,11 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object));
+                _mockServicoUsuario.Object,
+                _repositorioComponenteCurricular.Object,
+                _proficienciaRepositorio.Object,
+                null!
+                ));
     }
 
     [Fact]
@@ -119,7 +132,11 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 null!,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object));
+                _mockServicoUsuario.Object,
+                _repositorioComponenteCurricular.Object,
+                _proficienciaRepositorio.Object,
+                null!
+                ));
     }
 
     [Fact]
@@ -131,7 +148,11 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 null!,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object));
+                _mockServicoUsuario.Object,
+                _repositorioComponenteCurricular.Object,
+                _proficienciaRepositorio.Object,
+                null!
+                ));
     }
 
     [Fact]
@@ -143,7 +164,11 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 null!,
-                _mockServicoUsuario.Object));
+                _mockServicoUsuario.Object,
+                _repositorioComponenteCurricular.Object,
+                _proficienciaRepositorio.Object,
+                null!
+                ));
     }
 
     [Fact]
@@ -155,7 +180,11 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                null!));
+                 _mockServicoUsuario.Object,
+                _repositorioComponenteCurricular.Object,
+                null!,
+                null
+                ));
     }
 
     [Fact]
@@ -1456,7 +1485,7 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
         long questaoIdPrincipal,
         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
         bool ehRelatorio = false)
-        => ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, respostasAlunosPorQuestoes, ehRelatorio);
+        => ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, false,respostasAlunosPorQuestoes, ehRelatorio);
 
     public static RespostasProcessadasDto ProcessarRespostasPublico(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
