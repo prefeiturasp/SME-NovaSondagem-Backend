@@ -29,8 +29,9 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IServicoUsuario servicoUsuario,
         IRepositorioComponenteCurricular repositorioComponenteCurricular,
         IRepositorioProficiencia proficienciaRepositorio,
+         IRepositorioBimestre repositorioBimestre,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio, repositorioBimestre)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -63,6 +64,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
     private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
+    private readonly Mock<IRepositorioBimestre> _repositorioBimestre;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -82,6 +84,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
         _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
+        _repositorioBimestre = new Mock<IRepositorioBimestre>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -103,6 +106,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockServicoUsuario.Object,
             _repositorioComponenteCurricular.Object,
             _proficienciaRepositorio.Object,
+            _repositorioBimestre.Object,
             dadosAlunos);
 
     #region Construtor
@@ -656,15 +660,15 @@ public class QuestionarioSondagemUseCaseBaseTeste
     #region ConstruirColunaAluno
 
     [Fact]
-    public void ConstruirColunaAluno_DeveConstruirColunaCorreta_SemResposta()
+    public async Task ConstruirColunaAluno_DeveConstruirColunaCorreta_SemResposta()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1);
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(1, resultado.IdCiclo);
         Assert.NotNull(resultado.Resposta);
@@ -672,38 +676,35 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public void ConstruirColunaAluno_DeveSetarPeriodoBimestreAtivo_QuandoAlunoEstaAtivo()
+    public async Task ConstruirColunaAluno_DeveSetarPeriodoBimestreAtivo_QuandoAlunoEstaAtivo()
     {
         var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
         var sondagem = CriarSondagemComPeriodo(periodoAtivo);
-
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: false);
         var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: (int)SituacaoMatriculaAluno.Ativo);
-
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.True(resultado.PeriodoBimestreAtivo);
     }
 
     [Fact]
-    public void ConstruirColunaAluno_DeveFiltrarOpcaoResposta_QuandoEhRelatorioForTrue()
+    public async Task ConstruirColunaAluno_DeveFiltrarOpcaoResposta_QuandoEhRelatorioForTrue()
     {
         var opcaoRespostaId = 7;
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, opcaoRespostaId: opcaoRespostaId);
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var resposta = CriarRespostaAluno(id: 1, opcaoRespostaId: opcaoRespostaId);
-
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>
-        {
-            { (100, 1, 1L), resposta }
-        };
+    {
+        { (100, 1, 1L), resposta }
+    };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
 
         Assert.NotNull(resultado.OpcaoResposta);
         Assert.Single(resultado.OpcaoResposta!);
@@ -711,21 +712,21 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public void ConstruirColunaAluno_NaoDeveFiltrarOpcaoResposta_QuandoEhRelatorioForFalse()
+    public async Task ConstruirColunaAluno_NaoDeveFiltrarOpcaoResposta_QuandoEhRelatorioForFalse()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, incluirDuasOpcoes: true);
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
 
         Assert.Equal(2, resultado.OpcaoResposta!.Count());
     }
 
     [Fact]
-    public void ConstruirColunaAluno_DeveUsarQuestaoSubrespostaId_QuandoDefinido()
+    public async Task ConstruirColunaAluno_DeveUsarQuestaoSubrespostaId_QuandoDefinido()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, questaoSubrespostaId: 55);
         var aluno = CriarAlunoElastic(codigo: 200);
@@ -735,15 +736,15 @@ public class QuestionarioSondagemUseCaseBaseTeste
         {
             { (200, 1, 55L), resposta }
         };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
 
         Assert.Equal(99, resultado.Resposta.Id);
     }
 
     [Fact]
-    public void ConstruirColunaAluno_DeveTratarIdCicloZeroComoBimestreIdNulo()
+    public async Task ConstruirColunaAluno_DeveTratarIdCicloZeroComoBimestreIdNulo()
     {
         var colunaBase = CriarColunaQuestionario(idCiclo: 0);
         var aluno = CriarAlunoElastic(codigo: 300);
@@ -753,9 +754,9 @@ public class QuestionarioSondagemUseCaseBaseTeste
         {
             { (300, null, 1L), resposta }
         };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = await useCase.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(50, resultado.Resposta.Id);
     }
@@ -1478,14 +1479,14 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
     public static RespostaDto ConstruirRespostaPublico(bool possuiResposta, RespostaAluno? resposta)
         => ConstruirResposta(possuiResposta, resposta);
 
-    public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
+    public async Task<ColunaQuestionarioDto> ConstruirColunaAlunoPublico(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         long questaoIdPrincipal,
         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
         bool ehRelatorio = false)
-        => ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, false,respostasAlunosPorQuestoes, ehRelatorio);
+        => await ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, false,respostasAlunosPorQuestoes, new Dictionary<int, string>(), ehRelatorio);
 
     public static RespostasProcessadasDto ProcessarRespostasPublico(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,

@@ -24,8 +24,8 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
         IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
+        IRepositorioProficiencia proficienciaRepositorio, IRepositorioBimestre repositorioBimestre)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio, repositorioBimestre)
     {
         _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
     }

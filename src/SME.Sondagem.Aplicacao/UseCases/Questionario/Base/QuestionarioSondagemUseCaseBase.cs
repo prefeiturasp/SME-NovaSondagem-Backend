@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -22,6 +23,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly IServicoUsuario _servicoUsuario;
     private readonly IRepositorioComponenteCurricular _repositorioComponenteCurricular;
     private readonly IRepositorioProficiencia _proficienciaRepositorio;
+    private readonly IRepositorioBimestre _repositorioBimestre;
 
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
@@ -30,7 +32,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario, 
         IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio)
+        IRepositorioProficiencia proficienciaRepositorio,
+        IRepositorioBimestre repositorioBimestre)
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
@@ -39,6 +42,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         _proficienciaRepositorio = proficienciaRepositorio ?? throw new ArgumentNullException(nameof(proficienciaRepositorio));
+        _repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(
@@ -194,21 +198,39 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         CancellationToken cancellationToken);
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
-        DadosAlunosDto dadosAlunos,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        ContextoProcessamentoDto contexto,
-        RespostasProcessadasDto respostasProcessadas,
-        bool ehRelatorio, bool exibirBimestreNaDescricaoColuna)
+    DadosAlunosDto dadosAlunos,
+    Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+    ContextoProcessamentoDto contexto,
+    RespostasProcessadasDto respostasProcessadas,
+    bool ehRelatorio, bool exibirBimestreNaDescricaoColuna)
     {
+        var descricoesBimestre = new Dictionary<int, string>();
+        if (exibirBimestreNaDescricaoColuna)
+        {
+            var bimestreIds = contexto.Colunas
+                     .Where(c => c.IdCiclo != 0)
+                     .Select(c => c.IdCiclo)
+                     .Distinct();
+
+            foreach (var id in bimestreIds)
+            {
+                var bimestre = await _repositorioBimestre.ObterPorIdAsync(id);
+                descricoesBimestre[id] = bimestre?.Descricao ?? string.Empty;
+            }
+        }
+
         var estudantes = new List<EstudanteQuestionarioDto>();
 
         foreach (var aluno in contexto.Alunos)
         {
-            var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal, exibirBimestreNaDescricaoColuna, respostasProcessadas.RespostasConvertidas, ehRelatorio))
-                .ToList();
+            var colunasAluno = await Task.WhenAll(contexto.Colunas
+                .Select(c => ConstruirColunaAluno(
+                    c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal,
+                    exibirBimestreNaDescricaoColuna, respostasProcessadas.RespostasConvertidas,
+                    descricoesBimestre, ehRelatorio))
+                .ToList());
 
-            var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, aluno.CodigoAluno);
+            var estudante = await ConstruirEstudante(aluno, dadosAlunos, [.. colunasAluno], aluno.CodigoAluno);
             estudantes.Add(estudante);
         }
 
@@ -503,13 +525,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         };
     }
 
-    protected static ColunaQuestionarioDto ConstruirColunaAluno(
+    protected async Task<ColunaQuestionarioDto> ConstruirColunaAluno(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         long questaoIdPrincipal,
         bool exibirBimestreNaDescricaoColuna,
         Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        Dictionary<int, string> descricoesBimestre,
         bool ehRelatorio = false)
     {
         long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)questaoIdPrincipal;
@@ -526,10 +549,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
             && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
+        string? descricaoBimestre = string.Empty;
+        if (exibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
+            descricoesBimestre.TryGetValue((int)bimestreIdChave.Value, out descricaoBimestre);
+
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
-            DescricaoColuna = exibirBimestreNaDescricaoColuna ? $"{colunaBase.DescricaoColuna} {bimestreIdChave}º Bim" : colunaBase.DescricaoColuna,
+            DescricaoColuna = exibirBimestreNaDescricaoColuna ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}" : colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = ehRelatorio

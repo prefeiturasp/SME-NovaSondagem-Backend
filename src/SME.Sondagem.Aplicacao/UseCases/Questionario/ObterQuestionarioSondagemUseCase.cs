@@ -22,10 +22,11 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
         IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio
+        IRepositorioProficiencia proficienciaRepositorio,
+        IRepositorioBimestre repositorioBimestre
         )
         : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, 
-            servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
+            servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio, repositorioBimestre)
     {
     }
 

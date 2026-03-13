@@ -30,6 +30,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
     private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
+    private readonly Mock<IRepositorioBimestre> _repositorioBimestre;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
@@ -46,6 +47,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
         _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
+        _repositorioBimestre = new Mock<IRepositorioBimestre>();
 
         var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -67,7 +69,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
             _repositorioComponenteCurricular.Object,
-            _proficienciaRepositorio.Object
+            _proficienciaRepositorio.Object,
+            _repositorioBimestre.Object
+
         );
     }
 
@@ -96,7 +100,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object ,
             _repositorioComponenteCurricular.Object,
-            _proficienciaRepositorio.Object
+            _proficienciaRepositorio.Object,
+            _repositorioBimestre.Object
         ))
 ;
     }
