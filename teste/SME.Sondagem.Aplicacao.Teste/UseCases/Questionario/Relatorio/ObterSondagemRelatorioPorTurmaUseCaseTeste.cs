@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
@@ -28,8 +29,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
-    private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
-    private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
+    private readonly Mock<IMediator> _mediator;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
@@ -44,8 +44,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
-        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-        _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
+        _mediator = new Mock<IMediator>();
+
 
         var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -66,8 +66,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoTurmaService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _repositorioComponenteCurricular.Object,
-            _proficienciaRepositorio.Object
+            _mediator.Object
+
         );
     }
 
@@ -95,8 +95,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             null!,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object ,
-            _repositorioComponenteCurricular.Object,
-            _proficienciaRepositorio.Object
+            _mediator.Object
         ))
 ;
     }

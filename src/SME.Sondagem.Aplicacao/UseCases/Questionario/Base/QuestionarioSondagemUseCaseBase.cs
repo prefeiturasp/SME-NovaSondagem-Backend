@@ -1,7 +1,10 @@
+using MediatR;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Base;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Aplicacao.Queries.Bimestre;
+using SME.Sondagem.Aplicacao.Queries.ComponenteCurricular;
+using SME.Sondagem.Aplicacao.Queries.Proficiencia;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -20,25 +23,22 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly IAlunoPapService _alunoPapService;
     protected readonly IControleAcessoService _controleAcessoService;
     protected readonly IServicoUsuario _servicoUsuario;
-    private readonly IRepositorioComponenteCurricular _repositorioComponenteCurricular;
-    private readonly IRepositorioProficiencia _proficienciaRepositorio;
+    private readonly IMediator _mediator;
 
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
-        IServicoUsuario servicoUsuario, 
-        IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio)
+        IServicoUsuario servicoUsuario,
+        IMediator mediator)
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
         _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-        _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-        _proficienciaRepositorio = proficienciaRepositorio ?? throw new ArgumentNullException(nameof(proficienciaRepositorio));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(
@@ -197,21 +197,50 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         CancellationToken cancellationToken);
 
     private async Task<List<EstudanteQuestionarioDto>> ConstruirEstudantes(
-        DadosAlunosDto dadosAlunos,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        ContextoProcessamentoDto contexto,
-        RespostasProcessadasDto respostasProcessadas,
-        bool ehRelatorio, bool exibirBimestreNaDescricaoColuna)
+    DadosAlunosDto dadosAlunos,
+    Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+    ContextoProcessamentoDto contexto,
+    RespostasProcessadasDto respostasProcessadas,
+    bool ehRelatorio,
+    bool exibirBimestreNaDescricaoColuna)
     {
+        var descricoesBimestre = new Dictionary<int, string>();
+        if (exibirBimestreNaDescricaoColuna)
+        {
+            var bimestreIds = contexto.Colunas
+                .Where(c => c.IdCiclo != 0)
+                .Select(c => c.IdCiclo)
+                .Distinct();
+
+            foreach (var id in bimestreIds)
+            {
+                var bimestre = await _mediator.Send(new ObterBimestrePorIdQuery(id));
+                descricoesBimestre[id] = bimestre?.Descricao ?? string.Empty;
+            }
+        }
+
+        var contextoColunaDto = new ContextoColunaDto(
+            sondagemAtiva,
+            contexto.QuestaoIdPrincipal,
+            exibirBimestreNaDescricaoColuna,
+            respostasProcessadas.RespostasConvertidas,
+            descricoesBimestre,
+            ehRelatorio
+        );
+
         var estudantes = new List<EstudanteQuestionarioDto>();
 
         foreach (var aluno in contexto.Alunos)
         {
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, aluno, sondagemAtiva, contexto.QuestaoIdPrincipal, exibirBimestreNaDescricaoColuna, respostasProcessadas.RespostasConvertidas, ehRelatorio))
+                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto))
                 .ToList();
 
-            var estudante = await ConstruirEstudante(aluno, dadosAlunos, colunasAluno, aluno.CodigoAluno);
+            var estudante = await ConstruirEstudante(
+                aluno, dadosAlunos,
+                [.. colunasAluno.OrderBy(x => x.BimestreId)],
+                aluno.CodigoAluno);
+
             estudantes.Add(estudante);
         }
 
@@ -507,15 +536,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
 
     protected static ColunaQuestionarioDto ConstruirColunaAluno(
-        ColunaQuestionarioDto colunaBase,
-        AlunoElasticDto aluno,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        long questaoIdPrincipal,
-        bool exibirBimestreNaDescricaoColuna,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
-        bool ehRelatorio = false)
+    ColunaQuestionarioDto colunaBase,
+    AlunoElasticDto aluno,
+    ContextoColunaDto contexto)
     {
-        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)questaoIdPrincipal;
+        long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)contexto.QuestaoIdPrincipal;
         int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
 
         int codigoAluno = aluno.CodigoAluno;
@@ -523,19 +548,26 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         DateTime dataSituacaoMatricula = aluno.DataSituacao;
 
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
-        var possuiResposta = respostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
+        var possuiResposta = contexto.RespostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = sondagemAtiva.PeriodosBimestre.Any(p =>
+        var podeLancarSondagem = contexto.SondagemAtiva.PeriodosBimestre.Any(p =>
                 dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
             && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+
+        string? descricaoBimestre = string.Empty;
+        if (contexto.ExibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
+            contexto.DescricoesBimestre.TryGetValue(bimestreIdChave.Value, out descricaoBimestre);
 
         return new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
-            DescricaoColuna = exibirBimestreNaDescricaoColuna ? $"{colunaBase.DescricaoColuna} {bimestreIdChave}º Bim" : colunaBase.DescricaoColuna,
+            BimestreId = bimestreIdChave,
+            DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna
+                ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}"
+                : colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
-            OpcaoResposta = ehRelatorio
+            OpcaoResposta = contexto.EhRelatorio
                 ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
                 : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
@@ -571,13 +603,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     private async Task<bool> EhMatematicaOuLinguaPortuguesa(int componenteCurricularId)
     {
         var componentes = new List<string> { "LÍNGUA PORTUGUESA", "MATEMÁTICA" };
-        var componente = await _repositorioComponenteCurricular.ObterPorIdAsync(componenteCurricularId);
+        var componente = await _mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
         return componente != null && componentes.Contains(componente.Nome.ToUpper());
     }
     private async Task<bool> EhProficienciaLeituraMapSaberes(int proficienciaId)
     {
         var proficienciaLeitura = new List<string> { "LEITURA" , "MAPEAMENTO DOS SABERES" };
-        var proficiencia = await _proficienciaRepositorio.ObterPorIdAsync(proficienciaId);
+        var proficiencia = await _mediator.Send(new ObterProficienciaPorIdQuery(proficienciaId));
         return proficiencia != null && proficienciaLeitura.Contains(proficiencia.Nome.ToUpper());
     }
 }
