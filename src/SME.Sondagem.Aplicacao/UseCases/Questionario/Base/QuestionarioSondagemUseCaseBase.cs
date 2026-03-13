@@ -102,7 +102,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), cancellationToken),
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
                 InseridoPor = respostasProcessadas.InseridoPor,
-                AlteradoPor = respostasProcessadas.AlteradoPor
+                AlteradoPor = respostasProcessadas.AlteradoPor,
+                QuestionarioId = contextoProcessamento.QuestionarioId
             };
         }
         else
@@ -112,7 +113,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 TituloTabelaRespostas = tituloTabelaRespostas,
                 Semestre = turma.Semestre.ToString() + "º semestre",
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
-                Legenda = legenda
+                Legenda = legenda,
+                QuestionarioId = contextoProcessamento.QuestionarioId
             };
         }
     }
@@ -171,7 +173,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 x => (x.Key.CodigoAluno, x.Key.BimestreId, x.Key.QuestaoId),
                 x => x.Value
             ),
-            QuestaoIdPrincipal = questaoIdPrincipal
+            QuestaoIdPrincipal = questaoIdPrincipal,
+            QuestionarioId = questoesAtivas.FirstOrDefault()?.QuestionarioId
         };
     }
 
