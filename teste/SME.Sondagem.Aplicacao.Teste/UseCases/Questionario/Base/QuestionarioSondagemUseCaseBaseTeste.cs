@@ -1464,13 +1464,13 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
     public static RespostaDto ConstruirRespostaPublico(bool possuiResposta, RespostaAluno? resposta)
         => ConstruirResposta(possuiResposta, resposta);
 
-    public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
-        ColunaQuestionarioDto colunaBase,
-        AlunoElasticDto aluno,
-        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        long questaoIdPrincipal,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
-        bool ehRelatorio = false)
+    private static ColunaQuestionarioDto ConstruirColunaAlunoPublicoInterno(
+    ColunaQuestionarioDto colunaBase,
+    AlunoElasticDto aluno,
+    Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+    long questaoIdPrincipal,
+    Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
+    bool ehRelatorio = false)
     {
         var contexto = new ContextoColunaDto(
             sondagemAtiva,
@@ -1483,6 +1483,15 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
 
         return ConstruirColunaAluno(colunaBase, aluno, contexto);
     }
+
+    public ColunaQuestionarioDto ConstruirColunaAlunoPublico(
+        ColunaQuestionarioDto colunaBase,
+        AlunoElasticDto aluno,
+        Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+        long questaoIdPrincipal,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
+        bool ehRelatorio = false)
+        => ConstruirColunaAlunoPublicoInterno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, respostas, ehRelatorio);
 
     public static RespostasProcessadasDto ProcessarRespostasPublico(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
