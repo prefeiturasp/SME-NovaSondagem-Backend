@@ -115,7 +115,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 Questao              = ra.Questao.Nome,
                 Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
                 Legenda              = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
-                Bimestre             = ra.BimestreId,
+                Bimestre             = ra.BimestreId.ToString(),
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
                 Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
                 ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
