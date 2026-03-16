@@ -16,7 +16,7 @@ namespace SME.Sondagem.API.Controllers;
 /// </remarks>
 [Route("api/relatorio-integracao")]
 [ApiController]
-[ChaveIntegracaoApiAttribute]
+//[ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
@@ -28,7 +28,7 @@ public class RelatorioIntegracaoController : ControllerBase
         return Ok(await obterRelatorioSondagemPorTurmaUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
-    [HttpGet("sondagem-por-todas-turma")]
+    [HttpGet("sondagem-por-todas-turma-lp")]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(MemoryStream), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
