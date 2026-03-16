@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using MediatR;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
@@ -27,10 +28,9 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
-        IRepositorioComponenteCurricular repositorioComponenteCurricular,
-        IRepositorioProficiencia proficienciaRepositorio,
+        IMediator mediator,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, repositorioComponenteCurricular, proficienciaRepositorio)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario,mediator)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -61,8 +61,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
-    private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
-    private readonly Mock<IRepositorioProficiencia> _proficienciaRepositorio;
+    private readonly Mock<IMediator> _mediator;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -80,8 +79,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
-        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-        _proficienciaRepositorio = new Mock<IRepositorioProficiencia>();
+        _mediator = new Mock<IMediator>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -101,8 +99,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _repositorioComponenteCurricular.Object,
-            _proficienciaRepositorio.Object,
+            _mediator.Object,
             dadosAlunos);
 
     #region Construtor
@@ -116,9 +113,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object,
-                _repositorioComponenteCurricular.Object,
-                _proficienciaRepositorio.Object,
+                _mockServicoUsuario.Object, _mediator.Object,
                 null!
                 ));
     }
@@ -133,8 +128,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
-                _repositorioComponenteCurricular.Object,
-                _proficienciaRepositorio.Object,
+                _mediator.Object,
                 null!
                 ));
     }
@@ -148,9 +142,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 null!,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object,
-                _repositorioComponenteCurricular.Object,
-                _proficienciaRepositorio.Object,
+                _mockServicoUsuario.Object, _mediator.Object,
                 null!
                 ));
     }
@@ -164,9 +156,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 null!,
-                _mockServicoUsuario.Object,
-                _repositorioComponenteCurricular.Object,
-                _proficienciaRepositorio.Object,
+                _mockServicoUsuario.Object, _mediator.Object,
                 null!
                 ));
     }
@@ -181,8 +171,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
                  _mockServicoUsuario.Object,
-                _repositorioComponenteCurricular.Object,
-                null!,
+                 null!,
                 null
                 ));
     }
@@ -662,9 +651,9 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(1, resultado.IdCiclo);
         Assert.NotNull(resultado.Resposta);
@@ -676,14 +665,12 @@ public class QuestionarioSondagemUseCaseBaseTeste
     {
         var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
         var sondagem = CriarSondagemComPeriodo(periodoAtivo);
-
         var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: false);
         var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: (int)SituacaoMatriculaAluno.Ativo);
-
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.True(resultado.PeriodoBimestreAtivo);
     }
@@ -696,14 +683,13 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var resposta = CriarRespostaAluno(id: 1, opcaoRespostaId: opcaoRespostaId);
-
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>
-        {
-            { (100, 1, 1L), resposta }
-        };
+    {
+        { (100, 1, 1L), resposta }
+    };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: true);
 
         Assert.NotNull(resultado.OpcaoResposta);
         Assert.Single(resultado.OpcaoResposta!);
@@ -717,9 +703,9 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var aluno = CriarAlunoElastic(codigo: 100);
         var sondagem = CriarSondagem();
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas, ehRelatorio: false);
 
         Assert.Equal(2, resultado.OpcaoResposta!.Count());
     }
@@ -735,9 +721,9 @@ public class QuestionarioSondagemUseCaseBaseTeste
         {
             { (200, 1, 55L), resposta }
         };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 9L, respostas);
 
         Assert.Equal(99, resultado.Resposta.Id);
     }
@@ -753,9 +739,9 @@ public class QuestionarioSondagemUseCaseBaseTeste
         {
             { (300, null, 1L), resposta }
         };
+        var useCase = CriarUseCase();
 
-        var resultado = QuestionarioSondagemUseCaseBaseConcreto
-            .ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
 
         Assert.Equal(50, resultado.Resposta.Id);
     }
@@ -1478,14 +1464,34 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
     public static RespostaDto ConstruirRespostaPublico(bool possuiResposta, RespostaAluno? resposta)
         => ConstruirResposta(possuiResposta, resposta);
 
+    private static ColunaQuestionarioDto ConstruirColunaAlunoPublicoInterno(
+    ColunaQuestionarioDto colunaBase,
+    AlunoElasticDto aluno,
+    Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
+    long questaoIdPrincipal,
+    Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
+    bool ehRelatorio = false)
+    {
+        var contexto = new ContextoColunaDto(
+            sondagemAtiva,
+            questaoIdPrincipal,
+            false,
+            respostas,
+            new Dictionary<int, string>(),
+            ehRelatorio
+        );
+
+        return ConstruirColunaAluno(colunaBase, aluno, contexto);
+    }
+
     public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
         ColunaQuestionarioDto colunaBase,
         AlunoElasticDto aluno,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
         long questaoIdPrincipal,
-        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
+        Dictionary<(int CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostas,
         bool ehRelatorio = false)
-        => ConstruirColunaAluno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, false,respostasAlunosPorQuestoes, ehRelatorio);
+        => ConstruirColunaAlunoPublicoInterno(colunaBase, aluno, sondagemAtiva, questaoIdPrincipal, respostas, ehRelatorio);
 
     public static RespostasProcessadasDto ProcessarRespostasPublico(
         Dictionary<(long CodigoAluno, int? BimestreId, long QuestaoId), RespostaAluno> respostasAlunosPorQuestoes,
