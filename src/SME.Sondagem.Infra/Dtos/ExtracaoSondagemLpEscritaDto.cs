@@ -37,7 +37,7 @@ namespace SME.Sondagem.Infrastructure.Dtos
         public string? Ano { get; set; }
 
         [Name("Bimestre")]
-        public int? Bimestre { get; set; }
+        public string? Bimestre { get; set; }
 
         [Name("Modalidade")]
         public string? Modalidade { get; set; }

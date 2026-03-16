@@ -1,5 +1,5 @@
-﻿using CsvHelper;
-using CsvHelper.Configuration;
+﻿using ClosedXML.Excel;
+using CsvHelper.Configuration.Attributes;
 using MediatR;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -9,8 +9,7 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infrastructure.Dtos;
-using System.Globalization;
-using System.Text;
+using System.Reflection;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 {
@@ -20,17 +19,20 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         private readonly IRepositorioRespostaAluno _repositorioRespostaAluno; 
         private readonly IRepositorioComponenteCurricular _repositorioComponenteCurricular; 
         private readonly IUeComDreEolService _ueComDreEolService;
+        private readonly IRepositorioBimestre _repositorioBimestre;
 
 
         public ObterSondagemRelatorioPorTodasTurmaUseCase(IMediator mediator, IUeComDreEolService ueComDreEolService,
             IRepositorioRespostaAluno repositorioRespostaAluno,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular
+            IRepositorioComponenteCurricular repositorioComponenteCurricular,
+            IRepositorioBimestre repositorioBimestre
             )
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _ueComDreEolService = ueComDreEolService ?? throw new ArgumentNullException(nameof(ueComDreEolService));
             _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
             _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            _repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
         }
 
         public async Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken = default)
@@ -47,10 +49,15 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
             var codigoUes = ObterCodigosUes(dadosAlunos);
             var uesComDre = await BuscarUesDres(codigoUes);
-            var dadosArquivo = MapearAquivo(lista, respostas, uesComDre, turmasCodigoNome, dadosAlunos);
-            var csvStream = GerarCsv(dadosArquivo);
+            var dadosArquivo = await MapearAquivo(lista, respostas, uesComDre, turmasCodigoNome, dadosAlunos);
+            var xlsxStream = GerarXlsx(dadosArquivo);
 
-            return new FileResultDto(csvStream, "text/csv", $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.csv");
+            return new FileResultDto(
+                xlsxStream,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.xlsx"
+            );
+
         }
 
         private static IEnumerable<string> ObterCodigosUes(IEnumerable<AlunoEolDto> dadosAlunos)
@@ -84,24 +91,26 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return await _repositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
         }
 
-        private static IEnumerable<ExtracaoSondagemLpEscritaDto> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
+        private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
             IEnumerable<TurmaCodigoElasticDto> turmasCodigoNome, IEnumerable<AlunoEolDto> dadosAlunos)
         {
 
+            var bimestresLista = await _repositorioBimestre.ListarAsync();
             foreach (var responsta in responstas)
             {
                  var aluno = dadosAlunos.FirstOrDefault(x => x.CodigoAluno.ToString() == responsta.CodigoEolEstudante);
+                 
                  if (aluno != null)
                  {
                      var turma = turmasCodigoNome.FirstOrDefault(t =>
                          t.CodigoTurma == aluno.CodigoTurma);
 
                      var ueDre = uesComDre.FirstOrDefault(e => e.CodigoEscola == aluno?.CodigoEscola);
-
+                    var bimestreDesc = bimestresLista?.FirstOrDefault(x => x.Id.ToString() == responsta?.Bimestre)?.Descricao ?? "Todos";
                      var item = new ExtracaoSondagemLpEscritaDto
                      {
                          NomeDre = ueDre?.NomeDRE ?? string.Empty,
-                         Bimestre = responsta?.Bimestre,
+                         Bimestre = bimestreDesc,
                          CodigoDre = ueDre?.CodigoDRE ?? string.Empty,
                          NomeEscola = ueDre?.NomeEscola ?? string.Empty,
                          CodigoEolEscola = ueDre?.CodigoEscola ?? string.Empty,
@@ -111,9 +120,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                          ComponenteCurricular = responsta?.ComponenteCurricular,
                          Proficiencia = responsta?.Proficiencia,
                          Ano = turma?.AnoTurma,
-                         Questao =  responsta?.Questao,
+                         Questao =  responsta?.Questao ?? string.Empty,
                          Resposta =  responsta?.Resposta,
-                         Legenda =  responsta?.Legenda,
+                         Legenda =  responsta?.Legenda ?? string.Empty,
                          Modalidade =  ObterNomeModalidade(responsta?.ModalidadeId ?? 0),
                          ModalidadeId =  responsta?.ModalidadeId,
                      };
@@ -125,20 +134,38 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return lista.OrderBy(x => x.NomeEstudanteEstudante);
         }
 
-        private static MemoryStream GerarCsv(IEnumerable<ExtracaoSondagemLpEscritaDto> dados)
+        private static MemoryStream GerarXlsx(IEnumerable<ExtracaoSondagemLpEscritaDto> dados)
         {
             var memoryStream = new MemoryStream();
 
-            using var writer = new StreamWriter(memoryStream, Encoding.UTF8, leaveOpen: true);
-            using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Sondagem");
+
+            var propriedades = typeof(ExtracaoSondagemLpEscritaDto).GetProperties();
+
+            for (int i = 0; i < propriedades.Length; i++)
             {
-                Delimiter = ";",
-                HasHeaderRecord = true,
-            });
+                var prop = propriedades[i];
 
-            csv.WriteRecords(dados);
-            writer.Flush();
+                var nameAttr = prop
+                    .GetCustomAttribute<NameAttribute>(); 
 
+                var headerText = nameAttr?.Names?.FirstOrDefault() ?? prop.Name;
+
+                worksheet.Cell(1, i + 1).Value = headerText;
+            }
+
+            var lista = dados.ToList();
+            for (int row = 0; row < lista.Count; row++)
+            {
+                for (int col = 0; col < propriedades.Length; col++)
+                {
+                    var valor = propriedades[col].GetValue(lista[row]);
+                    worksheet.Cell(row + 2, col + 1).Value = valor?.ToString() ?? string.Empty;
+                }
+            }
+
+            workbook.SaveAs(memoryStream);
             memoryStream.Position = 0;
             return memoryStream;
         }
