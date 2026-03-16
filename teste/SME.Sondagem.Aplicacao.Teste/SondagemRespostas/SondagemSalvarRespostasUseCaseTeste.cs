@@ -24,6 +24,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
     private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly Mock<IControleAcessoService> _controleAcessoService;
+    private readonly Mock<IRepositorioBimestre> _repositorioBimestre;
     private readonly SondagemSalvarRespostasUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
 
@@ -40,6 +41,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
+        _repositorioBimestre = new Mock<IRepositorioBimestre>();
         _cancellationToken = CancellationToken.None;
 
         _useCase = new SondagemSalvarRespostasUseCase(
@@ -52,7 +54,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _mediator = new Mock<IMediator>();
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
         _ueComDreEolService = new Mock<IUeComDreEolService>();
-        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_mediator.Object, _ueComDreEolService.Object, _repositorioSondagemResposta.Object, _repositorioComponenteCurricular.Object);
+        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_mediator.Object, _ueComDreEolService.Object, _repositorioSondagemResposta.Object, _repositorioComponenteCurricular.Object, _repositorioBimestre.Object);
     }
 
     [Fact]
