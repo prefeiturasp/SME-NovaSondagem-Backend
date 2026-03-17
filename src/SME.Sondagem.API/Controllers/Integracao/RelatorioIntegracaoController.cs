@@ -16,11 +16,11 @@ namespace SME.Sondagem.API.Controllers;
 /// </remarks>
 [Route("api/relatorio-integracao")]
 [ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
 [ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
-    [ApiExplorerSettings(IgnoreApi = true)]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(QuestionarioSondagemRelatorioDto), 200)]
     public async Task<IActionResult> ObterRelatorioSondagemPorTurma([FromQuery] FiltroQuestionario filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterRelatorioSondagemPorTurmaUseCase, CancellationToken cancellationToken)
