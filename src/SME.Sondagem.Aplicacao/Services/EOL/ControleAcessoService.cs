@@ -4,6 +4,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Constantes;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
@@ -17,26 +18,18 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioElasticTurma repositorioTurma;
-
-        public static readonly Guid PERFIL_CP = Guid.Parse("44e1e074-37d6-e911-abd6-f81654fe895d");
-        public static readonly Guid PERFIL_AD = Guid.Parse("45e1e074-37d6-e911-abd6-f81654fe895d");
-        public static readonly Guid PERFIL_DIRETOR = Guid.Parse("46e1e074-37d6-e911-abd6-f81654fe895d");
-        public static readonly Guid PERFIL_PROFESSOR = Guid.Parse("40e1e074-37d6-e911-abd6-f81654fe895d");
-        public static readonly Guid PERFIL_ADM_SME = Guid.Parse("5ae1e074-37d6-e911-abd6-f81654fe895d");
-        public static readonly Guid PERFIL_ADM_COTIC = Guid.Parse("5be1e074-37d6-e911-abd6-f81654fe895d");
+        private readonly IPerfilService perfilService;
 
         private const int CACHE_TTL_TURMA_MINUTOS = 30;
 
-        public ControleAcessoService(
-            IHttpClientFactory httpClientFactory,
-            IHttpContextAccessor httpContextAccessor,
-            IRepositorioCache repositorioCache,
-            IRepositorioElasticTurma repositorioTurma)
+        public ControleAcessoService(IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor, IRepositorioCache repositorioCache,
+            IRepositorioElasticTurma repositorioTurma, IPerfilService perfilService)
         {
-            this.httpClientFactory = httpClientFactory;
-            this.httpContextAccessor = httpContextAccessor;
-            this.repositorioCache = repositorioCache;
-            this.repositorioTurma = repositorioTurma;
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
+            this.perfilService = perfilService ?? throw new ArgumentNullException(nameof(perfilService));
         }
 
         public async Task<bool> ValidarPermissaoAcessoAsync(
@@ -46,12 +39,17 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (string.IsNullOrWhiteSpace(turmaId))
                 return false;
 
-            var perfil = httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
+            var perfilIdString = httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
 
-            if (!Guid.TryParse(perfil, out var perfilGuid))
+            if (!Guid.TryParse(perfilIdString, out var perfilId))
                 return false;
 
-            if (perfilGuid == PERFIL_ADM_SME || perfilGuid == PERFIL_ADM_COTIC)
+            var perfilInfo = await perfilService.ObterPerfilPorIdAsync(perfilId, cancellationToken);
+
+            if (perfilInfo == null || !perfilInfo.PermiteConsultar)
+                return false;
+
+            if (perfilInfo.AcessoIrrestrito)
             {
                 if (!int.TryParse(turmaId, out var codigoTurma))
                     return false;
@@ -60,34 +58,48 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 return turmaElastic is not null;
             }
 
-            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(cancellationToken);
+            if (!perfilInfo.ConsultarAbrangencia)
+                return false;
+
+            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(
+                perfilInfo,
+                cancellationToken);
+
             if (!acessos.Any())
                 return false;
 
-            if (perfilGuid == PERFIL_PROFESSOR)
+            return perfilInfo.TipoValidacao switch
             {
-                return acessos.Any(a =>
-                    a.Regencia &&
-                    a.TurmaCodigos.Contains(turmaId));
-            }
+                "Regencia" => ValidarPorRegencia(acessos, turmaId),
+                "UE" => await ValidarPorUEAsync(acessos, turmaId, cancellationToken),
+                _ => false
+            };
+        }
 
-            if (!int.TryParse(turmaId, out var codigoTurmaValidacao))
+        private bool ValidarPorRegencia(IEnumerable<ControleAcessoDto> acessos, string turmaId)
+        {
+            return acessos.Any(a => a.Regencia && a.TurmaCodigos.Contains(turmaId));
+        }
+
+        private async Task<bool> ValidarPorUEAsync(
+            IEnumerable<ControleAcessoDto> acessos,
+            string turmaId,
+            CancellationToken cancellationToken)
+        {
+            if (!int.TryParse(turmaId, out var codigoTurma))
                 return false;
 
-            var turmaElasticValidacao = await ObterTurmaComCacheAsync(
-                codigoTurmaValidacao,
-                cancellationToken);
+            var turma = await ObterTurmaComCacheAsync(codigoTurma, cancellationToken);
 
-            if (turmaElasticValidacao is null)
+            if (turma is null)
                 return false;
 
-            return acessos.Any(a =>
-                a.IdUes.Contains(turmaElasticValidacao.CodigoEscola));
+            return acessos.Any(a => a.IdUes.Contains(turma.CodigoEscola));
         }
 
         private async Task<TurmaElasticDto?> ObterTurmaComCacheAsync(
-            int codigoTurma,
-            CancellationToken cancellationToken)
+                    int codigoTurma,
+                    CancellationToken cancellationToken)
         {
             var chaveCache = $"turma-elastic:{codigoTurma}";
 
@@ -113,6 +125,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         private async Task<IEnumerable<ControleAcessoDto>>
             ObterControleAcessoUsuarioAutenticadoAsync(
+                PerfilInfo perfilInfo,
                 CancellationToken cancellationToken)
         {
             var usuario = httpContextAccessor.HttpContext?.User;
@@ -121,34 +134,30 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 return Enumerable.Empty<ControleAcessoDto>();
 
             var login = usuario.FindFirst("rf")?.Value;
-            var perfil = usuario.FindFirst("perfil")?.Value;
 
-            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
+            if (string.IsNullOrWhiteSpace(login))
                 return Enumerable.Empty<ControleAcessoDto>();
 
             var chave = string.Format(
                 NomeChaveCache.CONTROLE_ACESSO_USUARIO,
                 login,
-                perfil);
+                perfilInfo.Codigo);
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
-                return MapearControleAcesso(cacheRedis, perfil);
-
-            if (!Guid.TryParse(perfil, out var perfilGuid))
-                return Enumerable.Empty<ControleAcessoDto>();
+                return MapearControleAcesso(cacheRedis, perfilInfo);
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 
-            var url = perfilGuid == PERFIL_PROFESSOR
+            var url = perfilInfo.TipoValidacao == "Regencia"
                 ? string.Format(
                     ServicoEolConstants.URL_COMPONENTES_CURRICULARES_FUNCIONARIOS,
                     login,
-                    perfil)
+                    perfilInfo.Codigo)
                 : string.Format(
                     ServicoEolConstants.URL_ABRANGENCIA_COMPACTA_VIGENTE_PERFIL,
                     login,
-                    perfil);
+                    perfilInfo.Codigo);
 
             var response = await httpClient.GetAsync(url, cancellationToken);
 
@@ -161,17 +170,14 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             await repositorioCache.SalvarRedisToJsonAsync(chave, json);
 
-            return MapearControleAcesso(json, perfil);
+            return MapearControleAcesso(json, perfilInfo);
         }
 
         private static IEnumerable<ControleAcessoDto> MapearControleAcesso(
             string json,
-            string perfil)
+            PerfilInfo perfilInfo)
         {
-            if (!Guid.TryParse(perfil, out var perfilGuid))
-                return Enumerable.Empty<ControleAcessoDto>();
-
-            if (perfilGuid == PERFIL_PROFESSOR)
+            if (perfilInfo.TipoValidacao == "Regencia")
             {
                 var dados = JsonConvert.DeserializeObject<List<dynamic>>(json);
 
@@ -180,21 +186,20 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                     .Select(d => new ControleAcessoDto
                     {
                         Regencia = true,
-                        TurmaCodigos = new[] { (string)d.turmaCodigo }
+                        TurmaCodigos = [(string)d.turmaCodigo]
                     });
             }
 
             var abrangencia = JsonConvert.DeserializeObject<dynamic>(json);
 
-            return new List<ControleAcessoDto>
-            {
-                new ControleAcessoDto
-                {
+            return
+            [
+                new() {
                     IdUes = ((IEnumerable<dynamic>)abrangencia!.idUes)
                         .Select(u => (string)u)
                         .ToList()
                 }
-            };
+            ];
         }
     }
 }
