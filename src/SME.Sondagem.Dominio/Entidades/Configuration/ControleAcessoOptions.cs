@@ -8,6 +8,6 @@
 
         public int CacheDuracaoMinutos { get; set; }
 
-        public Dictionary<string, PerfilConfiguracao> ConfiguracaoPerfis { get; set; }
+        public IEnumerable<PerfilConfiguracao> ConfiguracaoPerfis { get; set; }
     }
 }

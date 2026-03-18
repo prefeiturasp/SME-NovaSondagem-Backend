@@ -70,8 +70,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var idString = perfilDto.Codigo.ToString().ToUpper();
 
             //Buscar No banco
-            if (!options.ConfiguracaoPerfis.TryGetValue(idString, out var config))
-                return null;
+            // if (!options.ConfiguracaoPerfis.TryGetValue(idString, out var config))
+            //     return null;
 
             // Combina dados da API (permissões) com configuração local (regras)
             // Atualizar o perfil no banco
@@ -83,9 +83,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 PermiteInserir = perfilDto.PermiteInserir,
                 PermiteAlterar = perfilDto.PermiteAlterar,
                 PermiteExcluir = perfilDto.PermiteExcluir,
-                TipoValidacao = config.TipoValidacao,
-                ConsultarAbrangencia = config.ConsultarAbrangencia,
-                AcessoIrrestrito = config.AcessoIrrestrito
+                // TipoValidacao = config.TipoValidacao,
+                // ConsultarAbrangencia = config.ConsultarAbrangencia,
+                // AcessoIrrestrito = config.AcessoIrrestrito
             };
         }
     }
