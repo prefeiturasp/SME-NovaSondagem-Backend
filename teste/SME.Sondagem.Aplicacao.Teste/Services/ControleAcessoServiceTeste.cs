@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Moq;
+using Moq.Protected;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Services.EOL;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using System.Net;
 using System.Security.Claims;
 using Xunit;
 
@@ -18,6 +20,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
         private const string TURMA_ID = "123456";
         private const string TURMA_ID_STRING = "TURMA-TESTE";
+        private const string ESCOLA_CODIGO = "ESCOLA-TESTE";
         private const string RF_USUARIO = "123456";
         private const string CODIGO_ESCOLA_PERMITIDA = "111111";
         private const string CODIGO_ESCOLA_NAO_PERMITIDA = "999999";
@@ -71,7 +74,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(string.Empty);
+            var result = await service.ValidarPermissaoAcessoAsync(string.Empty, string.Empty);
 
             Assert.False(result);
         }
@@ -90,7 +93,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(null!);
+            var result = await service.ValidarPermissaoAcessoAsync(null!, null!);
 
             Assert.False(result);
         }
@@ -106,7 +109,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -124,7 +127,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -140,7 +143,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -159,7 +162,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -197,7 +200,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
 
@@ -234,7 +237,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.False(result);
 
@@ -260,7 +263,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync("TURMA-ABC");
+            var result = await service.ValidarPermissaoAcessoAsync("TURMA-ABC", "ESCOLA-ABC");
 
             Assert.False(result);
         }
@@ -290,7 +293,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
 
@@ -332,7 +335,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.True(result);
         }
@@ -364,7 +367,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -396,7 +399,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -421,7 +424,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -451,7 +454,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
 
             Assert.True(result);
         }
@@ -503,7 +506,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
         }
@@ -551,7 +554,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -591,7 +594,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.False(result);
         }
@@ -620,7 +623,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync("TURMA-ABC");
+            var result = await service.ValidarPermissaoAcessoAsync("TURMA-ABC", "ESCOLA-ABC");
 
             Assert.False(result);
         }
@@ -660,7 +663,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
 
@@ -706,7 +709,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
 
@@ -749,7 +752,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
 
             Assert.True(result);
 
@@ -765,6 +768,290 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     It.IsAny<TurmaElasticDto>(),
                     It.IsAny<int>()),
                 Times.Never);
+        }
+
+        #endregion
+
+        #region Novos Testes – ValidarPermissaoAcessoAsync e ObterControleAcessoUsuarioAutenticadoAsync
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_CodigoEscolaVazio_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, string.Empty);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_CodigoEscolaNull_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, null!);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_Professor_SemAcessos_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            // Forçar ObterControleAcessoUsuarioAutenticadoAsync a retornar vazio:
+            // Perfil é válido, mas cache vazio e HTTP retornando NoContent
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NoContent));
+
+            var httpClient = new HttpClient(httpMessageHandlerMock.Object)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory
+                .Setup(f => f.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(string.Empty);
+
+            var service = new ControleAcessoService(
+                httpClientFactory.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_PerfilGestao_SemAcessos_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_CP.ToString());
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(string.Empty)
+                });
+
+            var httpClient = new HttpClient(httpMessageHandlerMock.Object)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            var httpClientFactory = new Mock<IHttpClientFactory>();
+            httpClientFactory
+                .Setup(f => f.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(string.Empty);
+
+            var service = new ControleAcessoService(
+                httpClientFactory.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task ObterControleAcessoUsuarioAutenticadoAsync_UsaCache_Professor_DeveEvitarChamadaHttp()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var cacheJsonEol = JsonConvert.SerializeObject(new[]
+            {
+                new { regencia = true, turmaCodigo = TURMA_ID_STRING }
+            });
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(cacheJsonEol);
+
+            var httpClientFactory = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+
+            var service = new ControleAcessoService(
+                httpClientFactory.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+
+            Assert.True(resultado);
+            httpClientFactory.Verify(f => f.CreateClient(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ObterControleAcessoUsuarioAutenticadoAsync_SemCache_Professor_ChamaHttpESalvaCache()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(string.Empty);
+
+            var jsonRetorno = JsonConvert.SerializeObject(new[]
+            {
+                new { regencia = true, turmaCodigo = TURMA_ID_STRING }
+            });
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonRetorno)
+                });
+
+            var httpClient = new HttpClient(httpMessageHandlerMock.Object)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            httpClientFactoryMock
+                .Setup(f => f.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+
+            Assert.True(resultado);
+
+            repositorioCache.Verify(
+        r => r.SalvarRedisToJsonAsync(
+            It.IsAny<string>(),
+            jsonRetorno,
+            It.IsAny<int>()),
+        Times.Once);
+        }
+
+        [Fact]
+        public async Task ObterControleAcessoUsuarioAutenticadoAsync_SemCache_Gestao_ChamaHttpESalvaCache()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_CP.ToString());
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(string.Empty);
+
+            var jsonRetorno = JsonConvert.SerializeObject(new
+            {
+                idUes = UES_PERMITIDAS
+            });
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(jsonRetorno)
+                });
+
+            var httpClient = new HttpClient(httpMessageHandlerMock.Object)
+            {
+                BaseAddress = new Uri("http://localhost")
+            };
+
+            httpClientFactoryMock
+                .Setup(f => f.CreateClient(It.IsAny<string>()))
+                .Returns(httpClient);
+
+            var turmaElastic = new TurmaElasticDto
+            {
+                CodigoTurma = int.Parse(TURMA_ID),
+                CodigoEscola = CODIGO_ESCOLA_PERMITIDA
+            };
+
+            repositorioCache
+                .Setup(r => r.ObterRedisAsync<TurmaElasticDto>(It.IsAny<string>()))
+                .ReturnsAsync(turmaElastic);
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+
+            Assert.True(resultado);
+
+            repositorioCache.Verify(
+              r => r.SalvarRedisToJsonAsync(
+                  It.IsAny<string>(),
+                  jsonRetorno,
+                  It.IsAny<int>()),
+              Times.Once);
         }
 
         #endregion
