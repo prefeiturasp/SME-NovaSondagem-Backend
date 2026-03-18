@@ -23,7 +23,13 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
             var url = $"alunos/obter-nomes-alunos";
-            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(codigoAlunos), Encoding.UTF8, "application/json");
+            int anoAtual = DateTime.Now.Year;
+            var requestBody = new
+            {
+                codigosAlunos = codigoAlunos,
+                anoLetivo = anoAtual
+            };
+            var jsonParaPost = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
             var resposta = await httpClient.PostAsync(url, jsonParaPost, cancellationToken);
 
             if (!resposta.IsSuccessStatusCode) return resultado;
