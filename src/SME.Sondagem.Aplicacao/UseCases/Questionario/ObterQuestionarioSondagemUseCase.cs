@@ -129,7 +129,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
             QuestaoId = questaoId,
             SondagemId = sondagemAtiva.Id,
             TituloTabelaRespostas = tituloTabelaRespostas,
-            PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), turma.CodigoEscola, cancellationToken),
+            PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), turma.CodigoEscola, turma.AnoTurma, cancellationToken),
             Estudantes = estudantes,
             InseridoPor = nomeInseridoPor,
             AlteradoPor = nomeAlteradoPor
