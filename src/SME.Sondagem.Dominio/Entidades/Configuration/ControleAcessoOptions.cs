@@ -2,6 +2,11 @@
 {
     public class ControleAcessoOptions : EntidadeBase
     {
+        public ControleAcessoOptions()
+        {
+            ConfiguracaoPerfis = new List<PerfilConfiguracao>();
+        }
+
         public int GrupoSituacao { get; set; }
         public int SistemaId { get; set; }
         public int ModuloId { get; set; }

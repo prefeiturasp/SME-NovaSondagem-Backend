@@ -13,16 +13,16 @@ namespace SME.Sondagem.Dados.Mapeamentos
 
             builder.ToTable("controle_acesso_options");
 
-            builder.Property(e => e.GrupoSituacao)
+            builder.Property(e => e.GrupoSituacao).HasColumnName("grupo_situacao")
                 .IsRequired();
 
-            builder.Property(e => e.SistemaId)
+            builder.Property(e => e.SistemaId).HasColumnName("sistema_id")
                 .IsRequired();
 
-            builder.Property(e => e.ModuloId)
+            builder.Property(e => e.ModuloId).HasColumnName("modulo_id")
                 .IsRequired();
 
-            builder.Property(e => e.CacheDuracaoMinutos)
+            builder.Property(e => e.CacheDuracaoMinutos).HasColumnName("cache_duracao_minutos")
                 .IsRequired();
 
             builder.HasMany(e => e.ConfiguracaoPerfis)

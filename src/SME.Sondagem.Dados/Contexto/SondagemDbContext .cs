@@ -30,7 +30,6 @@ public class SondagemDbContext : DbContext
     public DbSet<RespostaAluno> RespostasAluno { get; set; }
     public DbSet<Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; set; }
     public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
-    public DbSet<PerfilInfo> PerfilInfo { get; set; }
     public DbSet<PerfilConfiguracao> PerfilConfiguracao { get; set; }
     public DbSet<ControleAcessoOptions> ControleAcessoOptions { get; set; }
 

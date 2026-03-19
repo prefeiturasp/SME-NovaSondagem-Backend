@@ -4,9 +4,9 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Constantes;
-using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Services;
+using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using System.Net;
 
@@ -127,7 +127,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         private async Task<IEnumerable<ControleAcessoDto>>
             ObterControleAcessoUsuarioAutenticadoAsync(
-                PerfilInfo perfilInfo,
+                PerfilInfoSondagemDto perfilInfo,
                 CancellationToken cancellationToken)
         {
             var usuario = httpContextAccessor.HttpContext?.User;
@@ -177,7 +177,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         private static IEnumerable<ControleAcessoDto> MapearControleAcesso(
             string json,
-            PerfilInfo perfilInfo)
+            PerfilInfoSondagemDto perfilInfo)
         {
             if (perfilInfo.TipoValidacao == "Regencia")
             {
