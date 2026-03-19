@@ -96,7 +96,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             sondagemAtiva.PeriodosBimestre.OrderBy(c => c.DataInicio).FirstOrDefault()!.DataInicio
         );
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio, exibirBimestreNaDescricaoColuna);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio, exibirBimestreNaDescricaoColuna,filtro);
 
         var legenda = ConstruirLegenda(contextoProcessamento);
 
@@ -202,7 +202,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     ContextoProcessamentoDto contexto,
     RespostasProcessadasDto respostasProcessadas,
     bool ehRelatorio,
-    bool exibirBimestreNaDescricaoColuna)
+    bool exibirBimestreNaDescricaoColuna, FiltroQuestionario filtro)
     {
         var descricoesBimestre = new Dictionary<int, string>();
         if (exibirBimestreNaDescricaoColuna)
@@ -233,7 +233,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         foreach (var aluno in contexto.Alunos)
         {
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto))
+                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto,filtro))
                 .ToList();
 
             var estudante = await ConstruirEstudante(
@@ -538,7 +538,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected static ColunaQuestionarioDto ConstruirColunaAluno(
     ColunaQuestionarioDto colunaBase,
     AlunoElasticDto aluno,
-    ContextoColunaDto contexto)
+    ContextoColunaDto contexto, FiltroQuestionario filtro)
     {
         long questaoIdChave = colunaBase.QuestaoSubrespostaId ?? (int)contexto.QuestaoIdPrincipal;
         int? bimestreIdChave = colunaBase.IdCiclo == 0 ? null : colunaBase.IdCiclo;
@@ -558,11 +558,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         if (contexto.ExibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
             contexto.DescricoesBimestre.TryGetValue(bimestreIdChave.Value, out descricaoBimestre);
 
-        return new ColunaQuestionarioDto
+        var ehEja = filtro.Modalidade == (int)Modalidade.EJA;
+
+        var retorno = new ColunaQuestionarioDto
         {
             IdCiclo = colunaBase.IdCiclo,
             BimestreId = bimestreIdChave,
-            DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna
+            DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna && !ehEja
                 ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}"
                 : colunaBase.DescricaoColuna,
             PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
@@ -572,6 +574,8 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 : colunaBase.OpcaoResposta,
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
+
+        return retorno;
     }
 
     protected static RespostaDto ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
