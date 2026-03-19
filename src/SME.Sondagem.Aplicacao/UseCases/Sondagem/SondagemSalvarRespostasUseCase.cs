@@ -1,12 +1,15 @@
 ﻿using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
+using System.Threading;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Sondagem;
 
@@ -16,17 +19,20 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     private readonly IRepositorioRespostaAluno _repositorioSondagemResposta;
     private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IControleAcessoService _controleAcessoService;
+    private readonly IRepositorioElasticTurma _repositorioElasticTurma;
 
     public SondagemSalvarRespostasUseCase(IRepositorioSondagem repositorioSondagem,
         IRepositorioRespostaAluno repositorioSondagemResposta,
         IRepositorioQuestao repositorioQuestao,
         IControleAcessoService controleAcessoService
-        )
+,
+        IRepositorioElasticTurma repositorioElasticTurma)
     {
         _repositorioSondagem = repositorioSondagem;
         _repositorioSondagemResposta = repositorioSondagemResposta;
         _repositorioQuestao = repositorioQuestao;
         _controleAcessoService = controleAcessoService;
+        _repositorioElasticTurma = repositorioElasticTurma;
     }
 
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
@@ -63,12 +69,23 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private async Task<bool> ValidarSalvarSondagem(SondagemSalvarDto dto)
     {
-        if(dto == null) return false;
+        if (dto == null) return false;
 
-        if(string.IsNullOrEmpty(dto.TurmaId))
+        var filtro = new FiltroQuestionario
+        {
+            TurmaId = int.TryParse(dto.TurmaId, out var turmaId) ? turmaId : 0
+        };
+
+        var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, default)
+            ?? throw new RegraNegocioException("Turma não localizada", 400);
+
+        var codigoEscola = turma.CodigoEscola;
+        var anoTurma = turma.AnoTurma;
+
+        if (string.IsNullOrEmpty(dto.TurmaId))
             throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM);
 
-        bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId, "", "");
+        bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId, codigoEscola, anoTurma);
 
         if (!retorno)
             throw new RegraNegocioException(MensagemNegocioComuns.SEM_PERMISSAO_SALVAR_SONDAGEM);

@@ -2,11 +2,13 @@ using Moq;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Teste.DTO;
 using Xunit;
@@ -15,10 +17,15 @@ namespace SME.Sondagem.Aplicacao.Teste.SondagemRespostas;
 
 public class SondagemSalvarRespostasUseCaseTeste
 {
+    private const string CODIGO_ESCOLA_PERMITIDA = "111111";
+    private const string TURMA_ID = "123456";
+    private const string ANO_TURMA = "2023";
+
     private readonly Mock<IRepositorioSondagem> _repositorioSondagem;
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
     private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly Mock<IControleAcessoService> _controleAcessoService;
+    private readonly Mock<IRepositorioElasticTurma> _repositorioElasticTurma;
     private readonly SondagemSalvarRespostasUseCase _useCase;
 
     public SondagemSalvarRespostasUseCaseTeste()
@@ -27,13 +34,27 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
+        _repositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
 
         _useCase = new SondagemSalvarRespostasUseCase(
             _repositorioSondagem.Object,
             _repositorioSondagemResposta.Object,
             _repositorioQuestao.Object,
-            _controleAcessoService.Object
+            _controleAcessoService.Object,
+            _repositorioElasticTurma.Object
         );
+    }
+
+    private void ConfigurarMockTurmaSucesso()
+    {
+        _repositorioElasticTurma
+            .Setup(r => r.ObterTurmaPorId(It.IsAny<FiltroQuestionario>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new TurmaElasticDto
+            {
+                CodigoTurma = int.Parse(TURMA_ID),
+                CodigoEscola = CODIGO_ESCOLA_PERMITIDA,
+                AnoTurma = ANO_TURMA
+            });
     }
 
     [Fact]
@@ -43,8 +64,13 @@ public class SondagemSalvarRespostasUseCaseTeste
         dto.TurmaId = "TURMA-TESTE";
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(true);
+
+        ConfigurarMockTurmaSucesso();
 
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())!
@@ -64,8 +90,13 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(2);
 
+        ConfigurarMockTurmaSucesso();
+
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>()))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(true);
 
         _repositorioSondagem
@@ -84,12 +115,17 @@ public class SondagemSalvarRespostasUseCaseTeste
         var dto = SondagemMockData.ObterSondagemMock();
         dto.TurmaId = "TURMA-TESTE";
 
+        ConfigurarMockTurmaSucesso();
+
         var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(1, 1);
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>()))
-            .ReturnsAsync(true);
+             .Setup(x => x.ValidarPermissaoAcessoAsync(
+                 It.IsAny<string>(),
+                 It.IsAny<string>(),
+                 It.IsAny<string>()))
+             .ReturnsAsync(true);
 
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())
@@ -125,14 +161,19 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveAtualizarRespostaExistente()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = TURMA_ID;
 
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
         var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), null);
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>()))
-            .ReturnsAsync(true);
+                .Setup(x => x.ValidarPermissaoAcessoAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(true);
+
+        ConfigurarMockTurmaSucesso();
 
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())
@@ -168,7 +209,17 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarExcecao_QuandoSemPermissao()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = TURMA_ID;
+
+        _repositorioElasticTurma
+               .Setup(r => r.ObterTurmaPorId(
+                   It.IsAny<FiltroQuestionario>(),
+                   It.IsAny<CancellationToken>()))
+               .ReturnsAsync(new TurmaElasticDto
+               {
+                   CodigoTurma = int.Parse(TURMA_ID),
+                   CodigoEscola = CODIGO_ESCOLA_PERMITIDA
+               });
 
         _controleAcessoService
             .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId))
