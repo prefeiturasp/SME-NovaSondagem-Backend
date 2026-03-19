@@ -41,7 +41,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         public async Task<bool> ValidarPermissaoAcessoAsync(
             string turmaId,
-            string codigoEscola,
+            string codigoEscola = "",
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(turmaId))
