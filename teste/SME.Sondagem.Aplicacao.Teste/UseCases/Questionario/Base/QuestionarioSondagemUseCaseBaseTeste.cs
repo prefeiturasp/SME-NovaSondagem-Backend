@@ -1480,8 +1480,8 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
             new Dictionary<int, string>(),
             ehRelatorio
         );
-
-        return ConstruirColunaAluno(colunaBase, aluno, contexto);
+        var filtro = new FiltroQuestionario { Modalidade = (int)Modalidade.Fundamental };
+        return ConstruirColunaAluno(colunaBase, aluno, contexto, filtro);
     }
 
     public static ColunaQuestionarioDto ConstruirColunaAlunoPublico(
