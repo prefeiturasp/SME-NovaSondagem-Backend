@@ -2,6 +2,6 @@
 {
     public interface IControleAcessoService
     {
-        Task<bool> ValidarPermissaoAcessoAsync(string turmaId, CancellationToken cancellationToken = default);
+        Task<bool> ValidarPermissaoAcessoAsync(string turmaId, string codigoEscola = "", CancellationToken cancellationToken = default);
     }
 }
