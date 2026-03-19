@@ -21,6 +21,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         private const string TURMA_ID = "123456";
         private const string TURMA_ID_STRING = "TURMA-TESTE";
         private const string ESCOLA_CODIGO = "ESCOLA-TESTE";
+        private const string TURMA_ANO = "2";
         private const string RF_USUARIO = "123456";
         private const string CODIGO_ESCOLA_PERMITIDA = "111111";
         private const string CODIGO_ESCOLA_NAO_PERMITIDA = "999999";
@@ -167,6 +168,50 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_AnoTurmaVazio_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(
+                TURMA_ID_STRING,
+                ESCOLA_CODIGO,
+                string.Empty);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_AnoTurmaNull_DeveRetornarFalse()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(
+                TURMA_ID_STRING,
+                ESCOLA_CODIGO,
+                null!);
+
+            Assert.False(result);
+        }
+
         #endregion
 
         #region Testes ADM_SME
@@ -200,7 +245,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(result);
 
@@ -335,7 +380,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(result);
         }
@@ -454,7 +499,39 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO, TURMA_ANO);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_Professor_RegenciaMista_DeveConsiderarApenasRegenciaTrue()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_PROFESSOR.ToString());
+
+            var cacheJsonEol = JsonConvert.SerializeObject(new[]
+            {
+                new { regencia = false, turmaCodigo = TURMA_ID_STRING },
+                new { regencia = true,  turmaCodigo = TURMA_ID_STRING }
+            });
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(cacheJsonEol);
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(
+                TURMA_ID_STRING,
+                ESCOLA_CODIGO,
+                TURMA_ANO);
 
             Assert.True(result);
         }
@@ -506,7 +583,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(result);
         }
@@ -663,7 +740,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(result);
 
@@ -672,6 +749,48 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     It.IsAny<FiltroQuestionario>(),
                     It.IsAny<CancellationToken>()),
                 Times.Never);
+        }
+
+        [Fact]
+        public async Task ValidarPermissaoAcessoAsync_CP_ComAnoTurmaECache_DeveRetornarTrue()
+        {
+            var accessor = CriarHttpContextAccessor(
+                true,
+                rf: RF_USUARIO,
+                perfil: ControleAcessoService.PERFIL_CP.ToString());
+
+            var cacheJsonEol = JsonConvert.SerializeObject(new
+            {
+                login = RF_USUARIO,
+                idUes = UES_PERMITIDAS
+            });
+
+            var turmaCached = new TurmaElasticDto
+            {
+                CodigoTurma = int.Parse(TURMA_ID),
+                CodigoEscola = CODIGO_ESCOLA_PERMITIDA
+            };
+
+            repositorioCache
+                .Setup(r => r.ObterRedisToJsonAsync(It.IsAny<string>()))
+                .ReturnsAsync(cacheJsonEol);
+
+            repositorioCache
+                .Setup(r => r.ObterRedisAsync<TurmaElasticDto>(It.IsAny<string>()))
+                .ReturnsAsync(turmaCached);
+
+            var service = new ControleAcessoService(
+                httpClientFactoryMock.Object,
+                accessor,
+                repositorioCache.Object,
+                repositorioElasticTurma.Object);
+
+            var result = await service.ValidarPermissaoAcessoAsync(
+                TURMA_ID,
+                ESCOLA_CODIGO,
+                TURMA_ANO);
+
+            Assert.True(result);
         }
 
         #endregion
@@ -709,7 +828,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+            var result = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(result);
 
@@ -728,7 +847,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         }
 
         [Fact]
-        public async Task ObterTurmaComCache_SegundaConsulta_DeveUsarApenaCache()
+        public async Task ObterTurmaComCache_SegundaConsulta_DeveUsarApenasCache()
         {
             var accessor = CriarHttpContextAccessor(
                 true,
@@ -926,7 +1045,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(resultado);
             httpClientFactory.Verify(f => f.CreateClient(It.IsAny<string>()), Times.Never);
@@ -976,7 +1095,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO);
+            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID_STRING, ESCOLA_CODIGO, TURMA_ANO);
 
             Assert.True(resultado);
 
@@ -1042,7 +1161,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 repositorioCache.Object,
                 repositorioElasticTurma.Object);
 
-            var resultado = await service.ValidarPermissaoAcessoAsync(TURMA_ID, ESCOLA_CODIGO);
+            var resultado = await service.ValidarPermissaoAcessoAsync(
+                TURMA_ID,
+                ESCOLA_CODIGO,
+                TURMA_ANO);
 
             Assert.True(resultado);
 
