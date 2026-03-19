@@ -1,8 +1,8 @@
 ﻿namespace SME.Sondagem.Infrastructure.Dtos
 {
-    public class PerfilDto
+    public class PerfilInfoEolDto
     {
-        public Guid Codigo { get; set; }
+        public Guid Id { get; set; }
         public string? Nome { get; set; }
         public bool PermiteConsultar { get; set; }
         public bool PermiteInserir { get; set; }

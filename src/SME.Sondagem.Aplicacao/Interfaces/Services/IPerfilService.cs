@@ -1,9 +1,9 @@
-﻿using SME.Sondagem.Dominio.Entidades;
+﻿using SME.Sondagem.Infrastructure.Dtos;
 
 namespace SME.Sondagem.Aplicacao.Interfaces.Services
 {
     public interface IPerfilService
     {
-        Task<PerfilInfo?> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<PerfilInfoSondagemDto?> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

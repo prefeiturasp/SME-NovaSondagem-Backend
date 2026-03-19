@@ -1,6 +1,6 @@
-﻿namespace SME.Sondagem.Dominio.Entidades
+﻿namespace SME.Sondagem.Infrastructure.Dtos
 {
-    public class PerfilInfo : EntidadeBase
+    public class PerfilInfoSondagemDto
     {
         public Guid Codigo { get; set; }
         public string? Nome { get; set; }

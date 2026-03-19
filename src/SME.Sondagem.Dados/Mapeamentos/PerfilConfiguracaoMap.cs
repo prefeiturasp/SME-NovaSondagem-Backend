@@ -11,18 +11,21 @@ namespace SME.Sondagem.Dados.Mapeamentos
 
             builder.ToTable("perfil_configuracao");
 
-            builder.Property(e => e.Nome)
+            builder.Property(e => e.Nome).HasColumnName("nome")
                 .HasMaxLength(200);
 
-            builder.Property(e => e.TipoValidacao)
+            builder.Property(e => e.Codigo).HasColumnName("codigo")
+                   .HasMaxLength(200);
+
+            builder.Property(e => e.TipoValidacao).HasColumnName("tipo_validacao")
                 .HasMaxLength(50)
                 .HasComment("Valores esperados: Regencia, UE, AcessoTotal");
 
-            builder.Property(e => e.ConsultarAbrangencia)
+            builder.Property(e => e.ConsultarAbrangencia).HasColumnName("consultar_abrangencia")
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            builder.Property(e => e.AcessoIrrestrito)
+            builder.Property(e => e.AcessoIrrestrito).HasColumnName("acesso_irrestrito")
                 .IsRequired()
                 .HasDefaultValue(false);
         }

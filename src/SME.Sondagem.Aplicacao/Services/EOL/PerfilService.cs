@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Configuration;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
@@ -10,82 +9,105 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class PerfilService : IPerfilService
     {
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly IRepositorioCache repositorioCache;
-        private readonly ControleAcessoOptions options;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IRepositorioCache _repositorioCache;
+        private readonly IRepositorioControleAcessoOptions _repositorioControleAcessoOptions;
 
-        private const int CACHE_TTL_MINUTOS = 60;
+        private const int CacheTtlMinutos = 60;
+        private const string CacheKeyPrefix = "perfil-config:";
 
-        public PerfilService(IHttpClientFactory httpClientFactory, IRepositorioCache repositorioCache, ControleAcessoOptions options)
+        public PerfilService(
+            IHttpClientFactory httpClientFactory,
+            IRepositorioCache repositorioCache,
+            IRepositorioControleAcessoOptions repositorioControleAcessoOptions)
         {
-            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
+            _httpClientFactory = httpClientFactory
+                ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _repositorioCache = repositorioCache
+                ?? throw new ArgumentNullException(nameof(repositorioCache));
+            _repositorioControleAcessoOptions = repositorioControleAcessoOptions
+                ?? throw new ArgumentNullException(nameof(repositorioControleAcessoOptions));
         }
 
-        public async Task<PerfilInfo?> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<PerfilInfoSondagemDto?> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var cacheKey = $"perfil-config:{id}";
-            var perfilCached = await repositorioCache.ObterRedisAsync<PerfilInfo>(cacheKey);
+            var cacheKey = $"{CacheKeyPrefix}{id}";
+
+            var perfilCached = await _repositorioCache.ObterRedisAsync<PerfilInfoSondagemDto>(cacheKey);
             if (perfilCached != null)
                 return perfilCached;
 
-            var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
+            var options = await ObterControleAcessoOptionsAsync();
+            var perfisDto = await BuscarPerfisNaApiAsync(options, cancellationToken);
 
-            var url = string.Format(ServicoEolConstants.URL_ACESSOS_PERMISSOES_GRUPOS,
-                                        options.GrupoSituacao,
-                                        options.SistemaId,
-                                        options.ModuloId);
-
-            var response = await httpClient.GetAsync(url, cancellationToken);
-
-            var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            if (string.IsNullOrWhiteSpace(json))
-                return null;
-
-            var perfisDto = JsonConvert.DeserializeObject<List<PerfilDto>>(json);
             if (perfisDto == null)
                 return null;
 
-            var perfilDto = perfisDto.FirstOrDefault(p => p.Codigo == id);
+            var perfilDto = perfisDto.FirstOrDefault(p => p.Id == id);
             if (perfilDto == null)
                 return null;
 
-            var perfilInfo = CombinarPerfilComConfiguracao(perfilDto);
+            var perfilInfo = CombinarPerfilComConfiguracao(perfilDto, options);
 
             if (perfilInfo != null)
-            {
-                await repositorioCache.SalvarRedisAsync(
-                    cacheKey,
-                    perfilInfo,
-                    CACHE_TTL_MINUTOS);
-            }
+                await _repositorioCache.SalvarRedisAsync(cacheKey, perfilInfo, CacheTtlMinutos);
 
             return perfilInfo;
-
         }
 
-        private PerfilInfo? CombinarPerfilComConfiguracao(PerfilDto perfilDto)
+        private async Task<List<PerfilInfoEolDto>?> BuscarPerfisNaApiAsync(
+            ControleAcessoOptions options,
+            CancellationToken cancellationToken)
         {
-            var idString = perfilDto.Codigo.ToString().ToUpper();
+            var httpClient = _httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 
-            //Buscar No banco
-            // if (!options.ConfiguracaoPerfis.TryGetValue(idString, out var config))
-            //     return null;
+            var url = string.Format(
+                ServicoEolConstants.URL_ACESSOS_PERMISSOES_GRUPOS,
+                options.GrupoSituacao,
+                options.SistemaId,
+                options.ModuloId);
 
-            // Combina dados da API (permissões) com configuração local (regras)
-            // Atualizar o perfil no banco
-            return new PerfilInfo
+            var response = await httpClient.GetAsync(url, cancellationToken);
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
+            return JsonConvert.DeserializeObject<List<PerfilInfoEolDto>>(json);
+        }
+
+        private async Task<ControleAcessoOptions> ObterControleAcessoOptionsAsync()
+        {
+            var consulta = await _repositorioControleAcessoOptions.ObterTodosComPerfis();
+            return consulta.FirstOrDefault()
+                ?? throw new InvalidOperationException("Nenhuma configuração de controle de acesso encontrada.");
+        }
+
+        private static PerfilInfoSondagemDto? CombinarPerfilComConfiguracao(
+            PerfilInfoEolDto perfilDto,
+            ControleAcessoOptions options)
+        {
+            var codigoPerfil = perfilDto.Id.ToString().ToUpperInvariant();
+
+            var config = options.ConfiguracaoPerfis
+                .FirstOrDefault(x => x.Codigo.ToString().ToUpperInvariant() == codigoPerfil);
+
+            if (config == null)
+                return null;
+
+            var configuracaoPadrao = options.ConfiguracaoPerfis.First();
+
+            return new PerfilInfoSondagemDto
             {
-                Codigo = perfilDto.Codigo,
+                Codigo = perfilDto.Id,
                 Nome = perfilDto.Nome,
                 PermiteConsultar = perfilDto.PermiteConsultar,
                 PermiteInserir = perfilDto.PermiteInserir,
                 PermiteAlterar = perfilDto.PermiteAlterar,
                 PermiteExcluir = perfilDto.PermiteExcluir,
-                // TipoValidacao = config.TipoValidacao,
-                // ConsultarAbrangencia = config.ConsultarAbrangencia,
-                // AcessoIrrestrito = config.AcessoIrrestrito
+                TipoValidacao = configuracaoPadrao.TipoValidacao,
+                ConsultarAbrangencia = config.ConsultarAbrangencia,
+                AcessoIrrestrito = config.AcessoIrrestrito
             };
         }
     }

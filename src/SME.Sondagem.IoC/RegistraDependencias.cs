@@ -116,6 +116,7 @@ public static class RegistraDependencias
         services.AddScoped<ISolicitacaoRelatorioService, SolicitacaoRelatorioService>();
         services.AddScoped<IUeComDreEolService, UeComDreEolService>();
         services.AddScoped<IDadosAlunosService, DadosAlunosService>();
+        services.AddScoped<IPerfilService, PerfilService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
