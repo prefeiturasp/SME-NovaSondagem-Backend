@@ -11,6 +11,7 @@ using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.QuestionarioBimestre;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
@@ -24,6 +25,7 @@ using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
+using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.QuestionarioBimestre;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.UseCases.Turma;
@@ -31,8 +33,8 @@ using SME.Sondagem.Aplicacao.Validators.Bimestre;
 using SME.Sondagem.Aplicacao.Validators.ComponenteCurricular;
 using SME.Sondagem.Aplicacao.Validators.Proficiencia;
 using SME.Sondagem.Aplicacao.Validators.Questao;
-using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Aplicacao.Validators.QuestionarioBimestre;
+using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -69,6 +71,7 @@ public static class RegistraDependencias
         RegistrarValidadores(services);
         RegistrarContextos(services);
         RegistrarAgregadores(services);
+        RegistrarMediator(services);
     }
 
     private static void RegistrarRepositorios(IServiceCollection services)
@@ -96,6 +99,8 @@ public static class RegistraDependencias
         services.TryAddScoped<IServicoLog, ServicoLog>();
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
         services.AddScoped<IServicoAuditoria, ServicoAuditoria>();
+        services.AddScoped<IUeComDreEolService, UeComDreEolService>();
+        services.AddScoped<IDadosAlunosService, DadosAlunosService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -145,6 +150,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IVincularBimestresUseCase, VincularBimestresUseCase>();
         services.TryAddScoped<IExcluirVinculosPorQuestionarioUseCase, ExcluirVinculosPorQuestionarioUseCase>();
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioPorTodasTurmaUseCase, ObterSondagemRelatorioPorTodasTurmaUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
@@ -172,5 +178,12 @@ public static class RegistraDependencias
     {
         services.AddScoped<RepositoriosElastic>();
         services.AddScoped<RepositoriosSondagem>();
+    }
+    private static void RegistrarMediator(IServiceCollection services)
+    {
+        services.AddMediatR(cfg =>
+                cfg.RegisterServicesFromAssemblies(
+                    AppDomain.CurrentDomain.GetAssemblies()
+                ));
     }
 }
