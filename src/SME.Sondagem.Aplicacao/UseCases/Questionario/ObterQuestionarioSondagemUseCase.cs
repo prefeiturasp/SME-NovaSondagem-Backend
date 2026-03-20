@@ -455,7 +455,7 @@ public class ObterQuestionarioSondagemUseCase : IObterQuestionarioSondagemUseCas
         DateTime dataInicioSondagem)
     {
         var codigosAlunosAtivos = alunosAtivos
-            .Where(a => a.DataSituacao <= dataInicioSondagem)
+            .Where(a => a.DataSituacao.Date <= dataInicioSondagem.Date)
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
