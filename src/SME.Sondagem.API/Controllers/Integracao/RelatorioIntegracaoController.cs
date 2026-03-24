@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.API.Middlewares;
+using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Infra.Dtos;
+using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
@@ -35,6 +37,15 @@ public class RelatorioIntegracaoController : ControllerBase
     {
        var resultado = await useCase.ObterSondagemRelatorio(cancellationToken);
         return File(resultado.Content, resultado.ContentType, resultado.FileName);
+    }
+
+    [HttpGet("proficiencia/{proficienciaId}")]
+    [ProducesResponseType(typeof(ProficienciaDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int proficienciaId, [FromServices] IObterProficienciaPorIdUseCase useCase, CancellationToken cancellationToken)
+    {
+            var resultado = await useCase.ExecutarAsync(proficienciaId, cancellationToken);
+            return Ok(resultado);
     }
 }
 
