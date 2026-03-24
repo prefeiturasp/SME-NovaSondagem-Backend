@@ -19,6 +19,6 @@ public class ExcluirSondagemUseCase : IExcluirSondagemUseCase
         if (sondagemExistente == null)
             return false;
 
-        return await sondagemRepositorio.RemoverLogico(id, cancellationToken: cancellationToken)>0;
+        return await sondagemRepositorio.RemoverLogico(id, cancellationToken: cancellationToken) > 0;
     }
 }

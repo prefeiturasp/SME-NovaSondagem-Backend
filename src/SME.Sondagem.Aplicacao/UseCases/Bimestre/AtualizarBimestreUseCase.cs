@@ -23,7 +23,7 @@ public class AtualizarBimestreUseCase : IAtualizarBimestreUseCase
         bimestreExistente.Atualizar(bimestreDto.Descricao, bimestreDto.CodBimestreEnsinoEol);
 
         var sucesso = await bimestreRepositorio.SalvarAsync(bimestreExistente, cancellationToken: cancellationToken);
-        
+
         if (sucesso == 0)
             return null;
 

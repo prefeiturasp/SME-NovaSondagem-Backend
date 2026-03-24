@@ -23,7 +23,7 @@ public class AtualizarParametroSondagemUseCase : IAtualizarParametroSondagemUseC
         p.Atualizar(parametroSondagemDto.Ativo, parametroSondagemDto.Descricao, parametroSondagemDto.Nome, parametroSondagemDto.Tipo);
 
         var sucessoId = await parametroSondagemRepositorio.SalvarAsync(p, cancellationToken: cancellationToken);
-        
+
         if (sucessoId == 0)
             return null;
 

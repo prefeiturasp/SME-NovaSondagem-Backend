@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Validators.Proficiencia
 {

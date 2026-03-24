@@ -20,13 +20,13 @@ namespace SME.Sondagem.Aplicacao.UseCases.Turma
 
         public async Task<bool> ObterPermissaoTurma(int turmaId, CancellationToken cancellationToken)
         {
-            var filtro = new FiltroQuestionario(){ TurmaId = turmaId };
+            var filtro = new FiltroQuestionario() { TurmaId = turmaId };
 
             var turma = await _repositorioElasticTurma.ObterTurmaPorId(filtro, cancellationToken)
             ?? throw new RegraNegocioException(MensagemNegocioComuns.TURMA_NAO_LOCALIZADA, 404);
 
             if (!ValidarSerieAnoEModalidadeTurma(turma))
-                throw new RegraNegocioException(MensagemNegocioComuns.MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA); 
+                throw new RegraNegocioException(MensagemNegocioComuns.MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA);
 
             if (!ValidarAnoLetivoTurma(turma))
                 throw new RegraNegocioException(MensagemNegocioComuns.ANO_LETIVO_TURMA_SONDAGEM_INVALIDA);
@@ -37,8 +37,8 @@ namespace SME.Sondagem.Aplicacao.UseCases.Turma
 
         private static bool ValidarSerieAnoEModalidadeTurma(TurmaElasticDto turma)
         {
-            if (turma.Modalidade == (int)Modalidade.Fundamental 
-                    && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma)) 
+            if (turma.Modalidade == (int)Modalidade.Fundamental
+                    && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma))
                 || turma.Modalidade == (int)Modalidade.EJA
                     && turma.TipoTurma == 1 && SERIE_ANO_PERMITIDOS.Contains(int.Parse(turma.AnoTurma)))
                 return true;
