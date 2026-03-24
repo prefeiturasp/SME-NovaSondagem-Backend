@@ -17,7 +17,7 @@ namespace SME.Sondagem.API.Controllers;
 [Route("api/relatorio-integracao")]
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
-//[ChaveIntegracaoApiAttribute]
+[ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
