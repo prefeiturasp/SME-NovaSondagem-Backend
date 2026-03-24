@@ -34,7 +34,6 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 .ToList();
 
             var resultado = new List<TurmaElasticDto>();
-            var tipoTurmaRegular = 1;
             foreach (var batch in batches)
             {
                 cancellationToken.ThrowIfCancellationRequested();
