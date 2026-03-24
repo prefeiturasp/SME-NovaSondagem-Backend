@@ -170,7 +170,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                 _mockServicoUsuario.Object,
+                 null!,
                  null!
                 ));
     }
