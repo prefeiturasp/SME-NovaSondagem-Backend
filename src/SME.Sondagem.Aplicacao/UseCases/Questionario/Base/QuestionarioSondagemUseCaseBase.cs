@@ -40,7 +40,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(filtro);
-        
+
         var ehTodosBimestreOuInicial = EhBimestreTodos(filtro.BimestreId);
         var ehMatematicaOuLinguaPortuguesa = await EhMatematicaOuLinguaPortuguesa(filtro.ComponenteCurricularId);
         var ehProficienciaLeitura = await EhProficienciaLeituraMapSaberes(filtro.ProficienciaId);
@@ -73,7 +73,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         FiltroQuestionario filtro,
         TurmaElasticDto turma,
         Dominio.Entidades.Sondagem.Sondagem sondagemAtiva,
-        bool ehRelatorio,bool exibirBimestreNaDescricaoColuna,
+        bool ehRelatorio, bool exibirBimestreNaDescricaoColuna,
         CancellationToken cancellationToken)
     {
         var contextoProcessamento = await ConstruirContextoProcessamento(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
@@ -89,7 +89,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             sondagemAtiva.PeriodosBimestre.OrderBy(c => c.DataInicio).FirstOrDefault()!.DataInicio
         );
 
-        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio, exibirBimestreNaDescricaoColuna,filtro);
+        var estudantes = await ConstruirEstudantes(dadosAlunos, sondagemAtiva, contextoProcessamento, respostasProcessadas, ehRelatorio, exibirBimestreNaDescricaoColuna, filtro);
 
         var legenda = ConstruirLegenda(contextoProcessamento);
 
@@ -226,7 +226,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         foreach (var aluno in contexto.Alunos)
         {
             var colunasAluno = contexto.Colunas
-                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto,filtro))
+                .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto, filtro))
                 .ToList();
 
             var estudante = await ConstruirEstudante(
@@ -605,7 +605,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     }
     private async Task<bool> EhProficienciaLeituraMapSaberes(int proficienciaId)
     {
-        var proficienciaLeitura = new List<string> { "LEITURA" , "MAPEAMENTO DOS SABERES" };
+        var proficienciaLeitura = new List<string> { "LEITURA", "MAPEAMENTO DOS SABERES" };
         var proficiencia = await _repositoriosSondagem.RepositorioProficiencia.ObterPorIdAsync(proficienciaId);
         return proficiencia != null && proficienciaLeitura.Contains(proficiencia.Nome.ToUpper());
     }

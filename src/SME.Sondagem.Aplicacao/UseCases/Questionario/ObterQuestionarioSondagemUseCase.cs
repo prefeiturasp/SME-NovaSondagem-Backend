@@ -21,7 +21,7 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario
         )
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, 
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService,
             servicoUsuario)
     {
     }
@@ -237,5 +237,5 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
             AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua,
             DadosRacaGenero = null
         };
-     }
- }
+    }
+}

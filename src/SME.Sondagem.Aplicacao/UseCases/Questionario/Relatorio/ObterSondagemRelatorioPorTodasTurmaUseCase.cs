@@ -172,7 +172,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 var prop = propriedades[i];
 
                 var nameAttr = prop
-                    .GetCustomAttribute<NameAttribute>(); 
+                    .GetCustomAttribute<NameAttribute>();
 
                 var headerText = nameAttr?.Names?.FirstOrDefault() ?? prop.Name;
 
@@ -194,16 +194,16 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return memoryStream;
         }
 
-        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos,CancellationToken cancellationToken)
+        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos, CancellationToken cancellationToken)
         {
             var retorno = new List<AlunoEolDto>();
-            if(codigoAlunos.Count == 0)
+            if (codigoAlunos.Count == 0)
                 return retorno;
 
             var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
-               if (dados.Any())
-                   retorno.AddRange(dados);
-            
+            if (dados.Any())
+                retorno.AddRange(dados);
+
 
             return retorno;
         }
@@ -211,12 +211,12 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         {
             var retorno = new List<UeComDreEolDto>();
 
-            if(!codigosUes.Any())
+            if (!codigosUes.Any())
                 return retorno;
 
             var busca = await _repositorioSondagemRelatorioPorTodasTurma.UeComDreEolService.ObterUesComDrePorCodigosUes(codigosUes);
 
-            if(busca.Any())
+            if (busca.Any())
                 retorno.AddRange(busca);
 
             return retorno;

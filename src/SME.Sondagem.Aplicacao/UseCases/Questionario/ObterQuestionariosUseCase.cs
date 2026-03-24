@@ -22,7 +22,7 @@ public class ObterQuestionariosUseCase : IObterQuestionariosUseCase
             Id = p.Id,
             Nome = p.Nome,
             Tipo = p.Tipo,
-            AnoLetivo = p.AnoLetivo,    
+            AnoLetivo = p.AnoLetivo,
             ProficienciaId = p.ProficienciaId,
             SondagemId = p.SondagemId,
             ModalidadeId = p.ModalidadeId,

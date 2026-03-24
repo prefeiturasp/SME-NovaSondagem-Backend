@@ -25,7 +25,7 @@ public class AtualizarQuestaoOpcaoRespostaUseCase : IAtualizarQuestaoOpcaoRespos
         questaoOpcaoRespostaExistente.AtualizarOrdem(questaoOpcaoRespostaDto.Ordem);
 
         var sucesso = await questaoOpcaoRespostaRepositorio.SalvarAsync(questaoOpcaoRespostaExistente, cancellationToken: cancellationToken);
-        
+
         if (sucesso == 0)
             return null;
 
@@ -34,7 +34,7 @@ public class AtualizarQuestaoOpcaoRespostaUseCase : IAtualizarQuestaoOpcaoRespos
             Id = questaoOpcaoRespostaExistente.Id,
             OpcaoRespostaId = questaoOpcaoRespostaExistente.OpcaoRespostaId,
             QuestaoId = questaoOpcaoRespostaExistente.QuestaoId,
-            Ordem = questaoOpcaoRespostaExistente.Ordem,           
+            Ordem = questaoOpcaoRespostaExistente.Ordem,
             CriadoEm = questaoOpcaoRespostaExistente.CriadoEm,
             CriadoPor = questaoOpcaoRespostaExistente.CriadoPor,
             CriadoRF = questaoOpcaoRespostaExistente.CriadoRF,

@@ -1,8 +1,8 @@
-using System.Text;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
+using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
 {

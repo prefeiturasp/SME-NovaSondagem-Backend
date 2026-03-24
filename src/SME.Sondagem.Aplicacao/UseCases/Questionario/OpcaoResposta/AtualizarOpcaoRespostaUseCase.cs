@@ -23,7 +23,7 @@ public class AtualizarOpcaoRespostaUseCase : IAtualizarOpcaoRespostaUseCase
         opcaoRespostaExistente.Atualizar(opcaoRespostaDto.Ordem, opcaoRespostaDto.DescricaoOpcaoResposta, opcaoRespostaDto.Legenda, opcaoRespostaDto.CorFundo, opcaoRespostaDto.CorTexto);
 
         var sucessoId = await opcaoRespostaRepositorio.SalvarAsync(opcaoRespostaExistente, cancellationToken: cancellationToken);
-        
+
         if (sucessoId == 0)
             return null;
 

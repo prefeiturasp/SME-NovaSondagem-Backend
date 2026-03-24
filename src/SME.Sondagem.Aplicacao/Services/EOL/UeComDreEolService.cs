@@ -21,7 +21,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             _servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
         }
 
-        public async Task<IEnumerable<UeComDreEolDto>> ObterUesComDrePorCodigosUes(IEnumerable<string> codigosUes,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UeComDreEolDto>> ObterUesComDrePorCodigosUes(IEnumerable<string> codigosUes, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -41,9 +41,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }
             catch (Exception e)
             {
-                _servicoLog.Registrar($"Erro ao executar UeComDreEolService",e);
+                _servicoLog.Registrar($"Erro ao executar UeComDreEolService", e);
                 return [];
-                
+
             }
         }
     }
