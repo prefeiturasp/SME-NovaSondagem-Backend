@@ -1,11 +1,12 @@
-using MediatR;
 using Moq;
+using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Services.EOL;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
@@ -24,24 +25,39 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
     private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly Mock<IControleAcessoService> _controleAcessoService;
-    private readonly Mock<IRepositorioBimestre> _repositorioBimestre;
     private readonly SondagemSalvarRespostasUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
+    private readonly Mock<RepositoriosElastic> _repositoriosElastic;
+    private readonly Mock<RepositoriosSondagem> _repositoriosSondagem;
+    private readonly Mock<RepositorioSondagemRelatorioPorTodasTurma> _repositorioSondagemRelatorioPorTodasTurma;
+    private readonly Mock<IRepositorioElasticTurma> _repositorioElasticTurma;
+    private readonly Mock<IRepositorioElasticAluno> _repositorioElasticAluno;
+    private readonly Mock<IRepositorioBimestre> _repositorioBimestre;
+    private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
+    private readonly Mock<IDadosAlunosService> _dadosAlunosService;
 
 
-
-    private readonly Mock<IMediator> _mediator;
     private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
     private readonly Mock<IUeComDreEolService> _ueComDreEolService;
     private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
 
     public SondagemSalvarRespostasUseCaseTeste()
     {
+        _ueComDreEolService = new Mock<IUeComDreEolService>();
+        _dadosAlunosService = new Mock<IDadosAlunosService>();
+        _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _repositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
+        _repositorioBimestre = new Mock<IRepositorioBimestre>();
+        _repositorioElasticAluno = new Mock<IRepositorioElasticAluno>();
         _repositorioSondagem = new Mock<IRepositorioSondagem>();
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
-        _repositorioBimestre = new Mock<IRepositorioBimestre>();
+        _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
+        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object);
+        _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
+
         _cancellationToken = CancellationToken.None;
 
         _useCase = new SondagemSalvarRespostasUseCase(
@@ -51,10 +67,8 @@ public class SondagemSalvarRespostasUseCaseTeste
             _controleAcessoService.Object
         );
 
-        _mediator = new Mock<IMediator>();
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-        _ueComDreEolService = new Mock<IUeComDreEolService>();
-        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_mediator.Object, _ueComDreEolService.Object, _repositorioSondagemResposta.Object, _repositorioComponenteCurricular.Object, _repositorioBimestre.Object);
+        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_ueComDreEolService.Object, _repositoriosElastic.Object, _repositoriosSondagem.Object, _repositorioSondagemRelatorioPorTodasTurma.Object);
     }
 
     [Fact]

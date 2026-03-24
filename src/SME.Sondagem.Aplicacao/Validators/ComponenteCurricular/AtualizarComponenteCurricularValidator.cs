@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Validators.ComponenteCurricular
 {

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Moq;
+﻿using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
@@ -7,6 +6,7 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -29,8 +29,10 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
-    private readonly Mock<IMediator> _mediator;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
+    private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
+    private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
+
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
     {
@@ -44,7 +46,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
-        _mediator = new Mock<IMediator>();
+        _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
 
 
         var repositoriosElastic = new RepositoriosElastic(
@@ -56,7 +59,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
-            _mockRepositorioBimestre.Object
+            _mockRepositorioBimestre.Object,
+                        _componenteCurricular.Object,
+            _repositorioProficiencia.Object
         );
 
         _useCase = new ObterSondagemRelatorioPorTurmaUseCase(
@@ -65,8 +70,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoPapService.Object,
             _mockAlunoTurmaService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object,
-            _mediator.Object
+            _mockServicoUsuario.Object
 
         );
     }
@@ -85,7 +89,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
-            _mockRepositorioBimestre.Object
+            _mockRepositorioBimestre.Object,
+                        _componenteCurricular.Object,
+            _repositorioProficiencia.Object
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterSondagemRelatorioPorTurmaUseCase(
@@ -94,8 +100,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoPapService.Object,
             null!,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object ,
-            _mediator.Object
+            _mockServicoUsuario.Object 
         ))
 ;
     }

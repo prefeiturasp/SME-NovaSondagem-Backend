@@ -16,17 +16,17 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
             proficienciaRepositorio ?? throw new ArgumentNullException(nameof(proficienciaRepositorio));
     }
 
-    public async Task<ProficienciaDto?> ExecutarAsync(long id, ProficienciaDto proficienciaDto,CancellationToken cancellationToken = default)
+    public async Task<ProficienciaDto?> ExecutarAsync(long id, ProficienciaDto proficienciaDto, CancellationToken cancellationToken = default)
     {
         var proficienciaExistente = await proficienciaRepositorio.ObterPorIdAsync(id, cancellationToken: cancellationToken);
 
         if (proficienciaExistente == null)
             return null;
 
-        proficienciaExistente.Atualizar(proficienciaDto.Nome, proficienciaDto.ComponenteCurricularId,proficienciaDto.ModalidadeId);
+        proficienciaExistente.Atualizar(proficienciaDto.Nome, proficienciaDto.ComponenteCurricularId, proficienciaDto.ModalidadeId);
 
         var sucesso = await proficienciaRepositorio.SalvarAsync(proficienciaExistente, cancellationToken: cancellationToken);
-        
+
         if (sucesso == 0)
             return null;
 
@@ -35,7 +35,7 @@ public class AtualizarProficienciaUseCase : IAtualizarProficienciaUseCase
             Id = proficienciaExistente.Id,
             Nome = proficienciaExistente.Nome,
             ComponenteCurricularId = proficienciaExistente.ComponenteCurricularId,
-            ModalidadeId =  proficienciaExistente.ModalidadeId,
+            ModalidadeId = proficienciaExistente.ModalidadeId,
             Modalidade = ObterNomeModalidade(proficienciaExistente.ModalidadeId),
             CriadoEm = proficienciaExistente.CriadoEm,
             CriadoPor = proficienciaExistente.CriadoPor,

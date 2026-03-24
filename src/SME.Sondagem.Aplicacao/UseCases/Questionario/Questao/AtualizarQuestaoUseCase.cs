@@ -36,7 +36,7 @@ public class AtualizarQuestaoUseCase : IAtualizarQuestaoUseCase
         questaoExistente.AtualizarNomeComponente(questaoDto.NomeComponente);
 
         var sucesso = await questaoRepositorio.SalvarAsync(questaoExistente, cancellationToken: cancellationToken);
-        
+
         if (sucesso == 0)
             return null;
 

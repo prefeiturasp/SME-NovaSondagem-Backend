@@ -63,9 +63,9 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private async Task<bool> ValidarSalvarSondagem(SondagemSalvarDto dto)
     {
-        if(dto == null) return false;
+        if (dto == null) return false;
 
-        if(string.IsNullOrEmpty(dto.TurmaId))
+        if (string.IsNullOrEmpty(dto.TurmaId))
             throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM);
 
         bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId);

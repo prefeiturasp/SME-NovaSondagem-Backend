@@ -24,7 +24,7 @@ public class AtualizarSondagemUseCase : IAtualizarSondagemUseCase
         sondagemExistente.AtualizarDataAplicacao(sondagemDto.DataAplicacao);
 
         var sucesso = await sondagemRepositorio.SalvarAsync(sondagemExistente, cancellationToken: cancellationToken);
-        
+
         if (sucesso == 0)
             return null;
 

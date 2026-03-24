@@ -21,12 +21,12 @@ public class AtualizarParametroSondagemQuestionarioUseCase : IAtualizarParametro
             return null;
 
         parametroSondagemQuestionario.Atualizar(
-            parametroSondagemQuestionarioDto.IdParametroSondagem, 
-            parametroSondagemQuestionarioDto.IdQuestionario, 
+            parametroSondagemQuestionarioDto.IdParametroSondagem,
+            parametroSondagemQuestionarioDto.IdQuestionario,
             parametroSondagemQuestionarioDto.Valor);
 
         var sucessoId = await parametroSondagemQuestionarioRepositorio.SalvarAsync(parametroSondagemQuestionario, cancellationToken: cancellationToken);
-        
+
         if (sucessoId == 0)
             return null;
 

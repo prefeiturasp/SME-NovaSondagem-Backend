@@ -1,11 +1,8 @@
 ﻿using ClosedXML.Excel;
 using CsvHelper.Configuration.Attributes;
-using MediatR;
+using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Aplicacao.Queries.Alunos.DadosAlunos;
-using SME.Sondagem.Aplicacao.Queries.ObterTodasTurmaElastic;
-using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infrastructure.Dtos;
@@ -15,24 +12,20 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 {
     public class ObterSondagemRelatorioPorTodasTurmaUseCase : IObterSondagemRelatorioPorTodasTurmaUseCase
     {
-        private readonly IMediator _mediator;
-        private readonly IRepositorioRespostaAluno _repositorioRespostaAluno; 
-        private readonly IRepositorioComponenteCurricular _repositorioComponenteCurricular; 
-        private readonly IUeComDreEolService _ueComDreEolService;
-        private readonly IRepositorioBimestre _repositorioBimestre;
+        private readonly RepositoriosElastic _repositoriosElastic;
+        private readonly RepositoriosSondagem _repositoriosSondagem;
+        private readonly RepositorioSondagemRelatorioPorTodasTurma _repositorioSondagemRelatorioPorTodasTurma;
 
 
-        public ObterSondagemRelatorioPorTodasTurmaUseCase(IMediator mediator, IUeComDreEolService ueComDreEolService,
-            IRepositorioRespostaAluno repositorioRespostaAluno,
-            IRepositorioComponenteCurricular repositorioComponenteCurricular,
-            IRepositorioBimestre repositorioBimestre
+        public ObterSondagemRelatorioPorTodasTurmaUseCase(IUeComDreEolService ueComDreEolService,
+            RepositoriosElastic repositoriosElastic,
+            RepositoriosSondagem repositoriosSondagem,
+            RepositorioSondagemRelatorioPorTodasTurma repositorioSondagemRelatorioPorTodasTurma
             )
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _ueComDreEolService = ueComDreEolService ?? throw new ArgumentNullException(nameof(ueComDreEolService));
-            _repositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
-            _repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
-            _repositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
+            _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
+            _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
+            _repositorioSondagemRelatorioPorTodasTurma = repositorioSondagemRelatorioPorTodasTurma ?? throw new ArgumentNullException(nameof(repositorioSondagemRelatorioPorTodasTurma));
         }
 
         public async Task<FileResultDto> ObterSondagemRelatorio(CancellationToken cancellationToken = default)
@@ -72,7 +65,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
         private async Task<IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto>> ObterTurmasPorCodigosNoElastic(IEnumerable<AlunoEolDto> dadosAlunos, CancellationToken cancellationToken)
         {
-            return await _mediator.Send(new ObterTodasTurmaElasticQuery(dadosAlunos.Select(x => x.CodigoTurma)), cancellationToken);
+            return await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(dadosAlunos.Select(x => x.CodigoTurma), cancellationToken);
         }
 
         private static List<string> ObterCodigosAlunos(IEnumerable<ExtracaoSondagemLpEscritaDto> responstas)
@@ -83,53 +76,84 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(int modalidadeIdFundamental, Dominio.Entidades.ComponenteCurricular componenteLp, CancellationToken cancellationToken)
         {
             if (componenteLp == null) return new List<ExtracaoSondagemLpEscritaDto>();
-            return await _repositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!.Id, cancellationToken);
+            return await _repositoriosSondagem.RepositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp!.Id, cancellationToken);
         }
 
         private async Task<Dominio.Entidades.ComponenteCurricular?> ObterPorNomeModalidade(string NOME_COMPONENTE, int modalidadeIdFundamental, CancellationToken cancellationToken)
         {
-            return await _repositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
+            return await _repositoriosSondagem.RepositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
         }
 
-        private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> MapearAquivo(List<ExtracaoSondagemLpEscritaDto> lista, IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,IEnumerable<UeComDreEolDto> uesComDre, 
-            IEnumerable<TurmaCodigoElasticDto> turmasCodigoNome, IEnumerable<AlunoEolDto> dadosAlunos)
-        {
 
-            var bimestresLista = await _repositorioBimestre.ListarAsync();
+        private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> MapearAquivo(
+                    List<ExtracaoSondagemLpEscritaDto> lista,
+                    IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,
+                    IEnumerable<UeComDreEolDto> uesComDre,
+                    IEnumerable<TurmaCodigoElasticDto> turmasCodigoNome,
+                    IEnumerable<AlunoEolDto> dadosAlunos)
+        {
+            var bimestresLista = await _repositoriosSondagem.RepositorioBimestre.ListarAsync();
+
+            var alunosPorCodigo = dadosAlunos
+                .GroupBy(x => x.CodigoAluno.ToString())
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var turmasPorCodigo = turmasCodigoNome
+                .Where(t => t.CodigoTurma.HasValue)
+                .GroupBy(t => t.CodigoTurma!.Value)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var uesPorCodigo = uesComDre
+                .Where(e => !string.IsNullOrEmpty(e.CodigoEscola))
+                .GroupBy(e => e.CodigoEscola!)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var bimestresPorId = (bimestresLista ?? [])
+                .GroupBy(x => x.Id.ToString())
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var modalidadesCache = Enum.GetValues<Modalidade>()
+                .ToDictionary(
+                    m => (int)m,
+                    m => m.Nome() ?? m.ToString()
+                );
+
             foreach (var responsta in responstas)
             {
-                 var aluno = dadosAlunos.FirstOrDefault(x => x.CodigoAluno.ToString() == responsta.CodigoEolEstudante);
-                 
-                 if (aluno != null)
-                 {
-                     var turma = turmasCodigoNome.FirstOrDefault(t =>
-                         t.CodigoTurma == aluno.CodigoTurma);
+                if (!alunosPorCodigo.TryGetValue(responsta.CodigoEolEstudante!, out var aluno))
+                    continue;
 
-                     var ueDre = uesComDre.FirstOrDefault(e => e.CodigoEscola == aluno?.CodigoEscola);
-                    var bimestreDesc = bimestresLista?.FirstOrDefault(x => x.Id.ToString() == responsta?.Bimestre)?.Descricao ?? "Todos";
-                     var item = new ExtracaoSondagemLpEscritaDto
-                     {
-                         NomeDre = ueDre?.NomeDRE ?? string.Empty,
-                         Bimestre = bimestreDesc,
-                         CodigoDre = ueDre?.CodigoDRE ?? string.Empty,
-                         NomeEscola = ueDre?.NomeEscola ?? string.Empty,
-                         CodigoEolEscola = ueDre?.CodigoEscola ?? string.Empty,
-                         NomeTurma = turma?.NomeTurma ?? string.Empty,
-                         CodigoEolEstudante = aluno.CodigoAluno.ToString(),
-                         NomeEstudanteEstudante = aluno?.NomeAluno ?? string.Empty,
-                         ComponenteCurricular = responsta?.ComponenteCurricular,
-                         Proficiencia = responsta?.Proficiencia,
-                         Ano = turma?.AnoTurma,
-                         Questao =  responsta?.Questao ?? string.Empty,
-                         Resposta =  responsta?.Resposta,
-                         Legenda =  responsta?.Legenda ?? string.Empty,
-                         Modalidade =  ObterNomeModalidade(responsta?.ModalidadeId ?? 0),
-                         ModalidadeId =  responsta?.ModalidadeId,
-                     };
-                     lista.Add(item);
-                 }
+                turmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turma);
+                uesPorCodigo.TryGetValue(aluno.CodigoEscola!, out var ueDre);
+
+                var bimestreDesc = responsta?.Bimestre != null && bimestresPorId.TryGetValue(responsta.Bimestre, out var bimestre)
+                    ? bimestre.Descricao
+                    : "Todos";
+
+                var modalidadeNome = modalidadesCache.TryGetValue(responsta?.ModalidadeId ?? 0, out var nome)
+                    ? nome
+                    : string.Empty;
+
+                lista.Add(new ExtracaoSondagemLpEscritaDto
+                {
+                    NomeDre = ueDre?.NomeDRE ?? string.Empty,
+                    Bimestre = bimestreDesc,
+                    CodigoDre = ueDre?.CodigoDRE ?? string.Empty,
+                    NomeEscola = ueDre?.NomeEscola ?? string.Empty,
+                    CodigoEolEscola = ueDre?.CodigoEscola ?? string.Empty,
+                    NomeTurma = turma?.NomeTurma ?? string.Empty,
+                    CodigoEolEstudante = aluno.CodigoAluno.ToString(),
+                    NomeEstudanteEstudante = aluno?.NomeAluno ?? string.Empty,
+                    ComponenteCurricular = responsta?.ComponenteCurricular,
+                    Proficiencia = responsta?.Proficiencia,
+                    Ano = turma?.AnoTurma,
+                    Questao = responsta?.Questao ?? string.Empty,
+                    Resposta = responsta?.Resposta,
+                    Legenda = responsta?.Legenda ?? string.Empty,
+                    Modalidade = modalidadeNome,
+                    ModalidadeId = responsta?.ModalidadeId,
+                });
             }
-
 
             return lista.OrderBy(x => x.NomeEstudanteEstudante);
         }
@@ -148,7 +172,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 var prop = propriedades[i];
 
                 var nameAttr = prop
-                    .GetCustomAttribute<NameAttribute>(); 
+                    .GetCustomAttribute<NameAttribute>();
 
                 var headerText = nameAttr?.Names?.FirstOrDefault() ?? prop.Name;
 
@@ -170,29 +194,16 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return memoryStream;
         }
 
-        private  static string ObterNomeModalidade(int modalidadeId)
-        {
-            var item = Enum.GetValues<Modalidade>()
-                .Select(m => new
-                {
-                    Id = (int)m,
-                    Name = m.Nome() ?? m.ToString()
-                })
-                .FirstOrDefault(x => x.Id == modalidadeId)?.Name ?? string.Empty;
-
-
-            return item;
-        }
-        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos,CancellationToken cancellationToken)
+        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos, CancellationToken cancellationToken)
         {
             var retorno = new List<AlunoEolDto>();
-            if(codigoAlunos.Count == 0)
+            if (codigoAlunos.Count == 0)
                 return retorno;
 
-               var dados =  await _mediator.Send(new DadosAlunosServiceQuery(codigoAlunos), cancellationToken);
-               if(dados.Any())
-                   retorno.AddRange(dados);
-            
+            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
+            if (dados.Any())
+                retorno.AddRange(dados);
+
 
             return retorno;
         }
@@ -200,12 +211,12 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         {
             var retorno = new List<UeComDreEolDto>();
 
-            if(!codigosUes.Any())
+            if (!codigosUes.Any())
                 return retorno;
 
-            var busca = await _ueComDreEolService.ObterUesComDrePorCodigosUes(codigosUes);
+            var busca = await _repositorioSondagemRelatorioPorTodasTurma.UeComDreEolService.ObterUesComDrePorCodigosUes(codigosUes);
 
-            if(busca.Any())
+            if (busca.Any())
                 retorno.AddRange(busca);
 
             return retorno;

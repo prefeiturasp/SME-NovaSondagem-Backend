@@ -19,6 +19,6 @@ public class ExcluirQuestaoUseCase : IExcluirQuestaoUseCase
         if (questaoExistente == null)
             return false;
 
-        return await questaoRepositorio.RemoverLogico(id, cancellationToken: cancellationToken)>0;
+        return await questaoRepositorio.RemoverLogico(id, cancellationToken: cancellationToken) > 0;
     }
 }

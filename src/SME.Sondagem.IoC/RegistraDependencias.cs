@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -82,7 +81,6 @@ public static class RegistraDependencias
         RegistrarValidadores(services);
         RegistrarContextos(services);
         RegistrarAgregadores(services);
-        RegistrarMediator(services);
     }
 
     private static void RegistrarRepositorios(IServiceCollection services)
@@ -206,12 +204,6 @@ public static class RegistraDependencias
     {
         services.AddScoped<RepositoriosElastic>();
         services.AddScoped<RepositoriosSondagem>();
-    }
-    private static void RegistrarMediator(IServiceCollection services)
-    {
-        services.AddMediatR(cfg =>
-                cfg.RegisterServicesFromAssemblies(
-                    AppDomain.CurrentDomain.GetAssemblies()
-                ));
+        services.AddScoped<RepositorioSondagemRelatorioPorTodasTurma>();
     }
 }
