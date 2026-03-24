@@ -1,10 +1,6 @@
-using MediatR;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Base;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Aplicacao.Queries.Bimestre;
-using SME.Sondagem.Aplicacao.Queries.ComponenteCurricular;
-using SME.Sondagem.Aplicacao.Queries.Proficiencia;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -23,22 +19,19 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly IAlunoPapService _alunoPapService;
     protected readonly IControleAcessoService _controleAcessoService;
     protected readonly IServicoUsuario _servicoUsuario;
-    private readonly IMediator _mediator;
 
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
-        IServicoUsuario servicoUsuario,
-        IMediator mediator)
+        IServicoUsuario servicoUsuario)
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
         _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(
@@ -214,7 +207,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
             foreach (var id in bimestreIds)
             {
-                var bimestre = await _mediator.Send(new ObterBimestrePorIdQuery(id));
+                var bimestre = await _repositoriosSondagem.RepositorioBimestre.ObterPorIdAsync(id);
                 descricoesBimestre[id] = bimestre?.Descricao ?? string.Empty;
             }
         }
@@ -607,13 +600,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     private async Task<bool> EhMatematicaOuLinguaPortuguesa(int componenteCurricularId)
     {
         var componentes = new List<string> { "LÍNGUA PORTUGUESA", "MATEMÁTICA" };
-        var componente = await _mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+        var componente = await _repositoriosSondagem.RepositorioComponenteCurricular.ObterPorIdAsync(componenteCurricularId);
         return componente != null && componentes.Contains(componente.Nome.ToUpper());
     }
     private async Task<bool> EhProficienciaLeituraMapSaberes(int proficienciaId)
     {
         var proficienciaLeitura = new List<string> { "LEITURA" , "MAPEAMENTO DOS SABERES" };
-        var proficiencia = await _mediator.Send(new ObterProficienciaPorIdQuery(proficienciaId));
+        var proficiencia = await _repositoriosSondagem.RepositorioProficiencia.ObterPorIdAsync(proficienciaId);
         return proficiencia != null && proficienciaLeitura.Contains(proficiencia.Nome.ToUpper());
     }
 }

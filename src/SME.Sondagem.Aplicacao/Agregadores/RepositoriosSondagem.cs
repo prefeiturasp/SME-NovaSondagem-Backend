@@ -9,13 +9,15 @@ public class RepositoriosSondagem
         IRepositorioQuestao repositorioQuestao,
         IRepositorioRespostaAluno repositorioRespostaAluno,
         IRepositorioBimestre repositorioBimestre,
-        IRepositorioComponenteCurricular componenteCurricular)
+        IRepositorioComponenteCurricular componenteCurricular,
+        IRepositorioProficiencia repositorioProficiencia)
     {
         RepositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
         RepositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
         RepositorioRespostaAluno = repositorioRespostaAluno ?? throw new ArgumentNullException(nameof(repositorioRespostaAluno));
         RepositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
         RepositorioComponenteCurricular = componenteCurricular ?? throw new ArgumentNullException(nameof(componenteCurricular));
+        RepositorioProficiencia = repositorioProficiencia ?? throw new ArgumentNullException(nameof(repositorioProficiencia));
     }
 
     public IRepositorioSondagem RepositorioSondagem { get; }
@@ -23,4 +25,5 @@ public class RepositoriosSondagem
     public IRepositorioRespostaAluno RepositorioRespostaAluno { get; }
     public IRepositorioBimestre RepositorioBimestre { get; }
     public IRepositorioComponenteCurricular RepositorioComponenteCurricular { get; }
+    public IRepositorioProficiencia RepositorioProficiencia { get; }
 }

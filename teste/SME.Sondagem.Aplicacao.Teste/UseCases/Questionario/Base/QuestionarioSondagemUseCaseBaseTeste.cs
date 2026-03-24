@@ -1,11 +1,9 @@
-﻿using MediatR;
-using Moq;
+﻿using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -28,9 +26,8 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
-        IMediator mediator,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario,mediator)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -61,7 +58,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
-    private readonly Mock<IMediator> _mediator;
+    private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
+    private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -79,7 +77,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
-        _mediator = new Mock<IMediator>();
+        _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -89,7 +88,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockRepositorioSondagem.Object,
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
-            _mockRepositorioBimestre.Object);
+            _mockRepositorioBimestre.Object,
+                        _componenteCurricular.Object,
+            _repositorioProficiencia.Object
+            );
     }
 
     private QuestionarioSondagemUseCaseBaseConcreto CriarUseCase(DadosAlunosDto? dadosAlunos = null)
@@ -99,7 +101,6 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mediator.Object,
             dadosAlunos);
 
     #region Construtor
@@ -113,7 +114,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object, _mediator.Object,
+                _mockServicoUsuario.Object,
                 null!
                 ));
     }
@@ -128,7 +129,6 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
-                _mediator.Object,
                 null!
                 ));
     }
@@ -142,7 +142,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 null!,
                 _mockControleAcessoService.Object,
-                _mockServicoUsuario.Object, _mediator.Object,
+                _mockServicoUsuario.Object,
                 null!
                 ));
     }
@@ -156,7 +156,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
                 null!,
-                _mockServicoUsuario.Object, _mediator.Object,
+                _mockServicoUsuario.Object,
                 null!
                 ));
     }
@@ -171,8 +171,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _mockAlunoPapService.Object,
                 _mockControleAcessoService.Object,
                  _mockServicoUsuario.Object,
-                 null!,
-                null
+                 null!
                 ));
     }
 
