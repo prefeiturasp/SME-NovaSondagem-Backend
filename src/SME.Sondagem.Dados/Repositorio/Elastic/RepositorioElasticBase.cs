@@ -24,12 +24,18 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             this.elasticClient = elasticClient ?? throw new ArgumentNullException(nameof(elasticClient));
         }
 
-        // Hook de validação para facilitar testes
+        // --- Hooks de validação ---
         protected virtual bool EhRespostaValida<TResponse>(SearchResponse<TResponse> response) where TResponse : class
             => response?.IsValidResponse == true;
 
-        // Hook de extração de documentos para facilitar testes
+        protected virtual bool EhRespostaValida<TResponse>(ScrollResponse<TResponse> response) where TResponse : class
+            => response?.IsValidResponse == true;
+
+        // --- Hooks de extração de documentos ---
         protected virtual IReadOnlyCollection<TResponse> ObterDocumentos<TResponse>(SearchResponse<TResponse> response) where TResponse : class
+            => response.Documents;
+
+        protected virtual IReadOnlyCollection<TResponse> ObterDocumentos<TResponse>(ScrollResponse<TResponse> response) where TResponse : class
             => response.Documents;
 
         public async Task<T?> ObterAsync(
@@ -58,44 +64,48 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
         {
             var lista = new List<TResponse>();
 
-            SearchResponse<TResponse> response =
-                await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
-                        await elasticClient.SearchAsync<TResponse>(s => s
-                            .Indices(indice)
-                            .Query(q => request(q))
-                            .Scroll(TempoCursor)
-                            .Size(QuantidadeRetorno)),
-                    NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
+            var searchResponse = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
+                    await elasticClient.SearchAsync<TResponse>(s => s
+                        .Indices(indice)
+                        .Query(q => request(q))
+                        .Scroll(TempoCursor)
+                        .Size(QuantidadeRetorno)),
+                NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
 
-            if (response is null || !EhRespostaValida(response))
-                throw new NegocioException(response?.ElasticsearchServerError?.ToString()!);
+            if (searchResponse is null || !EhRespostaValida(searchResponse))
+                throw new NegocioException(searchResponse?.ElasticsearchServerError?.ToString()!);
 
-            var docs = ObterDocumentos(response);
+            var docs = ObterDocumentos(searchResponse);
             lista.AddRange(docs);
 
-            while (docs.Count > 0 && docs.Count == QuantidadeRetorno)
-            {
-                if (response.ScrollId is null)
-                    break;
+            string? scrollId = searchResponse?.ScrollId?.ToString();
 
-                response = await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
-                        await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(response.ScrollId!)
-                            { Scroll = TimeSpan.FromSeconds(10) }),
+            while (docs.Count > 0 && docs.Count == QuantidadeRetorno && !string.IsNullOrEmpty(scrollId))
+            {
+                var scrollIdLoop = scrollId;
+
+                var scrollResponse = await servicoTelemetria.RegistrarComRetornoAsync<ScrollResponse<TResponse>>(async () =>
+                        await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(scrollIdLoop ?? string.Empty)
+                        {
+                            Scroll = TimeSpan.FromSeconds(10)
+                        }),
                     NomeTelemetria,
                     $"{nomeConsulta} scroll",
                     indice,
                     parametro?.ToString()!);
 
-                if (!EhRespostaValida(response))
-                    throw new NegocioException(response.ElasticsearchServerError?.ToString()!);
+                if (!EhRespostaValida(scrollResponse))
+                    throw new NegocioException(scrollResponse.ElasticsearchServerError?.ToString()!);
 
-                docs = ObterDocumentos(response);
+                docs = ObterDocumentos(scrollResponse);
                 lista.AddRange(docs);
+
+                scrollId = scrollResponse.ScrollId?.ToString();
             }
 
-            if (response.ScrollId is not null)
+            if (!string.IsNullOrEmpty(scrollId))
             {
-                await elasticClient.ClearScrollAsync(new ClearScrollRequest { ScrollId = response.ScrollId });
+                await elasticClient.ClearScrollAsync(new ClearScrollRequest { ScrollId = scrollId });
             }
 
             return lista;

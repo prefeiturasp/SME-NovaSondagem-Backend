@@ -246,7 +246,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoTurmaNaoForLocalizada()
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocioException_QuandoTurmaNaoForLocalizada()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         _mockRepositorioElasticTurma.Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
@@ -276,7 +276,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #region Testes de Validação de Sondagem
 
     [Fact]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoNaoHouverSondagemAtiva()
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocioException_QuandoNaoHouverSondagemAtiva()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var turma = new TurmaElasticDto { Modalidade = 1, AnoTurma = "1", AnoLetivo = 2024 };
@@ -286,7 +286,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioSondagem.Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
             .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem?)null!);
 
-        var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
         Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
     }
@@ -299,7 +299,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [InlineData(1)]
     [InlineData(4)]
     [InlineData(6)]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoModalidadeNaoForSuportada(int modalidade)
+    public async Task ObterQuestionarioSondagem_DeveLancarErroNaoEncontradoException_QuandoModalidadeNaoForSuportada(int modalidade)
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var turma = new TurmaElasticDto { Modalidade = modalidade, AnoTurma = "1", AnoLetivo = 2024 };
@@ -588,7 +588,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.Is<List<long>>(ids => ids.Count == 3),
                 It.IsAny<long>(),
                 It.IsAny<CancellationToken>()),
-            Times.Once);
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -908,14 +908,16 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 CodigoAluno = 1001,
                 NumeroAlunoChamada = "1",
                 NomeAluno = "João Silva",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             },
             new AlunoElasticDto
             {
                 CodigoAluno = 1002,
                 NumeroAlunoChamada = "2",
                 NomeAluno = "Maria Santos",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             }
         };
     }
