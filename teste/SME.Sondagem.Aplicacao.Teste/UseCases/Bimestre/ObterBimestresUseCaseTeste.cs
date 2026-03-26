@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Bimestre;
@@ -21,7 +22,7 @@ public class ObterBimestresUseCaseTeste
 
     [Fact]
     public async Task ExecutarAsync_DeveRetornarListaDeBimestreDto()
-    { 
+    {
         var bimestres = new List<Dominio.Entidades.Bimestre>
         {
             new(1, "Bimestre 1")
@@ -72,6 +73,60 @@ public class ObterBimestresUseCaseTeste
         Assert.Equal("RF003", segunda.AlteradoRF);
 
         _repositorioBimestreMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
+    }
+
+
+    [Fact]
+    public async Task ExecutarAsync_DeveFiltrarBimestres_QuandoModalidadeForEJA()
+    {
+        var entidades = new List<Dominio.Entidades.Bimestre>
+        {
+            new(1, "Bimestre 1")
+            {
+                Id = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Usuario1",
+                CriadoRF = "RF001"
+            },
+            new(2, "Bimestre 2")
+            {
+                Id = 2,
+                CriadoEm = DateTime.Now.AddDays(-1),
+                CriadoPor = "Usuario2",
+                CriadoRF = "RF002",
+                AlteradoEm = DateTime.Now,
+                AlteradoPor = "Usuario3",
+                AlteradoRF = "RF003"
+            },
+            new(2, "Bimestre 3")
+            {
+                Id = 3,
+                CriadoEm = DateTime.Now.AddDays(-1),
+                CriadoPor = "Usuario3",
+                CriadoRF = "RF002",
+                AlteradoEm = DateTime.Now,
+                AlteradoPor = "Usuario3",
+                AlteradoRF = "RF003"
+            },
+            new(2, "Bimestre 4")
+            {
+                Id = 4,
+                CriadoEm = DateTime.Now.AddDays(-1),
+                CriadoPor = "Usuario2",
+                CriadoRF = "RF002",
+                AlteradoEm = DateTime.Now,
+                AlteradoPor = "Usuario3",
+                AlteradoRF = "RF003"
+            }
+        };
+
+        _repositorioBimestreMock
+            .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(entidades);
+
+        var resultado = await _useCase.ExecutarAsync((int)Modalidade.EJA, _cancellationToken);
+
+        Assert.Equal(2, resultado.Count());
     }
 
     [Fact]
@@ -140,7 +195,7 @@ public class ObterBimestresUseCaseTeste
     {
         var dataEspecifica = new DateTime(2023, 10, 15, 14, 30, 0);
         var dataAlteracao = new DateTime(2023, 10, 16, 10, 15, 0);
-        
+
         var bimestres = new List<Dominio.Entidades.Bimestre>
         {
             new(3, "Matemática Básica")
@@ -177,7 +232,7 @@ public class ObterBimestresUseCaseTeste
     public async Task ExecutarAsync_ComMuitasBimestres_DeveMantarPerformance()
     {
         var bimestres = new List<Dominio.Entidades.Bimestre>();
-        
+
         for (int i = 1; i <= 1000; i++)
         {
             bimestres.Add(new Dominio.Entidades.Bimestre(i % 5 + 1, $"Bimestre {i}")
