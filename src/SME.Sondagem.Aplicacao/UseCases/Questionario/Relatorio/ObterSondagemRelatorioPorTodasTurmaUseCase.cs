@@ -111,7 +111,8 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                         {
                             resultado.Add(new TurmaCodigoElasticDto(
                                 turmaElastic.CodigoTurma,
-                                $"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
+                                $"{turmaElastic.NomeTurma}",
+                                //$"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
                                 turmaElastic.AnoTurma,aluno.CodigoAluno, turmaElastic.CodigoEscola!)
                             {
                                 DataMatricula = aluno.DataMatricula
@@ -127,7 +128,8 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                         {
                             resultado.Add(new TurmaCodigoElasticDto(
                                 turmaElastic.CodigoTurma,
-                                $"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
+                                $"{turmaElastic.NomeTurma}",
+                                //$"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
                                 turmaElastic.AnoTurma, aluno.CodigoAluno, turmaElastic.CodigoEscola!)
                             {
                                 DataMatricula = aluno.DataMatricula
@@ -143,7 +145,11 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
         private async Task<IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto>> ObterTurmasPorCodigosNoElastic(IEnumerable<AlunoEolDto> dadosAlunos, CancellationToken cancellationToken)
         {
-            return await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(dadosAlunos.Select(x => x.CodigoTurma), cancellationToken);
+            var anosPermitidos = new List<string>() {"1","2","3"};
+            var consulta = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(dadosAlunos.Select(x => x.CodigoTurma), cancellationToken);
+            var filtro = consulta.Where(x => anosPermitidos.Contains(x.AnoTurma)).ToList();
+
+            return filtro;
         }
 
         private static List<string> ObterCodigosAlunos(IEnumerable<ExtracaoSondagemLpEscritaDto> responstas)
@@ -354,11 +360,15 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             if (codigoAlunos.Count == 0)
                 return retorno;
 
-            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
+            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, true,cancellationToken);
             if (dados.Any())
-                retorno.AddRange(dados);
+            {
+                var situacaoMatriculaPermitido = new List<int>() { 1, 6, 10, 13, 5,4,3, 15,16,8,2,11 };
+                var naoDesistente = dados.Where(x => situacaoMatriculaPermitido.Contains(x.CodigoSituacaoMatricula)).ToList();
+                retorno.AddRange(naoDesistente);
+            }
 
-
+            
             return retorno;
         }
         private async Task<IEnumerable<UeComDreEolDto>> BuscarUesDres(IEnumerable<string> codigosUes)
