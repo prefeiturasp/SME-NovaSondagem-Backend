@@ -7,6 +7,7 @@ using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -29,7 +30,6 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
     private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly Mock<IControleAcessoService> _controleAcessoService;
-    private readonly Mock<IRepositorioElasticTurma> _repositorioElasticTurma;
     private readonly SondagemSalvarRespostasUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
     private readonly Mock<RepositoriosElastic> _repositoriosElastic;
@@ -59,7 +59,11 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
-        _repositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
+        _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
+        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object);
+        _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
+
+        _cancellationToken = CancellationToken.None;
 
         _useCase = new SondagemSalvarRespostasUseCase(
             _repositorioSondagem.Object,
@@ -283,20 +287,20 @@ public class SondagemSalvarRespostasUseCaseTeste
     private static Questao CriarQuestaoLinguaPortuguesaSegundaLingua(int questionarioId)
     {
         var questao = new Questao(
-            questionarioId,
-            1,
-            "Língua Portuguesa é Segunda Língua?",
-            string.Empty,
-            false,
-            TipoQuestao.LinguaPortuguesaSegundaLingua,
-            string.Empty,
-            false,
-            1,
-            null,
-            null,
-            null,
-            null,
-            null)
+           questionarioId,
+           1,
+           "Língua Portuguesa é Segunda Língua?",
+           string.Empty,
+           false,
+           TipoQuestao.LinguaPortuguesaSegundaLingua,
+           string.Empty,
+           false,
+           1,
+           null,
+           null,
+           null,
+           null,
+           null)
         {
             Id = 999
         };

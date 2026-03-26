@@ -242,7 +242,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var useCase = CriarUseCase();
 
-        var ex = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var ex = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None));
 
         Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, ex.Message);
@@ -961,7 +961,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
     {
         ConfigurarMocksCompletos();
         _mockControleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+             .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(true);
 
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
@@ -1147,7 +1150,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
             .ReturnsAsync((ICollection<SondagemPeriodoBimestre>?)null!);
 
         _mockControleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(false);
 
         Dictionary<(long, long, int?), RespostaAluno> respostasDict;

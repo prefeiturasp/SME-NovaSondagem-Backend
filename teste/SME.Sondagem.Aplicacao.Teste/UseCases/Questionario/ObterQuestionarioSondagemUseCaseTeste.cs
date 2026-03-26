@@ -588,7 +588,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.Is<List<long>>(ids => ids.Count == 3),
                 It.IsAny<long>(),
                 It.IsAny<CancellationToken>()),
-            Times.Exactly(2));
+            Times.Once);
     }
 
     [Fact]
