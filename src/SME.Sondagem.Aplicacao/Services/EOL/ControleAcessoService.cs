@@ -41,6 +41,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
         public async Task<bool> ValidarPermissaoAcessoAsync(
             string turmaId,
+            string codigoEscola = "",
+            string anoTurma = "",
             CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(turmaId))
@@ -60,7 +62,13 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 return turmaElastic is not null;
             }
 
-            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(cancellationToken);
+            if (codigoEscola == null || codigoEscola == "")
+                return false;
+
+            if (anoTurma == null || anoTurma == "")
+                return false;
+
+            var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(codigoEscola, anoTurma, cancellationToken);
             if (!acessos.Any())
                 return false;
 
@@ -112,7 +120,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         }
 
         private async Task<IEnumerable<ControleAcessoDto>>
-            ObterControleAcessoUsuarioAutenticadoAsync(
+            ObterControleAcessoUsuarioAutenticadoAsync(string codigoEscola, string anoTurma,
                 CancellationToken cancellationToken)
         {
             var usuario = httpContextAccessor.HttpContext?.User;
@@ -129,7 +137,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var chave = string.Format(
                 NomeChaveCache.CONTROLE_ACESSO_USUARIO,
                 login,
-                perfil);
+                perfil,
+                codigoEscola,
+                anoTurma);
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
@@ -144,7 +154,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 ? string.Format(
                     ServicoEolConstants.URL_COMPONENTES_CURRICULARES_FUNCIONARIOS,
                     login,
-                    perfil)
+                    perfil,
+                    codigoEscola,
+                    anoTurma)
                 : string.Format(
                     ServicoEolConstants.URL_ABRANGENCIA_COMPACTA_VIGENTE_PERFIL,
                     login,
