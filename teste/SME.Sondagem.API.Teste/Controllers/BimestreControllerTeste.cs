@@ -19,6 +19,7 @@ public class BimestreControllerTeste
     private readonly Mock<IExcluirBimestreUseCase> _excluirBimestreUseCaseMock;
     private readonly BimestreController _controller;
     private readonly CancellationToken _cancellationToken;
+    private readonly int modalidade = 0;
 
     public BimestreControllerTeste()
     {
@@ -51,10 +52,10 @@ public class BimestreControllerTeste
         };
 
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(_cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
             .ReturnsAsync(bimestres);
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(modalidade, _cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
@@ -65,10 +66,10 @@ public class BimestreControllerTeste
     public async Task Listar_OperationCanceledException_DeveRetornarStatus499()
     {
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(_cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(modalidade, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(499, statusCodeResult.StatusCode);
@@ -83,10 +84,10 @@ public class BimestreControllerTeste
     {
         var exception = new Exception("Erro interno");
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(_cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
             .ThrowsAsync(exception);
 
-        var result = await _controller.Listar(_cancellationToken);
+        var result = await _controller.Listar(modalidade, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
