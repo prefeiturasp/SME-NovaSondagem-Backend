@@ -11,7 +11,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
     [ExcludeFromCodeCoverage]
     public class RepositorioElasticTurma : RepositorioElasticBase<TurmaElasticDto>, IRepositorioElasticTurma
     {
-        private const int TamanhoBatch = 100;
+        private const int TAMANHOBATCH = 100;
 
         public RepositorioElasticTurma(IServicoTelemetria servicoTelemetria, ElasticsearchClient elasticClient)
             : base(servicoTelemetria, elasticClient)
@@ -29,7 +29,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
 
             var batches = ids
                 .Select((id, index) => new { id, index })
-                .GroupBy(x => x.index / TamanhoBatch)
+                .GroupBy(x => x.index / TAMANHOBATCH)
                 .Select(g => g.Select(x => x.id).ToList())
                 .ToList();
 
@@ -70,7 +70,7 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 {
                     var filters = new List<Action<QueryDescriptor<TurmaElasticDto>>>
                     {
-                f => f.Term(t => t.Field(ff => ff.CodigoTurma).Value(filtro.TurmaId))
+                            f => f.Term(t => t.Field(ff => ff.CodigoTurma).Value(filtro.TurmaId))
                     };
 
                     if (filtro.AnoLetivo != 0)

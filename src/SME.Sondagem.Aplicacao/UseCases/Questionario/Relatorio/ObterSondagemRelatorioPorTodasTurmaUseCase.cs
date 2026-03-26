@@ -39,7 +39,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             var codigoAlunos = ObterCodigosAlunos(respostas);
             var dadosAlunos = await ObterAlunos(codigoAlunos, cancellationToken);
             var dadosCompletosTurmas = await ObterTurmasPorCodigosNoElastic(dadosAlunos, cancellationToken);
-            var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
+            var turmasCodigoNome = MapearTurma(dadosCompletosTurmas, dadosAlunos, respostas);
             var codigoUes = ObterCodigosUes(dadosAlunos);
             var uesComDre = await BuscarUesDres(codigoUes);
             var dadosArquivo = await MapearAquivo(lista, respostas, uesComDre, turmasCodigoNome, dadosAlunos);
@@ -48,7 +48,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return new FileResultDto(
                 xlsxStream,
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                $"sondagem-lp-escrita-{DateTime.Now:yyyy-MM-dd}.xlsx"
+                $"sondagem-lp-{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.xlsx"
             );
 
         }
@@ -58,9 +58,87 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return dadosAlunos.Select(x => x.CodigoEscola!).Distinct();
         }
 
-        private static IEnumerable<TurmaCodigoElasticDto> MapearTurma(IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto> dadosCompletosTurmas)
+        private  IEnumerable<TurmaCodigoElasticDto> MapearTurma2(IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto> dadosCompletosTurmas, IEnumerable<AlunoEolDto> dadosAlunos, IEnumerable<ExtracaoSondagemLpEscritaDto> respostas)
         {
-            return dadosCompletosTurmas.Select(x => new TurmaCodigoElasticDto(x.CodigoTurma, x.NomeTurma, x.AnoTurma)).Distinct();
+            var retor = new List<TurmaCodigoElasticDto>();
+            foreach (var item in dadosAlunos.OrderBy(x => x.DataMatricula))
+            {
+                var resposta = respostas.FirstOrDefault(x => x.DataResposta?.Date >= item.DataMatricula.Date);
+                
+                var aluno = dadosAlunos.FirstOrDefault(x => resposta?.DataResposta?.Date >= x.DataMatricula.Date);
+                var turma = dadosCompletosTurmas.Where(x =>x.CodigoTurma == aluno?.CodigoTurma).Select(x => new TurmaCodigoElasticDto(x.CodigoTurma, $"{x.NomeTurma} - {dadosAlunos.Where(w => w.CodigoTurma == x.CodigoTurma)?.FirstOrDefault()?.SituacaoMatricula ?? string.Empty} - {dadosAlunos.Where(w => w.CodigoTurma == x.CodigoTurma)?.FirstOrDefault()?.DataMatricula.ToString() ?? string.Empty}", x.AnoTurma,aluno.CodigoAluno,aluno.CodigoEscola)).Distinct();
+                if (turma.Count() > 0)
+                    retor.AddRange(turma);
+            }
+            return retor;
+        }
+        private IEnumerable<TurmaCodigoElasticDto> MapearTurma(
+                 IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto> dadosCompletosTurmas,
+                 IEnumerable<AlunoEolDto> dadosAlunos,
+                 IEnumerable<ExtracaoSondagemLpEscritaDto> respostas)
+        {
+            var resultado = new List<TurmaCodigoElasticDto>();
+
+            // 1. Agrupamos as respostas por Código de Estudante para facilitar a busca
+            var respostasPorAluno = respostas
+                .Where(r => !string.IsNullOrEmpty(r.CodigoEolEstudante))
+                .ToLookup(r => r.CodigoEolEstudante);
+
+            // 2. Foreach em dadosAlunos conforme solicitado
+            foreach (var aluno in dadosAlunos)
+            {
+
+                var codigoAlunoString = aluno.CodigoAluno.ToString();
+
+                // Obtemos todas as respostas desse aluno específico
+                var respostasDoAluno = respostasPorAluno[codigoAlunoString];
+
+                if (respostasDoAluno.Any())
+                {
+                    // 3. Obter a resposta mais recente (ordenada por data)
+                    var ultimaResposta = respostasDoAluno
+                        .OrderByDescending(r => r.DataResposta)
+                        .FirstOrDefault();
+
+                    // 4. Verificar se a matrícula do aluno é anterior ou igual à data da resposta
+                    // (Garantindo que ele estava nessa turma quando respondeu)
+                    if (aluno.DataMatricula.Date <= ultimaResposta?.DataResposta?.Date)
+                    {
+                        var turmaElastic = dadosCompletosTurmas
+                            .FirstOrDefault(t => t.CodigoTurma == aluno.CodigoTurma);
+
+                        if (turmaElastic != null)
+                        {
+                            resultado.Add(new TurmaCodigoElasticDto(
+                                turmaElastic.CodigoTurma,
+                                $"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
+                                turmaElastic.AnoTurma,aluno.CodigoAluno, turmaElastic.CodigoEscola!)
+                            {
+                                DataMatricula = aluno.DataMatricula
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var turmaElastic = dadosCompletosTurmas
+                                .FirstOrDefault(t => t.CodigoTurma == aluno.CodigoTurma);
+
+                        if (turmaElastic != null)
+                        {
+                            resultado.Add(new TurmaCodigoElasticDto(
+                                turmaElastic.CodigoTurma,
+                                $"{turmaElastic.NomeTurma} - {aluno.SituacaoMatricula} - {aluno.DataMatricula}",
+                                turmaElastic.AnoTurma, aluno.CodigoAluno, turmaElastic.CodigoEscola!)
+                            {
+                                DataMatricula = aluno.DataMatricula
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Retorna apenas turmas distintas para evitar duplicidade no mapeamento final
+            return resultado;
         }
 
         private async Task<IEnumerable<Infra.Dtos.Questionario.TurmaElasticDto>> ObterTurmasPorCodigosNoElastic(IEnumerable<AlunoEolDto> dadosAlunos, CancellationToken cancellationToken)
@@ -84,8 +162,92 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return await _repositoriosSondagem.RepositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeIdFundamental.ToString(), cancellationToken);
         }
 
-
         private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> MapearAquivo(
+                List<ExtracaoSondagemLpEscritaDto> lista,
+                IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,
+                IEnumerable<UeComDreEolDto> uesComDre,
+                IEnumerable<TurmaCodigoElasticDto> turmasCodigoNome,
+                IEnumerable<AlunoEolDto> dadosAlunos)
+        {
+            var bimestresLista = await _repositoriosSondagem.RepositorioBimestre.ListarAsync();
+
+            var alunosPorCodigo = dadosAlunos
+                .GroupBy(x => x.CodigoAluno.ToString())
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var bimestresPorId = (bimestresLista ?? [])
+                .GroupBy(x => x.Id.ToString())
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var modalidadesCache = Enum.GetValues<Modalidade>()
+                .ToDictionary(m => (int)m, m => m.Nome() ?? m.ToString());
+
+            var turmasPorAluno = turmasCodigoNome
+                .Where(x => x.CodigoAluno.HasValue)
+                .GroupBy(x => x.CodigoAluno!.Value)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var uesPorCodigoEscola = uesComDre
+                .Where(x => x.CodigoEscola != null)
+                .GroupBy(x => x.CodigoEscola!)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            foreach (var responsta in responstas)
+            {
+                if (!alunosPorCodigo.TryGetValue(responsta.CodigoEolEstudante!, out var aluno))
+                    continue;
+
+                var bimestreDesc = responsta?.Bimestre != null && bimestresPorId.TryGetValue(responsta.Bimestre, out var bimestre)
+                    ? bimestre.Descricao
+                    : "Todos";
+
+                var modalidadeNome = modalidadesCache.TryGetValue(responsta?.ModalidadeId ?? 0, out var nome)
+                    ? nome
+                    : string.Empty;
+
+                var alunosTurma = turmasPorAluno.TryGetValue(aluno.CodigoAluno, out var turmas)
+                    ? turmas
+                    : new List<TurmaCodigoElasticDto>();
+
+                var codigoEscolasDistinct = alunosTurma
+                    .Select(x => x.CodigoEscola)
+                    .Where(c => c != null)
+                    .Distinct()
+                    .ToList();
+
+                var ueDresNomes = codigoEscolasDistinct
+                    .Where(c => uesPorCodigoEscola.ContainsKey(c!))
+                    .Select(c => uesPorCodigoEscola[c!])
+                    .Distinct()
+                    .ToList();
+
+                lista.Add(new ExtracaoSondagemLpEscritaDto
+                {
+                    NomeDre = string.Join(" | ", ueDresNomes.Select(x => x.NomeDRE).Distinct()),
+                    Bimestre = bimestreDesc,
+                    CodigoDre = string.Join(" | ", ueDresNomes.Select(x => x.CodigoDRE).Distinct()),
+                    NomeEscola = string.Join(" | ", ueDresNomes.Select(x => x.NomeEscola).Distinct()),
+                    CodigoEolEscola = string.Join(" | ", ueDresNomes.Select(x => x.CodigoEscola).Distinct()),
+                    NomeTurma = string.Join(" | ", alunosTurma.Select(x => x.NomeTurma).Distinct()),
+                    CodigoEolEstudante = aluno.CodigoAluno.ToString(),
+                    NomeEstudanteEstudante = aluno?.NomeAluno ?? string.Empty,
+                    ComponenteCurricular = responsta?.ComponenteCurricular,
+                    Proficiencia = responsta?.Proficiencia,
+                    Ano = string.Join(" | ", alunosTurma.Select(x => x.AnoTurma).Distinct()),
+                    Questao = responsta?.Questao ?? string.Empty,
+                    Resposta = responsta?.Resposta,
+                    Legenda = responsta?.Legenda ?? string.Empty,
+                    Modalidade = modalidadeNome,
+                    ModalidadeId = responsta?.ModalidadeId,
+                    DataResposta = responsta?.DataResposta,
+                });
+            }
+
+            return lista.OrderBy(x => x.NomeEstudanteEstudante);
+        }
+
+
+        private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> MapearAquivo4(
                     List<ExtracaoSondagemLpEscritaDto> lista,
                     IEnumerable<ExtracaoSondagemLpEscritaDto> responstas,
                     IEnumerable<UeComDreEolDto> uesComDre,
@@ -96,16 +258,6 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
             var alunosPorCodigo = dadosAlunos
                 .GroupBy(x => x.CodigoAluno.ToString())
-                .ToDictionary(g => g.Key, g => g.First());
-
-            var turmasPorCodigo = turmasCodigoNome
-                .Where(t => t.CodigoTurma.HasValue)
-                .GroupBy(t => t.CodigoTurma!.Value)
-                .ToDictionary(g => g.Key, g => g.First());
-
-            var uesPorCodigo = uesComDre
-                .Where(e => !string.IsNullOrEmpty(e.CodigoEscola))
-                .GroupBy(e => e.CodigoEscola!)
                 .ToDictionary(g => g.Key, g => g.First());
 
             var bimestresPorId = (bimestresLista ?? [])
@@ -123,9 +275,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 if (!alunosPorCodigo.TryGetValue(responsta.CodigoEolEstudante!, out var aluno))
                     continue;
 
-                turmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turma);
-                uesPorCodigo.TryGetValue(aluno.CodigoEscola!, out var ueDre);
-
+                
                 var bimestreDesc = responsta?.Bimestre != null && bimestresPorId.TryGetValue(responsta.Bimestre, out var bimestre)
                     ? bimestre.Descricao
                     : "Todos";
@@ -133,25 +283,29 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 var modalidadeNome = modalidadesCache.TryGetValue(responsta?.ModalidadeId ?? 0, out var nome)
                     ? nome
                     : string.Empty;
+                var alunosTurma = turmasCodigoNome.Where(x => x.CodigoAluno == aluno?.CodigoAluno).ToList();
+                var codigoEscolas  = alunosTurma.Select(x =>x.CodigoEscola);
+                var ueDresNomes = uesComDre.Where(x => codigoEscolas.Distinct().Contains(x.CodigoEscola)).Distinct();
 
                 lista.Add(new ExtracaoSondagemLpEscritaDto
                 {
-                    NomeDre = ueDre?.NomeDRE ?? string.Empty,
+                    NomeDre = string.Join(" | ", ueDresNomes.Select(x => x.NomeDRE).Distinct()) ?? string.Empty,
                     Bimestre = bimestreDesc,
-                    CodigoDre = ueDre?.CodigoDRE ?? string.Empty,
-                    NomeEscola = ueDre?.NomeEscola ?? string.Empty,
-                    CodigoEolEscola = ueDre?.CodigoEscola ?? string.Empty,
-                    NomeTurma = turma?.NomeTurma ?? string.Empty,
+                    CodigoDre = string.Join(" | ", ueDresNomes.Select(x => x.CodigoDRE).Distinct()) ?? string.Empty,
+                    NomeEscola = string.Join(" | ", ueDresNomes.Select(x => x.NomeEscola).Distinct()) ?? string.Empty,
+                    CodigoEolEscola = string.Join(" | ", ueDresNomes.Select(x => x.CodigoEscola).Distinct()) ?? string.Empty,
+                    NomeTurma = string.Join(" | ", alunosTurma.Select(x =>x.NomeTurma).Distinct()) ?? string.Empty,
                     CodigoEolEstudante = aluno.CodigoAluno.ToString(),
                     NomeEstudanteEstudante = aluno?.NomeAluno ?? string.Empty,
                     ComponenteCurricular = responsta?.ComponenteCurricular,
                     Proficiencia = responsta?.Proficiencia,
-                    Ano = turma?.AnoTurma,
+                    Ano = string.Join(" | ", alunosTurma.Select(x => x.AnoTurma).Distinct()) ?? string.Empty,
                     Questao = responsta?.Questao ?? string.Empty,
                     Resposta = responsta?.Resposta,
                     Legenda = responsta?.Legenda ?? string.Empty,
                     Modalidade = modalidadeNome,
                     ModalidadeId = responsta?.ModalidadeId,
+                    DataResposta = responsta?.DataResposta,
                 });
             }
 

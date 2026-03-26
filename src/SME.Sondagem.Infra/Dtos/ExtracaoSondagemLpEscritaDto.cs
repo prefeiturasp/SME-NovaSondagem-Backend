@@ -50,6 +50,8 @@ namespace SME.Sondagem.Infrastructure.Dtos
 
         [Name("Proficiência")]
         public string? Proficiencia { get; set; }
+        [Name("Data Resposta")]
+        public DateTime? DataResposta { get; set; }
 
     }
 }

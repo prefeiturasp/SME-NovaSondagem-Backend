@@ -50,6 +50,82 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
             return response.Found ? response.Source : null;
         }
 
+        public async Task<IEnumerable<TResponse>> ObterListaSemScrollAsync<TResponse>(
+            string indice,
+            Func<QueryDescriptor<TResponse>, Query> request,
+            string nomeConsulta,
+            object? parametro = null) where TResponse : class
+        {
+            SearchResponse<TResponse> response =
+                await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
+                        await elasticClient.SearchAsync<TResponse>(s => s
+                            .Indices(indice)
+                            .Query(q => request(q))
+                            .Size(10000)),
+                    NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
+
+            if (!EhRespostaValida(response))
+                throw new NegocioException(response?.ElasticsearchServerError?.ToString()!);
+
+            return ObterDocumentos(response);
+        }
+
+
+        public async Task<IEnumerable<TResponse>> ObterListaAsync2<TResponse>(
+            string indice,
+            Func<QueryDescriptor<TResponse>, Query> request,
+            string nomeConsulta,
+            object? parametro = null) where TResponse : class
+        {
+            var lista = new List<TResponse>();
+
+            SearchResponse<TResponse> response =
+                await servicoTelemetria.RegistrarComRetornoAsync<SearchResponse<TResponse>>(async () =>
+                        await elasticClient.SearchAsync<TResponse>(s => s
+                            .Indices(indice)
+                            .Query(q => request(q))
+                            .Scroll(TempoCursor)
+                            .Size(QuantidadeRetorno)),
+                    NomeTelemetria, nomeConsulta, indice, parametro?.ToString()!);
+
+            if (response is null || !EhRespostaValida(response))
+                throw new NegocioException(response?.ElasticsearchServerError?.ToString()!);
+
+            var docs = ObterDocumentos(response);
+            lista.AddRange(docs);
+
+            var scrollId = response.ScrollId;
+
+            while (docs.Count > 0 && docs.Count == QuantidadeRetorno)
+            {
+                if (scrollId is null)
+                    break;
+
+                // variável separada para o scroll, evitando conflito de tipos
+                var scrollResponse = await servicoTelemetria.RegistrarComRetornoAsync<ScrollResponse<TResponse>>(async () =>
+                        await elasticClient.ScrollAsync<TResponse>(new ScrollRequest(scrollId)
+                        { Scroll = TimeSpan.FromSeconds(10) }),
+                    NomeTelemetria,
+                    $"{nomeConsulta} scroll",
+                    indice,
+                    parametro?.ToString()!);
+
+                if (!scrollResponse.IsValidResponse)
+                    throw new NegocioException(scrollResponse.ElasticsearchServerError?.ToString()!);
+
+                docs = scrollResponse.Documents;
+                lista.AddRange(docs);
+                scrollId = scrollResponse.ScrollId;
+            }
+
+            if (scrollId is not null)
+            {
+                await elasticClient.ClearScrollAsync(new ClearScrollRequest { ScrollId = scrollId });
+            }
+
+            return lista;
+        }
+
         public async Task<IEnumerable<TResponse>> ObterListaAsync<TResponse>(
             string indice,
             Func<QueryDescriptor<TResponse>, Query> request,

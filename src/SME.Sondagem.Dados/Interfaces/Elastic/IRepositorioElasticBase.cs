@@ -9,6 +9,19 @@ namespace SME.Sondagem.Dados.Interfaces.Elastic
             Func<QueryDescriptor<TResponse>, Query> request, string nomeConsulta,
             object? parametro = null) where TResponse : class;
 
+        Task<IEnumerable<TResponse>> ObterListaAsync2<TResponse>(
+            string indice,
+            Func<QueryDescriptor<TResponse>, Query> request,
+            string nomeConsulta,
+            object? parametro = null) where TResponse : class;
+
+
+        Task<IEnumerable<TResponse>> ObterListaSemScrollAsync<TResponse>(
+            string indice,
+            Func<QueryDescriptor<TResponse>, Query> request,
+            string nomeConsulta,
+            object? parametro = null) where TResponse : class;
+
         Task<IEnumerable<TResponse>> ObterTodosAsync<TResponse>(string indice, string nomeConsulta,
             object? parametro = null) where TResponse : class;
 
