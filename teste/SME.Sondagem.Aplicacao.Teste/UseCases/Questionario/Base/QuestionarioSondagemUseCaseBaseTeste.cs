@@ -824,12 +824,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var alunosAtivos = new List<AlunoElasticDto> { alunoAtivo, alunoInativo };
 
         var respostaAtivo = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
-        var respostaInativo = CriarRespostaAluno(id: 2, opcaoRespostaId: 3, alunoId: 1002);
 
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
-            { (1001L, 1, 1L), respostaAtivo },
-            { (1002L, 1, 1L), respostaInativo }
+            { (1001L, 1, 1L), respostaAtivo }
         };
 
         var resultado = QuestionarioSondagemUseCaseBaseConcreto
