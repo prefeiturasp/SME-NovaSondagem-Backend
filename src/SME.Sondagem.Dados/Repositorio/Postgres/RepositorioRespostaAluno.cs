@@ -110,7 +110,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
             .Where(ra =>
-                ra.Questao.Questionario.ModalidadeId == modalidadeId &&
+                ra.Questao.Questionario.ModalidadeId == modalidadeId && ra.OpcaoRespostaId !=null &&
                 //ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId && numeros.Contains((int)ra.AlunoId))
                  ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
             .OrderBy(ra => ra.AlunoId)
