@@ -10,6 +10,14 @@ public class MensagemRabbit
         CodigoCorrelacao = codigoCorrelacao;
     }
 
+    public MensagemRabbit(string usuarioLogadoRF, object mensagem, Guid codigoCorrelacao)
+    {
+        UsuarioLogadoRF = usuarioLogadoRF;
+        Mensagem = mensagem;
+        CodigoCorrelacao = codigoCorrelacao;
+    }
+
+    public string? UsuarioLogadoRF { get; set; }
     public object Mensagem { get; set; }
     public Guid CodigoCorrelacao { get; set; }
 

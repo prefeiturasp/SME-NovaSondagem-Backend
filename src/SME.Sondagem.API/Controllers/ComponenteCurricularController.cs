@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 
@@ -24,11 +25,11 @@ public class ComponenteCurricularController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Listar(CancellationToken cancellationToken)
+    public async Task<IActionResult> Listar([FromQuery] Modalidade IdModalidade,  CancellationToken cancellationToken)
     {
         try
         {
-            var componentes = await _useCase.ListarAsync(cancellationToken);
+           var componentes = await _useCase.ListarAsync(IdModalidade, cancellationToken);
             return Ok(componentes);
         }
         catch (OperationCanceledException)
@@ -78,6 +79,30 @@ public class ComponenteCurricularController : ControllerBase
                 return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_EOL_NAO_ENCONTRADO, codigoEol)  });
 
             return Ok(componente);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(499, new { mensagem = MensagemNegocioComuns.REQUISICAO_CANCELADA });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { mensagem = "Erro ao obter componente curricular" });
+        }
+    }
+
+    [HttpGet("modalidade/{modalidade}")]
+    [ProducesResponseType(typeof(IEnumerable<ComponenteCurricularDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterPorModalidade(string modalidade, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var componentes = (await _useCase.ObterPorModalidadeAsync(modalidade, cancellationToken))?.ToList();
+
+            if (componentes is null || componentes.Count == 0)
+                return NotFound(new { mensagem = string.Format(MensagemNegocioComuns.COMPONENTE_CURRICULAR_MODALIDADE_NAO_ENCONTRADO, modalidade) });
+
+            return Ok(componentes);
         }
         catch (OperationCanceledException)
         {

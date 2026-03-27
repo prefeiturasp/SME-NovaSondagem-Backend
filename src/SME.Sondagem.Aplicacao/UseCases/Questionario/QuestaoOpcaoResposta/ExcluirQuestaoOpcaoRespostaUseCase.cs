@@ -19,6 +19,6 @@ public class ExcluirQuestaoOpcaoRespostaUseCase : IExcluirQuestaoOpcaoRespostaUs
         if (opcaoQuestaoRespostaExistente == null)
             return false;
 
-        return await questaoOpcaoRespostaRepositorio.RemoverLogico(id, cancellationToken: cancellationToken)>0;
+        return await questaoOpcaoRespostaRepositorio.RemoverLogico(id, cancellationToken: cancellationToken) > 0;
     }
 }

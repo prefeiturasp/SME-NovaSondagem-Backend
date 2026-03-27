@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="ClosedXML" Version="0.105.0" />
+        <PackageReference Include="CsvHelper" Version="33.1.0" />
         <PackageReference Include="FluentValidation" Version="12.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.12" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
@@ -21,7 +23,6 @@
 
     <ItemGroup>
         <Folder Include="Interfaces\Services\Auditoria\" />
-        <Folder Include="Services\SGP\" />
     </ItemGroup>
 
 </Project>

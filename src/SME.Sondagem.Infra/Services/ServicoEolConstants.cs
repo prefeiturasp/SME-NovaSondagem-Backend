@@ -79,7 +79,9 @@ namespace SME.Sondagem.Infra.Services
 
         public const string URL_ALUNOS_INFORMACOES = "alunos/{0}/informacoes";
 
-        public const string URL_ALUNOS_ALUNOS_PAP = "alunos/alunos-pap/{0}";
+        public const string URL_ALUNOS_ALUNOS_PAP = "alunos/alunos-pap/{0}"; 
+
+        public const string URL_ALUNOS_TURMA_INFORMACOES = "alunos/{0}/turma/informacoes";
 
         public const string URL_ALUNOS_TURMAS = "alunos/{0}/turmas";
 
@@ -266,5 +268,6 @@ namespace SME.Sondagem.Infra.Services
         public const string URL_MATRICULA_TURMA_ESCOLA_ALUNO = "turmas/matricula-turma-escola-aluno";
         public const string URL_USUARIOS_CORESSO_POR_LOGIN = "v1/usuarios/coresso/login/{0}";
         public const string URL_USUARIOS_CORESSO_PAGINADO = "v1/usuarios/coresso/todos?paginaAtual={0}&registrosPorPagina={1}";
+        public const string URL_OBTER_UE_COM_DRE = "escolas";
     }
 }

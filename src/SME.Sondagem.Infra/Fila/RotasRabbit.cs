@@ -7,5 +7,5 @@ public class RotasRabbit
     public static string RotaLogs => "ApplicationLog";
     public static string Log => "ApplicationLog";
 
-    public const string IniciarSync = "Sondagem.iniciar.sync";
+    public const string RelatorioSondagemPorTurma = "sr.sondagem.relatorios.solicitados.sondagem.por.turma";
 }

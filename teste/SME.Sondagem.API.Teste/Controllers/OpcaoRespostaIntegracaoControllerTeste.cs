@@ -41,7 +41,6 @@ public class OpcaoRespostaIntegracaoControllerTeste
     private static OpcaoRespostaDto CriarDto(int id = 1, int ordem = 1, string descricao = "Opção A")
         => new()
         {
-            Id = id,
             Ordem = ordem,
             DescricaoOpcaoResposta = descricao,
             Legenda = "Legenda teste",
@@ -145,7 +144,6 @@ public class OpcaoRespostaIntegracaoControllerTeste
 
         var opcao = okResult.Value.Should().BeOfType<OpcaoRespostaDto>().Subject;
         opcao.Should().BeEquivalentTo(opcaoEsperada);
-        opcao.Id.Should().Be(idEsperado);
 
         _obterPorIdMock.Verify(x => x.ExecutarAsync(idEsperado, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -193,7 +191,6 @@ public class OpcaoRespostaIntegracaoControllerTeste
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var opcao = okResult.Value.Should().BeOfType<OpcaoRespostaDto>().Subject;
-        opcao.Id.Should().Be(id);
     }
 
     #endregion
@@ -373,7 +370,6 @@ public class OpcaoRespostaIntegracaoControllerTeste
         const int id = 1;
         var dtoAtualizado = new OpcaoRespostaDto
         {
-            Id = id,
             Ordem = 10,
             DescricaoOpcaoResposta = "Descrição Atualizada",
             Legenda = "Nova Legenda",

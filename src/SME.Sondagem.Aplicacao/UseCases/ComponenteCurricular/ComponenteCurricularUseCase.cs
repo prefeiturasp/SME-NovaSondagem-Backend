@@ -2,6 +2,7 @@ using FluentValidation;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infrastructure.Dtos.ComponenteCurricular;
 using System.Net;
 
@@ -102,9 +103,12 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         return entidade != null ? MapearParaDto(entidade) : null;
     }
 
-    public async Task<IEnumerable<ComponenteCurricularDto>> ListarAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ComponenteCurricularDto>> ListarAsync(Modalidade idModalidade, CancellationToken cancellationToken = default)
     {
         var entidades = await _repositorio.ListarAsync(cancellationToken);
+
+        entidades = entidades.Where(c => c.ModalidadeComponenteCurricular?.Any(m => m.ModalidadeId == idModalidade) ?? false);
+
         return entidades.Select(MapearParaDto);
     }
 
@@ -118,6 +122,12 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
     {
         var entidade = await _repositorio.ObterPorCodigoEolAsync(codigoEol, cancellationToken);
         return entidade != null ? MapearParaDto(entidade) : null;
+    }
+
+    public async Task<IEnumerable<ComponenteCurricularDto>> ObterPorModalidadeAsync(string modalidade, CancellationToken cancellationToken = default)
+    {
+        var entidades = await _repositorio.ObterPorModalidadeAsync(modalidade, cancellationToken);
+        return entidades.Select(MapearParaDto).ToList();
     }
 
     private static ComponenteCurricularDto MapearParaDto(Dominio.Entidades.ComponenteCurricular entidade)

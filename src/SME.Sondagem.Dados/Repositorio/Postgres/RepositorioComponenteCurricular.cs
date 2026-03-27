@@ -23,6 +23,20 @@ public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricu
             .FirstOrDefaultAsync(c => c.CodigoEol == codigoEol, cancellationToken);
     }
 
+    public async Task<ComponenteCurricular?> ObterPorNomeModalidade(string nome,string modalidadeId,CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(c => c.Nome == nome &&  c.Modalidade == modalidadeId, cancellationToken);
+    }
+
+    public async Task<IEnumerable<ComponenteCurricular>> ObterPorModalidadeAsync(string modalidade,
+       CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(c => c.Modalidade == modalidade)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IEnumerable<ComponenteCurricular>> ObterPorAnoAsync(int ano,
         CancellationToken cancellationToken = default)
     {
@@ -42,5 +56,13 @@ public class RepositorioComponenteCurricular : RepositorioBase<ComponenteCurricu
             query = query.Where(c => c.Id != idIgnorar.Value);
 
         return await query.AnyAsync(c => c.CodigoEol == codigoEol, cancellationToken);
+    }
+
+    public override async Task<IEnumerable<ComponenteCurricular>> ListarAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.AsNoTracking()
+            .Include(c => c.ModalidadeComponenteCurricular)
+            .OrderBy(c => c.Nome)
+            .ToListAsync(cancellationToken);        
     }
 }

@@ -26,7 +26,10 @@ public class TurmaElasticDto
 
     [JsonPropertyName("Modalidade")]
     public int Modalidade { get; set; }
-    
+
+    [JsonPropertyName("Semestre")]
+    public int Semestre { get; set; }
+
     [JsonPropertyName("AnoTurma")]
     public string AnoTurma { get; set; } = string.Empty;
 
@@ -40,6 +43,16 @@ public class TurmaElasticDto
 [ExcludeFromCodeCoverage]
 public class ComponenteCurricularElasticDto
 {
+    public ComponenteCurricularElasticDto(string nome, int codigo)
+    {
+        Nome = nome;
+        Codigo = codigo;
+    }
+    public ComponenteCurricularElasticDto()
+    {
+
+    }
+
     [JsonPropertyName("NomeComponenteCurricular")]
     public string Nome { get; set; } = string.Empty;
 

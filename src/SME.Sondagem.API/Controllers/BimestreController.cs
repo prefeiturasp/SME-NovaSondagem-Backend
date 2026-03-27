@@ -34,11 +34,11 @@ public class BimestreController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<BimestreDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Listar(CancellationToken cancellationToken)
+    public async Task<IActionResult> Listar(int modalidade, CancellationToken cancellationToken)
     {
         try
         {
-            var bimestres = await _obterBimestreUseCase.ExecutarAsync(cancellationToken);
+            var bimestres = await _obterBimestreUseCase.ExecutarAsync(modalidade, cancellationToken);
             return Ok(bimestres);
         }
         catch (OperationCanceledException)
