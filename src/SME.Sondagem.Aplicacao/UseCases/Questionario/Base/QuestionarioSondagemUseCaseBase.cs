@@ -9,6 +9,7 @@ using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Interfaces;
+using System.Linq;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
@@ -477,8 +478,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         IEnumerable<AlunoElasticDto> alunosAtivos,
         DateTime dataInicioSondagem)
     {
+        var alunosComResposta = respostasAlunosPorQuestoes.Values
+            .Select(r => r.AlunoId)
+            .ToHashSet();
+
         var codigosAlunosAtivos = alunosAtivos
-            .Where(a => a.DataSituacao.Date <= dataInicioSondagem.Date)
+            .Where(a =>
+                a.DataSituacao.Date <= dataInicioSondagem.Date ||
+                alunosComResposta.Contains(a.CodigoAluno))
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
