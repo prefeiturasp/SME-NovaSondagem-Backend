@@ -95,8 +95,6 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (config == null)
                 return null;
 
-            var configuracaoPadrao = options.ConfiguracaoPerfis.First();
-
             return new PerfilInfoSondagemDto
             {
                 Codigo = perfilDto.Id,
@@ -105,7 +103,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 PermiteInserir = perfilDto.PermiteInserir,
                 PermiteAlterar = perfilDto.PermiteAlterar,
                 PermiteExcluir = perfilDto.PermiteExcluir,
-                TipoValidacao = configuracaoPadrao.TipoValidacao,
+                TipoValidacao = config.TipoValidacao,
                 ConsultarAbrangencia = config.ConsultarAbrangencia,
                 AcessoIrrestrito = config.AcessoIrrestrito
             };

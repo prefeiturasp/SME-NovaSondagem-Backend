@@ -74,6 +74,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             {
                 "Regencia" => ValidarPorRegencia(acessos, turmaId),
                 "UE" => await ValidarPorUEAsync(acessos, turmaId, cancellationToken),
+                "AcessoTotal" => true,
                 _ => false
             };
         }
@@ -140,10 +141,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (string.IsNullOrWhiteSpace(login))
                 return Enumerable.Empty<ControleAcessoDto>();
 
-            var chave = string.Format(
-                NomeChaveCache.CONTROLE_ACESSO_USUARIO,
-                login,
-                perfilInfo.Codigo);
+            var chave = string.Format(NomeChaveCache.CONTROLE_ACESSO_USUARIO, login, perfilInfo.Codigo, perfilInfo?.Nome!.Trim(), perfilInfo?.AcessoIrrestrito.ToString());
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
