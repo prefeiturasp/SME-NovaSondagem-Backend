@@ -87,10 +87,10 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             PerfilInfoEolDto perfilDto,
             ControleAcessoOptions options)
         {
-            var codigoPerfil = perfilDto.Id.ToString().ToUpperInvariant();
+            var codigoPerfil = perfilDto.Id.ToString().ToUpper();
 
             var config = options.ConfiguracaoPerfis
-                .FirstOrDefault(x => x.Codigo.ToString().ToUpperInvariant() == codigoPerfil);
+                .FirstOrDefault(x => x.Codigo.ToString().ToUpper().Equals(codigoPerfil, StringComparison.CurrentCultureIgnoreCase));
 
             if (config == null)
                 return SemAcesso();

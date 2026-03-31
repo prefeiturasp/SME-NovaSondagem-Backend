@@ -65,6 +65,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             var acessos = await ObterControleAcessoUsuarioAutenticadoAsync(
                 perfilInfo,
+                codigoEscola, anoTurma,
                 cancellationToken);
 
             if (!acessos.Any())
@@ -129,6 +130,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         private async Task<IEnumerable<ControleAcessoDto>>
             ObterControleAcessoUsuarioAutenticadoAsync(
                 PerfilInfoSondagemDto perfilInfo,
+                string codigoEscola,
+                string anoTurma,
                 CancellationToken cancellationToken)
         {
             var usuario = httpContextAccessor.HttpContext?.User;
@@ -158,7 +161,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 ? string.Format(
                     ServicoEolConstants.URL_COMPONENTES_CURRICULARES_FUNCIONARIOS,
                     login,
-                    perfilInfo.Codigo)
+                    perfilInfo!.Codigo,
+                    codigoEscola,
+                    anoTurma)
                 : string.Format(
                     ServicoEolConstants.URL_ABRANGENCIA_COMPACTA_VIGENTE_PERFIL,
                     login,

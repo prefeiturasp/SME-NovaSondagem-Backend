@@ -172,8 +172,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             var accessor = CriarHttpContextAccessor(true, rf: RF_USUARIO, perfil: perfilId.ToString());
 
             _perfilServiceMock
-                .Setup(p => p.ObterPerfilPorIdAsync(perfilId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync((PerfilInfoSondagemDto?)null);
+                .Setup(p => p.ObterPerfilPorIdAsync(PERFIL_IRRESTRITO_ID, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CriarPerfilIrrestrito());
 
             var service = CriarService(accessor);
 
