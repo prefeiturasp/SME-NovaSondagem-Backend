@@ -242,7 +242,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var useCase = CriarUseCase();
 
-        var ex = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var ex = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None));
 
         Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, ex.Message);
@@ -824,12 +824,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var alunosAtivos = new List<AlunoElasticDto> { alunoAtivo, alunoInativo };
 
         var respostaAtivo = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
-        var respostaInativo = CriarRespostaAluno(id: 2, opcaoRespostaId: 3, alunoId: 1002);
 
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
-            { (1001L, 1, 1L), respostaAtivo },
-            { (1002L, 1, 1L), respostaInativo }
+            { (1001L, 1, 1L), respostaAtivo }
         };
 
         var resultado = QuestionarioSondagemUseCaseBaseConcreto
@@ -961,7 +959,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
     {
         ConfigurarMocksCompletos();
         _mockControleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+             .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(true);
 
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
@@ -1147,7 +1148,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
             .ReturnsAsync((ICollection<SondagemPeriodoBimestre>?)null!);
 
         _mockControleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .ReturnsAsync(false);
 
         Dictionary<(long, long, int?), RespostaAluno> respostasDict;

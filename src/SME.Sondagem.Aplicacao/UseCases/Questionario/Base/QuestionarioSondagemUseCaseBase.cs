@@ -9,6 +9,7 @@ using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Interfaces;
+using System.Linq;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
@@ -66,7 +67,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected async Task<Dominio.Entidades.Sondagem.Sondagem> ObterSondagemAtiva(CancellationToken cancellationToken)
     {
         return await _repositoriosSondagem.RepositorioSondagem.ObterSondagemAtiva(cancellationToken)
-            ?? throw new ErroInternoException(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA);
+            ?? throw new RegraNegocioException(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA);
     }
 
     private async Task<object> ProcessarQuestionario(
@@ -104,7 +105,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 QuestaoId = questaoId,
                 SondagemId = sondagemAtiva.Id,
                 TituloTabelaRespostas = tituloTabelaRespostas,
-                PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), cancellationToken),
+                PodeSalvar = await _controleAcessoService.ValidarPermissaoAcessoAsync(turma.CodigoTurma.ToString(), turma.CodigoEscola, turma.AnoTurma, cancellationToken),
                 Estudantes = estudantes.OrderBy(e => e.Nome).ToList(),
                 InseridoPor = respostasProcessadas.InseridoPor,
                 AlteradoPor = respostasProcessadas.AlteradoPor,
@@ -477,8 +478,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         IEnumerable<AlunoElasticDto> alunosAtivos,
         DateTime dataInicioSondagem)
     {
+        var alunosComResposta = respostasAlunosPorQuestoes.Values
+            .Select(r => r.AlunoId)
+            .ToHashSet();
+
         var codigosAlunosAtivos = alunosAtivos
-            .Where(a => a.DataSituacao <= dataInicioSondagem)
+            .Where(a =>
+                a.DataSituacao.Date <= dataInicioSondagem.Date ||
+                alunosComResposta.Contains(a.CodigoAluno))
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
