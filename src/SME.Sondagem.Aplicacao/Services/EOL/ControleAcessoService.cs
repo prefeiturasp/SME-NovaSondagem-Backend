@@ -46,9 +46,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (!Guid.TryParse(perfilIdString, out var perfilId))
                 return false;
 
-            var perfilInfo = await perfilService.ObterPerfilPorIdAsync(perfilId, cancellationToken);
+            PerfilInfoSondagemDto perfilInfo = await perfilService.ObterPerfilPorIdAsync(perfilId, cancellationToken);
 
-            if (perfilInfo == null || !perfilInfo.PermiteConsultar)
+            if (string.IsNullOrEmpty(perfilInfo.Nome) || !perfilInfo.PermiteConsultar)
                 return false;
 
             if (perfilInfo.AcessoIrrestrito)
@@ -79,7 +79,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             };
         }
 
-        private bool ValidarPorRegencia(IEnumerable<ControleAcessoDto> acessos, string turmaId)
+        private static bool ValidarPorRegencia(IEnumerable<ControleAcessoDto> acessos, string turmaId)
         {
             return acessos.Any(a => a.Regencia && a.TurmaCodigos.Contains(turmaId));
         }
@@ -150,7 +150,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
-                return MapearControleAcesso(cacheRedis, perfilInfo);
+                return MapearControleAcesso(cacheRedis, perfilInfo!);
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 

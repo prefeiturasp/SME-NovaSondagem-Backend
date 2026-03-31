@@ -29,7 +29,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 ?? throw new ArgumentNullException(nameof(repositorioControleAcessoOptions));
         }
 
-        public async Task<PerfilInfoSondagemDto?> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<PerfilInfoSondagemDto> ObterPerfilPorIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var cacheKey = $"{CacheKeyPrefix}{id}";
 
@@ -41,15 +41,15 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var perfisDto = await BuscarPerfisNaApiAsync(options, cancellationToken);
 
             if (perfisDto == null)
-                return null;
+                return SemAcesso();
 
             var perfilDto = perfisDto.FirstOrDefault(p => p.Id == id);
             if (perfilDto == null)
-                return null;
+                return SemAcesso();
 
-            var perfilInfo = CombinarPerfilComConfiguracao(perfilDto, options);
+            PerfilInfoSondagemDto perfilInfo = CombinarPerfilComConfiguracao(perfilDto, options);
 
-            if (perfilInfo != null)
+            if (!string.IsNullOrEmpty(perfilInfo.Nome))
                 await _repositorioCache.SalvarRedisAsync(cacheKey, perfilInfo, CacheTtlMinutos);
 
             return perfilInfo;
@@ -83,7 +83,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 ?? throw new InvalidOperationException("Nenhuma configuração de controle de acesso encontrada.");
         }
 
-        private static PerfilInfoSondagemDto? CombinarPerfilComConfiguracao(
+        private static PerfilInfoSondagemDto CombinarPerfilComConfiguracao(
             PerfilInfoEolDto perfilDto,
             ControleAcessoOptions options)
         {
@@ -93,7 +93,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 .FirstOrDefault(x => x.Codigo.ToString().ToUpperInvariant() == codigoPerfil);
 
             if (config == null)
-                return null;
+                return SemAcesso();
 
             return new PerfilInfoSondagemDto
             {
@@ -106,6 +106,22 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 TipoValidacao = config.TipoValidacao,
                 ConsultarAbrangencia = config.ConsultarAbrangencia,
                 AcessoIrrestrito = config.AcessoIrrestrito
+            };
+        }
+
+        private static PerfilInfoSondagemDto SemAcesso()
+        {
+            return new PerfilInfoSondagemDto
+            {
+                Codigo = Guid.NewGuid(),
+                Nome = string.Empty,
+                PermiteConsultar = false,
+                PermiteInserir = false,
+                PermiteAlterar = false,
+                PermiteExcluir = false,
+                TipoValidacao = string.Empty,
+                ConsultarAbrangencia = false,
+                AcessoIrrestrito = false
             };
         }
     }
