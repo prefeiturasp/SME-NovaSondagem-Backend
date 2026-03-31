@@ -141,7 +141,12 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (string.IsNullOrWhiteSpace(login))
                 return Enumerable.Empty<ControleAcessoDto>();
 
-            var chave = string.Format(NomeChaveCache.CONTROLE_ACESSO_USUARIO, login, perfilInfo.Codigo, perfilInfo?.Nome!.Trim(), perfilInfo?.AcessoIrrestrito.ToString());
+            var chave = string.Format(
+                            NomeChaveCache.CONTROLE_ACESSO_USUARIO,
+                            login,
+                            perfilInfo.Codigo,
+                            perfilInfo?.Nome?.Trim() ?? string.Empty,
+                            perfilInfo?.AcessoIrrestrito.ToString());
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
@@ -149,7 +154,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 
-            var url = perfilInfo.TipoValidacao == "Regencia"
+            var url = perfilInfo?.TipoValidacao == "Regencia"
                 ? string.Format(
                     ServicoEolConstants.URL_COMPONENTES_CURRICULARES_FUNCIONARIOS,
                     login,
@@ -157,7 +162,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 : string.Format(
                     ServicoEolConstants.URL_ABRANGENCIA_COMPACTA_VIGENTE_PERFIL,
                     login,
-                    perfilInfo.Codigo);
+                    perfilInfo?.Codigo);
 
             var response = await httpClient.GetAsync(url, cancellationToken);
 

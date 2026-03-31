@@ -86,6 +86,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         private static PerfilInfoSondagemDto CriarPerfilRegencia() => new()
         {
             Codigo = PERFIL_PROFESSOR_ID,
+            Nome = "Professor",          
             PermiteConsultar = true,
             AcessoIrrestrito = false,
             ConsultarAbrangencia = true,
@@ -96,6 +97,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         {
             Codigo = PERFIL_GESTAO_ID,
             PermiteConsultar = true,
+            Nome = "Gestao UE",
             AcessoIrrestrito = false,
             ConsultarAbrangencia = true,
             TipoValidacao = "UE"
@@ -668,6 +670,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 .ReturnsAsync(new PerfilInfoSondagemDto
                 {
                     Codigo = perfilId,
+                    Nome = "Tipo Desconhecido",
                     PermiteConsultar = true,
                     AcessoIrrestrito = false,
                     ConsultarAbrangencia = true,
