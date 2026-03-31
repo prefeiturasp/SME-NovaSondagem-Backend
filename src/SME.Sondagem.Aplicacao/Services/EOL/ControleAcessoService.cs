@@ -46,9 +46,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (!Guid.TryParse(perfilIdString, out var perfilId))
                 return false;
 
-            PerfilInfoSondagemDto perfilInfo = await perfilService.ObterPerfilPorIdAsync(perfilId, cancellationToken);
+            var perfilInfo = await perfilService.ObterPerfilPorIdAsync(perfilId, cancellationToken);
 
-            if (string.IsNullOrEmpty(perfilInfo.Nome) || !perfilInfo.PermiteConsultar)
+            if (perfilInfo is null || !perfilInfo.PermiteConsultar)
                 return false;
 
             if (perfilInfo.AcessoIrrestrito)
@@ -175,7 +175,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             await repositorioCache.SalvarRedisToJsonAsync(chave, json);
 
-            return MapearControleAcesso(json, perfilInfo);
+            return MapearControleAcesso(json, perfilInfo!);
         }
 
         private static IEnumerable<ControleAcessoDto> MapearControleAcesso(

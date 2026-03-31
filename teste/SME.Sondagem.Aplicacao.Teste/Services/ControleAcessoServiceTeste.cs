@@ -77,6 +77,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         private static PerfilInfoSondagemDto CriarPerfilIrrestrito() => new()
         {
             Codigo = PERFIL_IRRESTRITO_ID,
+            Nome = "Irrestrito",
             PermiteConsultar = true,
             AcessoIrrestrito = true,
             ConsultarAbrangencia = false,
