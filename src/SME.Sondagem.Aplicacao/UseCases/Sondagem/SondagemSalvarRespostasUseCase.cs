@@ -39,10 +39,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var alunosIds = dto.Alunos.Select(a => a.Codigo);
         var questoesId = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)) ?? [0];
 
-        var questoes = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId);
-        if (questoes == null)
-            throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
-
+        var questoes = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId) ?? throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
         var primeiroQuestionarioId = questoes.FirstOrDefault()!.QuestionarioId;
         var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(primeiroQuestionarioId, TipoQuestao.LinguaPortuguesaSegundaLingua);
 
@@ -61,19 +58,35 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return await _repositorioSondagemResposta.SalvarAsync(respostas);
     }
 
-    private async Task<bool> ValidarSalvarSondagem(SondagemSalvarDto dto)
+    private async Task ValidarSalvarSondagem(SondagemSalvarDto dto)
     {
-        if (dto == null) return false;
+        if (dto == null)
+            throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_DADOS_SALVAR_SONDAGEM);
 
-        if (string.IsNullOrEmpty(dto.TurmaId))
-            throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM);
+        ValidarCamposObrigatorios(dto);
 
-        bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId);
+        bool temPermissao = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId.ToString());
 
-        if (!retorno)
+        if (!temPermissao)
             throw new RegraNegocioException(MensagemNegocioComuns.SEM_PERMISSAO_SALVAR_SONDAGEM);
+    }
 
-        return retorno;
+    private static void ValidarCamposObrigatorios(SondagemSalvarDto dto)
+    {
+        var regras = new (Func<SondagemSalvarDto, bool> Invalido, string Mensagem)[]
+        {
+        (d => d.TurmaId == 0,                           MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM),
+        (d => d.UeId == 0,                              MensagemNegocioComuns.INFORMAR_UE_SALVAR_SONDAGEM),
+        (d => d.DreId == 0,                             MensagemNegocioComuns.INFORMAR_DRE_SALVAR_SONDAGEM),
+        (d => d.AnoLetivo == 0,                         MensagemNegocioComuns.INFORMAR_ANO_LETIVO_SALVAR_SONDAGEM),
+        (d => !Enum.IsDefined(typeof(Modalidade), d.ModalidadeId), MensagemNegocioComuns.INFORMAR_MODALIDADE_SALVAR_SONDAGEM),
+        };
+
+        foreach (var (invalido, mensagem) in regras)
+        {
+            if (invalido(dto))
+                throw new RegraNegocioException(mensagem);
+        }
     }
 
     private async Task<Dominio.Entidades.Sondagem.Sondagem> ObterEValidarSondagemAtiva(int sondagemId)
@@ -104,7 +117,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     dto.SondagemId,
                     aluno,
                     questaoLinguaPortuguesa,
-                    respostasExistentes));
+                    respostasExistentes, dto));
             }
 
             foreach (var respostaDto in aluno.Respostas)
@@ -114,7 +127,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     aluno.Codigo,
                     respostaDto,
                     periodosBimestresAtivos,
-                    respostasExistentes);
+                    respostasExistentes, dto);
 
                 if (resposta != null)
                     respostas.Add(resposta);
@@ -128,7 +141,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     int sondagemId,
     AlunoSondagemDto aluno,
     Dominio.Entidades.Questionario.Questao questao,
-    IEnumerable<RespostaAluno> respostasExistentes)
+    IEnumerable<RespostaAluno> respostasExistentes, SondagemSalvarDto sondagemSalvarDto)
     {
         var respostaExistente = respostasExistentes.FirstOrDefault(r =>
             r.AlunoId == aluno.Codigo &&
@@ -143,7 +156,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (respostaExistente != null)
         {
-            respostaExistente.AtualizarResposta(opcaoRespostaId, DateTimeExtension.HorarioBrasilia());
+            respostaExistente.AtualizarResposta(opcaoRespostaId, DateTimeExtension.HorarioBrasilia(), sondagemSalvarDto.TurmaId, sondagemSalvarDto.DreId, sondagemSalvarDto.UeId, sondagemSalvarDto.ModalidadeId);
             return respostaExistente;
         }
 
@@ -153,6 +166,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             questao.Id,
             opcaoRespostaId,
             DateTimeExtension.HorarioBrasilia(),
+            sondagemSalvarDto.TurmaId,
+            sondagemSalvarDto.UeId,
+            sondagemSalvarDto.DreId,
+            sondagemSalvarDto.AnoLetivo,
+            sondagemSalvarDto.ModalidadeId,
             null);
     }
 
@@ -161,7 +179,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         int alunoId,
         RespostaSondagemDto respostaDto,
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
-        IEnumerable<RespostaAluno> repostasAlunos)
+        IEnumerable<RespostaAluno> repostasAlunos, SondagemSalvarDto sondagemSalvarDto)
     {
         var periodoBimestreAtivo = periodosBimestresAtivos
             .FirstOrDefault(pb => pb.BimestreId == respostaDto.BimestreId);
@@ -176,7 +194,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             sondagemId,
             alunoId,
             respostaDto,
-            respostaExistente);
+            respostaExistente, sondagemSalvarDto);
     }
 
     private static bool ValidarPeriodoBimestre(SondagemPeriodoBimestre? periodoBimestreAtivo)
@@ -192,7 +210,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         int sondagemId,
         int alunoId,
         RespostaSondagemDto respostaDto,
-        RespostaAluno? respostaExistente)
+        RespostaAluno? respostaExistente, SondagemSalvarDto sondagemSalvarDto)
     {
         if (respostaExistente == null)
             return new RespostaAluno(
@@ -201,8 +219,13 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 respostaDto.QuestaoId,
                 respostaDto.OpcaoRespostaId,
                 DateTime.UtcNow,
+                sondagemSalvarDto.TurmaId,
+                sondagemSalvarDto.UeId,
+                sondagemSalvarDto.DreId,
+                sondagemSalvarDto.AnoLetivo,
+                sondagemSalvarDto.ModalidadeId,
                 respostaDto.BimestreId);
-        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow);
+        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow, sondagemSalvarDto.TurmaId, sondagemSalvarDto.DreId, sondagemSalvarDto.UeId, sondagemSalvarDto.ModalidadeId);
         return respostaExistente;
     }
 }

@@ -25,7 +25,12 @@ public static class MensagemNegocioComuns
     public const string MODALIDADE_ID_MAIOR_QUE_ZERO = "Modalidade deve ser maior que zero.";
     public const string QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO = "As questões informadas não pertencem a um questionário válido.";
     public const string TURMA_NAO_LOCALIZADA = "Turma não localizada";
-    public const string INFORMAR_TURMA_SALVAR_SONDAGEM = "Informar a turma para salvar a Sondagem.";
+    public const string INFORMAR_TURMA_SALVAR_SONDAGEM = "É necessário informar a turma antes de salvar a Sondagem;";
+    public const string INFORMAR_UE_SALVAR_SONDAGEM = "É necessário informar a UE antes de salvar a Sondagem";
+    public const string INFORMAR_DRE_SALVAR_SONDAGEM = "É necessário informar a DRE antes de salvar a Sondagem";
+    public const string INFORMAR_ANO_LETIVO_SALVAR_SONDAGEM = "É necessário informar o ano letivo antes de salvar a Sondagem";
+    public const string INFORMAR_MODALIDADE_SALVAR_SONDAGEM = "É necessário informar a modalidade Letivo antes de salvar a Sondagem";
+    public const string INFORMAR_DADOS_SALVAR_SONDAGEM = "É necessário informar os dados da sondagem para salvar a Sondagem";
     public const string SEM_PERMISSAO_SALVAR_SONDAGEM = "Você não possui permissão para salvar a Sondagem.";
     public const string MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA = "Somente é possível utilizar a Sondagem para turmas de 1° a 3º no do Ensino Fundamental e etapa de alfabetização da EJA.";
     public const string ANO_LETIVO_TURMA_SONDAGEM_INVALIDA = "A Sondagem não se aplica para turmas deste ano letivo.";

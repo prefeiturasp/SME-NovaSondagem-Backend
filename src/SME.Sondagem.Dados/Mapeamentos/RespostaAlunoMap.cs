@@ -43,6 +43,22 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasColumnName("bimestre_id")
             .IsRequired(false);
 
+        builder.Property(x => x.TurmaId)
+               .HasColumnName("turma_id")
+               .IsRequired(false);
+        
+        builder.Property(x => x.UeId)
+               .HasColumnName("ue_id")
+               .IsRequired(false);
+        
+        builder.Property(x => x.DreId)
+               .HasColumnName("dre_id")
+               .IsRequired(false);
+        
+        builder.Property(x => x.ModalidadeId)
+               .HasColumnName("modalidade_id")
+               .IsRequired(false);
+
         ConfigurarAuditoria(builder);
 
         builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId, x.BimestreId })
