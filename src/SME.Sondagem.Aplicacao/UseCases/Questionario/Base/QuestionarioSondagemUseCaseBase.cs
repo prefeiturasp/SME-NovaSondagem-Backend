@@ -611,7 +611,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             : primeiraQuestao?.Nome ?? string.Empty;
     }
 
-    protected async Task<DadosAlunosDto> ObterDadosAlunos(int turmaId, int anoLetivo, ContextoProcessamentoDto contexto, CancellationToken cancellationToken)
+    protected virtual async Task<DadosAlunosDto> ObterDadosAlunos(int turmaId, int anoLetivo, ContextoProcessamentoDto contexto, CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
             contexto.CodigosAlunos,

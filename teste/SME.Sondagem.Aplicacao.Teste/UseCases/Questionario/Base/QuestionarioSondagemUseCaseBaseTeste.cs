@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
@@ -38,7 +38,7 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         };
     }
 
-    protected Task<DadosAlunosDto> ObterDadosAlunos(
+    protected override Task<DadosAlunosDto> ObterDadosAlunos(
         int turmaId,
         int anoLetivo,
         ContextoProcessamentoDto contexto,

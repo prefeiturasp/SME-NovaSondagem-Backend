@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -20,10 +20,10 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         IAlunoPapService alunoPapService,
         IAlunoTurmaService alunoTurmaService,
         IControleAcessoService controleAcessoService,
-        IServicoUsuario servicoUsuario,
-        IAlunoTurmaService _alunoTurmaService)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, _alunoTurmaService)
+        IServicoUsuario servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, alunoTurmaService)
     {
+        ArgumentNullException.ThrowIfNull(alunoTurmaService);
     }
 
     public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
