@@ -29,7 +29,9 @@ public static class MensagemNegocioComuns
     public const string INFORMAR_UE_SALVAR_SONDAGEM = "É necessário informar a UE antes de salvar a Sondagem";
     public const string INFORMAR_DRE_SALVAR_SONDAGEM = "É necessário informar a DRE antes de salvar a Sondagem";
     public const string INFORMAR_ANO_LETIVO_SALVAR_SONDAGEM = "É necessário informar o ano letivo antes de salvar a Sondagem";
-    public const string INFORMAR_MODALIDADE_SALVAR_SONDAGEM = "É necessário informar a modalidade Letivo antes de salvar a Sondagem";
+    public const string INFORMAR_MODALIDADE_SALVAR_SONDAGEM = "É necessário informar a modalidade antes de salvar a Sondagem";
+    public const string INFORMAR_GENERO_SALVAR_SONDAGEM = "É necessário informar o gênero antes de salvar a Sondagem";
+    public const string INFORMAR_RACA_SALVAR_SONDAGEM = "É necessário informar a raça antes de salvar a Sondagem";
     public const string INFORMAR_DADOS_SALVAR_SONDAGEM = "É necessário informar os dados da sondagem para salvar a Sondagem";
     public const string SEM_PERMISSAO_SALVAR_SONDAGEM = "Você não possui permissão para salvar a Sondagem.";
     public const string MODALIDADE_SERIEANO_TURMA_SONDAGEM_INVALIDA = "Somente é possível utilizar a Sondagem para turmas de 1° a 3º no do Ensino Fundamental e etapa de alfabetização da EJA.";

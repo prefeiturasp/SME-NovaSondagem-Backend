@@ -1357,13 +1357,15 @@ public class QuestionarioSondagemUseCaseBaseTeste
         int questaoId = 1,
         int bimestreId = 1)
     {
-        var turmaid = 1;
-        var dreId = 2;
-        var ueId = 3;
-        var modalidadeId = 4;
+        var turmaid = "1";
+        var dreId = "2";
+        var ueId = "3";
+        var modalidadeId = "4";
         var anoLetivo = 2026;
+        var raca = "Parda";
+        var genero = "Feminino";
 
-        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId, bimestreId);
+        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId, raca, genero, bimestreId);
         resposta.GetType().BaseType?.GetProperty("Id")?.SetValue(resposta, id);
         return resposta;
     }

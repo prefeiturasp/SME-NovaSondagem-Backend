@@ -5,7 +5,7 @@ namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 public class RespostaAluno : EntidadeBase
 {
     public RespostaAluno(int sondagemId, int alunoId, int questaoId, int? opcaoRespostaId, DateTime dataResposta,
-        int? turmaId, int? ueId, int? dreId, int? anoLetivo, int? modalidadeId, int? bimestreId = null)
+        string? turmaId, string? ueId, string? dreId, int? anoLetivo, string? modalidadeId,string? raca, string? genero,int? bimestreId = null)
     {
         SondagemId = sondagemId;
         AlunoId = alunoId;
@@ -13,11 +13,13 @@ public class RespostaAluno : EntidadeBase
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
         BimestreId = bimestreId;
-        TurmaId = ValidarId(turmaId, nameof(turmaId));
-        UeId = ValidarId(ueId, nameof(ueId));
-        DreId = ValidarId(dreId, nameof(dreId));
-        AnoLetivo = ValidarId(anoLetivo, nameof(anoLetivo));
-        ModalidadeId = ValidarId(modalidadeId, nameof(modalidadeId));
+        TurmaId = turmaId;
+        UeId = ueId;
+        DreId = dreId;
+        AnoLetivo = anoLetivo;
+        Raca = raca;
+        Genero = genero;
+        ModalidadeId = modalidadeId;
     }
 
     public int SondagemId { get; private set; }
@@ -26,26 +28,26 @@ public class RespostaAluno : EntidadeBase
     public int? OpcaoRespostaId { get; private set; }
     public DateTime DataResposta { get; private set; }
     public int? BimestreId { get; private set; }
-    public int? TurmaId { get; set; }
-    public int? UeId { get; set; }
-    public int? DreId { get; set; }
+    public string? TurmaId { get; set; }
+    public string? UeId { get; set; }
+    public string? DreId { get; set; }
     public int? AnoLetivo { get; set; }
-    public int? ModalidadeId { get; set; }
+    public string? ModalidadeId { get; set; }
+    public string? Raca { get; set; }
+    public string? Genero { get; set; }
 
-    public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta,int turmaId,int dreId, int ueId,int modalidadeId)
+    public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta,string? turmaId, string? ueId, string? dreId, int? anoLetivo, string? raca, string? genero,string? modalidadeId)
     {
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
-        TurmaId = turmaId;
-        DreId = dreId;
-        UeId = ueId;
-        ModalidadeId = modalidadeId;
+        TurmaId = TurmaId is null && turmaId is not null ? turmaId : TurmaId;
+        UeId = UeId is null && ueId is not null ? ueId : UeId;
+        DreId = DreId is null && dreId is not null ? dreId : DreId;
+        AnoLetivo = AnoLetivo is null && anoLetivo is not null ? anoLetivo : AnoLetivo;
+        Raca = Raca is null && raca is not null ? raca : Raca;
+        Genero = Genero is null && genero is not null ? genero : Genero;
+        ModalidadeId = ModalidadeId is null && modalidadeId is not null ? modalidadeId : ModalidadeId;
     }
-    
-    private static int ValidarId(int? valor, string nome) =>
-        valor is null or <= 0
-            ? throw new ArgumentException($"{nome} é obrigatório e deve ser maior que zero", nome)
-            : valor.Value;
 
     // Navegação
     public virtual Sondagem Sondagem { get; private set; } = null!;

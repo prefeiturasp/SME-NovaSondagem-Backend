@@ -30,6 +30,14 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
+    private readonly string RACA = "Parda";
+    private readonly string GENERO = "Feminino";
+    private readonly string TURMAID = "1";
+    private readonly string DREID = "2";
+    private readonly string UEID = "3";
+    private readonly string MODALIDADEID = "4";
+    private readonly int ANOLETIVO = 2026;
+
     public ObterQuestionarioSondagemUseCaseTeste()
     {
         _mockRepositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
@@ -468,11 +476,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var questaoRespondidaId = 13;
 
-        var turmaid = 1;
-        var dreId = 2;
-        var ueId = 3;
-        var modalidadeId = 4;
-        var anoLetivo = 2026;
 
         ConfigurarMocksBase(
             filtro,
@@ -501,11 +504,13 @@ public class ObterQuestionarioSondagemUseCaseTeste
             bimestreId: 1,
             opcaoRespostaId: 10,
             dataResposta: DateTime.Now,
-            turmaId: turmaid,
-            ueId: ueId,
-            dreId: dreId,
-            anoLetivo: anoLetivo,
-            modalidadeId: modalidadeId
+            turmaId: TURMAID,
+            ueId: UEID,
+            dreId: DREID,
+            anoLetivo: ANOLETIVO,
+            modalidadeId: MODALIDADEID,
+            raca: RACA,
+            genero: GENERO
         );
 
         respostaAluno.GetType().BaseType!

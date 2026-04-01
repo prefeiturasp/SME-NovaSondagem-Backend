@@ -3,7 +3,6 @@ using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
-using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
@@ -19,7 +18,13 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         private static readonly int[] AlunosIdsPadrao = [10, 20];
         private static readonly int[] AlunoIdUnico = [10];
         private static readonly int[] QuestaoIdUnica = [100];
-
+        private readonly string RACA = "Parda";
+        private readonly string GENERO = "Feminino";
+        private readonly string TURMAID = "1";
+        private readonly string DREID = "2";
+        private readonly string UEID = "3";
+        private readonly string MODALIDADE = "4";
+        private readonly int ANOLETIVO = 2026;
         #endregion
 
         #region Helpers
@@ -44,24 +49,20 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             return questao;
         }
 
-        private static RespostaAluno CriarRespostaAluno(
+        private  RespostaAluno CriarRespostaAluno(
             int alunoId,
             int questaoId,
             int sondagemId = 1,
             bool excluido = false)
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
+
 
             var resposta = new RespostaAluno(
                 sondagemId,
                 alunoId,
                 questaoId,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now, turmaid, ueId,dreId, anoLetivo, modalidadeId
+                dataResposta: DateTime.Now, TURMAID, UEID,DREID, ANOLETIVO, MODALIDADE,RACA,GENERO
             );
 
             typeof(RespostaAluno).GetProperty("Excluido")!.SetValue(resposta, excluido);
@@ -270,11 +271,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Arrange
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas));
 
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
+
 
             var respostaValida = new RespostaAluno(
                 sondagemId: 1,
@@ -282,7 +279,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                turmaid, ueId, dreId, anoLetivo, modalidadeId
+                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
             );
 
             var respostaOutroAluno = new RespostaAluno(
@@ -291,7 +288,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                turmaid, ueId, dreId, anoLetivo, modalidadeId
+                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
             );
 
             var respostaOutraQuestao = new RespostaAluno(
@@ -300,7 +297,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 999,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                turmaid, ueId, dreId, anoLetivo, modalidadeId
+                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
             );
 
             var respostaExcluida = new RespostaAluno(
@@ -309,7 +306,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                turmaid, ueId, dreId, anoLetivo, modalidadeId
+                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
             );
             respostaExcluida.Excluido = true;
 

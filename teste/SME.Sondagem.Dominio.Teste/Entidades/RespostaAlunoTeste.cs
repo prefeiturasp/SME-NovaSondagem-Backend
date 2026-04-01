@@ -4,8 +4,17 @@ using Xunit;
 
 namespace SME.Sondagem.Dominio.Teste.Entidades
 {
+
     public class RespostaAlunoTeste
     {
+        private readonly string RACA = "Parda";
+        private readonly string GENERO = "Feminino";
+        private readonly string TURMAID = "1";
+        private readonly string DREID = "2";
+        private readonly string UEID = "3";
+        private readonly string MODALIDADEID = "4";
+        private readonly int ANOLETIVO = 2026;
+
         [Fact]
         public void Deve_criar_resposta_aluno_com_dados_validos()
         {
@@ -14,13 +23,9 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var questaoId = 3;
             var opcaoRespostaId = 7;
             var dataResposta = new DateTime(2026, 1, 8);
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
 
-            var respostaAluno = new RespostaAluno(sondagemId, alunoId, questaoId, opcaoRespostaId, dataResposta,turmaid,ueId,dreId,anoLetivo,modalidadeId);
+
+            var respostaAluno = new RespostaAluno(sondagemId, alunoId, questaoId, opcaoRespostaId, dataResposta,TURMAID,UEID,DREID,ANOLETIVO,MODALIDADEID,RACA,GENERO);
 
             Assert.Equal(sondagemId, respostaAluno.SondagemId);
             Assert.Equal(alunoId, respostaAluno.AlunoId);
@@ -40,13 +45,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var dataResposta = new DateTime(2026, 1, 8);
             var bimestre = 2;
 
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-
-            var respostaAluno = new RespostaAluno(sondagemId, alunoId, questaoId, opcaoRespostaId, dataResposta, turmaid, ueId, dreId, anoLetivo, modalidadeId, bimestre);
+            var respostaAluno = new RespostaAluno(sondagemId, alunoId, questaoId, opcaoRespostaId, dataResposta, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO, bimestre);
 
             Assert.Equal(sondagemId, respostaAluno.SondagemId);
             Assert.Equal(alunoId, respostaAluno.AlunoId);
@@ -59,12 +58,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_sondagem()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId);
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO);
 
             Assert.NotNull(respostaAluno);
             Assert.Null(respostaAluno.Sondagem);
@@ -73,12 +67,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_aluno()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId);
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO);
 
             Assert.NotNull(respostaAluno);
         }
@@ -86,12 +75,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_questao()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId);
+
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO);
 
             Assert.NotNull(respostaAluno);
             Assert.Null(respostaAluno.Questao);
@@ -100,12 +85,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_opcao_resposta()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId);
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO);
 
             Assert.NotNull(respostaAluno);
             Assert.Null(respostaAluno.OpcaoResposta);
@@ -114,12 +94,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_possuir_navegacao_para_bimestre()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId, 5);
+
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO, 5);
 
             Assert.NotNull(respostaAluno);
             Assert.Null(respostaAluno.Bimestre);
@@ -128,13 +104,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
         [Fact]
         public void Deve_herdar_propriedades_da_entidade_base()
         {
-            var turmaid = 1;
-            var dreId = 2;
-            var ueId = 3;
-            var modalidadeId = 4;
-            var anoLetivo = 2026;
 
-            var respostaAluno = new RespostaAluno(15, 20, 25, 30, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId);
+            var respostaAluno = new RespostaAluno(15, 20, 25, 30, DateTime.Now, TURMAID, UEID, DREID, ANOLETIVO, MODALIDADEID, RACA, GENERO);
             respostaAluno.CriadoEm = DateTime.UtcNow;
             Assert.Equal(0, respostaAluno.Id);
             Assert.Null(respostaAluno.AlteradoEm);
