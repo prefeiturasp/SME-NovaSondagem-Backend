@@ -468,6 +468,12 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var questaoRespondidaId = 13;
 
+        var turmaid = 1;
+        var dreId = 2;
+        var ueId = 3;
+        var modalidadeId = 4;
+        var anoLetivo = 2026;
+
         ConfigurarMocksBase(
             filtro,
             new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2026 },
@@ -494,7 +500,12 @@ public class ObterQuestionarioSondagemUseCaseTeste
             alunoId: 1001,
             bimestreId: 1,
             opcaoRespostaId: 10,
-            dataResposta: DateTime.Now
+            dataResposta: DateTime.Now,
+            turmaId: turmaid,
+            ueId: ueId,
+            dreId: dreId,
+            anoLetivo: anoLetivo,
+            modalidadeId: modalidadeId
         );
 
         respostaAluno.GetType().BaseType!

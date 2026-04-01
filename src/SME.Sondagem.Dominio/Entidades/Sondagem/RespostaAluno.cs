@@ -5,7 +5,7 @@ namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 public class RespostaAluno : EntidadeBase
 {
     public RespostaAluno(int sondagemId, int alunoId, int questaoId, int? opcaoRespostaId, DateTime dataResposta,
-        int turmaId,int ueId,int dreId,int anoLetivo, int modalidadeId, int? bimestreId = null)
+        int? turmaId, int? ueId, int? dreId, int? anoLetivo, int? modalidadeId, int? bimestreId = null)
     {
         SondagemId = sondagemId;
         AlunoId = alunoId;
@@ -13,11 +13,11 @@ public class RespostaAluno : EntidadeBase
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
         BimestreId = bimestreId;
-        TurmaId = turmaId;
-        UeId = ueId;
-        DreId = dreId;
-        AnoLetivo = anoLetivo;
-        ModalidadeId = modalidadeId;
+        TurmaId = ValidarId(turmaId, nameof(turmaId));
+        UeId = ValidarId(ueId, nameof(ueId));
+        DreId = ValidarId(dreId, nameof(dreId));
+        AnoLetivo = ValidarId(anoLetivo, nameof(anoLetivo));
+        ModalidadeId = ValidarId(modalidadeId, nameof(modalidadeId));
     }
 
     public int SondagemId { get; private set; }
@@ -41,6 +41,11 @@ public class RespostaAluno : EntidadeBase
         UeId = ueId;
         ModalidadeId = modalidadeId;
     }
+    
+    private static int ValidarId(int? valor, string nome) =>
+        valor is null or <= 0
+            ? throw new ArgumentException($"{nome} é obrigatório e deve ser maior que zero", nome)
+            : valor.Value;
 
     // Navegação
     public virtual Sondagem Sondagem { get; private set; } = null!;

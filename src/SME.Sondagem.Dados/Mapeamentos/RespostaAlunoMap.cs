@@ -58,6 +58,10 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
         builder.Property(x => x.ModalidadeId)
                .HasColumnName("modalidade_id")
                .IsRequired(false);
+        
+        builder.Property(x => x.AnoLetivo)
+            .HasColumnName("ano_letivo")
+            .IsRequired(false);
 
         ConfigurarAuditoria(builder);
 

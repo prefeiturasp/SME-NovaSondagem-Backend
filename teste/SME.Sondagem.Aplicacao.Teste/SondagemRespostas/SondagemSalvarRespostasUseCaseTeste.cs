@@ -75,10 +75,10 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarNegocioException_QuandoNenhumaSondagemAtivaEncontrada()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = 1;
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId.ToString()))
             .ReturnsAsync(true);
 
         _repositorioSondagem
@@ -95,7 +95,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarNegocioException_QuandoSondagemIdDiferenteDaAtiva()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = 1;
 
         var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(2);
 
@@ -117,7 +117,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveSalvarComSucesso_QuandoDadosValidos()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = 1;
 
         var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(1, 1);
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
@@ -160,10 +160,16 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveAtualizarRespostaExistente()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = 1;
+
+        var turmaid = 1;
+        var dreId = 2;
+        var ueId = 3;
+        var modalidadeId = 4;
+        var anoLetivo = 2026;
 
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
-        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), null);
+        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1),turmaid,ueId,dreId,anoLetivo,modalidadeId ,null);
 
         _controleAcessoService
             .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>()))
@@ -203,10 +209,10 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarExcecao_QuandoSemPermissao()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = 1;
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId.ToString()))
             .ReturnsAsync(false);
 
         _repositorioSondagem

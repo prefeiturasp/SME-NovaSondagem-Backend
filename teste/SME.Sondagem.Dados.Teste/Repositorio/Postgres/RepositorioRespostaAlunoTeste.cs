@@ -50,12 +50,18 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             int sondagemId = 1,
             bool excluido = false)
         {
+            var turmaid = 1;
+            var dreId = 2;
+            var ueId = 3;
+            var modalidadeId = 4;
+            var anoLetivo = 2026;
+
             var resposta = new RespostaAluno(
                 sondagemId,
                 alunoId,
                 questaoId,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now, turmaid, ueId,dreId, anoLetivo, modalidadeId
             );
 
             typeof(RespostaAluno).GetProperty("Excluido")!.SetValue(resposta, excluido);
@@ -264,12 +270,19 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Arrange
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas));
 
+            var turmaid = 1;
+            var dreId = 2;
+            var ueId = 3;
+            var modalidadeId = 4;
+            var anoLetivo = 2026;
+
             var respostaValida = new RespostaAluno(
                 sondagemId: 1,
                 alunoId: 10,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                turmaid, ueId, dreId, anoLetivo, modalidadeId
             );
 
             var respostaOutroAluno = new RespostaAluno(
@@ -277,7 +290,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 99,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                turmaid, ueId, dreId, anoLetivo, modalidadeId
             );
 
             var respostaOutraQuestao = new RespostaAluno(
@@ -285,7 +299,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 10,
                 questaoId: 999,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                turmaid, ueId, dreId, anoLetivo, modalidadeId
             );
 
             var respostaExcluida = new RespostaAluno(
@@ -293,7 +308,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 10,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                turmaid, ueId, dreId, anoLetivo, modalidadeId
             );
             respostaExcluida.Excluido = true;
 
