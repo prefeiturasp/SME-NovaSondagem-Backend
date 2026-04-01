@@ -27,22 +27,22 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                         m => m.Term(r => r
                             .Field(f => f.AnoLetivo)
                             .Value(anoLetivo)
-                        )
+                            )
                     )
                 );
 
             var alunosTurma = await ObterListaAsync(
-                IndicesElastic.INDICE_ALUNO_MATRICULA_TURMA_DRE,
-                query,
-                "Obter alunos por Id da turma",
-                new { idTurma, anoLetivo }
+               IndicesElastic.INDICE_ALUNO_MATRICULA_TURMA_DRE,
+               query,
+               "Obter alunos por Id da turma",
+               new { idTurma, anoLetivo }
             );
 
             var resultado = alunosTurma?.GroupBy(aluno => aluno.CodigoMatricula)
-                            .Select(agrupado => agrupado.OrderByDescending(aluno => aluno.DataSituacao)
-                                                        .ThenByDescending(aluno => aluno.NumeroAlunoChamada)
-                                                        .First())
-                            .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo);
+                              .Select(agrupado => agrupado.OrderByDescending(aluno => aluno.DataSituacao)
+                                                          .ThenByDescending(aluno => aluno.NumeroAlunoChamada)
+                                                          .First())
+                              .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo);
 
             var lista = resultado?.ToList() ?? [];
             return lista;

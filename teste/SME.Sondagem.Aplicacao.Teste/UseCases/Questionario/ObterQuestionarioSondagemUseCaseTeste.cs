@@ -27,6 +27,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
+    private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
@@ -49,7 +50,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
 
         // Criar os agregadores com os mocks
@@ -72,7 +75,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoTurmaService.Object
         );
     }
 
@@ -95,7 +99,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+              _mockAlunoTurmaService.Object
         ));
     }
 
@@ -112,7 +117,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+              _mockAlunoTurmaService.Object
         ));
     }
 
@@ -138,7 +144,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             null!,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoTurmaService.Object
         ));
     }
 
@@ -164,7 +171,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             null!,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoTurmaService.Object
         ));
     }
 
@@ -254,7 +262,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoTurmaNaoForLocalizada()
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocioException_QuandoTurmaNaoForLocalizada()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         _mockRepositorioElasticTurma.Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
@@ -279,12 +287,12 @@ public class ObterQuestionarioSondagemUseCaseTeste
         Assert.Equal(MensagemNegocioComuns.PROFICIENCIA_OBRIGATORIA_NO_FILTRO, exception.Message);
     }
 
-   #endregion
+    #endregion
 
     #region Testes de Validação de Sondagem
 
     [Fact]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoNaoHouverSondagemAtiva()
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocioException_QuandoNaoHouverSondagemAtiva()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var turma = new TurmaElasticDto { Modalidade = 1, AnoTurma = "1", AnoLetivo = 2024 };
@@ -294,7 +302,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioSondagem.Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
             .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem?)null!);
 
-        var exception = await Assert.ThrowsAsync<ErroInternoException>(() =>
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
             _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
         Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
     }
@@ -307,7 +315,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     [InlineData(1)]
     [InlineData(4)]
     [InlineData(6)]
-    public async Task ObterQuestionarioSondagem_DeveLancarErroInternoException_QuandoModalidadeNaoForSuportada(int modalidade)
+    public async Task ObterQuestionarioSondagem_DeveLancarErroNaoEncontradoException_QuandoModalidadeNaoForSuportada(int modalidade)
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
         var turma = new TurmaElasticDto { Modalidade = modalidade, AnoTurma = "1", AnoLetivo = 2024 };
@@ -924,14 +932,16 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 CodigoAluno = 1001,
                 NumeroAlunoChamada = "1",
                 NomeAluno = "João Silva",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             },
             new AlunoElasticDto
             {
                 CodigoAluno = 1002,
                 NumeroAlunoChamada = "2",
                 NomeAluno = "Maria Santos",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             }
         };
     }

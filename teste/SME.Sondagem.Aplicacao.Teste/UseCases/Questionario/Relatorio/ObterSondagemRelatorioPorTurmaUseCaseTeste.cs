@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
@@ -71,7 +71,6 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoTurmaService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
-
         );
     }
 
@@ -100,9 +99,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockAlunoPapService.Object,
             null!,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object 
-        ))
-;
+            _mockServicoUsuario.Object
+        ));
     }
 
     #endregion
