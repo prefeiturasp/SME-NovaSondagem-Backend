@@ -92,8 +92,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private static void ValidarCamposObrigatorios(SondagemSalvarDto dto)
     {
-        var raca = dto.Alunos.Where(a => string.IsNullOrWhiteSpace(a.Raca)).Count();
-        var genero = dto.Alunos.Where(a => string.IsNullOrWhiteSpace(a.Genero)).Count();
+        var raca = dto.Alunos.Count(a => string.IsNullOrWhiteSpace(a.Raca));
+        var genero = dto.Alunos.Count(a => string.IsNullOrWhiteSpace(a.Genero));
 
         var regras = new (Func<SondagemSalvarDto, bool> Invalido, string Mensagem)[]
         {
