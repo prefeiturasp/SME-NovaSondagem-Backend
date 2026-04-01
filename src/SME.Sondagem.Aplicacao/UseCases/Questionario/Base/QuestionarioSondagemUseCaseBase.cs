@@ -637,7 +637,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     private async Task<Dictionary<long, (string Raca, string Sexo)>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken)
     {
-        var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId);
+        var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId,cancellationToken);
 
         return dadosAlunos.ToDictionary(
             aluno => aluno.CodigoAluno,
