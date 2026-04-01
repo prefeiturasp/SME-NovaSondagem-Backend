@@ -141,10 +141,13 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         IEnumerable<Infrastructure.Dtos.AlunoRacaGeneroDto> dadosRacaGenero)
     {
         var respostas = new List<RespostaAluno>();
+        var racaGeneroPorAluno = dadosRacaGenero
+                        .ToDictionary(d => d.CodigoAluno);
+
 
         foreach (var aluno in dto.Alunos)
         {
-            var racaGenero = dadosRacaGenero.FirstOrDefault(d => d.CodigoAluno == aluno.Codigo);
+            racaGeneroPorAluno.TryGetValue(aluno.Codigo, out var racaGenero);
             var contexto = CriarContexto(dto, aluno, racaGenero);
             if (questaoLinguaPortuguesa is not null)
             {
