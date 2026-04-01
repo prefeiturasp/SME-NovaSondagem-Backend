@@ -84,7 +84,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         if (string.IsNullOrEmpty(dto.TurmaId))
             throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_TURMA_SALVAR_SONDAGEM);
 
-        bool retorno = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId, codigoEscola, anoTurma);
+        bool temPermissao = await _controleAcessoService.ValidarPermissaoAcessoAsync(dto.TurmaId, codigoEscola, anoTurma);
 
         if (!temPermissao)
             throw new RegraNegocioException(MensagemNegocioComuns.SEM_PERMISSAO_SALVAR_SONDAGEM);
