@@ -44,7 +44,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             return questao;
         }
 
-        private  RespostaAluno CriarRespostaAluno(
+        private  static RespostaAluno CriarRespostaAluno(
             int alunoId,
             int questaoId,
             int sondagemId = 1,
