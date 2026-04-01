@@ -10,7 +10,6 @@ using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
-using System.Threading;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Sondagem;
 
@@ -21,24 +20,27 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IControleAcessoService _controleAcessoService;
     private readonly IRepositorioElasticTurma _repositorioElasticTurma;
+    private readonly IDadosAlunosService _dadosAlunosService;
 
     public SondagemSalvarRespostasUseCase(IRepositorioSondagem repositorioSondagem,
         IRepositorioRespostaAluno repositorioSondagemResposta,
         IRepositorioQuestao repositorioQuestao,
-        IControleAcessoService controleAcessoService
-,
-        IRepositorioElasticTurma repositorioElasticTurma)
+        IControleAcessoService controleAcessoService,
+        IRepositorioElasticTurma repositorioElasticTurma,
+        IDadosAlunosService dadosAlunosService)
     {
         _repositorioSondagem = repositorioSondagem;
         _repositorioSondagemResposta = repositorioSondagemResposta;
         _repositorioQuestao = repositorioQuestao;
         _controleAcessoService = controleAcessoService;
         _repositorioElasticTurma = repositorioElasticTurma;
+        _dadosAlunosService = dadosAlunosService;
     }
 
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
         await ValidarSalvarSondagem(dto);
+        var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
@@ -60,7 +62,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var repostasAlunos =
             await _repositorioSondagemResposta.ObterRespostasPorSondagemEAlunosAsync(dto.SondagemId, alunosIds, questoesIdsResposta);
 
-        var respostas = ProcessarRespostasAlunos(dto, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua);
+        var respostas = ProcessarRespostasAlunos(dto, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero);
 
         return await _repositorioSondagemResposta.SalvarAsync(respostas);
     }
@@ -93,8 +95,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private static void ValidarCamposObrigatorios(SondagemSalvarDto dto)
     {
-        var raca = dto.Alunos.Count(a => string.IsNullOrWhiteSpace(a.Raca));
-        var genero = dto.Alunos.Count(a => string.IsNullOrWhiteSpace(a.Genero));
 
         var regras = new (Func<SondagemSalvarDto, bool> Invalido, string Mensagem)[]
         {
@@ -109,12 +109,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         (d => d.AnoLetivo == 0,
             MensagemNegocioComuns.INFORMAR_ANO_LETIVO_SALVAR_SONDAGEM),
-        
-        (d => raca > 0,
-            MensagemNegocioComuns.INFORMAR_RACA_SALVAR_SONDAGEM),
-
-        (d => genero > 0,
-            MensagemNegocioComuns.INFORMAR_GENERO_SALVAR_SONDAGEM),
 
         (d => string.IsNullOrWhiteSpace(d.ModalidadeId) || !Enum.IsDefined(typeof(Modalidade),Convert.ToInt32(dto.ModalidadeId)),
             MensagemNegocioComuns.INFORMAR_MODALIDADE_SALVAR_SONDAGEM),
@@ -143,13 +137,15 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         SondagemSalvarDto dto,
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
         IEnumerable<RespostaAluno> respostasExistentes,
-        Dominio.Entidades.Questionario.Questao? questaoLinguaPortuguesa)
+        Dominio.Entidades.Questionario.Questao? questaoLinguaPortuguesa,
+        IEnumerable<Infrastructure.Dtos.AlunoRacaGeneroDto> dadosRacaGenero)
     {
         var respostas = new List<RespostaAluno>();
 
         foreach (var aluno in dto.Alunos)
         {
-            var contexto = CriarContexto(dto, aluno);
+            var racaGenero = dadosRacaGenero.FirstOrDefault(d => d.CodigoAluno == aluno.Codigo);
+            var contexto = CriarContexto(dto, aluno, racaGenero);
             if (questaoLinguaPortuguesa is not null)
             {
                 respostas.Add(ProcessarRespostaLinguaPortuguesa(
@@ -260,7 +256,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return respostaExistente;
     }
 
-    private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, AlunoSondagemDto aluno) =>
+    private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, AlunoSondagemDto aluno, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero) =>
     new()
     {
         TurmaId = dto.TurmaId,
@@ -268,7 +264,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         DreId = dto.DreId,
         AnoLetivo = dto.AnoLetivo,
         ModalidadeId = dto.ModalidadeId,
-        Raca = aluno.Raca,
-        Genero = aluno.Genero
+        Raca = racaGenero?.Raca,
+        Genero = racaGenero?.Sexo
     };
+
 }

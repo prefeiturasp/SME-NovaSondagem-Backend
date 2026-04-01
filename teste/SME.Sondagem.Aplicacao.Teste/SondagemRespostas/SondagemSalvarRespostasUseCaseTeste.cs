@@ -72,7 +72,8 @@ public class SondagemSalvarRespostasUseCaseTeste
             _repositorioSondagemResposta.Object,
             _repositorioQuestao.Object,
             _controleAcessoService.Object,
-            _repositorioElasticTurma.Object
+            _repositorioElasticTurma.Object,
+            _dadosAlunosService.Object
         );
 
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
