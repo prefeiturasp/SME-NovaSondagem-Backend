@@ -13,6 +13,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Teste.DTO;
@@ -45,13 +46,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
     private readonly Mock<IUeComDreEolService> _ueComDreEolService;
     private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
-    private readonly string RACA = "Parda";
-    private readonly string GENERO = "Feminino";
-    private readonly string TURMAID = "1";
-    private readonly string DREID = "2";
-    private readonly string UEID = "3";
-    private readonly string MODALIDADE = "4";
-    private readonly int ANOLETIVO = 2026;
+
 
     public SondagemSalvarRespostasUseCaseTeste()
     {
@@ -205,7 +200,8 @@ public class SondagemSalvarRespostasUseCaseTeste
 
 
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
-        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO, null);
+        var contextoEdu = CriarContextoEducacional();
+        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), contextoEdu);
 
         _controleAcessoService
                 .Setup(x => x.ValidarPermissaoAcessoAsync(
@@ -331,5 +327,19 @@ public class SondagemSalvarRespostasUseCaseTeste
         questao.QuestaoOpcoes.Add(questaoOpcaoNao);
 
         return questao;
+    }
+    private static ContextoEducacional CriarContextoEducacional()
+    {
+        return new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            Raca = "Parda",
+            Genero = "Feminino",
+            BimestreId = 2
+        };
     }
 }

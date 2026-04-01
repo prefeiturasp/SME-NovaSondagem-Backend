@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
@@ -1364,15 +1365,19 @@ public class QuestionarioSondagemUseCaseBaseTeste
         int questaoId = 1,
         int bimestreId = 1)
     {
-        var turmaid = "1";
-        var dreId = "2";
-        var ueId = "3";
-        var modalidadeId = "4";
-        var anoLetivo = 2026;
-        var raca = "Parda";
-        var genero = "Feminino";
+        var contexto = new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            Raca = "Parda",
+            Genero = "Feminino",
+            BimestreId = bimestreId
+        };
 
-        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, turmaid, ueId, dreId, anoLetivo, modalidadeId, raca, genero, bimestreId);
+        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, contexto);
         resposta.GetType().BaseType?.GetProperty("Id")?.SetValue(resposta, id);
         return resposta;
     }

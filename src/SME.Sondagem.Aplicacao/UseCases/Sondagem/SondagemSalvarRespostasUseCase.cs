@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
@@ -148,13 +149,14 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         foreach (var aluno in dto.Alunos)
         {
+            var contexto = CriarContexto(dto, aluno);
             if (questaoLinguaPortuguesa is not null)
             {
                 respostas.Add(ProcessarRespostaLinguaPortuguesa(
                     dto.SondagemId,
                     aluno,
                     questaoLinguaPortuguesa,
-                    respostasExistentes, dto));
+                    respostasExistentes, contexto));
             }
 
             foreach (var respostaDto in aluno.Respostas)
@@ -164,7 +166,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     aluno.Codigo,
                     respostaDto,
                     periodosBimestresAtivos,
-                    respostasExistentes, dto,aluno.Raca,aluno.Genero);
+                    respostasExistentes, contexto);
 
                 if (resposta != null)
                     respostas.Add(resposta);
@@ -178,7 +180,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     int sondagemId,
     AlunoSondagemDto aluno,
     Dominio.Entidades.Questionario.Questao questao,
-    IEnumerable<RespostaAluno> respostasExistentes, SondagemSalvarDto sondagemSalvarDto)
+    IEnumerable<RespostaAluno> respostasExistentes, ContextoEducacional contexto)
     {
         var respostaExistente = respostasExistentes.FirstOrDefault(r =>
             r.AlunoId == aluno.Codigo &&
@@ -193,7 +195,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (respostaExistente != null)
         {
-            respostaExistente.AtualizarResposta(opcaoRespostaId, DateTimeExtension.HorarioBrasilia(), sondagemSalvarDto.TurmaId, sondagemSalvarDto.UeId, sondagemSalvarDto.DreId, sondagemSalvarDto.AnoLetivo,aluno.Raca,aluno.Genero,sondagemSalvarDto.ModalidadeId);
+            respostaExistente.AtualizarResposta(opcaoRespostaId, DateTimeExtension.HorarioBrasilia(), contexto);
             return respostaExistente;
         }
 
@@ -202,15 +204,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             aluno.Codigo,
             questao.Id,
             opcaoRespostaId,
-            DateTimeExtension.HorarioBrasilia(),
-            sondagemSalvarDto.TurmaId,
-            sondagemSalvarDto.UeId,
-            sondagemSalvarDto.DreId,
-            sondagemSalvarDto.AnoLetivo,
-            sondagemSalvarDto.ModalidadeId,
-            aluno.Raca,
-            aluno.Genero,
-            null);
+            DateTimeExtension.HorarioBrasilia(), contexto);
     }
 
     private static RespostaAluno? ProcessarRespostaIndividual(
@@ -218,8 +212,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         int alunoId,
         RespostaSondagemDto respostaDto,
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
-        IEnumerable<RespostaAluno> repostasAlunos, SondagemSalvarDto sondagemSalvarDto,
-        string raca , string genero
+        IEnumerable<RespostaAluno> repostasAlunos, ContextoEducacional contexto
         )
     {
         var periodoBimestreAtivo = periodosBimestresAtivos
@@ -235,7 +228,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             sondagemId,
             alunoId,
             respostaDto,
-            respostaExistente, sondagemSalvarDto, raca, genero);
+            respostaExistente, contexto);
     }
 
     private static bool ValidarPeriodoBimestre(SondagemPeriodoBimestre? periodoBimestreAtivo)
@@ -251,8 +244,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         int sondagemId,
         int alunoId,
         RespostaSondagemDto respostaDto,
-        RespostaAluno? respostaExistente, SondagemSalvarDto sondagemSalvarDto,
-        string raca, string genero
+        RespostaAluno? respostaExistente, ContextoEducacional contexto
         )
     {
         if (respostaExistente == null)
@@ -262,16 +254,21 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 respostaDto.QuestaoId,
                 respostaDto.OpcaoRespostaId,
                 DateTime.UtcNow,
-                sondagemSalvarDto.TurmaId,
-                sondagemSalvarDto.UeId,
-                sondagemSalvarDto.DreId,
-                sondagemSalvarDto.AnoLetivo,
-                sondagemSalvarDto.ModalidadeId,
-                raca,
-                genero,
-                respostaDto.BimestreId);
-        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow, sondagemSalvarDto.TurmaId, sondagemSalvarDto.UeId, sondagemSalvarDto.DreId, sondagemSalvarDto.AnoLetivo, raca,
-                                            genero, sondagemSalvarDto.ModalidadeId);
+                contexto with { BimestreId = respostaDto.BimestreId });
+
+        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow, contexto);
         return respostaExistente;
     }
+
+    private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, AlunoSondagemDto aluno) =>
+    new()
+    {
+        TurmaId = dto.TurmaId,
+        UeId = dto.UeId,
+        DreId = dto.DreId,
+        AnoLetivo = dto.AnoLetivo,
+        ModalidadeId = dto.ModalidadeId,
+        Raca = aluno.Raca,
+        Genero = aluno.Genero
+    };
 }

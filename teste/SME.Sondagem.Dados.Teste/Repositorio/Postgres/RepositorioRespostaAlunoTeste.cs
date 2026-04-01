@@ -6,6 +6,7 @@ using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
@@ -18,13 +19,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         private static readonly int[] AlunosIdsPadrao = [10, 20];
         private static readonly int[] AlunoIdUnico = [10];
         private static readonly int[] QuestaoIdUnica = [100];
-        private readonly string RACA = "Parda";
-        private readonly string GENERO = "Feminino";
-        private readonly string TURMAID = "1";
-        private readonly string DREID = "2";
-        private readonly string UEID = "3";
-        private readonly string MODALIDADE = "4";
-        private readonly int ANOLETIVO = 2026;
+
         #endregion
 
         #region Helpers
@@ -55,14 +50,14 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             int sondagemId = 1,
             bool excluido = false)
         {
-
+            var contextoEdu = CriarContextoEducacional();
 
             var resposta = new RespostaAluno(
                 sondagemId,
                 alunoId,
                 questaoId,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now, TURMAID, UEID,DREID, ANOLETIVO, MODALIDADE,RACA,GENERO
+                dataResposta: DateTime.Now,contextoEdu
             );
 
             typeof(RespostaAluno).GetProperty("Excluido")!.SetValue(resposta, excluido);
@@ -200,8 +195,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
-            Assert.Contains((10L, 100L, null), resultado.Keys);
-            Assert.Contains((20L, 200L, null), resultado.Keys);
+            Assert.Contains((10L, 100L, 2), resultado.Keys);
+            Assert.Contains((20L, 200L, 2), resultado.Keys);
         }
 
         [Fact]
@@ -271,7 +266,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Arrange
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas));
 
-
+            var contextoEdu = CriarContextoEducacional();
 
             var respostaValida = new RespostaAluno(
                 sondagemId: 1,
@@ -279,7 +274,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
+                contextoEdu
             );
 
             var respostaOutroAluno = new RespostaAluno(
@@ -288,7 +283,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
+                contextoEdu
             );
 
             var respostaOutraQuestao = new RespostaAluno(
@@ -297,7 +292,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 999,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
+                contextoEdu
             );
 
             var respostaExcluida = new RespostaAluno(
@@ -306,7 +301,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 questaoId: 100,
                 opcaoRespostaId: 1,
                 dataResposta: DateTime.Now,
-                TURMAID, UEID, DREID, ANOLETIVO, MODALIDADE, RACA, GENERO
+                contextoEdu
             );
             respostaExcluida.Excluido = true;
 
@@ -332,6 +327,21 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
+        }
+
+        private static ContextoEducacional CriarContextoEducacional()
+        {
+            return new ContextoEducacional
+            {
+                TurmaId = "1",
+                UeId = "3",
+                DreId = "2",
+                AnoLetivo = 2026,
+                ModalidadeId = "4",
+                Raca = "Parda",
+                Genero = "Feminino",
+                BimestreId = 2
+            };
         }
 
     }

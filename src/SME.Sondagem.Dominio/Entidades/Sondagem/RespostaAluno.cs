@@ -1,25 +1,28 @@
 ﻿using SME.Sondagem.Dominio.Entidades.Questionario;
+using SME.Sondagem.Dominio.ValueObjects;
 
 namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 
 public class RespostaAluno : EntidadeBase
 {
-    public RespostaAluno(int sondagemId, int alunoId, int questaoId, int? opcaoRespostaId, DateTime dataResposta,
-        string? turmaId, string? ueId, string? dreId, int? anoLetivo, string? modalidadeId,string? raca, string? genero,int? bimestreId = null)
+
+    protected RespostaAluno() { }
+    public RespostaAluno(int sondagemId, int alunoId, int questaoId, int? opcaoRespostaId,
+        DateTime dataResposta, ContextoEducacional contexto)
     {
         SondagemId = sondagemId;
         AlunoId = alunoId;
         QuestaoId = questaoId;
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
-        BimestreId = bimestreId;
-        TurmaId = turmaId;
-        UeId = ueId;
-        DreId = dreId;
-        AnoLetivo = anoLetivo;
-        Raca = raca;
-        Genero = genero;
-        ModalidadeId = modalidadeId;
+        BimestreId = contexto.BimestreId;
+        TurmaId = contexto.TurmaId;
+        UeId = contexto.UeId;
+        DreId = contexto.DreId;
+        AnoLetivo = contexto.AnoLetivo;
+        Raca = contexto.Raca;
+        Genero = contexto.Genero;
+        ModalidadeId = contexto.ModalidadeId;
     }
 
     public int SondagemId { get; private set; }
@@ -36,17 +39,17 @@ public class RespostaAluno : EntidadeBase
     public string? Raca { get; set; }
     public string? Genero { get; set; }
 
-    public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta,string? turmaId, string? ueId, string? dreId, int? anoLetivo, string? raca, string? genero,string? modalidadeId)
+    public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
     {
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
-        TurmaId = TurmaId is null && turmaId is not null ? turmaId : TurmaId;
-        UeId = UeId is null && ueId is not null ? ueId : UeId;
-        DreId = DreId is null && dreId is not null ? dreId : DreId;
-        AnoLetivo = AnoLetivo is null && anoLetivo is not null ? anoLetivo : AnoLetivo;
-        Raca = Raca is null && raca is not null ? raca : Raca;
-        Genero = Genero is null && genero is not null ? genero : Genero;
-        ModalidadeId = ModalidadeId is null && modalidadeId is not null ? modalidadeId : ModalidadeId;
+        TurmaId = TurmaId is null && contexto.TurmaId is not null ? contexto.TurmaId : TurmaId;
+        UeId = UeId is null && contexto.UeId is not null ? contexto.UeId : UeId;
+        DreId = DreId is null && contexto.DreId is not null ? contexto.DreId : DreId;
+        AnoLetivo = AnoLetivo is null && contexto.AnoLetivo is not null ? contexto.AnoLetivo : AnoLetivo;
+        Raca = Raca is null && contexto.Raca is not null ? contexto.Raca : Raca;
+        Genero = Genero is null && contexto.Genero is not null ? contexto.Genero : Genero;
+        ModalidadeId = ModalidadeId is null && contexto.ModalidadeId is not null ? contexto.ModalidadeId : ModalidadeId;
     }
 
     // Navegação

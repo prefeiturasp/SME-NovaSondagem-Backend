@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
 using Xunit;
@@ -30,14 +31,6 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
-
-    private readonly string RACA = "Parda";
-    private readonly string GENERO = "Feminino";
-    private readonly string TURMAID = "1";
-    private readonly string DREID = "2";
-    private readonly string UEID = "3";
-    private readonly string MODALIDADEID = "4";
-    private readonly int ANOLETIVO = 2026;
 
     public ObterQuestionarioSondagemUseCaseTeste()
     {
@@ -481,7 +474,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
-
+        var contextoEdu = CriarContextoEducacional();
         var questaoRespondidaId = 13;
 
 
@@ -509,16 +502,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
             sondagemId: 1,
             questaoId: questaoRespondidaId,
             alunoId: 1001,
-            bimestreId: 1,
             opcaoRespostaId: 10,
             dataResposta: DateTime.Now,
-            turmaId: TURMAID,
-            ueId: UEID,
-            dreId: DREID,
-            anoLetivo: ANOLETIVO,
-            modalidadeId: MODALIDADEID,
-            raca: RACA,
-            genero: GENERO
+            contexto: contextoEdu
         );
 
         respostaAluno.GetType().BaseType!
@@ -741,6 +727,21 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #endregion
 
     #region Métodos Auxiliares
+
+    private static ContextoEducacional CriarContextoEducacional()
+    {
+        return new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            Raca = "Parda",
+            Genero = "Feminino",
+            BimestreId = 2
+        };
+    }
     private static Dominio.Entidades.Sondagem.Sondagem CriarSondagemMock()
     {
         var sondagem = new Dominio.Entidades.Sondagem.Sondagem(
