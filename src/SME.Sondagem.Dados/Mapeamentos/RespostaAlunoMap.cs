@@ -40,8 +40,36 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasDefaultValue(false);
 
         builder.Property(x => x.BimestreId)
-            .HasColumnName("bimestre_id")
+            .HasColumnName("bimestre_id").HasMaxLength(10)
             .IsRequired(false);
+
+        builder.Property(x => x.TurmaId)
+               .HasColumnName("turma_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.UeId)
+               .HasColumnName("ue_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.DreId)
+               .HasColumnName("dre_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.ModalidadeId)
+               .HasColumnName("modalidade_id").HasMaxLength(10)
+               .IsRequired(false);
+        
+        builder.Property(x => x.AnoLetivo)
+            .HasColumnName("ano_letivo")
+            .IsRequired(false);
+
+        builder.Property(x => x.Raca)
+                    .HasColumnName("raca").HasMaxLength(100)
+                    .IsRequired(false);
+
+        builder.Property(x => x.Genero).HasMaxLength(100)
+                .HasColumnName("genero")
+                .IsRequired(false);
 
         ConfigurarAuditoria(builder);
 

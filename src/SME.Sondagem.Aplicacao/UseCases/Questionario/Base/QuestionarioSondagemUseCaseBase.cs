@@ -498,7 +498,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             .ToHashSet();
 
         var respostasAuditoria = respostasAlunosPorQuestoes.Values
-            .Where(r => r.AlunoId.HasValue && codigosAlunosAtivos.Contains(r.AlunoId.Value))
+            .Where(r => codigosAlunosAtivos.Contains(r.AlunoId))
             .ToList();
 
         if (linguaPortuguesaSegundaLingua != null)

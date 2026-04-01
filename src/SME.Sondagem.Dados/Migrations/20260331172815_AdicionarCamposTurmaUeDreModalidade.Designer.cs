@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260331172815_AdicionarCamposTurmaUeDreModalidade")]
+    partial class AdicionarCamposTurmaUeDreModalidade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1205,7 +1208,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("ano_letivo");
 
                     b.Property<int?>("BimestreId")
-                        .HasMaxLength(10)
                         .HasColumnType("integer")
                         .HasColumnName("bimestre_id");
 
@@ -1231,9 +1233,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("data_resposta")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("DreId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("DreId")
+                        .HasColumnType("integer")
                         .HasColumnName("dre_id");
 
                     b.Property<bool>("Excluido")
@@ -1242,14 +1243,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
-                    b.Property<string>("Genero")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("genero");
-
-                    b.Property<string>("ModalidadeId")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                    b.Property<int?>("ModalidadeId")
+                        .HasColumnType("integer")
                         .HasColumnName("modalidade_id");
 
                     b.Property<int?>("OpcaoRespostaId")
@@ -1260,23 +1255,16 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("questao_id");
 
-                    b.Property<string>("Raca")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("raca");
-
                     b.Property<int>("SondagemId")
                         .HasColumnType("integer")
                         .HasColumnName("sondagem_id");
 
-                    b.Property<string>("TurmaId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("TurmaId")
+                        .HasColumnType("integer")
                         .HasColumnName("turma_id");
 
-                    b.Property<string>("UeId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("UeId")
+                        .HasColumnType("integer")
                         .HasColumnName("ue_id");
 
                     b.HasKey("Id")

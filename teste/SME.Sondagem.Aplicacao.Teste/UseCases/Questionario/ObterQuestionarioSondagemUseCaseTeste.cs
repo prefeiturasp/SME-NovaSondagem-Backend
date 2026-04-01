@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
 using Xunit;
@@ -473,8 +474,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
-
+        var contextoEdu = CriarContextoEducacional();
         var questaoRespondidaId = 13;
+
 
         ConfigurarMocksBase(
             filtro,
@@ -500,9 +502,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
             sondagemId: 1,
             questaoId: questaoRespondidaId,
             alunoId: 1001,
-            bimestreId: 1,
             opcaoRespostaId: 10,
-            dataResposta: DateTime.Now
+            dataResposta: DateTime.Now,
+            contexto: contextoEdu
         );
 
         respostaAluno.GetType().BaseType!
@@ -725,6 +727,21 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #endregion
 
     #region Métodos Auxiliares
+
+    private static ContextoEducacional CriarContextoEducacional()
+    {
+        return new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            Raca = "Parda",
+            Genero = "Feminino",
+            BimestreId = 2
+        };
+    }
     private static Dominio.Entidades.Sondagem.Sondagem CriarSondagemMock()
     {
         var sondagem = new Dominio.Entidades.Sondagem.Sondagem(
