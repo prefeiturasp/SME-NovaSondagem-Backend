@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260331172815_AdicionarCamposTurmaUeDreModalidade")]
+    partial class AdicionarCamposTurmaUeDreModalidade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -378,127 +381,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasDatabaseName("uk_componente_nome_ano_modalidade");
 
                     b.ToTable("componente_curricular", (string)null);
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Configuration.ControleAcessoOptions", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("AlteradoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("AlteradoPor")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AlteradoRF")
-                        .HasColumnType("text");
-
-                    b.Property<int>("CacheDuracaoMinutos")
-                        .HasColumnType("integer")
-                        .HasColumnName("cache_duracao_minutos");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CriadoRF")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Excluido")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("GrupoSituacao")
-                        .HasColumnType("integer")
-                        .HasColumnName("grupo_situacao");
-
-                    b.Property<int>("ModuloId")
-                        .HasColumnType("integer")
-                        .HasColumnName("modulo_id");
-
-                    b.Property<int>("SistemaId")
-                        .HasColumnType("integer")
-                        .HasColumnName("sistema_id");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("controle_acesso_options", (string)null);
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Configuration.PerfilConfiguracao", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("AcessoIrrestrito")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("acesso_irrestrito");
-
-                    b.Property<DateTime?>("AlteradoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("AlteradoPor")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AlteradoRF")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("Codigo")
-                        .HasMaxLength(200)
-                        .HasColumnType("uuid")
-                        .HasColumnName("codigo");
-
-                    b.Property<bool>("ConsultarAbrangencia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("consultar_abrangencia");
-
-                    b.Property<int?>("ControleAcessoOptionsId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CriadoRF")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Excluido")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Nome")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("nome");
-
-                    b.Property<string>("TipoValidacao")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("tipo_validacao")
-                        .HasComment("Valores esperados: Regencia, UE, AcessoTotal");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ControleAcessoOptionsId");
-
-                    b.ToTable("perfil_configuracao", (string)null);
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ModalidadeComponenteCurricular", b =>
@@ -1326,7 +1208,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("ano_letivo");
 
                     b.Property<int?>("BimestreId")
-                        .HasMaxLength(10)
                         .HasColumnType("integer")
                         .HasColumnName("bimestre_id");
 
@@ -1352,9 +1233,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("data_resposta")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("DreId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("DreId")
+                        .HasColumnType("integer")
                         .HasColumnName("dre_id");
 
                     b.Property<bool>("Excluido")
@@ -1363,14 +1243,8 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
-                    b.Property<string>("Genero")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("genero");
-
-                    b.Property<string>("ModalidadeId")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
+                    b.Property<int?>("ModalidadeId")
+                        .HasColumnType("integer")
                         .HasColumnName("modalidade_id");
 
                     b.Property<int?>("OpcaoRespostaId")
@@ -1381,23 +1255,16 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("questao_id");
 
-                    b.Property<string>("Raca")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("raca");
-
                     b.Property<int>("SondagemId")
                         .HasColumnType("integer")
                         .HasColumnName("sondagem_id");
 
-                    b.Property<string>("TurmaId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("TurmaId")
+                        .HasColumnType("integer")
                         .HasColumnName("turma_id");
 
-                    b.Property<string>("UeId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
+                    b.Property<int?>("UeId")
+                        .HasColumnType("integer")
                         .HasColumnName("ue_id");
 
                     b.HasKey("Id")
@@ -1560,14 +1427,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasConstraintName("fk_auditoria_detalhe_auditoria");
 
                     b.Navigation("Auditoria");
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Configuration.PerfilConfiguracao", b =>
-                {
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.Configuration.ControleAcessoOptions", null)
-                        .WithMany("ConfiguracaoPerfis")
-                        .HasForeignKey("ControleAcessoOptionsId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ModalidadeComponenteCurricular", b =>
@@ -1790,11 +1649,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("Proficiencias");
 
                     b.Navigation("Questionarios");
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Configuration.ControleAcessoOptions", b =>
-                {
-                    b.Navigation("ConfiguracaoPerfis");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Proficiencia", b =>
