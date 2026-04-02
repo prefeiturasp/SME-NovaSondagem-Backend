@@ -2,10 +2,12 @@ using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
 {
+    [ExcludeFromCodeCoverage]
     public class DadosAlunosService : IDadosAlunosService
     {
         private const int TamanhoBatch = 100; // ajuste conforme o limite da API
