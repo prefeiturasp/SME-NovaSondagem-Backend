@@ -84,7 +84,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<DadosAlunoPorTurmaDto>
                 {
-                new() { CodigoAluno = 101, Raca = "PARDA", Sexo = null, NomeAluno = "Teste" }
+                new() { CodigoAluno = 101, Raca = "PARDA", Sexo = string.Empty, NomeAluno = "Teste" }
                         });
 
             var resultado = (await CriarService().ObterDadosRacaGeneroAlunos(1)).ToList();
@@ -125,7 +125,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<DadosAlunoPorTurmaDto>
                 {
-                new() { CodigoAluno = 101, Raca = null, Sexo = "M", NomeAluno = "Teste" }
+                new() { CodigoAluno = 101, Raca = string.Empty, Sexo = "M", NomeAluno = "Teste" }
                         });
 
             var resultado = (await CriarService().ObterDadosRacaGeneroAlunos(1)).ToList();
