@@ -1,4 +1,6 @@
+using Elastic.Apm.SerilogEnricher;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using SME.SME.Sondagem.Api.Configuracoes;
 using SME.Sondagem.API.Configuracoes;
 using SME.Sondagem.API.Middlewares;
@@ -6,12 +8,6 @@ using SME.Sondagem.Infra.EnvironmentVariables;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
 using System.Diagnostics.CodeAnalysis;
-using Npgsql;
-using Elastic.Apm.NetCoreAll;
-using Elastic.Apm.SerilogEnricher;
-using Serilog;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Metrics;
 
 [assembly: ExcludeFromCodeCoverage]
 Log.Logger = new LoggerConfiguration()
@@ -32,16 +28,6 @@ RegistraEntityFramework.Registrar(builder.Services, builder.Configuration);
 
 builder.Host.UseSerilog();
 builder.Services.AddAllElasticApm();
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => {
-        tracing
-            .AddSource("SME.Sondagem")
-            .AddHttpClientInstrumentation()
-            .AddAspNetCoreInstrumentation();
-    })
-    .WithMetrics(metrics => {
-        metrics.AddMeter("SME.Sondagem.Metrics");
-    });
 
 var telemetriaOptions = new TelemetriaOptions();
 builder.Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
