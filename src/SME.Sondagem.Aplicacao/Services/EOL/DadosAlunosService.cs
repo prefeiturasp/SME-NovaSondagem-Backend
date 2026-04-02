@@ -7,7 +7,6 @@ using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
 {
-    [ExcludeFromCodeCoverage]
     public class DadosAlunosService : IDadosAlunosService
     {
         private const int TamanhoBatch = 100; 

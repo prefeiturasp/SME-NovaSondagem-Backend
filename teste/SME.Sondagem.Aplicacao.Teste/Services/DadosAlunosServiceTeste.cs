@@ -1,12 +1,11 @@
 ﻿using Moq;
-using Moq.Protected;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using System.Net;
-using System.Text;
 using Xunit;
 
 
@@ -25,26 +24,8 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             _httpClientFactory = new Mock<IHttpClientFactory>();
             _httpMessageHandler = new Mock<HttpMessageHandler>();
 
-            var httpClient = new HttpClient(_httpMessageHandler.Object)
-            {
-                BaseAddress = new Uri("http://mock-local/")
-            };
-
-            _httpClientFactory
-                .Setup(f => f.CreateClient(It.IsAny<string>()))
-                .Returns(httpClient);
         }
 
-        private void ConfigurarRespostaHttp(HttpResponseMessage resposta)
-        {
-            _httpMessageHandler
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(resposta);
-        }
 
         private DadosAlunosService CriarService()
         {
@@ -166,17 +147,14 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         public async Task DeveRetornarAlunos_QuandoRespostaHttpComSucesso()
         {
             var alunosEsperados = new List<AlunoEolDto>
-        {
-            new() { CodigoAluno = 123, NomeAluno = "João" }
-        };
-
-            ConfigurarRespostaHttp(new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(
-                    JsonConvert.SerializeObject(alunosEsperados),
-                    Encoding.UTF8,
-                    "application/json")
-            });
+                new() { CodigoAluno = 123, NomeAluno = "João" }
+            };
+            var json = JsonConvert.SerializeObject(alunosEsperados);
+            var httpClient = HttpClientMockHelper.Create(HttpStatusCode.OK,json);
+            _httpClientFactory
+                    .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
+                    .Returns(httpClient);
 
             var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" });
 
@@ -186,7 +164,11 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task DeveRetornarListaVazia_QuandoRespostaHttpForErro()
         {
-            ConfigurarRespostaHttp(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+            var httpClient = HttpClientMockHelper.Create(HttpStatusCode.NoContent);
+            _httpClientFactory
+                    .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
+                    .Returns(httpClient);
 
             var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" });
 
@@ -196,10 +178,10 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task DeveLancarOperationCanceled_QuandoCancelado()
         {
-            ConfigurarRespostaHttp(new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("[]", Encoding.UTF8, "application/json")
-            });
+            var httpClient = HttpClientMockHelper.Create(HttpStatusCode.OK);
+            _httpClientFactory
+                    .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
+                    .Returns(httpClient);
 
             var cts = new CancellationTokenSource();
             cts.Cancel();
