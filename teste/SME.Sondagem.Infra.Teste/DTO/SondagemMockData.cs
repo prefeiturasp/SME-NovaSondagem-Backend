@@ -22,8 +22,6 @@ public static class SondagemMockData
                     Codigo = 101,
                     NumeroAlunoChamada = "2024001234",
                     NomeEstudante = "João Silva Santos",
-                    Raca = "Branca",
-                    Genero = "Masculino",
                     LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [
@@ -55,8 +53,6 @@ public static class SondagemMockData
                     Codigo = 102,
                     NumeroAlunoChamada = "2024001235",
                     NomeEstudante = "Maria Oliveira Costa",
-                    Raca = "Branca",
-                    Genero = "Masculino",
                     LinguaPortuguesaSegundaLingua = false,
                     Respostas =
                     [
@@ -81,8 +77,6 @@ public static class SondagemMockData
                     Codigo = 103,
                     NumeroAlunoChamada = "2024001236",
                     NomeEstudante = "Pedro Henrique Souza",
-                    Raca = "Branca",
-                    Genero = "Masculino",
                     LinguaPortuguesaSegundaLingua = true,
                     Respostas =
                     [

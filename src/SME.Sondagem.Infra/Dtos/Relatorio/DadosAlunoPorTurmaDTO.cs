@@ -2,6 +2,10 @@
 {
     public class DadosAlunoPorTurmaDto
     {
+        public DadosAlunoPorTurmaDto()
+        {
+            
+        }
         public long NumeroChamada { get; set; }
         public long CodigoAluno { get; set; }
         public required string NomeAluno { get; set; }

@@ -18,12 +18,12 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
-        IAlunoTurmaService alunoTurmaService,
+        IDadosAlunosService alunoService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, alunoTurmaService)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, alunoService)
     {
-        ArgumentNullException.ThrowIfNull(alunoTurmaService);
+        ArgumentNullException.ThrowIfNull(alunoService);
     }
 
     public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)

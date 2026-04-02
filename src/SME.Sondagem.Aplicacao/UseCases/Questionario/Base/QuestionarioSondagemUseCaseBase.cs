@@ -20,7 +20,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly IAlunoPapService _alunoPapService;
     protected readonly IControleAcessoService _controleAcessoService;
     protected readonly IServicoUsuario _servicoUsuario;
-    private readonly IAlunoTurmaService _alunoTurmaService;
+    protected readonly IDadosAlunosService _dadosAlunosService;
 
     protected QuestionarioSondagemUseCaseBase(
         RepositoriosElastic repositoriosElastic,
@@ -28,14 +28,15 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
-        IAlunoTurmaService alunoTurmaService)
+        IDadosAlunosService dadosAlunosService
+        )
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
         _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-        _alunoTurmaService = alunoTurmaService;
+        _dadosAlunosService = dadosAlunosService ?? throw new ArgumentNullException(nameof(dadosAlunosService));
     }
 
     public async Task<object> ExecutarProcessamentoQuestionario(FiltroQuestionario filtro, bool ehRelatorio, CancellationToken cancellationToken)
@@ -636,44 +637,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
     private async Task<Dictionary<long, (string Raca, string Sexo)>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken)
     {
-        var dadosAlunos = await _alunoTurmaService.InformacoesAlunosPorTurma(turmaId, cancellationToken);
+        var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId,cancellationToken);
 
         return dadosAlunos.ToDictionary(
             aluno => aluno.CodigoAluno,
-            aluno => (
-                Raca: ConverterCodigoRacaParaDescricao(aluno.Raca),
-                Sexo: ConverterCodigoGeneroParaDescricao(aluno.Sexo)
+            aluno => (aluno.Raca,
+                 aluno.Sexo
             )
         );
     }
-
-    private static string ConverterCodigoGeneroParaDescricao(string codigoGenero)
-    {
-        return codigoGenero?.ToUpperInvariant() switch
-        {
-            "M" => "Masculino",
-            "F" => "Feminino",
-            _ => string.IsNullOrWhiteSpace(codigoGenero) ? string.Empty : codigoGenero
-        };
-    }
-
-    private static string ConverterCodigoRacaParaDescricao(string codigoRaca)
-    {
-        if (string.IsNullOrWhiteSpace(codigoRaca))
-            return string.Empty;
-
-        var racaUpper = codigoRaca.ToUpperInvariant();
-        return racaUpper switch
-        {
-            "BRANCA" => "Branca",
-            "PRETA" => "Preta",
-            "PARDA" => "Parda",
-            "AMARELA" => "Amarela",
-            "INDIGENA" => "Indígena",
-            "INDÍGENA" => "Indígena",
-            _ => char.ToUpperInvariant(racaUpper[0]) + racaUpper[1..].ToLowerInvariant()
-        };
-    }
+    
 
     private static bool EhBimestreTodos(int? bimestreId)
     {

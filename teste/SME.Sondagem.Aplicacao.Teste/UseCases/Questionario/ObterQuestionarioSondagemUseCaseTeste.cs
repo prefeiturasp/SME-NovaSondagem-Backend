@@ -28,7 +28,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
-    private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
+    private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
@@ -43,9 +43,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
-        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
+        _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
 
         // Criar os agregadores com os mocks
@@ -69,7 +68,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mockAlunoTurmaService.Object
+            _mockAlunoService.Object
         );
     }
 
@@ -93,7 +92,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-              _mockAlunoTurmaService.Object
+              _mockAlunoService.Object
         ));
     }
 
@@ -111,7 +110,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-              _mockAlunoTurmaService.Object
+              _mockAlunoService.Object
         ));
     }
 
@@ -138,7 +137,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mockAlunoTurmaService.Object
+            _mockAlunoService.Object
         ));
     }
 
@@ -165,7 +164,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoPapService.Object,
             null!,
             _mockServicoUsuario.Object,
-            _mockAlunoTurmaService.Object
+            _mockAlunoService.Object
         ));
     }
 
