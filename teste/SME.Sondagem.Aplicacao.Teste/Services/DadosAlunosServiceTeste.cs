@@ -38,7 +38,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         {
             _alunoTurmaService
                 .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((IEnumerable<DadosAlunoPorTurmaDto>?)null);
+                .ReturnsAsync([]);
 
             var resultado = await CriarService().ObterDadosRacaGeneroAlunos(1);
 
