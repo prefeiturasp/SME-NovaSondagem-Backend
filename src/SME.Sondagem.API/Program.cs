@@ -7,9 +7,19 @@ using SME.Sondagem.Infra.Services;
 using SME.Sondagem.IoC;
 using System.Diagnostics.CodeAnalysis;
 using Npgsql;
-
+using Elastic.Apm.NetCoreAll;
+using Elastic.Apm.SerilogEnricher;
+using Serilog;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
 
 [assembly: ExcludeFromCodeCoverage]
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithElasticApmCorrelationInfo()
+    .WriteTo.Console()
+    .CreateLogger();
+
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +29,19 @@ builder.Configuration.GetSection("ConnectionStrings").Bind(conexaoDadosVariaveis
 builder.Services.AddSingleton(conexaoDadosVariaveis);
 
 RegistraEntityFramework.Registrar(builder.Services, builder.Configuration);
+
+builder.Host.UseSerilog();
+builder.Services.AddAllElasticApm();
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => {
+        tracing
+            .AddSource("SME.Sondagem")
+            .AddHttpClientInstrumentation()
+            .AddAspNetCoreInstrumentation();
+    })
+    .WithMetrics(metrics => {
+        metrics.AddMeter("SME.Sondagem.Metrics");
+    });
 
 var telemetriaOptions = new TelemetriaOptions();
 builder.Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
