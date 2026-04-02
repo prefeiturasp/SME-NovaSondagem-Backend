@@ -2,18 +2,21 @@ using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class DadosAlunosService : IDadosAlunosService
     {
-        private const int TamanhoBatch = 100; // ajuste conforme o limite da API
+        private const int TamanhoBatch = 100; 
         private readonly IHttpClientFactory httpClientFactory;
+        private readonly IAlunoTurmaService _alunoTurmaService;
 
-        public DadosAlunosService(IHttpClientFactory httpClientFactory)
+        public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
         }
 
         public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, CancellationToken cancellationToken = default)
@@ -56,6 +59,51 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }
 
             return resultado;
+        }
+
+        public async Task<IEnumerable<AlunoRacaGeneroDto>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken = default)
+        {
+            var dadosAlunos = await _alunoTurmaService.InformacoesAlunosPorTurma(turmaId, cancellationToken);
+
+            if (dadosAlunos == null || !dadosAlunos.Any())
+                return Enumerable.Empty<AlunoRacaGeneroDto>();
+
+            var dados = dadosAlunos.Select(x => new AlunoRacaGeneroDto
+            {
+                CodigoAluno = x.CodigoAluno,
+                Raca = ConverterCodigoRacaParaDescricao(x.Raca),
+                Sexo = ConverterCodigoGeneroParaDescricao(x.Sexo)
+            }).ToList();
+
+            return dados;
+        }
+
+        private static string ConverterCodigoGeneroParaDescricao(string codigoGenero)
+        {
+            return codigoGenero?.ToUpperInvariant() switch
+            {
+                "M" => "Masculino",
+                "F" => "Feminino",
+                _ => string.IsNullOrWhiteSpace(codigoGenero) ? string.Empty : codigoGenero
+            };
+        }
+
+        private static string ConverterCodigoRacaParaDescricao(string codigoRaca)
+        {
+            if (string.IsNullOrWhiteSpace(codigoRaca))
+                return string.Empty;
+
+            var racaUpper = codigoRaca.ToUpperInvariant();
+            return racaUpper switch
+            {
+                "BRANCA" => "Branca",
+                "PRETA" => "Preta",
+                "PARDA" => "Parda",
+                "AMARELA" => "Amarela",
+                "INDIGENA" => "Indígena",
+                "INDÍGENA" => "Indígena",
+                _ => char.ToUpperInvariant(racaUpper[0]) + racaUpper[1..].ToLowerInvariant()
+            };
         }
     }
 }

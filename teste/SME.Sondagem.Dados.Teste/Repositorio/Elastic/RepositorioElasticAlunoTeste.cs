@@ -284,7 +284,7 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
             var listaResultado = resultado.ToList();
             Assert.Single(listaResultado);
             Assert.Equal("Ativo", listaResultado.First().NomeAluno);
-        }       
+        }
 
         #region Métodos Auxiliares
 

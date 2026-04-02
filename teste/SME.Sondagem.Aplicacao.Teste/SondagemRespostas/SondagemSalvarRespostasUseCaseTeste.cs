@@ -72,7 +72,8 @@ public class SondagemSalvarRespostasUseCaseTeste
             _repositorioSondagemResposta.Object,
             _repositorioQuestao.Object,
             _controleAcessoService.Object,
-            _repositorioElasticTurma.Object
+            _repositorioElasticTurma.Object,
+            _dadosAlunosService.Object
         );
 
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
@@ -175,11 +176,65 @@ public class SondagemSalvarRespostasUseCaseTeste
                 TipoQuestao.LinguaPortuguesaSegundaLingua))
             .ReturnsAsync(questaoLP);
 
+        _dadosAlunosService
+                .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+                .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>
+                {
+                    new() { CodigoAluno = 101, Raca = "Parda", Sexo = "Feminino" }
+                });
+
         _repositorioSondagemResposta
             .Setup(x => x.ObterRespostasPorSondagemEAlunosAsync(
                 It.IsAny<int>(),
                 It.IsAny<IEnumerable<int>>(),
                 It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new List<RespostaAluno>());
+
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>()))
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.True(resultado);
+    }
+
+    [Fact]
+    public async Task DeveSalvarComSucesso_QuandoSemQuestaoLinguaPortuguesa()
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+
+        ConfigurarMockTurmaSucesso();
+
+        var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(1, 1);
+        var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
+
+        _controleAcessoService
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+            .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>());
+
+        _repositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva())
+            .ReturnsAsync(sondagemAtiva);
+
+        _repositorioQuestao
+            .Setup(x => x.ObterQuestionarioIdPorQuestoesAsync(It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new List<Questao> { questaoLP });
+
+        _repositorioQuestao
+            .Setup(x => x.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                It.IsAny<int>(), TipoQuestao.LinguaPortuguesaSegundaLingua))
+            .ReturnsAsync((Questao?)null);
+
+        _repositorioSondagemResposta
+            .Setup(x => x.ObterRespostasPorSondagemEAlunosAsync(
+                It.IsAny<int>(), It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<int>>()))
             .ReturnsAsync(new List<RespostaAluno>());
 
         _repositorioSondagemResposta
@@ -215,6 +270,13 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())
             .ReturnsAsync(SondagemMockData.CriarSondagemAtiva(1, 1));
+
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+            .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>
+            {
+                new() { CodigoAluno = 101, Raca = "Parda", Sexo = "Feminino" }
+            });
 
         _repositorioQuestao
             .Setup(x => x.ObterQuestionarioIdPorQuestoesAsync(It.IsAny<IEnumerable<int>>()))

@@ -27,9 +27,9 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
-        IAlunoTurmaService _alunoTurmaService,
+        IDadosAlunosService _alunoService,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, _alunoTurmaService)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, _alunoService)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -60,7 +60,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
-    private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
+    private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
 
@@ -81,7 +81,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
-        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
+        _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
 
         _repositoriosElastic = new RepositoriosElastic(
@@ -105,7 +105,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mockAlunoTurmaService.Object,
+            _mockAlunoService.Object,
             dadosAlunos);
 
     #region Construtor

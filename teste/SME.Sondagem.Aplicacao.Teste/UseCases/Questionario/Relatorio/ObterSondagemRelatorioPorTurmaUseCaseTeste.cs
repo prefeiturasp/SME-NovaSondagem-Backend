@@ -10,6 +10,7 @@ using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using SME.Sondagem.Infrastructure.Interfaces;
@@ -27,7 +28,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
-    private readonly Mock<IAlunoTurmaService> _mockAlunoTurmaService;
+    private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
@@ -44,7 +45,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
-        _mockAlunoTurmaService = new Mock<IAlunoTurmaService>();
+        _mockAlunoService = new Mock<IDadosAlunosService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
@@ -68,7 +69,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
-            _mockAlunoTurmaService.Object,
+            _mockAlunoService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
         );
@@ -227,10 +228,10 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = CriarAlunosMock();
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "João Silva", Raca = "PARDA", Sexo = "M" },
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1002, NomeAluno = "Maria Santos", Raca = "BRANCA", Sexo = "F" }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001, Raca = "Parda", Sexo = "Masculino" },
+            new AlunoRacaGeneroDto { CodigoAluno = 1002, Raca = "Branca", Sexo = "Feminino" }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -251,12 +252,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
 
     #region Testes de ConverterCodigoGeneroParaDescricao
 
-    [Theory]
-    [InlineData("M", "Masculino")]
-    [InlineData("m", "Masculino")]
-    [InlineData("F", "Feminino")]
-    [InlineData("f", "Feminino")]
-    public async Task ObterSondagemRelatorio_DeveConverterCodigoGeneroCorretamente(string codigoGenero, string descricaoEsperada)
+    [Fact]
+    public async Task ObterSondagemRelatorio_DeveConverterCodigoGeneroCorretamente()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
         var turma = new TurmaElasticDto { Modalidade = 5, AnoTurma = "1", AnoLetivo = 2025 };
@@ -267,9 +264,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = codigoGenero, Raca = string.Empty }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = "Feminino", Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -277,7 +274,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         var estudante = resultado.Estudantes!.First();
-        Assert.Equal(descricaoEsperada, estudante.Genero);
+        Assert.Equal("Feminino", estudante.Genero);
     }
 
     [Fact]
@@ -292,9 +289,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = "X", Raca = string.Empty }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001, Sexo = "X", Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -317,9 +314,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = null!, Raca = string.Empty }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = string.Empty, Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -342,9 +339,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = "   ", Raca = string.Empty }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = "", Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -360,18 +357,11 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     #region Testes de ConverterCodigoRacaParaDescricao
 
     [Theory]
-    [InlineData("BRANCA", "Branca")]
-    [InlineData("branca", "Branca")]
-    [InlineData("PRETA", "Preta")]
-    [InlineData("preta", "Preta")]
-    [InlineData("PARDA", "Parda")]
-    [InlineData("parda", "Parda")]
-    [InlineData("AMARELA", "Amarela")]
-    [InlineData("amarela", "Amarela")]
-    [InlineData("INDIGENA", "Indígena")]
-    [InlineData("indigena", "Indígena")]
-    [InlineData("INDÍGENA", "Indígena")]
-    [InlineData("indígena", "Indígena")]
+    [InlineData("Branca", "Branca")]
+    [InlineData("Preta", "Preta")]
+    [InlineData("Parda", "Parda")]
+    [InlineData("Amarela", "Amarela")]
+    [InlineData("Indígena", "Indígena")]
     public async Task ObterSondagemRelatorio_DeveConverterCodigoRacaCorretamente(string codigoRaca, string descricaoEsperada)
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
@@ -383,9 +373,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = string.Empty, Raca = codigoRaca }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = string.Empty, Raca = codigoRaca }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -408,9 +398,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = string.Empty, Raca = null! }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001, Sexo = string.Empty, Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -433,9 +423,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = string.Empty, Raca = "   " }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = string.Empty, Raca = string.Empty }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -458,9 +448,9 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
         };
 
-        var dadosAlunos = new List<DadosAlunoPorTurmaDto>
+        var dadosAlunos = new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", Sexo = string.Empty, Raca = "CABOCLA" }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001,  Sexo = string.Empty, Raca = "Cabocla" }
         };
 
         ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, dadosAlunos);
@@ -491,8 +481,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
-        _mockAlunoTurmaService
-            .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+        _mockAlunoService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(dadosAlunos);
 
         var alunosComPap = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
@@ -533,8 +523,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
-        _mockAlunoTurmaService
-            .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+        _mockAlunoService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(dadosAlunos);
 
         _mockAlunoPapService
@@ -574,8 +564,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
 
         await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
-        _mockAlunoTurmaService.Verify(
-            x => x.InformacoesAlunosPorTurma(turmaId, It.IsAny<CancellationToken>()),
+        _mockAlunoService.Verify(
+            x => x.ObterDadosRacaGeneroAlunos(turmaId, It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -588,7 +578,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = CriarAlunosMock();
 
-        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, new List<DadosAlunoPorTurmaDto>());
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos, new List<AlunoRacaGeneroDto>());
 
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
@@ -653,12 +643,12 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         };
     }
 
-    private static List<DadosAlunoPorTurmaDto> CriarDadosAlunosPorTurmaMock()
+    private static List<AlunoRacaGeneroDto> CriarDadosAlunosPorTurmaMock()
     {
-        return new List<DadosAlunoPorTurmaDto>
+        return new List<AlunoRacaGeneroDto>
         {
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1001, NomeAluno = "João Silva", Sexo = "M", Raca = "PARDA" },
-            new DadosAlunoPorTurmaDto { CodigoAluno = 1002, NomeAluno = "Maria Santos", Sexo = "F", Raca = "BRANCA" }
+            new AlunoRacaGeneroDto { CodigoAluno = 1001, Sexo = "M", Raca = "PARDA" },
+            new AlunoRacaGeneroDto { CodigoAluno = 1002,  Sexo = "F", Raca = "BRANCA" }
         };
     }
 
@@ -692,7 +682,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         Dominio.Entidades.Sondagem.Sondagem sondagem,
         List<Dominio.Entidades.Questionario.Questao> questoes,
         List<AlunoElasticDto> alunos,
-        IEnumerable<DadosAlunoPorTurmaDto> dadosAlunos)
+        IEnumerable<AlunoRacaGeneroDto> dadosAlunos)
     {
         ConfigurarMocksBase(filtro, turma, sondagem, questoes);
 
@@ -700,8 +690,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunos);
 
-        _mockAlunoTurmaService
-            .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+        _mockAlunoService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(dadosAlunos);
 
         _mockAlunoPapService
