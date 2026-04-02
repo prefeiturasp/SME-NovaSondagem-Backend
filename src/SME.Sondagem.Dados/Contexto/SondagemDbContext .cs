@@ -29,6 +29,7 @@ public class SondagemDbContext : DbContext
     public DbSet<RespostaAluno> RespostasAluno { get; set; }
     public DbSet<Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; set; }
     public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
+    public DbSet<RacaCor> RacaCor { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
