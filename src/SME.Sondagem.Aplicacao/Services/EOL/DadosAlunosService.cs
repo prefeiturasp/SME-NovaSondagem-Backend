@@ -10,7 +10,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
     [ExcludeFromCodeCoverage]
     public class DadosAlunosService : IDadosAlunosService
     {
-        private const int TamanhoBatch = 100; // ajuste conforme o limite da API
+        private const int TamanhoBatch = 100; 
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IAlunoTurmaService _alunoTurmaService;
 
