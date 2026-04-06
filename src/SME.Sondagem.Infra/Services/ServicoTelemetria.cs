@@ -8,6 +8,9 @@ public class ServicoTelemetria : IServicoTelemetria
 {
     public static readonly ActivitySource SondagemActivitySource = new ActivitySource("SME.Sondagem");
     private readonly TelemetriaOptions _telemetriaOptions;
+    private const string Excecao = "Exception";
+    private const string ExcecaoMenssagem = "exception.message";
+    private const string ExcecaoStacktrace = "exception.stacktrace";
 
     public ServicoTelemetria(TelemetriaOptions telemetriaOptions)
     {
@@ -44,7 +47,7 @@ public class ServicoTelemetria : IServicoTelemetria
         if (servicoTelemetriaTransacao.Activity != null)
         {
             servicoTelemetriaTransacao.Activity.SetStatus(ActivityStatusCode.Error, ex.Message);
-            servicoTelemetriaTransacao.Activity.AddEvent(new ActivityEvent("Exception", tags: new ActivityTagsCollection { { "exception.message", ex.Message }, { "exception.stacktrace", ex.StackTrace } }));
+            servicoTelemetriaTransacao.Activity.AddEvent(new ActivityEvent(Excecao, tags: new ActivityTagsCollection { { ExcecaoMenssagem, ex.Message }, { ExcecaoStacktrace, ex.StackTrace } }));
         }
     }
 
@@ -69,7 +72,7 @@ public class ServicoTelemetria : IServicoTelemetria
         catch (Exception ex)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            activity?.AddEvent(new ActivityEvent("Exception", tags: new ActivityTagsCollection { { "exception.message", ex.Message }, { "exception.stacktrace", ex.StackTrace } }));
+            activity?.AddEvent(new ActivityEvent(Excecao, tags: new ActivityTagsCollection { { ExcecaoMenssagem, ex.Message }, { ExcecaoStacktrace, ex.StackTrace } }));
             throw;
         }
         finally
@@ -101,7 +104,7 @@ public class ServicoTelemetria : IServicoTelemetria
         catch (Exception ex)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            activity?.AddEvent(new ActivityEvent("Exception", tags: new ActivityTagsCollection { { "exception.message", ex.Message }, { "exception.stacktrace", ex.StackTrace } }));
+            activity?.AddEvent(new ActivityEvent(Excecao, tags: new ActivityTagsCollection { { ExcecaoMenssagem, ex.Message }, { ExcecaoStacktrace, ex.StackTrace } }));
             throw;
         }
         finally
@@ -127,7 +130,7 @@ public class ServicoTelemetria : IServicoTelemetria
         catch (Exception ex)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            activity?.AddEvent(new ActivityEvent("Exception", tags: new ActivityTagsCollection { { "exception.message", ex.Message }, { "exception.stacktrace", ex.StackTrace } }));
+            activity?.AddEvent(new ActivityEvent(Excecao, tags: new ActivityTagsCollection { { ExcecaoMenssagem, ex.Message }, { ExcecaoStacktrace, ex.StackTrace } }));
             throw;
         }
         finally
@@ -153,7 +156,7 @@ public class ServicoTelemetria : IServicoTelemetria
         catch (Exception ex)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            activity?.AddEvent(new ActivityEvent("Exception", tags: new ActivityTagsCollection { { "exception.message", ex.Message }, { "exception.stacktrace", ex.StackTrace } }));
+            activity?.AddEvent(new ActivityEvent(Excecao, tags: new ActivityTagsCollection { { ExcecaoMenssagem, ex.Message }, { ExcecaoStacktrace, ex.StackTrace } }));
             throw;
         }
         finally
