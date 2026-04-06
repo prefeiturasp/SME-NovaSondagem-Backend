@@ -50,14 +50,14 @@ public class RespostaAluno : EntidadeBase
 
     private void AtualizarContextoEducacional(ContextoEducacional contexto)
     {
-        TurmaId = TurmaId is null && contexto.TurmaId is not null ? contexto.TurmaId : TurmaId;
-        UeId = UeId is null && contexto.UeId is not null ? contexto.UeId : UeId;
-        DreId = DreId is null && contexto.DreId is not null ? contexto.DreId : DreId;
-        AnoLetivo = AnoLetivo is null && contexto.AnoLetivo is not null ? contexto.AnoLetivo : AnoLetivo;
-        RacaCorId = RacaCorId is null && contexto.RacaCorId is not null ? contexto.RacaCorId : RacaCorId;
-        GeneroSexoId = GeneroSexoId is null && contexto.GeneroSexoId is not null ? contexto.GeneroSexoId : GeneroSexoId;
-        ProgramaAtendimentoId = ProgramaAtendimentoId is null && contexto.ProgramaAtendimentoId is not null ? contexto.ProgramaAtendimentoId : ProgramaAtendimentoId;
-        ModalidadeId = ModalidadeId is null && contexto.ModalidadeId is not null ? contexto.ModalidadeId : ModalidadeId;
+        TurmaId ??= contexto.TurmaId;
+        UeId ??= contexto.UeId;
+        DreId ??= contexto.DreId;
+        AnoLetivo ??= contexto.AnoLetivo;
+        RacaCorId ??= contexto.RacaCorId;
+        GeneroSexoId ??= contexto.GeneroSexoId;
+        ProgramaAtendimentoId ??= contexto.ProgramaAtendimentoId;
+        ModalidadeId ??= contexto.ModalidadeId;
     }
 
     // Navegação
