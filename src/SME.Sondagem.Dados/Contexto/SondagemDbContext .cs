@@ -32,6 +32,9 @@ public class SondagemDbContext : DbContext
     public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
     public DbSet<PerfilConfiguracao> PerfilConfiguracao { get; set; }
     public DbSet<ControleAcessoOptions> ControleAcessoOptions { get; set; }
+    public DbSet<RacaCor> RacaCor { get; set; }
+    public DbSet<GeneroSexo> GeneroSexo { get; set; }
+    public DbSet<ProgramaAtendimento> ProgramaAtendimento { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

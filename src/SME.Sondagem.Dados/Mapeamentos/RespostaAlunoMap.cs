@@ -63,13 +63,14 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasColumnName("ano_letivo")
             .IsRequired(false);
 
-        builder.Property(x => x.Raca)
-                    .HasColumnName("raca").HasMaxLength(100)
-                    .IsRequired(false);
 
-        builder.Property(x => x.Genero).HasMaxLength(100)
-                .HasColumnName("genero")
-                .IsRequired(false);
+        builder.Property(x => x.RacaCorId)
+                .HasColumnName("raca_cor_id").IsRequired(false);
+
+        builder.Property(x => x.GeneroSexoId)
+            .HasColumnName("genero_sexo_id").IsRequired(false);
+
+        builder.Property(x => x.ProgramaAtendimentoId).HasColumnName("programa_atendimento_id").IsRequired(false);
 
         ConfigurarAuditoria(builder);
 
@@ -98,6 +99,21 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .WithMany(x => x.RespostaAlunos)
             .HasForeignKey(x => x.BimestreId)
             .HasConstraintName("fk_bimestre_resposta_aluno");
+
+        builder.HasOne(x => x.RacaCor)
+                        .WithMany(x => x.RespostaAlunos)
+                        .HasForeignKey(x => x.RacaCorId)
+                        .HasConstraintName("fk_raca_cor_resposta_aluno");
+
+        builder.HasOne(x => x.GeneroSexo)
+                .WithMany(x => x.RespostaAlunos)
+                .HasForeignKey(x => x.GeneroSexoId)
+                .HasConstraintName("fk_genero_sexo_resposta_aluno");
+
+        builder.HasOne(x => x.ProgramaAtendimento)
+                .WithMany(x => x.RespostaAlunos)
+                .HasForeignKey(x => x.ProgramaAtendimentoId)
+                .HasConstraintName("fk_programa_atendimento_resposta_aluno");
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<RespostaAluno> builder)
