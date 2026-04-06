@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -17,10 +18,14 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         private readonly Mock<IAlunoTurmaService> _alunoTurmaService;
         private readonly Mock<IHttpClientFactory> _httpClientFactory;
         private readonly Mock<HttpMessageHandler> _httpMessageHandler;
+        private readonly Mock<IRepositorioGeneroSexo> _repositorioGeneroSexo;
+        private readonly Mock<IRepositorioRacaCor> _repositorioRacaCor;
 
         public DadosAlunosServiceTeste()
         {
             _alunoTurmaService = new Mock<IAlunoTurmaService>();
+            _repositorioRacaCor = new Mock<IRepositorioRacaCor>();
+            _repositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
             _httpClientFactory = new Mock<IHttpClientFactory>();
             _httpMessageHandler = new Mock<HttpMessageHandler>();
 
@@ -29,7 +34,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
         private DadosAlunosService CriarService()
         {
-            return new DadosAlunosService(_httpClientFactory.Object, _alunoTurmaService.Object);
+            return new DadosAlunosService(_httpClientFactory.Object, _alunoTurmaService.Object, _repositorioGeneroSexo.Object, _repositorioRacaCor.Object);
         }
 
 
@@ -195,14 +200,14 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         public void DeveLancarArgumentNullException_QuandoHttpClientFactoryNulo()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new DadosAlunosService(null!, _alunoTurmaService.Object));
+                new DadosAlunosService(null!, _alunoTurmaService.Object, _repositorioGeneroSexo.Object, _repositorioRacaCor.Object));
         }
 
         [Fact]
         public void DeveLancarArgumentNullException_QuandoAlunoTurmaServiceNulo()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                new DadosAlunosService(_httpClientFactory.Object, null!));
+                new DadosAlunosService(_httpClientFactory.Object, null!, _repositorioGeneroSexo.Object, _repositorioRacaCor.Object));
         }
     }
 }

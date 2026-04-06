@@ -20,8 +20,9 @@ public class RespostaAluno : EntidadeBase
         UeId = contexto.UeId;
         DreId = contexto.DreId;
         AnoLetivo = contexto.AnoLetivo;
-        Raca = contexto.Raca;
-        Genero = contexto.Genero;
+        RacaCorId = contexto.RacaCorId;
+        GeneroSexoId = contexto.GeneroSexoId;
+        ProgramaAtendimentoId = contexto.ProgramaAtendimentoId;
         ModalidadeId = contexto.ModalidadeId;
     }
 
@@ -31,30 +32,39 @@ public class RespostaAluno : EntidadeBase
     public int? OpcaoRespostaId { get; private set; }
     public DateTime DataResposta { get; private set; }
     public int? BimestreId { get; private set; }
+    public int? RacaCorId { get;  set; }
+    public int? GeneroSexoId { get;  set; }
+    public int? ProgramaAtendimentoId { get;  set; }
     public string? TurmaId { get; set; }
     public string? UeId { get; set; }
     public string? DreId { get; set; }
     public int? AnoLetivo { get; set; }
     public string? ModalidadeId { get; set; }
-    public string? Raca { get; set; }
-    public string? Genero { get; set; }
 
     public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
     {
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
-        TurmaId = TurmaId is null && contexto.TurmaId is not null ? contexto.TurmaId : TurmaId;
-        UeId = UeId is null && contexto.UeId is not null ? contexto.UeId : UeId;
-        DreId = DreId is null && contexto.DreId is not null ? contexto.DreId : DreId;
-        AnoLetivo = AnoLetivo is null && contexto.AnoLetivo is not null ? contexto.AnoLetivo : AnoLetivo;
-        Raca = Raca is null && contexto.Raca is not null ? contexto.Raca : Raca;
-        Genero = Genero is null && contexto.Genero is not null ? contexto.Genero : Genero;
-        ModalidadeId = ModalidadeId is null && contexto.ModalidadeId is not null ? contexto.ModalidadeId : ModalidadeId;
+        AtualizarContextoEducacional(contexto);
     }
 
-    // Navegação
+    private void AtualizarContextoEducacional(ContextoEducacional contexto)
+    {
+        TurmaId ??= contexto.TurmaId;
+        UeId ??= contexto.UeId;
+        DreId ??= contexto.DreId;
+        AnoLetivo ??= contexto.AnoLetivo;
+        RacaCorId ??= contexto.RacaCorId;
+        GeneroSexoId ??= contexto.GeneroSexoId;
+        ProgramaAtendimentoId ??= contexto.ProgramaAtendimentoId;
+        ModalidadeId ??= contexto.ModalidadeId;
+    }
+
     public virtual Sondagem Sondagem { get; private set; } = null!;
     public virtual Questao Questao { get; private set; } = null!;
     public virtual OpcaoResposta OpcaoResposta { get; private set; } = null!;
     public virtual Bimestre? Bimestre { get; private set; } = null!;
+    public virtual RacaCor? RacaCor { get; set; }
+    public virtual GeneroSexo? GeneroSexo { get; set; }
+    public virtual ProgramaAtendimento? ProgramaAtendimento { get; set; }
 }

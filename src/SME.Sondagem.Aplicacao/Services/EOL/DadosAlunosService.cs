@@ -1,5 +1,7 @@
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using System.Diagnostics.CodeAnalysis;
@@ -12,11 +14,17 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         private const int TamanhoBatch = 100; 
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IAlunoTurmaService _alunoTurmaService;
+        private readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
+        private readonly IRepositorioRacaCor _repositorioRacaCor;
 
-        public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService)
+        public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService, IRepositorioGeneroSexo repositorioGeneroSexo
+            , IRepositorioRacaCor repositorioRacaCor)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
+            _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
+            _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
+            _repositorioRacaCor = repositorioRacaCor ?? throw new ArgumentNullException(nameof(repositorioRacaCor));
         }
 
         public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, CancellationToken cancellationToken = default)
@@ -66,16 +74,30 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var dadosAlunos = await _alunoTurmaService.InformacoesAlunosPorTurma(turmaId, cancellationToken);
 
             if (dadosAlunos == null || !dadosAlunos.Any())
-                return Enumerable.Empty<AlunoRacaGeneroDto>();
+                return [];
+
+            var dadosGeneroSexo = await _repositorioGeneroSexo.ListarAsync(cancellationToken);
+            var dadosRacaCor = await _repositorioRacaCor.ListarAsync(cancellationToken);
 
             var dados = dadosAlunos.Select(x => new AlunoRacaGeneroDto
             {
                 CodigoAluno = x.CodigoAluno,
                 Raca = ConverterCodigoRacaParaDescricao(x.Raca),
-                Sexo = ConverterCodigoGeneroParaDescricao(x.Sexo)
+                Sexo = ConverterCodigoGeneroParaDescricao(x.Sexo),
+                SexoId = ObterIdSexoGenero(x.Sexo, [.. dadosGeneroSexo]),
+                RacaId = ObterIdRaca(x.Raca, [.. dadosRacaCor]),
             }).ToList();
 
             return dados;
+        }
+
+        private static int? ObterIdRaca(string codigoRaca, List<RacaCor> dadosRacaCor)
+        {
+            return dadosRacaCor.FirstOrDefault(g => string.Equals(g.Descricao, codigoRaca, StringComparison.OrdinalIgnoreCase))?.Id;
+        }
+        private static int? ObterIdSexoGenero(string codigoGenero,List<GeneroSexo> dadosGeneroSexo)
+        {
+           return dadosGeneroSexo.FirstOrDefault(g => string.Equals(g.Sigla, codigoGenero, StringComparison.OrdinalIgnoreCase))?.Id;
         }
 
         private static string ConverterCodigoGeneroParaDescricao(string codigoGenero)
