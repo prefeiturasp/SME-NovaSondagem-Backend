@@ -1,4 +1,4 @@
-﻿using SME.Sondagem.Aplicacao.Interfaces.Questionario;
+﻿using SME.Sondagem.Aplicacao.Interfaces.RacaCor;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infrastructure.Dtos;
 
@@ -15,9 +15,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.RacaCor
 
         public async Task<IEnumerable<ItemMenuDto>> Executar(CancellationToken cancellationToken = default)
         {
-            var buscarNaBase = await _repositorioRacaCor.ListarAsync(cancellationToken);
+            var buscarNaBase = (await _repositorioRacaCor.ListarAsync(cancellationToken)).Where(x => !x.Excluido);
             if(!buscarNaBase.Any())
-                return Enumerable.Empty<ItemMenuDto>();
+                return [];
 
             return buscarNaBase.Select(x => new ItemMenuDto(x.Id, x.Descricao));
         }

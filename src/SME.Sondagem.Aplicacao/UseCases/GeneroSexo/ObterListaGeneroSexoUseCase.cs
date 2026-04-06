@@ -1,8 +1,8 @@
-﻿using SME.Sondagem.Aplicacao.Interfaces.Questionario;
+﻿using SME.Sondagem.Aplicacao.Interfaces.GeneroSexo;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infrastructure.Dtos;
 
-namespace SME.Sondagem.Aplicacao.UseCases.Questionario.GeneroSexo
+namespace SME.Sondagem.Aplicacao.UseCases.GeneroSexo
 {
     public class ObterListaGeneroSexoUseCase : IObterListaGeneroSexoUseCase
     {
@@ -15,10 +15,10 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.GeneroSexo
 
         public async Task<IEnumerable<ItemMenuDto>> Executar(CancellationToken cancellationToken = default)
         {
-            var buscarNaBase = await _repositorioGeneroSexo.ListarAsync(cancellationToken);
+            var buscarNaBase =( await _repositorioGeneroSexo.ListarAsync(cancellationToken)).Where(x => !x.Excluido);
 
-            if(!buscarNaBase.Any())
-                return Enumerable.Empty<ItemMenuDto>();
+            if (!buscarNaBase.Any())
+                return [];
 
             return buscarNaBase.Select(generoSexo => new ItemMenuDto(generoSexo.Id, generoSexo.Descricao));
 

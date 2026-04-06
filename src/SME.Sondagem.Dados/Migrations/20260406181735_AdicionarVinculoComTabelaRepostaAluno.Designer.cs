@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260406181735_AdicionarVinculoComTabelaRepostaAluno")]
+    partial class AdicionarVinculoComTabelaRepostaAluno
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -384,8 +387,7 @@ namespace SME.Sondagem.Dados.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -740,8 +742,7 @@ namespace SME.Sondagem.Dados.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1295,8 +1296,7 @@ namespace SME.Sondagem.Dados.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1426,6 +1426,11 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
+                    b.Property<string>("Genero")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("genero");
+
                     b.Property<int?>("GeneroSexoId")
                         .HasColumnType("integer")
                         .HasColumnName("genero_sexo_id");
@@ -1446,6 +1451,11 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Property<int>("QuestaoId")
                         .HasColumnType("integer")
                         .HasColumnName("questao_id");
+
+                    b.Property<string>("Raca")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("raca");
 
                     b.Property<int?>("RacaCorId")
                         .HasColumnType("integer")

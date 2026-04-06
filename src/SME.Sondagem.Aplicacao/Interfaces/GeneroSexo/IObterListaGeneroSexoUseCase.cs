@@ -2,7 +2,7 @@
 using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infrastructure.Dtos;
 
-namespace SME.Sondagem.Aplicacao.Interfaces.Questionario
+namespace SME.Sondagem.Aplicacao.Interfaces.GeneroSexo
 {
     public interface IObterListaGeneroSexoUseCase 
     {

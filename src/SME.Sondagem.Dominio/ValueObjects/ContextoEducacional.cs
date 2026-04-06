@@ -7,8 +7,9 @@
         public string? DreId { get; init; }
         public int? AnoLetivo { get; init; }
         public string? ModalidadeId { get; init; }
-        public string? Raca { get; init; }
-        public string? Genero { get; init; }
+        public int? RacaCorId { get; init; }
+        public int? GeneroSexoId { get; init; }
         public int? BimestreId { get; init; }
+        public int? ProgramaAtendimentoId { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.Aplicacao.Interfaces.Questionario;
+using SME.Sondagem.Aplicacao.Interfaces.RacaCor;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infrastructure.Dtos;
 

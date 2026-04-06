@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SME.Sondagem.Aplicacao.Interfaces.Questionario;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.GeneroSexo;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos;
