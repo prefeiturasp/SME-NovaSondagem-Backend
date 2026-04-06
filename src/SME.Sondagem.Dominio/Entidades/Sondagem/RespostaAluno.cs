@@ -45,6 +45,10 @@ public class RespostaAluno : EntidadeBase
     {
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
+        AtualizarContextoEducacional(contexto);
+    }
+    private void AtualizarContextoEducacional(ContextoEducacional contexto)
+    {
         TurmaId = TurmaId is null && contexto.TurmaId is not null ? contexto.TurmaId : TurmaId;
         UeId = UeId is null && contexto.UeId is not null ? contexto.UeId : UeId;
         DreId = DreId is null && contexto.DreId is not null ? contexto.DreId : DreId;
@@ -62,5 +66,5 @@ public class RespostaAluno : EntidadeBase
     public virtual Bimestre? Bimestre { get; private set; } = null!;
     public virtual RacaCor? RacaCor { get; set; }
     public virtual GeneroSexo? GeneroSexo { get; set; }
-    public virtual ProgramaAtendimento? ProgramaAtendimento { get; private set; }
+    public virtual ProgramaAtendimento? ProgramaAtendimento { get; set; }
 }
