@@ -60,7 +60,6 @@ public class RespostaAluno : EntidadeBase
         ModalidadeId ??= contexto.ModalidadeId;
     }
 
-    // Navegação
     public virtual Sondagem Sondagem { get; private set; } = null!;
     public virtual Questao Questao { get; private set; } = null!;
     public virtual OpcaoResposta OpcaoResposta { get; private set; } = null!;
