@@ -4,19 +4,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Autenticacao;
-using SME.Sondagem.Aplicacao.Interfaces.Base;
 using SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 using SME.Sondagem.Aplicacao.Interfaces.ComponenteCurricular;
+using SME.Sondagem.Aplicacao.Interfaces.GeneroSexo;
 using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagem;
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
+using SME.Sondagem.Aplicacao.Interfaces.ProgramaAtendimento;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.Interfaces.QuestionarioBimestre;
+using SME.Sondagem.Aplicacao.Interfaces.RacaCor;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Aplicacao.Interfaces.Turma;
@@ -25,17 +27,19 @@ using SME.Sondagem.Aplicacao.Services.SGP;
 using SME.Sondagem.Aplicacao.UseCases.Autenticacao;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Aplicacao.UseCases.ComponenteCurricular;
+using SME.Sondagem.Aplicacao.UseCases.GeneroSexo;
 using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.ParametroSondagem;
 using SME.Sondagem.Aplicacao.UseCases.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
+using SME.Sondagem.Aplicacao.UseCases.ProgramaAtendimento;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
-using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.UseCases.QuestionarioBimestre;
+using SME.Sondagem.Aplicacao.UseCases.RacaCor;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Aplicacao.UseCases.Turma;
 using SME.Sondagem.Aplicacao.Validators.Bimestre;
@@ -63,7 +67,6 @@ using SME.Sondagem.Infrastructure.Interfaces;
 using SME.Sondagem.Infrastructure.Services;
 using SME.Sondagem.IoC.Extensions;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 
 namespace SME.Sondagem.IoC;
 
@@ -177,6 +180,9 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterParametrosSondagemQuestionarioUseCase, ObterParametrosSondagemQuestionarioUseCase>();
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdUseCase, ObterParametroSondagemQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase, ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase>();
+        services.TryAddScoped<IObterListaRacaCorUseCase, ObterListaRacaCorUseCase>();
+        services.TryAddScoped<IObterListaProgramaAtendimentoUseCase, ObterListaProgramaAtendimentoUseCase>();
+        services.TryAddScoped<IObterListaGeneroSexoUseCase, ObterListaGeneroSexoUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
