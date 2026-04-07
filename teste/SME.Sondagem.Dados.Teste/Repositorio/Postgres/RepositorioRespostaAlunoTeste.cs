@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Dominio.ValueObjects;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
@@ -328,6 +330,29 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
         }
+
+        #region ObterRespostasParaRelatorioConsolidadoAsync
+
+        [Fact]
+        public async Task ObterRespostasParaRelatorioConsolidadoAsync_NaoDeveRetornarExcluidos()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasParaRelatorioConsolidadoAsync_NaoDeveRetornarExcluidos));
+            var resposta = CriarRespostaAluno(1, 1);
+            resposta.Excluido = true;
+
+            context.RespostasAluno.Add(resposta);
+            await context.SaveChangesAsync();
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(new FiltroConsolidadoDto());
+
+            // Assert
+            Assert.Empty(resultado);
+        }
+
+        #endregion
 
         private static ContextoEducacional CriarContextoEducacional()
         {

@@ -19,11 +19,11 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
         var respostasBrutas = await _repositorioSondagem.RepositorioRespostaAluno.ObterRespostasParaRelatorioConsolidadoAsync(filtro, cancellationToken);
 
         if (respostasBrutas == null || !respostasBrutas.Any())
-            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado Raça - Sem Dados" };
+            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado - Sem Dados" };
 
         var relatorio = new RelatorioConsolidadoSondagemDto
         {
-            Titulo = $"Relatório Consolidado de Sondagem Raça - {filtro.AnoLetivo}"
+            Titulo = $"Relatório Consolidado de Sondagem - {filtro.AnoLetivo}"
         };
 
         var agrupamentoPorAno = respostasBrutas
