@@ -18,6 +18,7 @@ public class RelatorioConsolidadoRespostaDto
 {
     public string Resposta { get; set; } = string.Empty;
     public IEnumerable<RelatorioConsolidadoRacaDto> Racas { get; set; } = new List<RelatorioConsolidadoRacaDto>();
+    public IEnumerable<RelatorioConsolidadoGeneroDto> Generos { get; set; } = new List<RelatorioConsolidadoGeneroDto>();
     public int Total { get; set; }
     public double Percentual { get; set; }
     public int Ordem { get; set; }
@@ -28,6 +29,14 @@ public class RelatorioConsolidadoRespostaDto
 public class RelatorioConsolidadoRacaDto
 {
     public string Raca { get; set; } = string.Empty;
+    public int Quantidade { get; set; }
+    public double Percentual { get; set; }
+}
+
+public class RelatorioConsolidadoGeneroDto
+{
+    public string Genero { get; set; } = string.Empty;
+    public string? Sigla { get; set; }
     public int Quantidade { get; set; }
     public double Percentual { get; set; }
 }

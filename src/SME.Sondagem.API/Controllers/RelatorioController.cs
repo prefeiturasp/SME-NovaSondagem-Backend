@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
@@ -28,9 +28,14 @@ public class RelatorioController : ControllerBase
     }
 
     [HttpGet("consoliado/raca")]
-    public async Task<IActionResult> ObterRelatorioSondagemConsolidado([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorRaca([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
     {
         return Ok(await obterSondagemRelatorioConsolidadoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
+    [HttpGet("consoliado/genero")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorGenero([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoGeneroUseCase obterSondagemRelatorioConsolidadoGeneroUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
 }

@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -184,6 +184,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterListaProgramaAtendimentoUseCase, ObterListaProgramaAtendimentoUseCase>();
         services.TryAddScoped<IObterListaGeneroSexoUseCase, ObterListaGeneroSexoUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaUseCase, ObterSondagemRelatorioConsolidadoRacaUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoGeneroUseCase, ObterSondagemRelatorioConsolidadoGeneroUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
