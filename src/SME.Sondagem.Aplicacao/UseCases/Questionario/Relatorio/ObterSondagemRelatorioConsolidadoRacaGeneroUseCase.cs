@@ -5,11 +5,11 @@ using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
-public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelatorioConsolidadoRacaUseCase
+public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : IObterSondagemRelatorioConsolidadoRacaGeneroUseCase
 {
     private readonly RepositoriosSondagem _repositorioSondagem;
 
-    public ObterSondagemRelatorioConsolidadoRacaUseCase(RepositoriosSondagem repositorioSondagem)
+    public ObterSondagemRelatorioConsolidadoRacaGeneroUseCase(RepositoriosSondagem repositorioSondagem)
     {
         _repositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
     }
@@ -19,11 +19,11 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
         var respostasBrutas = await _repositorioSondagem.RepositorioRespostaAluno.ObterRespostasParaRelatorioConsolidadoAsync(filtro, cancellationToken);
 
         if (respostasBrutas == null || !respostasBrutas.Any())
-            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Raça - Sem Dados" };
+            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Gênero e Raça - Sem Dados" };
 
         var relatorio = new RelatorioConsolidadoSondagemDto
         {
-            Titulo = $"Relatório Consolidado de Sondagem por Raça - {filtro.AnoLetivo}"
+            Titulo = $"Relatório Consolidado de Sondagem por Gênero e Raça - {filtro.AnoLetivo}"
         };
 
         var agrupamentoPorAno = respostasBrutas
@@ -34,8 +34,6 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
 
         foreach (var grupoAno in agrupamentoPorAno)
         {
-            int totalRespostasAno = grupoAno.Count();
-
             var anoDto = new RelatorioConsolidadoAnoDto
             {
                 Ano = grupoAno.Key,
@@ -46,6 +44,7 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
             var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
                                     ?? new List<RelatorioOpcaoRespostaDto>();
 
+            int totalRespostasAno = grupoAno.Count();
             var listaRespostas = new List<RelatorioConsolidadoRespostaDto>();
 
             foreach (var opcao in opcoesDisponiveis)
@@ -63,16 +62,10 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
                     Percentual = totalRespostasAno > 0 ? Math.Round((double)totalOpcao / totalRespostasAno * 100, 2) : 0
                 };
 
-                // Percentual por célula = quantidade_raca_nessa_opcao / totalRespostasAno
-                respostaDto.Racas = respostasDestaOpcao
-                    .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
-                    .Select(g => new RelatorioConsolidadoRacaDto
-                    {
-                        Raca = g.Key,
-                        Quantidade = g.Count(),
-                        Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
-                    })
-                    .OrderBy(r => r.Raca)
+                respostaDto.GenerosComRacas = respostasDestaOpcao
+                    .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
+                    .Select(grupoGenero => ConstruirAgrupamentoGeneroRaca(grupoGenero, totalOpcao))
+                    .OrderBy(g => g.Genero)
                     .ToList();
 
                 listaRespostas.Add(respostaDto);
@@ -80,24 +73,38 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
 
             anoDto.Respostas = listaRespostas;
             anoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
-
-            // Linha "Total" do rodapé: total por raça em todas as opções
-            anoDto.TotaisPorRaca = grupoAno
-                .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
-                .Select(g => new RelatorioConsolidadoRacaDto
-                {
-                    Raca = g.Key,
-                    Quantidade = g.Count(),
-                    Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
-                })
-                .OrderBy(r => r.Raca)
-                .ToList();
-
             listaAnos.Add(anoDto);
         }
 
         relatorio.Anos = listaAnos;
 
         return relatorio;
+    }
+
+    private static RelatorioConsolidadoGeneroRacaDto ConstruirAgrupamentoGeneroRaca(
+        IGrouping<string, RelatorioRespostaAlunoDto> grupoGenero,
+        int totalOpcao)
+    {
+        int totalGenero = grupoGenero.Count();
+
+        var racas = grupoGenero
+            .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
+            .Select(g => new RelatorioConsolidadoRacaDto
+            {
+                Raca = g.Key,
+                Quantidade = g.Count(),
+                Percentual = totalGenero > 0 ? Math.Round((double)g.Count() / totalGenero * 100, 2) : 0
+            })
+            .OrderBy(r => r.Raca)
+            .ToList();
+
+        return new RelatorioConsolidadoGeneroRacaDto
+        {
+            Genero = grupoGenero.Key,
+            Sigla = grupoGenero.FirstOrDefault()?.GeneroSexo?.Sigla,
+            TotalGenero = totalGenero,
+            PercentualGenero = totalOpcao > 0 ? Math.Round((double)totalGenero / totalOpcao * 100, 2) : 0,
+            Racas = racas
+        };
     }
 }

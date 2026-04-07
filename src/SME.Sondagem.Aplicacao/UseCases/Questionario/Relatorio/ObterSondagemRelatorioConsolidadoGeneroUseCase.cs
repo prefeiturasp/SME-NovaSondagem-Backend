@@ -34,18 +34,19 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : IObterSondagemRela
 
         foreach (var grupoAno in agrupamentoPorAno)
         {
+            int totalRespostasAno = grupoAno.Count();
+
             var anoDto = new RelatorioConsolidadoAnoDto
             {
                 Ano = grupoAno.Key,
                 TotalEstudantes = grupoAno.Select(r => r.AlunoId).Distinct().Count()
             };
 
-            var primeiraRespostaComOpcoes = grupoAno.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
-            var opcoesDisponiveis = primeiraRespostaComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
+            var primeiraComOpcoes = grupoAno.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
+            var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
                                     ?? new List<RelatorioOpcaoRespostaDto>();
 
             var listaRespostas = new List<RelatorioConsolidadoRespostaDto>();
-            int totalRespostasAno = grupoAno.Count();
 
             foreach (var opcao in opcoesDisponiveis)
             {
@@ -62,24 +63,38 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : IObterSondagemRela
                     Percentual = totalRespostasAno > 0 ? Math.Round((double)totalOpcao / totalRespostasAno * 100, 2) : 0
                 };
 
-                var agrupamentoGenero = respostasDestaOpcao
+                // Percentual por célula = quantidade_genero_nessa_opcao / totalRespostasAno
+                respostaDto.Generos = respostasDestaOpcao
                     .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
                     .Select(g => new RelatorioConsolidadoGeneroDto
                     {
                         Genero = g.Key,
                         Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
                         Quantidade = g.Count(),
-                        Percentual = totalOpcao > 0 ? Math.Round((double)g.Count() / totalOpcao * 100, 2) : 0
+                        Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
                     })
                     .OrderBy(g => g.Genero)
                     .ToList();
 
-                respostaDto.Generos = agrupamentoGenero;
                 listaRespostas.Add(respostaDto);
             }
 
             anoDto.Respostas = listaRespostas;
             anoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
+
+            // Linha "Total" do rodapé: total por gênero em todas as opções
+            anoDto.TotaisPorGenero = grupoAno
+                .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
+                .Select(g => new RelatorioConsolidadoGeneroDto
+                {
+                    Genero = g.Key,
+                    Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
+                    Quantidade = g.Count(),
+                    Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
+                })
+                .OrderBy(g => g.Genero)
+                .ToList();
+
             listaAnos.Add(anoDto);
         }
 
