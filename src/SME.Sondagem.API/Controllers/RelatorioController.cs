@@ -27,8 +27,8 @@ public class RelatorioController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("consoliado")]
-    public async Task<IActionResult> ObterRelatorioSondagemConsolidado([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
+    [HttpGet("consoliado/raca")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidado([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
     {
         return Ok(await obterSondagemRelatorioConsolidadoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }

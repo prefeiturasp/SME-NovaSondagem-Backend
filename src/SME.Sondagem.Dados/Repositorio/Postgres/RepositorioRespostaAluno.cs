@@ -69,38 +69,69 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<RespostaAluno>> ObterRespostasComDependenciasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RelatorioRespostaAlunoDto>> ObterRespostasParaRelatorioConsolidadoAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default)
     {
         var query = _context.RespostasAluno
-            .Include(ra => ra.Sondagem)
             .Include(ra => ra.Questao)
-                .ThenInclude(q => q.Questionario)
+            .ThenInclude(q => q.Questionario)
+            .ThenInclude(q2 => q2.ComponenteCurricular)
+            .Include(ra => ra.Questao)
+            .ThenInclude(q => q.Questionario)
+            .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
-            .Include(ra => ra.Bimestre)
+            .Where(ra => !ra.Excluido && ra.OpcaoRespostaId.HasValue)
             .AsNoTracking();
 
-        if (filtro.AnoLetivo > 0)
-            query = query.Where(ra => ra.AnoLetivo == filtro.AnoLetivo);
+        query = AplicarFiltrosRelatorioConsolidado(query, filtro);
 
-        if (!string.IsNullOrEmpty(filtro.Dre))
-            query = query.Where(ra => ra.DreId == filtro.Dre);
-
-        if (!string.IsNullOrEmpty(filtro.Ue))
-            query = query.Where(ra => ra.UeId == filtro.Ue);
-
-        if (filtro.Modalidade > 0)
-            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade.ToString());
-
-        if (filtro.BimestreId.HasValue)
-            query = query.Where(ra => ra.BimestreId == filtro.BimestreId.Value);
-
-        if (filtro.ProficienciaId > 0)
-            query = query.Where(ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId);
-
-        if (filtro.ComponenteCurricularId > 0)
-            query = query.Where(ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId);
-
-        return await query.ToListAsync(cancellationToken);
+        return await query.Select(ra => new RelatorioRespostaAlunoDto
+        {
+            Id = ra.Id,
+            SondagemId = ra.SondagemId,
+            SondagemDescricao = ra.Sondagem.Descricao,
+            AlunoId = ra.AlunoId,
+            QuestaoId = ra.QuestaoId,
+            QuestaoNome = ra.Questao.Nome,
+            OpcaoRespostaId = ra.OpcaoRespostaId,
+            OpcaoRespostaDescricao = ra.OpcaoResposta.DescricaoOpcaoResposta,
+            OpcaoRespostaLegenda = ra.OpcaoResposta.Legenda,
+            DataResposta = ra.DataResposta,
+            BimestreId = ra.BimestreId,
+            BimestreDescricao = ra.Bimestre != null ? ra.Bimestre.Descricao : null,
+            TurmaId = ra.TurmaId,
+            UeId = ra.UeId,
+            DreId = ra.DreId,
+            AnoLetivo = ra.AnoLetivo,
+            ModalidadeId = ra.ModalidadeId,
+            RacaCor = ra.RacaCor != null ? new RelatorioRacaCorDto
+            {
+                Id = ra.RacaCor.Id,
+                Descricao = ra.RacaCor.Descricao,
+                CodigoEol = ra.RacaCor.CodigoEolRacaCor
+            } : null,
+            GeneroSexo = ra.GeneroSexo != null ? new RelatorioGeneroSexoDto
+            {
+                Id = ra.GeneroSexo.Id,
+                Descricao = ra.GeneroSexo.Descricao,
+                Sigla = ra.GeneroSexo.Sigla
+            } : null,
+            ProgramaAtendimento = ra.ProgramaAtendimento != null ? new RelatorioProgramaAtendimentoDto
+            {
+                Id = ra.ProgramaAtendimento.Id,
+                Descricao = ra.ProgramaAtendimento.Descricao
+            } : null,
+            OpcoesDisponiveis = ra.Questao.QuestaoOpcoes
+                .OrderBy(qo => qo.Ordem)
+                .Select(qo => new RelatorioOpcaoRespostaDto
+                {
+                    Id = qo.OpcaoRespostaId,
+                    Descricao = qo.OpcaoResposta.DescricaoOpcaoResposta,
+                    Legenda = qo.OpcaoResposta.Legenda,
+                    Ordem = qo.Ordem,
+                    CorFundo = qo.OpcaoResposta.CorFundo,
+                    CorTexto = qo.OpcaoResposta.CorTexto
+                })
+        }).ToListAsync(cancellationToken);
     }
 
     public async Task<Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>>
@@ -155,5 +186,40 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
             })
             .ToListAsync(cancellationToken);
+    }
+
+    private static IQueryable<RespostaAluno> AplicarFiltrosRelatorioConsolidado(IQueryable<RespostaAluno> query, FiltroConsolidadoDto filtro)
+    {
+        if (filtro.AnoLetivo > 0)
+            query = query.Where(ra => ra.AnoLetivo == filtro.AnoLetivo);
+
+        if (!string.IsNullOrEmpty(filtro.Dre))
+            query = query.Where(ra => ra.DreId == filtro.Dre);
+
+        if (!string.IsNullOrEmpty(filtro.Ue))
+            query = query.Where(ra => ra.UeId == filtro.Ue);
+
+        if (filtro.Modalidade > 0)
+            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade.ToString());
+
+        if (filtro.BimestreId.HasValue)
+            query = query.Where(ra => ra.BimestreId == filtro.BimestreId.Value);
+
+        if (filtro.ProficienciaId > 0)
+            query = query.Where(ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId);
+
+        if (filtro.ComponenteCurricularId > 0)
+            query = query.Where(ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId);
+
+        if (filtro.GeneroId > 0)
+            query = query.Where(ra => ra.GeneroSexo != null && ra.GeneroSexo.Id == filtro.GeneroId);
+
+        if (filtro.RacaId > 0)
+            query = query.Where(ra => ra.RacaCor != null && ra.RacaCor.Id == filtro.RacaId);
+
+        if (filtro.ProgramaAtendimentoId > 0)
+            query = query.Where(ra => ra.ProgramaAtendimento != null && ra.ProgramaAtendimento.Id == filtro.ProgramaAtendimentoId);
+
+        return query;
     }
 }

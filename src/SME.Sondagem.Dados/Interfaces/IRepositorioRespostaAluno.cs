@@ -30,5 +30,5 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
         int componenteCurricularId,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<RespostaAluno>> ObterRespostasComDependenciasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default);
+    Task<IEnumerable<RelatorioRespostaAlunoDto>> ObterRespostasParaRelatorioConsolidadoAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default);
 }

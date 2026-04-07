@@ -11,4 +11,7 @@ public class FiltroConsolidadoDto
     public int AnoTurma { get; set; }
     public int SemestreId { get; set; }
     public int? BimestreId { get; set; }
+    public int? GeneroId { get; set; }
+    public int? RacaId { get; set; }
+    public int? ProgramaAtendimentoId { get; set; }
 }
