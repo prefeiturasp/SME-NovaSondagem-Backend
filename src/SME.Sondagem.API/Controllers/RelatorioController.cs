@@ -27,10 +27,10 @@ public class RelatorioController : ControllerBase
         return Ok();
     }
 
-    //[HttpGet("consoliado")]
-    //public async Task<IActionResult> ObterRelatorioSondagemConsolidado([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioPorTurmaUseCase obterRelatorioSondagemPorTurmaUseCase, CancellationToken cancellationToken)
-    //{
-    //    return Ok(await obterRelatorioSondagemPorTurmaUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
-    //}
+    [HttpGet("consoliado")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidado([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
 
 }

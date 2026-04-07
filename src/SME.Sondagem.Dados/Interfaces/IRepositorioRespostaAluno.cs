@@ -2,6 +2,7 @@ using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infrastructure.Dtos;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Dados.Interfaces;
 
@@ -28,4 +29,6 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
         int modalidadeId,
         int componenteCurricularId,
         CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<RespostaAluno>> ObterRespostasComDependenciasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default);
 }

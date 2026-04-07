@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infrastructure.Dtos;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
@@ -68,6 +69,39 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<RespostaAluno>> ObterRespostasComDependenciasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default)
+    {
+        var query = _context.RespostasAluno
+            .Include(ra => ra.Sondagem)
+            .Include(ra => ra.Questao)
+                .ThenInclude(q => q.Questionario)
+            .Include(ra => ra.OpcaoResposta)
+            .Include(ra => ra.Bimestre)
+            .AsNoTracking();
+
+        if (filtro.AnoLetivo > 0)
+            query = query.Where(ra => ra.AnoLetivo == filtro.AnoLetivo);
+
+        if (!string.IsNullOrEmpty(filtro.Dre))
+            query = query.Where(ra => ra.DreId == filtro.Dre);
+
+        if (!string.IsNullOrEmpty(filtro.Ue))
+            query = query.Where(ra => ra.UeId == filtro.Ue);
+
+        if (filtro.Modalidade > 0)
+            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade.ToString());
+
+        if (filtro.BimestreId.HasValue)
+            query = query.Where(ra => ra.BimestreId == filtro.BimestreId.Value);
+
+        if (filtro.ProficienciaId > 0)
+            query = query.Where(ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId);
+
+        if (filtro.ComponenteCurricularId > 0)
+            query = query.Where(ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId);
+
+        return await query.ToListAsync(cancellationToken);
+    }
 
     public async Task<Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>>
         ObterRespostasAlunosPorQuestoesAsync(
