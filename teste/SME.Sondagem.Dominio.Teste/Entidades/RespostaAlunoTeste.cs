@@ -127,8 +127,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
                 DreId = "2",
                 AnoLetivo = 2026,
                 ModalidadeId = "4",
-                Raca = "Parda",
-                Genero = "Feminino",
+                RacaCorId = 1,
+                GeneroSexoId = 1,
                 BimestreId = 2
             };
         }
