@@ -72,7 +72,7 @@ namespace SME.Sondagem.Dados.Cache
                 var byteCache = await database.StringGetAsync(nomeChave);
 
                 if (byteCache.HasValue)
-                    return MessagePackSerializer.Deserialize<T>(byteCache);
+                    return JsonSerializer.Deserialize<T>((string)byteCache!, JsonOptions)!;
             }
             catch (Exception ex)
             {
