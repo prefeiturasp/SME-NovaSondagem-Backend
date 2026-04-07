@@ -148,7 +148,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         foreach (var aluno in dto.Alunos)
         {
             racaGeneroPorAluno.TryGetValue(aluno.Codigo, out var racaGenero);
-            var contexto = CriarContexto(dto, racaGenero);
+            var contexto = CriarContexto(dto, aluno.ProgramaAtendimentoId,racaGenero);
             if (questaoLinguaPortuguesa is not null)
             {
                 respostas.Add(ProcessarRespostaLinguaPortuguesa(
@@ -259,7 +259,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return respostaExistente;
     }
 
-    private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero) =>
+    private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, int? programaAtendimentoId, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero) =>
     new()
     {
         TurmaId = dto.TurmaId,
@@ -267,8 +267,9 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         DreId = dto.DreId,
         AnoLetivo = dto.AnoLetivo,
         ModalidadeId = dto.ModalidadeId,
-        Raca = racaGenero?.Raca,
-        Genero = racaGenero?.Sexo
+        RacaCorId = racaGenero?.RacaId,
+        GeneroSexoId = racaGenero?.SexoId,
+        ProgramaAtendimentoId = programaAtendimentoId
     };
 
 }
