@@ -16,7 +16,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
     public ObterSondagemRelatorioConsolidadoUseCaseTeste()
     {
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
-        
+
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
             new Mock<IRepositorioQuestao>().Object,
@@ -28,6 +28,29 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 
         _useCase = new ObterSondagemRelatorioConsolidadoRacaUseCase(_repositoriosSondagem);
     }
+
+    private static List<RelatorioOpcaoRespostaDto> CriarOpcoes() =>
+    [
+        new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Certa",  Ordem = 1 },
+        new RelatorioOpcaoRespostaDto { Id = 2, Descricao = "Errada", Ordem = 2 }
+    ];
+
+    private static RelatorioRespostaAlunoDto CriarResposta(
+        int alunoId,
+        int questaoId,
+        string questaoNome,
+        int opcaoRespostaId,
+        string? raca = null,
+        IEnumerable<RelatorioOpcaoRespostaDto>? opcoes = null) =>
+        new RelatorioRespostaAlunoDto
+        {
+            AlunoId = alunoId,
+            QuestaoId = questaoId,
+            QuestaoNome = questaoNome,
+            OpcaoRespostaId = opcaoRespostaId,
+            RacaCor = raca != null ? new RelatorioRacaCorDto { Descricao = raca } : null,
+            OpcoesDisponiveis = opcoes ?? CriarOpcoes()
+        };
 
     [Fact]
     public async Task ObterSondagemRelatorio_DeveRetornarVazio_QuandoNaoHouverDados()
@@ -43,25 +66,93 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 
         // Assert
         Assert.Contains("Sem Dados", resultado.Titulo);
-        Assert.Empty(resultado.Anos);
+        Assert.Empty(resultado.Questoes);
     }
 
     [Fact]
-    public async Task ObterSondagemRelatorio_DeveAgruparPorAnoERespostaCorretamente()
+    public async Task ObterSondagemRelatorio_DeveAgruparPorQuestaoERespostaCorretamente()
+    {
+        // Arrange
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
+        var opcoes = CriarOpcoes();
+
+        var respostas = new List<RelatorioRespostaAlunoDto>
+        {
+            CriarResposta(101, 1, "Produção", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
+            CriarResposta(102, 1, "Produção", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes),
+            CriarResposta(103, 1, "Produção", opcaoRespostaId: 2, raca: "Parda",  opcoes: opcoes)
+        };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respostas);
+
+        // Act
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        // Assert
+        var questao = resultado.Questoes.Single();
+        Assert.Equal(1, questao.QuestaoId);
+        Assert.Equal("Produção", questao.QuestaoNome);
+        Assert.Equal(3, questao.TotalEstudantes);
+
+        var respostaCerta = questao.Respostas.First(r => r.Resposta == "Certa");
+        Assert.Equal(2, respostaCerta.Total);
+        Assert.Equal(Math.Round((2.0 / 3.0) * 100, 2), respostaCerta.Percentual);
+        Assert.Equal(2, respostaCerta.Racas.Count());
+
+        var respostaErrada = questao.Respostas.First(r => r.Resposta == "Errada");
+        Assert.Equal(1, respostaErrada.Total);
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_DeveAgruparMultiplasQuestoesIndependentemente()
+    {
+        // Arrange
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
+        var opcoes = CriarOpcoes();
+
+        var respostas = new List<RelatorioRespostaAlunoDto>
+        {
+            CriarResposta(1, questaoId: 1, "Leitura",  opcaoRespostaId: 1, opcoes: opcoes),
+            CriarResposta(2, questaoId: 1, "Leitura",  opcaoRespostaId: 2, opcoes: opcoes),
+            CriarResposta(3, questaoId: 2, "Produção", opcaoRespostaId: 1, opcoes: opcoes)
+        };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respostas);
+
+        // Act
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(2, resultado.Questoes.Count());
+
+        var questaoLeitura  = resultado.Questoes.Single(q => q.QuestaoNome == "Leitura");
+        var questaoProdução = resultado.Questoes.Single(q => q.QuestaoNome == "Produção");
+
+        Assert.Equal(2, questaoLeitura.TotalEstudantes);
+        Assert.Equal(1, questaoProdução.TotalEstudantes);
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_DeveCalcularPercentualSobreTotalDaQuestao()
     {
         // Arrange
         var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
         var opcoes = new List<RelatorioOpcaoRespostaDto>
         {
-            new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Certa", Ordem = 1 },
-            new RelatorioOpcaoRespostaDto { Id = 2, Descricao = "Errada", Ordem = 2 }
+            new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Resposta", Ordem = 1 }
         };
 
+        // 4 respostas na questão → cada raça tem 2 = 50%
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
-            new RelatorioRespostaAlunoDto { AlunoId = 101, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Branca" }, OpcoesDisponiveis = opcoes },
-            new RelatorioRespostaAlunoDto { AlunoId = 102, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Parda" }, OpcoesDisponiveis = opcoes },
-            new RelatorioRespostaAlunoDto { AlunoId = 103, AnoLetivo = 2026, OpcaoRespostaId = 2, RacaCor = new RelatorioRacaCorDto { Descricao = "Parda" }, OpcoesDisponiveis = opcoes }
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
+            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
+            CriarResposta(3, 1, "Q1", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes),
+            CriarResposta(4, 1, "Q1", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes)
         };
 
         _mockRepositorioRespostaAluno
@@ -71,55 +162,23 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         // Act
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
-        // Assert
-        var ano = resultado.Anos.First();
-        Assert.Equal(3, ano.TotalEstudantes);
-        
-        var respostaCerta = ano.Respostas.First(r => r.Resposta == "Certa");
-        Assert.Equal(2, respostaCerta.Total);
-        Assert.Equal((2.0/3.0)*100, respostaCerta.Percentual, 1);
-        Assert.Equal(2, respostaCerta.Racas.Count());
-
-        var respostaErrada = ano.Respostas.First(r => r.Resposta == "Errada");
-        Assert.Equal(1, respostaErrada.Total);
-    }
-
-    [Fact]
-    public async Task ObterSondagemRelatorio_DeveCalcularPercentualPorRacaDentroDaResposta()
-    {
-        // Arrange
-        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
-        var opcoes = new List<RelatorioOpcaoRespostaDto> { new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Resposta", Ordem = 1 } };
-
-        var respostas = new List<RelatorioRespostaAlunoDto>
-        {
-            new RelatorioRespostaAlunoDto { AlunoId = 1, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Branca" }, OpcoesDisponiveis = opcoes },
-            new RelatorioRespostaAlunoDto { AlunoId = 2, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Branca" }, OpcoesDisponiveis = opcoes },
-            new RelatorioRespostaAlunoDto { AlunoId = 3, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Parda" }, OpcoesDisponiveis = opcoes },
-            new RelatorioRespostaAlunoDto { AlunoId = 4, AnoLetivo = 2026, OpcaoRespostaId = 1, RacaCor = new RelatorioRacaCorDto { Descricao = "Parda" }, OpcoesDisponiveis = opcoes }
-        };
-
-        _mockRepositorioRespostaAluno
-            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(respostas);
-
-        // Act
-        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
-
-        // Assert
-        var racas = resultado.Anos.First().Respostas.First().Racas.ToList();
+        // Assert - percentual de cada raça = 2/4 = 50% (sobre o total da questão)
+        var racas = resultado.Questoes.First().Respostas.First().Racas.ToList();
         Assert.All(racas, r => Assert.Equal(50, r.Percentual));
     }
 
     [Fact]
-    public async Task ObterSondagemRelatorio_DeveTratarRacaComoNaoInformado_QuandoForNulo()
+    public async Task ObterSondagemRelatorio_DeveTratarRacaNulaComoNaoInformado()
     {
         // Arrange
         var filtro = new FiltroConsolidadoDto();
-        var opcoes = new List<RelatorioOpcaoRespostaDto> { new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Op", Ordem = 1 } };
+        var opcoes = new List<RelatorioOpcaoRespostaDto>
+        {
+            new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Op", Ordem = 1 }
+        };
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
-            new RelatorioRespostaAlunoDto { AlunoId = 1, OpcaoRespostaId = 1, RacaCor = null, OpcoesDisponiveis = opcoes }
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, raca: null, opcoes: opcoes)
         };
 
         _mockRepositorioRespostaAluno
@@ -130,7 +189,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        var raca = resultado.Anos.First().Respostas.First().Racas.First();
+        var raca = resultado.Questoes.First().Respostas.First().Racas.First();
         Assert.Equal("Não Informado", raca.Raca);
     }
 }

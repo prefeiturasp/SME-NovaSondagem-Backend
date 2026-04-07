@@ -3,12 +3,13 @@ namespace SME.Sondagem.Infrastructure.Dtos.Relatorio;
 public class RelatorioConsolidadoSondagemDto
 {
     public string Titulo { get; set; } = string.Empty;
-    public IEnumerable<RelatorioConsolidadoAnoDto> Anos { get; set; } = new List<RelatorioConsolidadoAnoDto>();
+    public IEnumerable<RelatorioConsolidadoQuestaoDto> Questoes { get; set; } = new List<RelatorioConsolidadoQuestaoDto>();
 }
 
-public class RelatorioConsolidadoAnoDto
+public class RelatorioConsolidadoQuestaoDto
 {
-    public int Ano { get; set; }
+    public int QuestaoId { get; set; }
+    public string QuestaoNome { get; set; } = string.Empty;
     public IEnumerable<RelatorioConsolidadoRespostaDto> Respostas { get; set; } = new List<RelatorioConsolidadoRespostaDto>();
     public IEnumerable<RelatorioConsolidadoGeneroDto> TotaisPorGenero { get; set; } = new List<RelatorioConsolidadoGeneroDto>();
     public IEnumerable<RelatorioConsolidadoRacaDto> TotaisPorRaca { get; set; } = new List<RelatorioConsolidadoRacaDto>();

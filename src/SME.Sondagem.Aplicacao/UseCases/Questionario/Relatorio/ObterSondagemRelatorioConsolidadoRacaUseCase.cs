@@ -26,23 +26,24 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
             Titulo = $"Relatório Consolidado de Sondagem por Raça - {filtro.AnoLetivo}"
         };
 
-        var agrupamentoPorAno = respostasBrutas
-            .GroupBy(r => r.AnoLetivo ?? filtro.AnoLetivo)
-            .OrderBy(g => g.Key);
+        var agrupamentoPorQuestao = respostasBrutas
+            .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
+            .OrderBy(g => g.Key.QuestaoNome);
 
-        var listaAnos = new List<RelatorioConsolidadoAnoDto>();
+        var listaQuestoes = new List<RelatorioConsolidadoQuestaoDto>();
 
-        foreach (var grupoAno in agrupamentoPorAno)
+        foreach (var grupoQuestao in agrupamentoPorQuestao)
         {
-            int totalRespostasAno = grupoAno.Count();
+            int totalRespostasQuestao = grupoQuestao.Count();
 
-            var anoDto = new RelatorioConsolidadoAnoDto
+            var questaoDto = new RelatorioConsolidadoQuestaoDto
             {
-                Ano = grupoAno.Key,
-                TotalEstudantes = grupoAno.Select(r => r.AlunoId).Distinct().Count()
+                QuestaoId = grupoQuestao.Key.QuestaoId,
+                QuestaoNome = grupoQuestao.Key.QuestaoNome,
+                TotalEstudantes = grupoQuestao.Select(r => r.AlunoId).Distinct().Count()
             };
 
-            var primeiraComOpcoes = grupoAno.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
+            var primeiraComOpcoes = grupoQuestao.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
             var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
                                     ?? new List<RelatorioOpcaoRespostaDto>();
 
@@ -50,7 +51,7 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
 
             foreach (var opcao in opcoesDisponiveis)
             {
-                var respostasDestaOpcao = grupoAno.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
+                var respostasDestaOpcao = grupoQuestao.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
                 int totalOpcao = respostasDestaOpcao.Count;
 
                 var respostaDto = new RelatorioConsolidadoRespostaDto
@@ -60,17 +61,16 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
                     CorFundo = opcao.CorFundo,
                     CorTexto = opcao.CorTexto,
                     Total = totalOpcao,
-                    Percentual = totalRespostasAno > 0 ? Math.Round((double)totalOpcao / totalRespostasAno * 100, 2) : 0
+                    Percentual = totalRespostasQuestao > 0 ? Math.Round((double)totalOpcao / totalRespostasQuestao * 100, 2) : 0
                 };
 
-                // Percentual por célula = quantidade_raca_nessa_opcao / totalRespostasAno
                 respostaDto.Racas = respostasDestaOpcao
                     .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
                     .Select(g => new RelatorioConsolidadoRacaDto
                     {
                         Raca = g.Key,
                         Quantidade = g.Count(),
-                        Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
+                        Percentual = totalRespostasQuestao > 0 ? Math.Round((double)g.Count() / totalRespostasQuestao * 100, 2) : 0
                     })
                     .OrderBy(r => r.Raca)
                     .ToList();
@@ -78,25 +78,24 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : IObterSondagemRelato
                 listaRespostas.Add(respostaDto);
             }
 
-            anoDto.Respostas = listaRespostas;
-            anoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
+            questaoDto.Respostas = listaRespostas;
+            questaoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
 
-            // Linha "Total" do rodapé: total por raça em todas as opções
-            anoDto.TotaisPorRaca = grupoAno
+            questaoDto.TotaisPorRaca = grupoQuestao
                 .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
                 .Select(g => new RelatorioConsolidadoRacaDto
                 {
                     Raca = g.Key,
                     Quantidade = g.Count(),
-                    Percentual = totalRespostasAno > 0 ? Math.Round((double)g.Count() / totalRespostasAno * 100, 2) : 0
+                    Percentual = totalRespostasQuestao > 0 ? Math.Round((double)g.Count() / totalRespostasQuestao * 100, 2) : 0
                 })
                 .OrderBy(r => r.Raca)
                 .ToList();
 
-            listaAnos.Add(anoDto);
+            listaQuestoes.Add(questaoDto);
         }
 
-        relatorio.Anos = listaAnos;
+        relatorio.Questoes = listaQuestoes;
 
         return relatorio;
     }
