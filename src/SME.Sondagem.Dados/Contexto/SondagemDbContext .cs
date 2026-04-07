@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Dominio.Entidades.Configuration;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using System.Linq.Expressions;
@@ -29,6 +30,8 @@ public class SondagemDbContext : DbContext
     public DbSet<RespostaAluno> RespostasAluno { get; set; }
     public DbSet<Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; set; }
     public DbSet<SondagemPeriodoBimestre> SondagemPeriodosBimestre { get; set; }
+    public DbSet<PerfilConfiguracao> PerfilConfiguracao { get; set; }
+    public DbSet<ControleAcessoOptions> ControleAcessoOptions { get; set; }
     public DbSet<RacaCor> RacaCor { get; set; }
     public DbSet<GeneroSexo> GeneroSexo { get; set; }
     public DbSet<ProgramaAtendimento> ProgramaAtendimento { get; set; }

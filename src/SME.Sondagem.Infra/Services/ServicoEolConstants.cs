@@ -269,5 +269,6 @@ namespace SME.Sondagem.Infra.Services
         public const string URL_USUARIOS_CORESSO_POR_LOGIN = "v1/usuarios/coresso/login/{0}";
         public const string URL_USUARIOS_CORESSO_PAGINADO = "v1/usuarios/coresso/todos?paginaAtual={0}&registrosPorPagina={1}";
         public const string URL_OBTER_UE_COM_DRE = "escolas";
+        public const string URL_ACESSOS_PERMISSOES_GRUPOS = "acessos/permissoes-grupos?GrupoSituacao={0}&SistemaId={1}&ModuloId={2}";
     }
 }

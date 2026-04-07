@@ -16,6 +16,7 @@ namespace SME.Sondagem.Dados.Cache
             PropertyNameCaseInsensitive = true
         };
 
+
         public RepositorioCache(IServicoLog servicoLog, IConnectionMultiplexer connectionMultiplexer)
         {
             this.servicoLog = servicoLog ?? throw new ArgumentNullException(nameof(servicoLog));
@@ -28,7 +29,13 @@ namespace SME.Sondagem.Dados.Cache
             try
             {
                 if (valor != null)
-                    await database.StringSetAsync(nomeChave, MessagePackSerializer.Serialize(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+                {
+                    var json = JsonSerializer.Serialize(valor, JsonOptions);
+                    await database.StringSetAsync(
+                        nomeChave,
+                        json,
+                        TimeSpan.FromMinutes(minutosParaExpirar));
+                }
             }
             catch (Exception ex)
             {
