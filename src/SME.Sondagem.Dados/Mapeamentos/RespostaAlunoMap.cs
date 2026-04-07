@@ -40,14 +40,45 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .HasDefaultValue(false);
 
         builder.Property(x => x.BimestreId)
-            .HasColumnName("bimestre_id")
+            .HasColumnName("bimestre_id").HasMaxLength(10)
             .IsRequired(false);
+
+        builder.Property(x => x.TurmaId)
+               .HasColumnName("turma_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.UeId)
+               .HasColumnName("ue_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.DreId)
+               .HasColumnName("dre_id").HasMaxLength(20)
+               .IsRequired(false);
+        
+        builder.Property(x => x.ModalidadeId)
+               .HasColumnName("modalidade_id").HasMaxLength(10)
+               .IsRequired(false);
+        
+        builder.Property(x => x.AnoLetivo)
+            .HasColumnName("ano_letivo")
+            .IsRequired(false);
+
+
+        builder.Property(x => x.RacaCorId)
+                .HasColumnName("raca_cor_id").IsRequired(false);
+
+        builder.Property(x => x.GeneroSexoId)
+            .HasColumnName("genero_sexo_id").IsRequired(false);
+
+        builder.Property(x => x.ProgramaAtendimentoId).HasColumnName("programa_atendimento_id").IsRequired(false);
 
         ConfigurarAuditoria(builder);
 
+
         builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId, x.BimestreId })
-            .HasDatabaseName("uk_resposta_sondagem_aluno_questao")
-            .IsUnique();
+                        .HasDatabaseName("uk_resposta_sondagem_aluno_questao")
+                        .IsUnique()
+                        .HasFilter("excluido = false");
 
         builder.HasOne(x => x.Sondagem)
             .WithMany(x => x.Respostas)
@@ -70,6 +101,21 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
             .WithMany(x => x.RespostaAlunos)
             .HasForeignKey(x => x.BimestreId)
             .HasConstraintName("fk_bimestre_resposta_aluno");
+
+        builder.HasOne(x => x.RacaCor)
+                        .WithMany(x => x.RespostaAlunos)
+                        .HasForeignKey(x => x.RacaCorId)
+                        .HasConstraintName("fk_raca_cor_resposta_aluno");
+
+        builder.HasOne(x => x.GeneroSexo)
+                .WithMany(x => x.RespostaAlunos)
+                .HasForeignKey(x => x.GeneroSexoId)
+                .HasConstraintName("fk_genero_sexo_resposta_aluno");
+
+        builder.HasOne(x => x.ProgramaAtendimento)
+                .WithMany(x => x.RespostaAlunos)
+                .HasForeignKey(x => x.ProgramaAtendimentoId)
+                .HasConstraintName("fk_programa_atendimento_resposta_aluno");
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<RespostaAluno> builder)

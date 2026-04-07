@@ -3,10 +3,10 @@ using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
-using SME.Sondagem.Dados.Teste.Services.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
@@ -44,18 +44,20 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             return questao;
         }
 
-        private static RespostaAluno CriarRespostaAluno(
+        private  static RespostaAluno CriarRespostaAluno(
             int alunoId,
             int questaoId,
             int sondagemId = 1,
             bool excluido = false)
         {
+            var contextoEdu = CriarContextoEducacional();
+
             var resposta = new RespostaAluno(
                 sondagemId,
                 alunoId,
                 questaoId,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,contextoEdu
             );
 
             typeof(RespostaAluno).GetProperty("Excluido")!.SetValue(resposta, excluido);
@@ -193,8 +195,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
-            Assert.Contains((10L, 100L, null), resultado.Keys);
-            Assert.Contains((20L, 200L, null), resultado.Keys);
+            Assert.Contains((10L, 100L, 2), resultado.Keys);
+            Assert.Contains((20L, 200L, 2), resultado.Keys);
         }
 
         [Fact]
@@ -264,12 +266,15 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Arrange
             var context = CriarContexto(nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarRespostasCorretas));
 
+            var contextoEdu = CriarContextoEducacional();
+
             var respostaValida = new RespostaAluno(
                 sondagemId: 1,
                 alunoId: 10,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                contextoEdu
             );
 
             var respostaOutroAluno = new RespostaAluno(
@@ -277,7 +282,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 99,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                contextoEdu
             );
 
             var respostaOutraQuestao = new RespostaAluno(
@@ -285,7 +291,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 10,
                 questaoId: 999,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                contextoEdu
             );
 
             var respostaExcluida = new RespostaAluno(
@@ -293,7 +300,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 alunoId: 10,
                 questaoId: 100,
                 opcaoRespostaId: 1,
-                dataResposta: DateTime.Now
+                dataResposta: DateTime.Now,
+                contextoEdu
             );
             respostaExcluida.Excluido = true;
 
@@ -319,6 +327,21 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
+        }
+
+        private static ContextoEducacional CriarContextoEducacional()
+        {
+            return new ContextoEducacional
+            {
+                TurmaId = "1",
+                UeId = "3",
+                DreId = "2",
+                AnoLetivo = 2026,
+                ModalidadeId = "4",
+                RacaCorId = 1,
+                GeneroSexoId = 1,
+                BimestreId = 2
+            };
         }
 
     }

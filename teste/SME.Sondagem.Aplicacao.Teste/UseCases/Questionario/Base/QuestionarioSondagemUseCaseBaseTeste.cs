@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
@@ -26,8 +27,9 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         IAlunoPapService alunoPapService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
+        IDadosAlunosService _alunoService,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, _alunoService)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
@@ -58,6 +60,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
+    private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
 
@@ -78,6 +81,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
 
         _repositoriosElastic = new RepositoriosElastic(
@@ -101,6 +105,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
+            _mockAlunoService.Object,
             dadosAlunos);
 
     #region Construtor
@@ -264,7 +269,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     [Fact]
     public async Task ExecutarProcessamentoQuestionario_DeveRetornarQuestionarioSondagemRelatorioDto_QuandoEhRelatorioForTrue()
     {
-        ConfigurarMocksCompletos(comBimestreId: 1);
+        ConfigurarMocksCompletos();
 
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, BimestreId = 1 };
         var useCase = CriarUseCase();
@@ -773,7 +778,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         DefinirAuditoria(resposta,
             criadoPor: "Professor Silva",
             criadoRf: "12345",
-            criadoEm: new DateTime(2024, 3, 10, 9, 0, 0));
+            criadoEm: new DateTime(2024, 3, 10, 9, 0, 0, DateTimeKind.Utc));
 
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
@@ -798,10 +803,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
         DefinirAuditoria(resposta,
             criadoPor: "Professor",
             criadoRf: "111",
-            criadoEm: new DateTime(2024, 3, 10, 9, 0, 0),
+            criadoEm: new DateTime(2024, 3, 10, 9, 0, 0, DateTimeKind.Utc),
             alteradoPor: "Coordenador",
             alteradoRf: "999",
-            alteradoEm: new DateTime(2024, 4, 1, 10, 0, 0));
+            alteradoEm: new DateTime(2024, 4, 1, 10, 0, 0, DateTimeKind.Utc));
 
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
@@ -824,12 +829,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var alunosAtivos = new List<AlunoElasticDto> { alunoAtivo, alunoInativo };
 
         var respostaAtivo = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
-        var respostaInativo = CriarRespostaAluno(id: 2, opcaoRespostaId: 3, alunoId: 1002);
 
         var respostas = new Dictionary<(long, int?, long), RespostaAluno>
         {
-            { (1001L, 1, 1L), respostaAtivo },
-            { (1002L, 1, 1L), respostaInativo }
+            { (1001L, 1, 1L), respostaAtivo }
         };
 
         var resultado = QuestionarioSondagemUseCaseBaseConcreto
@@ -874,7 +877,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         };
         var questoes = new List<Dominio.Entidades.Questionario.Questao> { CriarQuestaoComOpcoes(id: 1) };
 
-        var resultado = await QuestionarioSondagemUseCaseBaseConcreto
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto
             .ObterColunasOuLancarExcecaoPublico(periodos, questoes, null);
 
         Assert.Single(resultado);
@@ -894,7 +897,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             CriarQuestaoComId(1, tipo: TipoQuestao.Combo)
         };
 
-        await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
+        Assert.Throws<ErroNaoEncontradoException>(() =>
             QuestionarioSondagemUseCaseBaseConcreto
                 .ObterColunasOuLancarExcecaoPublico(periodos, questoes, null));
     }
@@ -911,7 +914,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             CriarQuestaoComVinculo(TipoQuestao.QuestaoComSubpergunta, id: 10, nome: "Subquestão 1"),
         };
 
-        var resultado = await QuestionarioSondagemUseCaseBaseConcreto
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto
             .ObterColunasOuLancarExcecaoPublico(periodos, questoes, null);
 
         Assert.NotEmpty(resultado);
@@ -929,7 +932,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             CriarQuestaoComVinculo(TipoQuestao.QuestaoComSubpergunta, id: 20, nome: "Sub 1"),
         };
 
-        var resultado = await QuestionarioSondagemUseCaseBaseConcreto
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto
             .ObterColunasOuLancarExcecaoPublico(periodos, questoes, bimestreId: 2);
 
         Assert.NotEmpty(resultado);
@@ -947,7 +950,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             CriarQuestaoComVinculo(TipoQuestao.QuestaoComSubpergunta, id: 30, nome: "Sub"),
         };
 
-        await Assert.ThrowsAsync<ErroNaoEncontradoException>(() =>
+         Assert.Throws<ErroNaoEncontradoException>(() =>
             QuestionarioSondagemUseCaseBaseConcreto
                 .ObterColunasOuLancarExcecaoPublico(periodos, questoes, bimestreId: 999));
     }
@@ -980,7 +983,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     [Fact]
     public async Task ExecutarProcessamentoQuestionario_DevePopularSemestreNoRelatorio()
     {
-        ConfigurarMocksCompletos(comBimestreId: 1, semestre: 2);
+        ConfigurarMocksCompletos(semestre: 2);
 
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, BimestreId = 1 };
         var useCase = CriarUseCase();
@@ -1087,7 +1090,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     [Fact]
     public async Task ExecutarProcessamentoQuestionario_DeveRetornarLegenda_NoRelatorio()
     {
-        ConfigurarMocksCompletos(comBimestreId: 1);
+        ConfigurarMocksCompletos();
 
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, BimestreId = 1 };
         var useCase = CriarUseCase();
@@ -1118,7 +1121,6 @@ public class QuestionarioSondagemUseCaseBaseTeste
     #region Helpers privados
 
     private void ConfigurarMocksCompletos(
-        int? comBimestreId = null,
         int semestre = 1,
         int anoLetivo = 2024,
         bool comRespostaAuditoria = false)
@@ -1363,7 +1365,19 @@ public class QuestionarioSondagemUseCaseBaseTeste
         int questaoId = 1,
         int bimestreId = 1)
     {
-        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, bimestreId);
+        var contexto = new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            RacaCorId = 1,
+            GeneroSexoId = 1,
+            BimestreId = bimestreId
+        };
+
+        var resposta = new RespostaAluno(1, alunoId, questaoId, opcaoRespostaId, DateTime.Now, contexto);
         resposta.GetType().BaseType?.GetProperty("Id")?.SetValue(resposta, id);
         return resposta;
     }
@@ -1444,11 +1458,11 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
 
     public Task<IEnumerable<Dominio.Entidades.Questionario.Questao>> ObterQuestoesAtivasOuLancarExcecaoPublico(
         int modalidade, int ano, int anoLetivo, int proficienciaId, CancellationToken cancellationToken)
-        => ObterQuestoesAtivasOuLancarExcecao(modalidade, ano, anoLetivo, proficienciaId, cancellationToken);
+        => ObterQuestoesAtivas(modalidade, ano, anoLetivo, proficienciaId, cancellationToken);
 
     public Task<IEnumerable<AlunoElasticDto>> ObterAlunosOuLancarExcecaoPublico(
         int turmaId, int anoLetivo, CancellationToken cancellationToken)
-        => ObterAlunosOuLancarExcecao(turmaId, anoLetivo, cancellationToken);
+        => ObterAlunos(turmaId, anoLetivo, cancellationToken);
 
     public static List<int> ObterQuestoesIdsPorTipoPublico(IEnumerable<Dominio.Entidades.Questionario.Questao> questoes)
         => ObterQuestoesIdsPorTipo(questoes);
@@ -1505,9 +1519,9 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto
         DateTime dataInicioSondagem)
         => ProcessarRespostas(respostasAlunosPorQuestoes, linguaPortuguesaSegundaLingua, alunosAtivos, dataInicioSondagem);
 
-    public static Task<List<ColunaQuestionarioDto>> ObterColunasOuLancarExcecaoPublico(
+    public static List<ColunaQuestionarioDto> ObterColunasOuLancarExcecaoPublico(
         ICollection<SondagemPeriodoBimestre> periodosBimestre,
         IEnumerable<Dominio.Entidades.Questionario.Questao> questoesAtivas,
         int? bimestreId)
-        => ObterColunasOuLancarExcecao(periodosBimestre, questoesAtivas, bimestreId);
+        => ObterColunas(periodosBimestre, questoesAtivas, bimestreId);
 }

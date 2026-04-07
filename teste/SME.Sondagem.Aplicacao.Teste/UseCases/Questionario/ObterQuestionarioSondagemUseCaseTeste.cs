@@ -9,6 +9,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Interfaces;
 using Xunit;
@@ -27,6 +28,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
+    private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
@@ -41,6 +43,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockAlunoPapService = new Mock<IAlunoPapService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
+        _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
 
@@ -64,7 +67,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoService.Object
         );
     }
 
@@ -87,7 +91,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+              _mockAlunoService.Object
         ));
     }
 
@@ -104,7 +109,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             _mockAlunoPapService.Object,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+              _mockAlunoService.Object
         ));
     }
 
@@ -130,7 +136,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             null!,
             _mockControleAcessoService.Object,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoService.Object
         ));
     }
 
@@ -156,7 +163,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosSondagem,
             _mockAlunoPapService.Object,
             null!,
-            _mockServicoUsuario.Object
+            _mockServicoUsuario.Object,
+            _mockAlunoService.Object
         ));
     }
 
@@ -271,7 +279,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         Assert.Equal(MensagemNegocioComuns.PROFICIENCIA_OBRIGATORIA_NO_FILTRO, exception.Message);
     }
 
-   #endregion
+    #endregion
 
     #region Testes de Validação de Sondagem
 
@@ -465,8 +473,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
     public async Task ObterQuestionarioSondagem_AssociaRespostaNaColunaCorreta()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
-
+        var contextoEdu = CriarContextoEducacional();
         var questaoRespondidaId = 13;
+
 
         ConfigurarMocksBase(
             filtro,
@@ -492,9 +501,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
             sondagemId: 1,
             questaoId: questaoRespondidaId,
             alunoId: 1001,
-            bimestreId: 1,
             opcaoRespostaId: 10,
-            dataResposta: DateTime.Now
+            dataResposta: DateTime.Now,
+            contexto: contextoEdu
         );
 
         respostaAluno.GetType().BaseType!
@@ -717,6 +726,21 @@ public class ObterQuestionarioSondagemUseCaseTeste
     #endregion
 
     #region Métodos Auxiliares
+
+    private static ContextoEducacional CriarContextoEducacional()
+    {
+        return new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            RacaCorId = 1,
+            GeneroSexoId = 1,
+            BimestreId = 2
+        };
+    }
     private static Dominio.Entidades.Sondagem.Sondagem CriarSondagemMock()
     {
         var sondagem = new Dominio.Entidades.Sondagem.Sondagem(

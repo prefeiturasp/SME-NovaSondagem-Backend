@@ -10,6 +10,11 @@ public static class SondagemMockData
         return new SondagemSalvarDto
         {
             SondagemId = 1,
+            TurmaId = "1",
+            DreId = "2",
+            UeId = "3",
+            ModalidadeId = "4",
+            AnoLetivo = 2026,
             Alunos =
             [
                 new AlunoSondagemDto

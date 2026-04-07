@@ -13,6 +13,7 @@ using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Teste.DTO;
@@ -46,6 +47,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IUeComDreEolService> _ueComDreEolService;
     private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
 
+
     public SondagemSalvarRespostasUseCaseTeste()
     {
         _ueComDreEolService = new Mock<IUeComDreEolService>();
@@ -70,7 +72,8 @@ public class SondagemSalvarRespostasUseCaseTeste
             _repositorioSondagemResposta.Object,
             _repositorioQuestao.Object,
             _controleAcessoService.Object,
-            _repositorioElasticTurma.Object
+            _repositorioElasticTurma.Object,
+            _dadosAlunosService.Object
         );
 
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
@@ -93,7 +96,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarNegocioException_QuandoNenhumaSondagemAtivaEncontrada()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = "1";
 
         _controleAcessoService
             .Setup(x => x.ValidarPermissaoAcessoAsync(
@@ -118,7 +121,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarNegocioException_QuandoSondagemIdDiferenteDaAtiva()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = "1";
 
         var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(2);
 
@@ -145,7 +148,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveSalvarComSucesso_QuandoDadosValidos()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = "TURMA-TESTE";
+        dto.TurmaId = "1";
 
         ConfigurarMockTurmaSucesso();
 
@@ -173,6 +176,13 @@ public class SondagemSalvarRespostasUseCaseTeste
                 TipoQuestao.LinguaPortuguesaSegundaLingua))
             .ReturnsAsync(questaoLP);
 
+        _dadosAlunosService
+                .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+                .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>
+                {
+                    new() { CodigoAluno = 101, Raca = "Parda", Sexo = "Feminino" }
+                });
+
         _repositorioSondagemResposta
             .Setup(x => x.ObterRespostasPorSondagemEAlunosAsync(
                 It.IsAny<int>(),
@@ -190,13 +200,63 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
+    public async Task DeveSalvarComSucesso_QuandoSemQuestaoLinguaPortuguesa()
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+
+        ConfigurarMockTurmaSucesso();
+
+        var sondagemAtiva = SondagemMockData.CriarSondagemAtiva(1, 1);
+        var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
+
+        _controleAcessoService
+            .Setup(x => x.ValidarPermissaoAcessoAsync(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+            .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>());
+
+        _repositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva())
+            .ReturnsAsync(sondagemAtiva);
+
+        _repositorioQuestao
+            .Setup(x => x.ObterQuestionarioIdPorQuestoesAsync(It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new List<Questao> { questaoLP });
+
+        _repositorioQuestao
+            .Setup(x => x.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(
+                It.IsAny<int>(), TipoQuestao.LinguaPortuguesaSegundaLingua))
+            .ReturnsAsync((Questao?)null);
+
+        _repositorioSondagemResposta
+            .Setup(x => x.ObterRespostasPorSondagemEAlunosAsync(
+                It.IsAny<int>(), It.IsAny<IEnumerable<int>>(), It.IsAny<IEnumerable<int>>()))
+            .ReturnsAsync(new List<RespostaAluno>());
+
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>()))
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.True(resultado);
+    }
+
+    [Fact]
     public async Task DeveAtualizarRespostaExistente()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = TURMA_ID;
+        dto.TurmaId = "1";
+
+
 
         var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
-        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), null);
+        var contextoEdu = CriarContextoEducacional();
+        var respostaExistente = new RespostaAluno(1, 101, questaoLP.Id, 2, DateTime.UtcNow.AddDays(-1), contextoEdu);
 
         _controleAcessoService
                 .Setup(x => x.ValidarPermissaoAcessoAsync(
@@ -210,6 +270,13 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagem
             .Setup(x => x.ObterSondagemAtiva())
             .ReturnsAsync(SondagemMockData.CriarSondagemAtiva(1, 1));
+
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>()))
+            .ReturnsAsync(new List<Infrastructure.Dtos.AlunoRacaGeneroDto>
+            {
+                new() { CodigoAluno = 101, Raca = "Parda", Sexo = "Feminino" }
+            });
 
         _repositorioQuestao
             .Setup(x => x.ObterQuestionarioIdPorQuestoesAsync(It.IsAny<IEnumerable<int>>()))
@@ -241,7 +308,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     public async Task DeveRetornarExcecao_QuandoSemPermissao()
     {
         var dto = SondagemMockData.ObterSondagemMock();
-        dto.TurmaId = TURMA_ID;
+        dto.TurmaId = "1";
 
         _repositorioElasticTurma
                .Setup(r => r.ObterTurmaPorId(
@@ -252,9 +319,10 @@ public class SondagemSalvarRespostasUseCaseTeste
                    CodigoTurma = int.Parse(TURMA_ID),
                    CodigoEscola = CODIGO_ESCOLA_PERMITIDA
                });
+        
 
         _controleAcessoService
-            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId))
+            .Setup(x => x.ValidarPermissaoAcessoAsync(dto.TurmaId.ToString()))
             .ReturnsAsync(false);
 
         _repositorioSondagem
@@ -321,5 +389,19 @@ public class SondagemSalvarRespostasUseCaseTeste
         questao.QuestaoOpcoes.Add(questaoOpcaoNao);
 
         return questao;
+    }
+    private static ContextoEducacional CriarContextoEducacional()
+    {
+        return new ContextoEducacional
+        {
+            TurmaId = "1",
+            UeId = "3",
+            DreId = "2",
+            AnoLetivo = 2026,
+            ModalidadeId = "4",
+            RacaCorId = 1,
+            GeneroSexoId = 1,
+            BimestreId = 2
+        };
     }
 }

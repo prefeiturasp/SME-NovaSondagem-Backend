@@ -17,5 +17,8 @@ public static class RegistraRepositorios
         services.AddScoped<IRepositorioOpcaoResposta, RepositorioOpcaoResposta>();
         services.AddScoped<IRepositorioRespostaAluno, RepositorioRespostaAluno>();
         services.AddScoped<IRepositorioControleAcessoOptions, RepositorioControleAcessoOptions>();
+        services.AddScoped<IRepositorioRacaCor, RepositorioRacaCor>();
+        services.AddScoped<IRepositorioGeneroSexo, RepositorioGeneroSexo>();
+        services.AddScoped<IRepositorioProgramaAtendimento, RepositorioProgramaAtendimento>();
     }
 }
