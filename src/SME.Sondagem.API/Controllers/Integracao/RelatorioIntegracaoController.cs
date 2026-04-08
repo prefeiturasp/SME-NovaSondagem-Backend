@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.API.Middlewares;
+using SME.Sondagem.Aplicacao.Interfaces.Integracao;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Infra.Dtos;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
+using SME.Sondagem.Infrastructure.Dtos.Integracao;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 namespace SME.Sondagem.API.Controllers;
@@ -37,6 +39,15 @@ public class RelatorioIntegracaoController : ControllerBase
     {
        var resultado = await useCase.ObterSondagemRelatorio(cancellationToken);
         return File(resultado.Content, resultado.ContentType, resultado.FileName);
+    }
+
+    [HttpPost("atualizar-contextos-respostas")]
+    [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+    [ProducesResponseType(typeof(ResumoAtualizacaoContextoDto), 200)]
+    public async Task<IActionResult> AtualizarContextosRespostas([FromServices] IAtualizarContextosRespostasAlunoUseCase useCase, CancellationToken cancellationToken)
+    {
+        var resultado = await useCase.ExecutarAsync(cancellationToken);
+        return Ok(resultado);
     }
 
     [HttpGet("proficiencia/{proficienciaId}")]

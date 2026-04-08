@@ -176,6 +176,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenBy(ra => ra.QuestaoId)
             .Select(ra => new ExtracaoSondagemLpEscritaDto
             {
+                RespostaId           = ra.Id,
                 CodigoEolEstudante   = ra.AlunoId.ToString(),
                 Questao              = ra.Questao.Nome,
                 Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
@@ -184,6 +185,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
                 Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
                 ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
+                DataResposta         = ra.DataResposta
             })
             .ToListAsync(cancellationToken);
     }

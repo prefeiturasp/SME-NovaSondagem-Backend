@@ -4,6 +4,9 @@ namespace SME.Sondagem.Infrastructure.Dtos
 {
     public class ExtracaoSondagemLpEscritaDto
     {
+        [Ignore]
+        public int RespostaId { get; set; }
+
         [Name("Nome DRE")]
         public string? NomeDre { get; set; }
 
@@ -50,6 +53,9 @@ namespace SME.Sondagem.Infrastructure.Dtos
 
         [Name("Proficiência")]
         public string? Proficiencia { get; set; }
+        
+        [Name("Data Resposta")]
+        public DateTime? DataResposta { get; set; }
 
     }
 }

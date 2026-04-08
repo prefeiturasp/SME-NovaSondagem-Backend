@@ -20,5 +20,6 @@ public static class RegistraRepositorios
         services.AddScoped<IRepositorioRacaCor, RepositorioRacaCor>();
         services.AddScoped<IRepositorioGeneroSexo, RepositorioGeneroSexo>();
         services.AddScoped<IRepositorioProgramaAtendimento, RepositorioProgramaAtendimento>();
+        services.AddScoped<IRepositorioRespostaAlunoDapper, RepositorioRespostaAlunoDapper>();
     }
 }

@@ -145,6 +145,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterQuestionarioSondagemUseCase, ObterQuestionarioSondagemUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioPorTurmaUseCase, ObterSondagemRelatorioPorTurmaUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioPorTodasTurmaUseCase, ObterSondagemRelatorioPorTodasTurmaUseCase>();
+        services.TryAddScoped<SME.Sondagem.Aplicacao.Interfaces.Integracao.IAtualizarContextosRespostasAlunoUseCase, SME.Sondagem.Aplicacao.UseCases.Integracao.AtualizarContextosRespostasAlunoUseCase>();
         services.TryAddScoped<ICriarProficienciaUseCase, CriarProficienciaUseCase>();
         services.TryAddScoped<IAtualizarProficienciaUseCase, AtualizarProficienciaUseCase>();
         services.TryAddScoped<IExcluirProficienciaUseCase, ExcluirProficienciaUseCase>();
