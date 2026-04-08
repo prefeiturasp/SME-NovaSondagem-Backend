@@ -7,6 +7,7 @@
         public string? UeId { get; set; }
         public string? DreId { get; set; }
         public int AnoLetivo { get; set; }
+        public string? AnoTurma { get; set; }
         public string? ModalidadeId { get; set; }
         public List<AlunoSondagemDto> Alunos { get; set; } = new();
     }

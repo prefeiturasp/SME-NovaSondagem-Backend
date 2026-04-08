@@ -39,7 +39,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
-        await ValidarSalvarSondagem(dto);
+        var turma = await ValidarSalvarSondagemEObterTurma(dto);
+        dto.AnoTurma = dto.AnoTurma ?? turma.AnoTurma;
         var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
@@ -67,7 +68,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return await _repositorioSondagemResposta.SalvarAsync(respostas);
     }
 
-    private async Task ValidarSalvarSondagem(SondagemSalvarDto dto)
+    private async Task<TurmaElasticDto> ValidarSalvarSondagemEObterTurma(SondagemSalvarDto dto)
     {
         if (dto == null)
             throw new RegraNegocioException(MensagemNegocioComuns.INFORMAR_DADOS_SALVAR_SONDAGEM);
@@ -91,6 +92,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (!temPermissao)
             throw new RegraNegocioException(MensagemNegocioComuns.SEM_PERMISSAO_SALVAR_SONDAGEM);
+
+        return turma;
     }
 
     private static void ValidarCamposObrigatorios(SondagemSalvarDto dto)
@@ -143,7 +146,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var respostas = new List<RespostaAluno>();
         var racaGeneroPorAluno = dadosRacaGenero
                         .ToDictionary(d => d.CodigoAluno);
-
 
         foreach (var aluno in dto.Alunos)
         {
@@ -269,7 +271,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         ModalidadeId = dto.ModalidadeId,
         RacaCorId = racaGenero?.RacaId,
         GeneroSexoId = racaGenero?.SexoId,
-        ProgramaAtendimentoId = programaAtendimentoId
+        ProgramaAtendimentoId = programaAtendimentoId,
+        AnoTurma = dto.AnoTurma
     };
 
 }
