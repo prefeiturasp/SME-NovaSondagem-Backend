@@ -34,7 +34,6 @@ public class SondagemDbContext : DbContext
     public DbSet<ControleAcessoOptions> ControleAcessoOptions { get; set; }
     public DbSet<RacaCor> RacaCor { get; set; }
     public DbSet<GeneroSexo> GeneroSexo { get; set; }
-    public DbSet<ProgramaAtendimento> ProgramaAtendimento { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

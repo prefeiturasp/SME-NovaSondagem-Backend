@@ -56,9 +56,13 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
                .IsRequired(false);
         
         builder.Property(x => x.ModalidadeId)
-               .HasColumnName("modalidade_id").HasMaxLength(10)
+               .HasColumnName("modalidade_id")
                .IsRequired(false);
-        
+
+        builder.Property(x => x.AnoTurma)
+               .HasColumnName("ano_turma")
+               .IsRequired(false);
+
         builder.Property(x => x.AnoLetivo)
             .HasColumnName("ano_letivo")
             .IsRequired(false);
@@ -70,7 +74,10 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
         builder.Property(x => x.GeneroSexoId)
             .HasColumnName("genero_sexo_id").IsRequired(false);
 
-        builder.Property(x => x.ProgramaAtendimentoId).HasColumnName("programa_atendimento_id").IsRequired(false);
+        builder.Property(x => x.Aee).HasColumnName("aee").HasDefaultValue(false);
+        builder.Property(x => x.Pap).HasColumnName("pap").HasDefaultValue(false);
+        builder.Property(x => x.Deficiente).HasColumnName("deficiente").HasDefaultValue(false);
+
 
         ConfigurarAuditoria(builder);
 
@@ -112,10 +119,6 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
                 .HasForeignKey(x => x.GeneroSexoId)
                 .HasConstraintName("fk_genero_sexo_resposta_aluno");
 
-        builder.HasOne(x => x.ProgramaAtendimento)
-                .WithMany(x => x.RespostaAlunos)
-                .HasForeignKey(x => x.ProgramaAtendimentoId)
-                .HasConstraintName("fk_programa_atendimento_resposta_aluno");
     }
 
     private static void ConfigurarAuditoria(EntityTypeBuilder<RespostaAluno> builder)
