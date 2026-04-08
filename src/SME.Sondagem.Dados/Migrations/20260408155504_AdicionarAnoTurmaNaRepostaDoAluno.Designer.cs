@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260408155504_AdicionarAnoTurmaNaRepostaDoAluno")]
+    partial class AdicionarAnoTurmaNaRepostaDoAluno
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1509,9 +1512,9 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("ano_letivo");
 
-                    b.Property<int?>("AnoTurma")
+                    b.Property<string>("AnoTurma")
                         .HasMaxLength(10)
-                        .HasColumnType("integer")
+                        .HasColumnType("character varying(10)")
                         .HasColumnName("ano_turma");
 
                     b.Property<int?>("BimestreId")
@@ -1556,9 +1559,9 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("genero_sexo_id");
 
-                    b.Property<int?>("ModalidadeId")
+                    b.Property<string>("ModalidadeId")
                         .HasMaxLength(10)
-                        .HasColumnType("integer")
+                        .HasColumnType("character varying(10)")
                         .HasColumnName("modalidade_id");
 
                     b.Property<int?>("OpcaoRespostaId")

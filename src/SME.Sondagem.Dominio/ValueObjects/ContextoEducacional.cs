@@ -6,7 +6,8 @@
         public string? UeId { get; init; }
         public string? DreId { get; init; }
         public int? AnoLetivo { get; init; }
-        public string? ModalidadeId { get; init; }
+        public int? AnoTurma { get; init; }
+        public int? ModalidadeId { get; init; }
         public int? RacaCorId { get; init; }
         public int? GeneroSexoId { get; init; }
         public int? BimestreId { get; init; }

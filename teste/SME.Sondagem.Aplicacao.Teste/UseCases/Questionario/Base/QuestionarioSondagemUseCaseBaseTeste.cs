@@ -1371,7 +1371,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             UeId = "3",
             DreId = "2",
             AnoLetivo = 2026,
-            ModalidadeId = "4",
+            ModalidadeId = 4,
             RacaCorId = 1,
             GeneroSexoId = 1,
             BimestreId = bimestreId
