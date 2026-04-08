@@ -39,6 +39,7 @@ public class RespostaAluno : EntidadeBase
     public string? UeId { get; set; }
     public string? DreId { get; set; }
     public int? AnoLetivo { get; set; }
+    public string? AnoTurma { get; set; }
     public string? ModalidadeId { get; set; }
 
     public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
@@ -58,6 +59,7 @@ public class RespostaAluno : EntidadeBase
         GeneroSexoId ??= contexto.GeneroSexoId;
         ProgramaAtendimentoId ??= contexto.ProgramaAtendimentoId;
         ModalidadeId ??= contexto.ModalidadeId;
+        AnoTurma ??= contexto.AnoTurma;
     }
 
     public virtual Sondagem Sondagem { get; private set; } = null!;
