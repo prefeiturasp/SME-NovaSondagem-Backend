@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dados.Repositorio.Postgres;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Dominio.ValueObjects;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
@@ -328,6 +330,130 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
         }
+
+        #region ObterRespostasParaRelatorioConsolidadoAsync
+
+        [Fact]
+        public async Task ObterRespostasParaRelatorioConsolidadoAsync_DeveFiltrarPorAnoLetivo()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasParaRelatorioConsolidadoAsync_DeveFiltrarPorAnoLetivo));
+            
+            var compCurricular = new ComponenteCurricular("Português", null, "1", 1);
+            typeof(ComponenteCurricular).GetProperty("Id")!.SetValue(compCurricular, 1);
+            context.ComponentesCurriculares.Add(compCurricular);
+
+            var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Leitura", 1, 1);
+            typeof(SME.Sondagem.Dominio.Entidades.Proficiencia).GetProperty("Id")!.SetValue(proficiencia, 1);
+            context.Proficiencias.Add(proficiencia);
+
+            var sondagem = new Dominio.Entidades.Sondagem.Sondagem("Sondagem", DateTime.Now);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("Id")!.SetValue(sondagem, 1);
+            context.Sondagens.Add(sondagem);
+
+            var questionario = new Questionario("Questionario", TipoQuestionario.SondagemLeitura, 2026, 1, 1, 1);
+            typeof(Questionario).GetProperty("Id")!.SetValue(questionario, 1);
+            context.Questionarios.Add(questionario);
+
+            var questao = new Questao(1, 1, "Questao", "", true, TipoQuestao.Combo, "{}", false, 12);
+            typeof(Questao).GetProperty("Id")!.SetValue(questao, 1);
+            context.Questoes.Add(questao);
+
+            var opcao = new OpcaoResposta(1, "Desc", "L", null, null);
+            typeof(OpcaoResposta).GetProperty("Id")!.SetValue(opcao, 1);
+            context.OpcoesResposta.Add(opcao);
+
+            // r1: AnoLetivo 2026 (via contextoEducacional)
+            var r1 = CriarRespostaAluno(alunoId: 1, questaoId: 1, sondagemId: 1);
+            
+            // r2: AnoLetivo 2025 (override)
+            var contexto2025 = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2025, ModalidadeId = "4", BimestreId = 2 };
+            var r2 = new RespostaAluno(1, 2, 1, 1, DateTime.Now, contexto2025);
+
+            context.RespostasAluno.AddRange(r1, r2);
+            await context.SaveChangesAsync();
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(filtro);
+
+            // Assert
+            var lista = resultado.ToList();
+            Assert.Single(lista);
+            Assert.Equal(2026, lista[0].AnoLetivo);
+        }
+
+        [Fact]
+        public async Task ObterRespostasParaRelatorioConsolidadoAsync_DeveProjetarCorretamenteParaDto()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasParaRelatorioConsolidadoAsync_DeveProjetarCorretamenteParaDto));
+            
+            var compCurricular = new ComponenteCurricular("Português", null, "1", 1);
+            typeof(ComponenteCurricular).GetProperty("Id")!.SetValue(compCurricular, 1);
+            context.ComponentesCurriculares.Add(compCurricular);
+
+            var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Leitura", 1, 1);
+            typeof(SME.Sondagem.Dominio.Entidades.Proficiencia).GetProperty("Id")!.SetValue(proficiencia, 1);
+            context.Proficiencias.Add(proficiencia);
+
+            var sondagem = new Dominio.Entidades.Sondagem.Sondagem("Sondagem", DateTime.Now);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("Id")!.SetValue(sondagem, 1);
+            context.Sondagens.Add(sondagem);
+
+            var questionario = new Questionario("Questionario", TipoQuestionario.SondagemLeitura, 2026, 1, 1, 1);
+            typeof(Questionario).GetProperty("Id")!.SetValue(questionario, 1);
+            context.Questionarios.Add(questionario);
+
+            var questao = new Questao(1, 1, "Questao", "", true, TipoQuestao.Combo, "{}", false, 12);
+            typeof(Questao).GetProperty("Id")!.SetValue(questao, 1);
+            context.Questoes.Add(questao);
+
+            var opcao = new OpcaoResposta(1, "Opcao", "L", null, null);
+            typeof(OpcaoResposta).GetProperty("Id")!.SetValue(opcao, 1);
+            context.OpcoesResposta.Add(opcao);
+
+            var raca = new RacaCor { Descricao = "Indígena", CodigoEolRacaCor = 5 };
+            typeof(RacaCor).GetProperty("Id")!.SetValue(raca, 5);
+            context.RacaCor.Add(raca);
+
+            var contextoEdu = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2026, ModalidadeId = "4", BimestreId = 2, RacaCorId = 5 };
+            var resposta = new RespostaAluno(1, 100, 1, 1, DateTime.Now, contextoEdu);
+
+            context.RespostasAluno.Add(resposta);
+            await context.SaveChangesAsync();
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(new FiltroConsolidadoDto());
+
+            // Assert
+            var dto = resultado.First();
+            Assert.Equal("Indígena", dto.RacaCor!.Descricao);
+            Assert.Equal("Opcao", dto.OpcaoRespostaDescricao);
+        }
+
+        [Fact]
+        public async Task ObterRespostasParaRelatorioConsolidadoAsync_NaoDeveRetornarExcluidos()
+        {
+            // Arrange
+            var context = CriarContexto(nameof(ObterRespostasParaRelatorioConsolidadoAsync_NaoDeveRetornarExcluidos));
+            var resposta = CriarRespostaAluno(1, 1);
+            resposta.Excluido = true;
+
+            context.RespostasAluno.Add(resposta);
+            await context.SaveChangesAsync();
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(new FiltroConsolidadoDto());
+
+            // Assert
+            Assert.Empty(resultado);
+        }
+
+        #endregion
 
         private static ContextoEducacional CriarContextoEducacional()
         {
