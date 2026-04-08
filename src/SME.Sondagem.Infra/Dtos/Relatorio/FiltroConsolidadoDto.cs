@@ -8,8 +8,7 @@ public class FiltroConsolidadoDto
     public int Modalidade { get; set; }
     public int ProficienciaId { get; set; }
     public int ComponenteCurricularId { get; set; }
-    public int AnoTurma { get; set; }
-    public int SemestreId { get; set; }
+    public List<int>? AnoTurma { get; set; }
     public int? BimestreId { get; set; }
     public int? GeneroId { get; set; }
     public int? RacaId { get; set; }

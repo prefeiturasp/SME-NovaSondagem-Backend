@@ -1,4 +1,4 @@
-﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Entidades.Elastic;
@@ -108,6 +108,50 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                 );
 
             return resultado.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<TurmaElasticDto>> ObterTurmasPorAnoLetivoModalidadeEAnoTurmaAsync(
+            int anoLetivo, 
+            int modalidade, 
+            IEnumerable<string> anosTurma, 
+            CancellationToken cancellationToken)
+        {
+            var anos = anosTurma?.Where(a => !string.IsNullOrWhiteSpace(a)).ToList() ?? [];
+
+            if (anos.Count == 0)
+                return [];
+
+            Func<QueryDescriptor<TurmaElasticDto>, Query> query = q => q
+                .Bool(b =>
+                {
+                    var filters = new List<Action<QueryDescriptor<TurmaElasticDto>>>
+                    {
+                        f => f.Term(t => t.Field(ff => ff.AnoLetivo).Value(anoLetivo)),
+                        f => f.Term(t => t.Field(ff => ff.Modalidade).Value(modalidade)),
+                        f => f.Terms(t => t
+                            .Field(ff => ff.AnoTurma)
+                            .Terms(new TermsQueryField(
+                                anos.Select(ano => FieldValue.String(ano)).ToArray()
+                            ))
+                        )
+                    };
+
+                    b.Filter(filters.Select<Action<QueryDescriptor<TurmaElasticDto>>, Query>(f =>
+                    {
+                        var qd = new QueryDescriptor<TurmaElasticDto>();
+                        f(qd);
+                        return qd;
+                    }).ToArray());
+                });
+
+            var resultado = await ObterListaAsync(
+                IndicesElastic.INDICE_TURMA,
+                query,
+                "Obter turmas por AnoLetivo, Modalidade e Lista de AnoTurma",
+                new { anoLetivo, modalidade, anosTurma = anos }
+            );
+
+            return resultado ?? [];
         }
     }
 }

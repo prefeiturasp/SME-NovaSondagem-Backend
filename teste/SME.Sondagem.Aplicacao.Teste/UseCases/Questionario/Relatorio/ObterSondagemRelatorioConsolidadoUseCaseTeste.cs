@@ -2,6 +2,7 @@ using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
@@ -10,12 +11,14 @@ namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
 public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 {
     private readonly Mock<IRepositorioRespostaAluno> _mockRepositorioRespostaAluno;
+    private readonly Mock<IRepositorioElasticTurma> _mockRepositorioElasticTurma;
     private readonly RepositoriosSondagem _repositoriosSondagem;
     private readonly ObterSondagemRelatorioConsolidadoRacaUseCase _useCase;
 
     public ObterSondagemRelatorioConsolidadoUseCaseTeste()
     {
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
+        _mockRepositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
 
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
@@ -26,7 +29,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
             new Mock<IRepositorioProficiencia>().Object
         );
 
-        _useCase = new ObterSondagemRelatorioConsolidadoRacaUseCase(_repositoriosSondagem);
+        _useCase = new ObterSondagemRelatorioConsolidadoRacaUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
     }
 
     private static List<RelatorioOpcaoRespostaDto> CriarOpcoes() =>
