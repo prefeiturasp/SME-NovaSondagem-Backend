@@ -9,6 +9,9 @@
         public int AnoLetivo { get; set; }
         public int? AnoTurma { get; set; }
         public int? ModalidadeId { get; set; }
+        public bool Aee { get; set; }
+        public bool Pap { get; set; }
+        public bool Deficiente { get; set; }
         public List<AlunoSondagemDto> Alunos { get; set; } = new();
     }
 }

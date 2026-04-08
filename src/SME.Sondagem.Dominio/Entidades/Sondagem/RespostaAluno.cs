@@ -22,7 +22,9 @@ public class RespostaAluno : EntidadeBase
         AnoLetivo = contexto.AnoLetivo;
         RacaCorId = contexto.RacaCorId;
         GeneroSexoId = contexto.GeneroSexoId;
-        ProgramaAtendimentoId = contexto.ProgramaAtendimentoId;
+        Aee = contexto.Aee;
+        Pap = contexto.Pap;
+        Deficiente = contexto.Deficiente;
         ModalidadeId = contexto.ModalidadeId;
     }
 
@@ -34,7 +36,9 @@ public class RespostaAluno : EntidadeBase
     public int? BimestreId { get; private set; }
     public int? RacaCorId { get;  set; }
     public int? GeneroSexoId { get;  set; }
-    public int? ProgramaAtendimentoId { get;  set; }
+    public bool Aee { get;  set; }
+    public bool Pap { get;  set; }
+    public bool Deficiente { get;  set; }
     public string? TurmaId { get; set; }
     public string? UeId { get; set; }
     public string? DreId { get; set; }
@@ -56,7 +60,9 @@ public class RespostaAluno : EntidadeBase
         AnoLetivo ??= contexto.AnoLetivo;
         RacaCorId ??= contexto.RacaCorId;
         GeneroSexoId ??= contexto.GeneroSexoId;
-        ProgramaAtendimentoId ??= contexto.ProgramaAtendimentoId;
+        Pap = contexto.Pap;
+        Aee = contexto.Aee;
+        Deficiente = contexto.Deficiente;
         ModalidadeId ??= contexto.ModalidadeId;
         AnoTurma ??= contexto.AnoTurma;
     }
@@ -68,5 +74,4 @@ public class RespostaAluno : EntidadeBase
     public virtual Bimestre? Bimestre { get; private set; } = null!;
     public virtual RacaCor? RacaCor { get; set; }
     public virtual GeneroSexo? GeneroSexo { get; set; }
-    public virtual ProgramaAtendimento? ProgramaAtendimento { get; set; }
 }

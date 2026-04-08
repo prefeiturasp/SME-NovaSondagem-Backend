@@ -274,7 +274,9 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         ModalidadeId = dto.ModalidadeId,
         RacaCorId = racaGenero?.RacaId,
         GeneroSexoId = racaGenero?.SexoId,
-        ProgramaAtendimentoId = programaAtendimentoId,
+        Pap = dto.Pap,
+        Deficiente = dto.Deficiente,
+        Aee = dto.Aee,
         AnoTurma = dto.AnoTurma
     };
 
