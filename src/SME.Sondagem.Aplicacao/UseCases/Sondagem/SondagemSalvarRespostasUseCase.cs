@@ -40,7 +40,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
         var turma = await ValidarSalvarSondagemEObterTurma(dto);
-        dto.AnoTurma = dto.AnoTurma ?? turma.AnoTurma;
+        dto.AnoTurma = dto.AnoTurma ?? (!string.IsNullOrEmpty(turma.AnoTurma) ? int.Parse(turma.AnoTurma) : null);
         var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
@@ -98,6 +98,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private static void ValidarCamposObrigatorios(SondagemSalvarDto dto)
     {
+        var modalidadeId = dto.ModalidadeId ?? 0;
+        var modalidadeValida = Enum.IsDefined(typeof(Modalidade), modalidadeId);
 
         var regras = new (Func<SondagemSalvarDto, bool> Invalido, string Mensagem)[]
         {
@@ -113,7 +115,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         (d => d.AnoLetivo == 0,
             MensagemNegocioComuns.INFORMAR_ANO_LETIVO_SALVAR_SONDAGEM),
 
-        (d => string.IsNullOrWhiteSpace(d.ModalidadeId) || !Enum.IsDefined(typeof(Modalidade),Convert.ToInt32(dto.ModalidadeId)),
+
+        (d => !modalidadeValida,
             MensagemNegocioComuns.INFORMAR_MODALIDADE_SALVAR_SONDAGEM),
         };
 
