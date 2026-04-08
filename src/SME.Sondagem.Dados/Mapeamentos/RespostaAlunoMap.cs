@@ -56,11 +56,11 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
                .IsRequired(false);
         
         builder.Property(x => x.ModalidadeId)
-               .HasColumnName("modalidade_id").HasMaxLength(10)
+               .HasColumnName("modalidade_id")
                .IsRequired(false);
 
         builder.Property(x => x.AnoTurma)
-               .HasColumnName("ano_turma").HasMaxLength(10)
+               .HasColumnName("ano_turma")
                .IsRequired(false);
 
         builder.Property(x => x.AnoLetivo)
