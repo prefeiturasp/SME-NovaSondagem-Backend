@@ -82,6 +82,7 @@ public class RelatorioConsolidadoGeneroRacaDto
 
 public class RelatorioConsolidadoAnoTurmaDto
 {
+    public int AnoTurma { get; set; }
     public int Quantidade { get; set; }
     public double Percentual { get; set; }
 }

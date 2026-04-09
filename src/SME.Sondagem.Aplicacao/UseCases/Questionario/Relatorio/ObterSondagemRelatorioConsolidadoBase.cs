@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -17,7 +18,21 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         RepositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
     }
 
-    protected async Task<List<RelatorioRespostaAlunoDto>> ObterRespostasFiltradasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
+    protected abstract string TituloSemDados { get; }
+    protected abstract string ObterTitulo(int anoLetivo);
+    protected abstract RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas);
+
+    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio([FromQuery] FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
+    {
+        var respostas = await ObterRespostasFiltradasAsync(filtro, cancellationToken);
+
+        if (respostas.Count == 0)
+            return new RelatorioConsolidadoSondagemDto { Titulo = TituloSemDados };
+
+        return ConstruirRelatorio(ObterTitulo(filtro.AnoLetivo), respostas, ProcessarQuestao);
+    }
+
+    private async Task<List<RelatorioRespostaAlunoDto>> ObterRespostasFiltradasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
         var respostasBrutas = await RepositorioSondagem.RepositorioRespostaAluno.ObterRespostasParaRelatorioConsolidadoAsync(filtro, cancellationToken);
         var respostas = respostasBrutas?.ToList() ?? [];
@@ -28,7 +43,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         return respostas;
     }
 
-    protected static RelatorioConsolidadoSondagemDto ConstruirRelatorio(
+    private static RelatorioConsolidadoSondagemDto ConstruirRelatorio(
         string titulo,
         List<RelatorioRespostaAlunoDto> respostas,
         Func<int, string, List<RelatorioRespostaAlunoDto>, RelatorioConsolidadoQuestaoDto> processarQuestao)

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -14,20 +13,10 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelator
     {
     }
 
-    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio([FromQuery] FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
-    {
-        var respostas = await ObterRespostasFiltradasAsync(filtro, cancellationToken);
+    protected override string TituloSemDados => "Relatório Consolidado por Raça - Sem Dados";
+    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Raça - {anoLetivo}";
 
-        if (respostas.Count == 0)
-            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Raça - Sem Dados" };
-
-        return ConstruirRelatorio(
-            $"Relatório Consolidado de Sondagem por Raça - {filtro.AnoLetivo}",
-            respostas,
-            ProcessarQuestao);
-    }
-
-    private static RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
+    protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
         => ConstruirQuestaoDto(
             questaoId,
             questaoNome,

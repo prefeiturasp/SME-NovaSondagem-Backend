@@ -99,13 +99,13 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         Assert.Equal("Produção", questao.QuestaoNome);
         Assert.Equal(3, questao.TotalEstudantes);
 
-        var respostaCerta = questao.Respostas.First(r => r.Resposta == "Certa");
-        Assert.Equal(2, respostaCerta.Total);
-        Assert.Equal(Math.Round((2.0 / 3.0) * 100, 2), respostaCerta.Percentual);
-        Assert.Equal(2, respostaCerta.Racas.Count());
+        var respostaCerta = questao?.Respostas?.First(r => r.Resposta == "Certa");
+        Assert.Equal(2, respostaCerta?.Total);
+        Assert.Equal(Math.Round((2.0 / 3.0) * 100, 2), respostaCerta?.Percentual);
+        Assert.Equal(2, respostaCerta?.Racas?.Count());
 
-        var respostaErrada = questao.Respostas.First(r => r.Resposta == "Errada");
-        Assert.Equal(1, respostaErrada.Total);
+        var respostaErrada = questao?.Respostas?.First(r => r.Resposta == "Errada");
+        Assert.Equal(1, respostaErrada?.Total);
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert - percentual de cada raça = 2/4 = 50% (sobre o total da questão)
-        var racas = resultado.Questoes.First().Respostas.First().Racas.ToList();
+        var racas = resultado?.Questoes?.First()?.Respostas?.First()?.Racas?.ToList() ?? [];
         Assert.All(racas, r => Assert.Equal(50, r.Percentual));
     }
 
@@ -192,7 +192,8 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        var raca = resultado.Questoes.First().Respostas.First().Racas.First();
+        var raca = resultado?.Questoes?.First()?.Respostas?.First()?.Racas?.First();
+        Assert.NotNull(raca);
         Assert.Equal("Não Informado", raca.Raca);
     }
 }
