@@ -25,6 +25,7 @@ public class RelatorioRespostaAlunoDto
     public string? UeId { get; set; }
     public string? DreId { get; set; }
     public int? AnoLetivo { get; set; }
+    public int? AnoTurma { get; set; }
     public string? ModalidadeId { get; set; }
     
     public IEnumerable<RelatorioOpcaoRespostaDto>? OpcoesDisponiveis { get; set; }

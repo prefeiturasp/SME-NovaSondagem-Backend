@@ -220,6 +220,9 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         if (filtro.ProgramaAtendimentoId > 0)
             query = query.Where(ra => ra.ProgramaAtendimento != null && ra.ProgramaAtendimento.Id == filtro.ProgramaAtendimentoId);
 
+        if (filtro.AnoTurma != null && filtro.AnoTurma.Any())
+            query = query.Where(ra => ra.AnoTurma.HasValue && filtro.AnoTurma.Contains(ra.AnoTurma.Value));
+
         return query;
     }
 }

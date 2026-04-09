@@ -39,6 +39,7 @@ public class RespostaAluno : EntidadeBase
     public string? UeId { get; set; }
     public string? DreId { get; set; }
     public int? AnoLetivo { get; set; }
+    public int? AnoTurma { get; set; }
     public string? ModalidadeId { get; set; }
 
     public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
