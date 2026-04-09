@@ -11,7 +11,6 @@ using SME.Sondagem.Aplicacao.Interfaces.OpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagem;
 using SME.Sondagem.Aplicacao.Interfaces.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
-using SME.Sondagem.Aplicacao.Interfaces.ProgramaAtendimento;
 using SME.Sondagem.Aplicacao.Interfaces.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Questao;
@@ -32,7 +31,6 @@ using SME.Sondagem.Aplicacao.UseCases.OpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.ParametroSondagem;
 using SME.Sondagem.Aplicacao.UseCases.ParametroSondagemQuestionario;
 using SME.Sondagem.Aplicacao.UseCases.Proficiencia;
-using SME.Sondagem.Aplicacao.UseCases.ProgramaAtendimento;
 using SME.Sondagem.Aplicacao.UseCases.Questao;
 using SME.Sondagem.Aplicacao.UseCases.QuestaoOpcaoResposta;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
@@ -117,6 +115,7 @@ public static class RegistraDependencias
         services.AddScoped<ISolicitacaoRelatorioService, SolicitacaoRelatorioService>();
         services.AddScoped<IUeComDreEolService, UeComDreEolService>();
         services.AddScoped<IDadosAlunosService, DadosAlunosService>();
+        services.AddScoped<IPerfilService, PerfilService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)
@@ -181,7 +180,6 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdUseCase, ObterParametroSondagemQuestionarioPorIdUseCase>();
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase, ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase>();
         services.TryAddScoped<IObterListaRacaCorUseCase, ObterListaRacaCorUseCase>();
-        services.TryAddScoped<IObterListaProgramaAtendimentoUseCase, ObterListaProgramaAtendimentoUseCase>();
         services.TryAddScoped<IObterListaGeneroSexoUseCase, ObterListaGeneroSexoUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaUseCase, ObterSondagemRelatorioConsolidadoRacaUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoGeneroUseCase, ObterSondagemRelatorioConsolidadoGeneroUseCase>();

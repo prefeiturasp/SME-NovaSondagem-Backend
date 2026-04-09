@@ -126,7 +126,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
                 UeId = "3",
                 DreId = "2",
                 AnoLetivo = 2026,
-                ModalidadeId = "4",
+                ModalidadeId = 4,
                 RacaCorId = 1,
                 GeneroSexoId = 1,
                 BimestreId = 2

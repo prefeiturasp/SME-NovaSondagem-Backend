@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SME.Sondagem.Dados.Contexto;
@@ -11,9 +12,11 @@ using SME.Sondagem.Dados.Contexto;
 namespace SME.Sondagem.Dados.Migrations
 {
     [DbContext(typeof(SondagemDbContext))]
-    partial class SondagemDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319145900_remover_tabela_nao_utilizada")]
+    partial class remover_tabela_nao_utilizada
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -499,66 +502,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.HasIndex("ControleAcessoOptionsId");
 
                     b.ToTable("perfil_configuracao", (string)null);
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.GeneroSexo", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("AlteradoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("alterado_em");
-
-                    b.Property<string>("AlteradoPor")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_por");
-
-                    b.Property<string>("AlteradoRF")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_rf");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("criado_em");
-
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_por");
-
-                    b.Property<string>("CriadoRF")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_rf");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("descricao");
-
-                    b.Property<bool>("Excluido")
-                        .HasColumnType("boolean")
-                        .HasColumnName("excluido");
-
-                    b.Property<string>("Sigla")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("sigla");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("genero_sexo", (string)null);
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.ModalidadeComponenteCurricular", b =>
@@ -1354,72 +1297,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.ToTable("questionario_bimestre", (string)null);
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.RacaCor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("AlteradoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("alterado_em");
-
-                    b.Property<string>("AlteradoPor")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_por");
-
-                    b.Property<string>("AlteradoRF")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("alterado_rf");
-
-                    b.Property<int>("CodigoEolRacaCor")
-                        .HasColumnType("integer")
-                        .HasColumnName("codigo_eol_racacor");
-
-                    b.Property<DateTime>("CriadoEm")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("criado_em");
-
-                    b.Property<string>("CriadoPor")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_por");
-
-                    b.Property<string>("CriadoRF")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("criado_rf");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("descricao");
-
-                    b.Property<bool>("Excluido")
-                        .HasColumnType("boolean")
-                        .HasColumnName("excluido");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CodigoEolRacaCor")
-                        .IsUnique()
-                        .HasDatabaseName("IX_RacaCor_CodigoEol");
-
-                    b.HasIndex("Descricao")
-                        .IsUnique()
-                        .HasDatabaseName("IX_RacaCor_Descricao");
-
-                    b.ToTable("raca_cor", (string)null);
-                });
-
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.RespostaAluno", b =>
                 {
                     b.Property<int>("Id")
@@ -1428,12 +1305,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Aee")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("aee");
 
                     b.Property<DateTime?>("AlteradoEm")
                         .HasColumnType("timestamp with time zone")
@@ -1453,16 +1324,7 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("aluno_id");
 
-                    b.Property<int?>("AnoLetivo")
-                        .HasColumnType("integer")
-                        .HasColumnName("ano_letivo");
-
-                    b.Property<int?>("AnoTurma")
-                        .HasColumnType("integer")
-                        .HasColumnName("ano_turma");
-
                     b.Property<int?>("BimestreId")
-                        .HasMaxLength(10)
                         .HasColumnType("integer")
                         .HasColumnName("bimestre_id");
 
@@ -1488,80 +1350,36 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasColumnName("data_resposta")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<bool>("Deficiente")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("deficiente");
-
-                    b.Property<string>("DreId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("dre_id");
-
                     b.Property<bool>("Excluido")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("excluido");
 
-                    b.Property<int?>("GeneroSexoId")
-                        .HasColumnType("integer")
-                        .HasColumnName("genero_sexo_id");
-
-                    b.Property<int?>("ModalidadeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("modalidade_id");
-
                     b.Property<int?>("OpcaoRespostaId")
                         .HasColumnType("integer")
                         .HasColumnName("opcao_resposta_id");
-
-                    b.Property<bool>("Pap")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("pap");
 
                     b.Property<int>("QuestaoId")
                         .HasColumnType("integer")
                         .HasColumnName("questao_id");
 
-                    b.Property<int?>("RacaCorId")
-                        .HasColumnType("integer")
-                        .HasColumnName("raca_cor_id");
-
                     b.Property<int>("SondagemId")
                         .HasColumnType("integer")
                         .HasColumnName("sondagem_id");
-
-                    b.Property<string>("TurmaId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("turma_id");
-
-                    b.Property<string>("UeId")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("ue_id");
 
                     b.HasKey("Id")
                         .HasName("pk_resposta_aluno");
 
                     b.HasIndex("BimestreId");
 
-                    b.HasIndex("GeneroSexoId");
-
                     b.HasIndex("OpcaoRespostaId");
 
                     b.HasIndex("QuestaoId");
 
-                    b.HasIndex("RacaCorId");
-
                     b.HasIndex("SondagemId", "AlunoId", "QuestaoId", "BimestreId")
                         .IsUnique()
-                        .HasDatabaseName("uk_resposta_sondagem_aluno_questao")
-                        .HasFilter("excluido = false");
+                        .HasDatabaseName("uk_resposta_sondagem_aluno_questao");
 
                     b.ToTable("resposta_aluno", (string)null);
                 });
@@ -1870,11 +1688,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .HasForeignKey("BimestreId")
                         .HasConstraintName("fk_bimestre_resposta_aluno");
 
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.GeneroSexo", "GeneroSexo")
-                        .WithMany("RespostaAlunos")
-                        .HasForeignKey("GeneroSexoId")
-                        .HasConstraintName("fk_genero_sexo_resposta_aluno");
-
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Questionario.OpcaoResposta", "OpcaoResposta")
                         .WithMany("Respostas")
                         .HasForeignKey("OpcaoRespostaId")
@@ -1887,11 +1700,6 @@ namespace SME.Sondagem.Dados.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_resposta_questao");
 
-                    b.HasOne("SME.Sondagem.Dominio.Entidades.RacaCor", "RacaCor")
-                        .WithMany("RespostaAlunos")
-                        .HasForeignKey("RacaCorId")
-                        .HasConstraintName("fk_raca_cor_resposta_aluno");
-
                     b.HasOne("SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem", "Sondagem")
                         .WithMany("Respostas")
                         .HasForeignKey("SondagemId")
@@ -1901,13 +1709,9 @@ namespace SME.Sondagem.Dados.Migrations
 
                     b.Navigation("Bimestre");
 
-                    b.Navigation("GeneroSexo");
-
                     b.Navigation("OpcaoResposta");
 
                     b.Navigation("Questao");
-
-                    b.Navigation("RacaCor");
 
                     b.Navigation("Sondagem");
                 });
@@ -1961,11 +1765,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("ConfiguracaoPerfis");
                 });
 
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.GeneroSexo", b =>
-                {
-                    b.Navigation("RespostaAlunos");
-                });
-
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Proficiencia", b =>
                 {
                     b.Navigation("Questionarios");
@@ -1999,11 +1798,6 @@ namespace SME.Sondagem.Dados.Migrations
                     b.Navigation("QuestionariosBimestres");
 
                     b.Navigation("Questoes");
-                });
-
-            modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.RacaCor", b =>
-                {
-                    b.Navigation("RespostaAlunos");
                 });
 
             modelBuilder.Entity("SME.Sondagem.Dominio.Entidades.Sondagem.Sondagem", b =>
