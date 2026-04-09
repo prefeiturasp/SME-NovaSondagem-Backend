@@ -52,6 +52,7 @@ public class RespostaAluno : EntidadeBase
         DataResposta = dataResposta;
         AtualizarContextoEducacional(contexto);
     }
+
     private void AtualizarContextoEducacional(ContextoEducacional contexto)
     {
         TurmaId ??= contexto.TurmaId;
@@ -67,7 +68,6 @@ public class RespostaAluno : EntidadeBase
         AnoTurma ??= contexto.AnoTurma;
     }
 
-    // Navegação
     public virtual Sondagem Sondagem { get; private set; } = null!;
     public virtual Questao Questao { get; private set; } = null!;
     public virtual OpcaoResposta OpcaoResposta { get; private set; } = null!;
