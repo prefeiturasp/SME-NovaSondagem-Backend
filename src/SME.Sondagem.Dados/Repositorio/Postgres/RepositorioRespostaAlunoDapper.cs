@@ -2,6 +2,7 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Infrastructure.Dtos.Integracao;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
@@ -15,7 +16,7 @@ public class RepositorioRespostaAlunoDapper : IRepositorioRespostaAlunoDapper
             ?? throw new ArgumentNullException(nameof(configuration), "A string de conexão SondagemConnection não foi encontrada.");
     }
 
-    public async Task AtualizarCamposAsync(int id, string? turmaId, string? ueId, string? dreId, int? anoLetivo, int? modalidadeId, int? anoTurma, int? generoId, int? raca_id)
+    public async Task AtualizarCamposAsync(ContextoRespostaAlunoDto contexto)
     {
         const string query = @"
             UPDATE resposta_aluno
@@ -26,22 +27,14 @@ public class RepositorioRespostaAlunoDapper : IRepositorioRespostaAlunoDapper
                    modalidade_id = @ModalidadeId,
                    ano_turma = @AnoTurma, 
                    genero_sexo_id = @GeneroId,
-                   raca_cor_id = @Raca_id,
+                   raca_cor_id = @RacaId,
+                   pap = @Pap,
+                   aee = @Aee,
+                   deficiente = @Deficiente,
                    alterado_em = CURRENT_TIMESTAMP
-             WHERE id = @Id;";
+             WHERE id = @RespostaId;";
 
         using var connection = new NpgsqlConnection(_connectionString);
-        await connection.ExecuteAsync(query, new
-        {
-            Id = id,
-            TurmaId = turmaId,
-            UeId = ueId,
-            DreId = dreId,
-            AnoLetivo = anoLetivo,
-            ModalidadeId = modalidadeId,
-            AnoTurma = anoTurma,
-            GeneroId = generoId,
-            Raca_id = raca_id
-        });
+        await connection.ExecuteAsync(query, contexto);
     }
 }

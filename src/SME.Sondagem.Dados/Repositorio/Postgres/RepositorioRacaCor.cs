@@ -1,4 +1,5 @@
-﻿using SME.Sondagem.Dados.Contexto;
+﻿using Microsoft.EntityFrameworkCore;
+using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio.Entidades;
@@ -10,6 +11,15 @@ namespace SME.Sondagem.Dados.Repositorio.Postgres
     {
         public RepositorioRacaCor(SondagemDbContext context, IServicoAuditoria servicoAuditoria, ContextoBase database) : base(context, servicoAuditoria, database)
         {
+        }
+
+        public async Task<RacaCor?> ObterPorCodigoEolAsync(int codigoEol, CancellationToken cancellationToken = default)
+        {
+
+            return await _context.RacaCor
+                .AsNoTracking()
+                .Where(r => r.CodigoEolRacaCor == codigoEol && !r.Excluido)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

@@ -18,19 +18,25 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
     private readonly IRepositorioRespostaAlunoDapper _repositorioDapper;
     protected readonly IDadosAlunosService _dadosAlunosService;
     protected readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
+    protected readonly IRepositorioRacaCor _repositorioRacaCor;
+    private readonly IAlunoPapService _alunoPapService;
 
     public AtualizarContextosRespostasAlunoUseCase(
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         RepositorioSondagemRelatorioPorTodasTurma repositorioSondagemRelatorioPorTodasTurma,
         IRepositorioRespostaAlunoDapper repositorioDapper,
-        IDadosAlunosService dadosAlunosService)
+        IDadosAlunosService dadosAlunosService,
+        IRepositorioRacaCor repositorioRacaCor,
+        IAlunoPapService alunoPapService)
     {
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _repositorioSondagemRelatorioPorTodasTurma = repositorioSondagemRelatorioPorTodasTurma ?? throw new ArgumentNullException(nameof(repositorioSondagemRelatorioPorTodasTurma));
         _repositorioDapper = repositorioDapper ?? throw new ArgumentNullException(nameof(repositorioDapper));
         _dadosAlunosService = dadosAlunosService;
+        _repositorioRacaCor = repositorioRacaCor;
+        _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
     }
 
     public async Task<ResumoAtualizacaoContextoDto> ExecutarAsync(CancellationToken cancellationToken = default)
@@ -44,11 +50,11 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
         var respostas = (await _repositoriosSondagem.RepositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeIdFundamental, componenteLp.Id, cancellationToken)).ToList();
 
         var codigoAlunos = respostas.Select(x => x.CodigoEolEstudante!).Where(c => !string.IsNullOrEmpty(c)).Distinct().ToList();
-        var dadosAlunos = await ObterAlunos(codigoAlunos, cancellationToken);
-        
+        var (dadosAlunos, alunosPap) = await ObterAlunos(codigoAlunos, cancellationToken);
+
         var turmasCodigosUnicos = dadosAlunos.Select(x => x.CodigoTurma).Where(c => c > 0).Distinct();
         var dadosCompletosTurmas = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(turmasCodigosUnicos, cancellationToken);
-        
+
         var codigoUes = dadosAlunos.Select(x => x.CodigoEscola!).Where(c => !string.IsNullOrEmpty(c)).Distinct();
         var uesComDre = await BuscarUesDres(codigoUes);
 
@@ -56,8 +62,25 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
         var turmasPorCodigo = dadosCompletosTurmas.Where(t => t.CodigoTurma > 0).GroupBy(t => t.CodigoTurma).ToDictionary(g => g.Key, g => g.First());
         var uesPorCodigo = uesComDre.Where(e => !string.IsNullOrEmpty(e.CodigoEscola)).GroupBy(e => e.CodigoEscola!).ToDictionary(g => g.Key, g => g.First());
 
+        var alunosElasticDict = new System.Collections.Concurrent.ConcurrentDictionary<int, SME.Sondagem.Infra.Dtos.Questionario.AlunoElasticDto>();
+        await Task.WhenAll(dadosCompletosTurmas.Select(async turma => 
+        {
+            var alunosTurma = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turma.CodigoTurma, turma.AnoLetivo, cancellationToken);
+            if (alunosTurma != null)
+            {
+                foreach (var aluno in alunosTurma)
+                {
+                    alunosElasticDict.TryAdd(aluno.CodigoAluno, aluno);
+                }
+            }
+        }));
+
         int registrosLidos = respostas.Count;
         int registrosAtualizados = 0;
+        var listagemRacaCor = await _repositorioRacaCor.ListarAsync(cancellationToken);
+        
+        var turmasIdsList = turmasCodigosUnicos.ToList();
+        var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmasIdsList, cancellationToken);
 
         foreach (var resposta in respostas)
         {
@@ -87,52 +110,76 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
             if (int.TryParse(turma?.AnoTurma, out var anoResult))
                 anoLetivoInt = anoResult;
 
-            var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turma.CodigoTurma, cancellationToken);
             var dadosAluno = dadosRacaGenero.TryGetValue(aluno.CodigoAluno, out var racaGenero) ? racaGenero : (null, null);
+            var racaCor = listagemRacaCor.FirstOrDefault(r => r.CodigoEolRacaCor == dadosAluno.Raca);
 
-            await _repositorioDapper.AtualizarCamposAsync(
-                resposta.RespostaId,
-                turma?.CodigoTurma.ToString(),
-                ueDre?.CodigoEscola,
-                ueDre?.CodigoDRE,
-                anoLetivoInt,
-                resposta.ModalidadeId,
-                Convert.ToInt32(turma?.AnoTurma),
-                dadosAluno.Raca,
-                dadosAluno.Sexo
-            );
+            var contextoDto = new ContextoRespostaAlunoDto
+            {
+                RespostaId = resposta.RespostaId,
+                TurmaId = turma?.CodigoTurma.ToString(),
+                UeId = ueDre?.CodigoEscola,
+                DreId = ueDre?.CodigoDRE,
+                AnoLetivo = anoLetivoInt,
+                ModalidadeId = resposta.ModalidadeId,
+                AnoTurma = Convert.ToInt32(turma?.AnoTurma),
+                GeneroId = dadosAluno.Sexo,
+                RacaId = racaCor?.Id,
+                Pap = alunosPap.TryGetValue(aluno.CodigoAluno, out var possuiPap) && possuiPap,
+                Deficiente = alunosElasticDict.TryGetValue(aluno.CodigoAluno, out var elDto) && elDto.PossuiDeficiencia == 1,
+                Aee = false // TODO: Avaliar de onde obter o Aee
+            };
+
+            await _repositorioDapper.AtualizarCamposAsync(contextoDto);
 
             registrosAtualizados++;
+            Console.WriteLine($"[Sondagem] AtualizarContextosRespostasAlunoUseCase - Registros Lidos: {registrosLidos} | Registros Atualizados: {registrosAtualizados}");
+            System.Diagnostics.Debug.WriteLine($"[Sondagem] AtualizarContextosRespostasAlunoUseCase - Registros Lidos: {registrosLidos} | Registros Atualizados: {registrosAtualizados}");
+
         }
 
-        return new ResumoAtualizacaoContextoDto
+        var resumo = new ResumoAtualizacaoContextoDto
         {
             RegistrosLidos = registrosLidos,
             RegistrosAtualizados = registrosAtualizados
         };
+
+        
+        return resumo;
     }
 
-    private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos, CancellationToken cancellationToken)
+    private async Task<(IEnumerable<AlunoEolDto> Alunos, Dictionary<int, bool> AlunosPap)> ObterAlunos(List<string> codigoAlunos, CancellationToken cancellationToken)
     {
         var retorno = new List<AlunoEolDto>();
-        if (codigoAlunos.Count == 0) return retorno;
+        var alunosPap = new Dictionary<int, bool>();
+
+        if (codigoAlunos.Count == 0) return (retorno, alunosPap);
 
         var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
         if (dados.Any()) retorno.AddRange(dados);
 
-        return retorno;
+        var codigosInt = retorno.Select(x => x.CodigoAluno).Distinct().ToList();
+        if (codigosInt.Count > 0)
+        {
+            alunosPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(codigosInt, DateTime.Now.Year, cancellationToken);
+        }
+
+        return (retorno, alunosPap);
     }
 
-    private async Task<Dictionary<long, (int? Raca, int? Sexo)>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken)
+    private async Task<Dictionary<long, (int? Raca, int? Sexo)>> ObterDadosRacaGeneroAlunos(IEnumerable<int> turmasIds, CancellationToken cancellationToken)
     {
-        var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId, cancellationToken);
+        var dicionario = new Dictionary<long, (int? Raca, int? Sexo)>();
+        
+        foreach (var turmaId in turmasIds)
+        {
+            var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId, cancellationToken);
+            foreach (var aluno in dadosAlunos)
+            {
+                dicionario.TryAdd(aluno.CodigoAluno, (aluno.RacaId, aluno.SexoId));
+            }
+        }
 
-        return dadosAlunos.ToDictionary(
-            aluno => aluno.CodigoAluno,
-            aluno => (aluno.RacaId,
-                 aluno.SexoId
-            )
-        );
+        return dicionario;
     }
 
     private async Task<IEnumerable<UeComDreEolDto>> BuscarUesDres(IEnumerable<string> codigosUes)
