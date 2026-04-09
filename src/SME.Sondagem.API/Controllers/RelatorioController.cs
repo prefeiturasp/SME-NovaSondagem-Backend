@@ -44,4 +44,10 @@ public class RelatorioController : ControllerBase
     {
         return Ok(await obterSondagemRelatorioConsolidadoRacaGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
+
+    [HttpGet("consoliado/ano")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorAno([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoAnoUseCase obterSondagemRelatorioConsolidadoAnoUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoAnoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
 }

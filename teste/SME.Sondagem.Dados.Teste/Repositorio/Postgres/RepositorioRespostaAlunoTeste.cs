@@ -367,7 +367,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var r1 = CriarRespostaAluno(alunoId: 1, questaoId: 1, sondagemId: 1);
             
             // r2: AnoLetivo 2025 (override)
-            var contexto2025 = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2025, ModalidadeId = "4", BimestreId = 2 };
+            var contexto2025 = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2025, ModalidadeId = 4, BimestreId = 2 };
             var r2 = new RespostaAluno(1, 2, 1, 1, DateTime.Now, contexto2025);
 
             context.RespostasAluno.AddRange(r1, r2);
@@ -418,7 +418,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             typeof(RacaCor).GetProperty("Id")!.SetValue(raca, 5);
             context.RacaCor.Add(raca);
 
-            var contextoEdu = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2026, ModalidadeId = "4", BimestreId = 2, RacaCorId = 5 };
+            var contextoEdu = new ContextoEducacional { TurmaId = "1", UeId = "3", DreId = "2", AnoLetivo = 2026, ModalidadeId = 4, BimestreId = 2, RacaCorId = 5 };
             var resposta = new RespostaAluno(1, 100, 1, 1, DateTime.Now, contextoEdu);
 
             context.RespostasAluno.Add(resposta);

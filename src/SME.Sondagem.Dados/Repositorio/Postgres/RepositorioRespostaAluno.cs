@@ -115,11 +115,6 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 Descricao = ra.GeneroSexo.Descricao,
                 Sigla = ra.GeneroSexo.Sigla
             } : null,
-            ProgramaAtendimento = ra.ProgramaAtendimento != null ? new RelatorioProgramaAtendimentoDto
-            {
-                Id = ra.ProgramaAtendimento.Id,
-                Descricao = ra.ProgramaAtendimento.Descricao
-            } : null,
             OpcoesDisponiveis = ra.Questao.QuestaoOpcoes
                 .OrderBy(qo => qo.Ordem)
                 .Select(qo => new RelatorioOpcaoRespostaDto
@@ -200,7 +195,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             query = query.Where(ra => ra.UeId == filtro.Ue);
 
         if (filtro.Modalidade > 0)
-            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade.ToString());
+            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade);
 
         if (filtro.BimestreId.HasValue)
             query = query.Where(ra => ra.BimestreId == filtro.BimestreId.Value);
@@ -217,8 +212,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         if (filtro.RacaId > 0)
             query = query.Where(ra => ra.RacaCor != null && ra.RacaCor.Id == filtro.RacaId);
 
-        if (filtro.ProgramaAtendimentoId > 0)
-            query = query.Where(ra => ra.ProgramaAtendimento != null && ra.ProgramaAtendimento.Id == filtro.ProgramaAtendimentoId);
+        if (filtro.AnoTurma != null && filtro.AnoTurma.Any())
+            query = query.Where(ra => ra.AnoTurma.HasValue && filtro.AnoTurma.Contains(ra.AnoTurma.Value));
 
         return query;
     }

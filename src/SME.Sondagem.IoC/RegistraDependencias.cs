@@ -184,6 +184,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaUseCase, ObterSondagemRelatorioConsolidadoRacaUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoGeneroUseCase, ObterSondagemRelatorioConsolidadoGeneroUseCase>();
         services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaGeneroUseCase, ObterSondagemRelatorioConsolidadoRacaGeneroUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoAnoUseCase, ObterSondagemRelatorioConsolidadoAnoUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
