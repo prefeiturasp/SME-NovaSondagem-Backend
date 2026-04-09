@@ -185,45 +185,25 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
 
     private static IQueryable<RespostaAluno> AplicarFiltrosRelatorioConsolidado(IQueryable<RespostaAluno> query, FiltroConsolidadoDto filtro)
     {
-        if (filtro.AnoLetivo > 0)
-            query = query.Where(ra => ra.AnoLetivo == filtro.AnoLetivo);
+        var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
+        {
+            (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
+            (!string.IsNullOrEmpty(filtro.Dre),                             ra => ra.DreId == filtro.Dre),
+            (!string.IsNullOrEmpty(filtro.Ue),                              ra => ra.UeId == filtro.Ue),
+            (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
+            (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
+            (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
+            (filtro.ComponenteCurricularId > 0,                             ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId),
+            (filtro.GeneroId > 0,                                           ra => ra.GeneroSexo != null && ra.GeneroSexo.Id == filtro.GeneroId),
+            (filtro.RacaId > 0,                                             ra => ra.RacaCor != null && ra.RacaCor.Id == filtro.RacaId),
+            (filtro.AnoTurma != null && filtro.AnoTurma.Count != 0,         ra => ra.AnoTurma.HasValue && filtro.AnoTurma!.Contains(ra.AnoTurma.Value)),
+            (filtro.Pap.HasValue,                                           ra => ra.Pap == filtro.Pap),
+            (filtro.Aee.HasValue,                                           ra => ra.Aee == filtro.Aee),
+            (filtro.Deficiente.HasValue,                                    ra => ra.Deficiente == filtro.Deficiente),
+        };
 
-        if (!string.IsNullOrEmpty(filtro.Dre))
-            query = query.Where(ra => ra.DreId == filtro.Dre);
-
-        if (!string.IsNullOrEmpty(filtro.Ue))
-            query = query.Where(ra => ra.UeId == filtro.Ue);
-
-        if (filtro.Modalidade > 0)
-            query = query.Where(ra => ra.ModalidadeId == filtro.Modalidade);
-
-        if (filtro.BimestreId.HasValue)
-            query = query.Where(ra => ra.BimestreId == filtro.BimestreId.Value);
-
-        if (filtro.ProficienciaId > 0)
-            query = query.Where(ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId);
-
-        if (filtro.ComponenteCurricularId > 0)
-            query = query.Where(ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId);
-
-        if (filtro.GeneroId > 0)
-            query = query.Where(ra => ra.GeneroSexo != null && ra.GeneroSexo.Id == filtro.GeneroId);
-
-        if (filtro.RacaId > 0)
-            query = query.Where(ra => ra.RacaCor != null && ra.RacaCor.Id == filtro.RacaId);
-
-        if (filtro.AnoTurma != null && filtro.AnoTurma.Any())
-            query = query.Where(ra => ra.AnoTurma.HasValue && filtro.AnoTurma.Contains(ra.AnoTurma.Value));
-
-        if (filtro.Pap.HasValue)
-            query = query.Where(ra => ra.Pap == filtro.Pap);
-
-        if (filtro.Aee.HasValue)
-            query = query.Where(ra => ra.Aee == filtro.Aee);
-
-        if (filtro.Deficiente.HasValue)
-            query = query.Where(ra => ra.Deficiente == filtro.Deficiente);
-
-        return query;
+        return filtros
+            .Where(f => f.Aplicar)
+            .Aggregate(query, (q, f) => q.Where(f.Predicado));
     }
 }

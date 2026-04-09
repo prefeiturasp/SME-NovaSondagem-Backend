@@ -21,76 +21,20 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : ObterSondagemRelat
         if (respostas.Count == 0)
             return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Gênero - Sem Dados" };
 
-        var relatorio = new RelatorioConsolidadoSondagemDto
-        {
-            Titulo = $"Relatório Consolidado de Sondagem por Gênero - {filtro.AnoLetivo}"
-        };
-
-        var agrupamentoPorQuestao = respostas
-            .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
-            .OrderBy(g => g.Key.QuestaoNome);
-
-        relatorio.Questoes = [.. agrupamentoPorQuestao.Select(g => ProcessarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))];
-
-        return relatorio;
+        return ConstruirRelatorio(
+            $"Relatório Consolidado de Sondagem por Gênero - {filtro.AnoLetivo}",
+            respostas,
+            ProcessarQuestao);
     }
 
-    private static RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostasQuestao)
-    {
-        int totalRespostasQuestao = respostasQuestao.Count;
-
-        var questaoDto = new RelatorioConsolidadoQuestaoDto
-        {
-            QuestaoId = questaoId,
-            QuestaoNome = questaoNome,
-            TotalEstudantes = respostasQuestao.Select(r => r.AlunoId).Distinct().Count()
-        };
-
-        var primeiraComOpcoes = respostasQuestao.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
-        var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
-                                ?? [];
-
-        var listaRespostas = opcoesDisponiveis
-            .Select(opcao => ProcessarRespostaOpcao(opcao, respostasQuestao, totalRespostasQuestao))
-            .ToList();
-
-        questaoDto.Respostas = listaRespostas;
-        questaoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
-
-        questaoDto.TotaisPorGenero = ObterTotaisPorGenero(respostasQuestao, totalRespostasQuestao);
-
-        return questaoDto;
-    }
-
-    private static RelatorioConsolidadoRespostaDto ProcessarRespostaOpcao(RelatorioOpcaoRespostaDto opcao, List<RelatorioRespostaAlunoDto> respostasQuestao, int totalRespostasQuestao)
-    {
-        var respostasDestaOpcao = respostasQuestao.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
-        int totalOpcao = respostasDestaOpcao.Count;
-
-        return new RelatorioConsolidadoRespostaDto
-        {
-            Resposta = opcao.Descricao,
-            Ordem = opcao.Ordem,
-            CorFundo = opcao.CorFundo,
-            CorTexto = opcao.CorTexto,
-            Total = totalOpcao,
-            Percentual = CalcularPercentual(totalOpcao, totalRespostasQuestao),
-            Generos = ObterTotaisPorGenero(respostasDestaOpcao, totalRespostasQuestao)
-        };
-    }
-
-    private static List<RelatorioConsolidadoGeneroDto> ObterTotaisPorGenero(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao)
-    {
-        return respostas
-            .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
-            .Select(g => new RelatorioConsolidadoGeneroDto
-            {
-                Genero = g.Key,
-                Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
-                Quantidade = g.Count(),
-                Percentual = CalcularPercentual(g.Count(), totalRespostasQuestao)
-            })
-            .OrderBy(g => g.Genero)
-            .ToList();
-    }
+    private static RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
+        => ConstruirQuestaoDto(
+            questaoId,
+            questaoNome,
+            respostas,
+            processarOpcao: (opcao, respostasQuestao, total) =>
+                ConstruirRespostaDto(opcao, respostasQuestao, total,
+                    (dto, respostasOpcao, totalQ) => dto.Generos = AgruparPorGenero(respostasOpcao, totalQ)),
+            adicionarTotais: (dto, respostasQuestao, total) =>
+                dto.TotaisPorGenero = AgruparPorGenero(respostasQuestao, total));
 }
