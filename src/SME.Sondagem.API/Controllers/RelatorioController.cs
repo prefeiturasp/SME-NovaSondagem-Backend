@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Infra.Constantes.Autenticacao;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.API.Controllers;
 
@@ -24,5 +25,29 @@ public class RelatorioController : ControllerBase
     {
         await exportarSondagemRelatorioPorTurmaUseCase.ExportarSondagemRelatorio(filtro, cancellationToken);
         return Ok();
+    }
+
+    [HttpGet("consoliado/raca")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorRaca([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaUseCase obterSondagemRelatorioConsolidadoUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
+
+    [HttpGet("consoliado/genero")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorGenero([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoGeneroUseCase obterSondagemRelatorioConsolidadoGeneroUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
+
+    [HttpGet("consoliado/raca-genero")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorRacaGenero([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaGeneroUseCase obterSondagemRelatorioConsolidadoRacaGeneroUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoRacaGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
+
+    [HttpGet("consoliado/ano")]
+    public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorAno([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoAnoUseCase obterSondagemRelatorioConsolidadoAnoUseCase, CancellationToken cancellationToken)
+    {
+        return Ok(await obterSondagemRelatorioConsolidadoAnoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 }

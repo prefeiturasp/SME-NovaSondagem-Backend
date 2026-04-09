@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -181,6 +181,10 @@ public static class RegistraDependencias
         services.TryAddScoped<IObterParametroSondagemQuestionarioPorIdQuestionarioUseCase, ObterParametroSondagemQuestionarioPorIdQuestionarioUseCase>();
         services.TryAddScoped<IObterListaRacaCorUseCase, ObterListaRacaCorUseCase>();
         services.TryAddScoped<IObterListaGeneroSexoUseCase, ObterListaGeneroSexoUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaUseCase, ObterSondagemRelatorioConsolidadoRacaUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoGeneroUseCase, ObterSondagemRelatorioConsolidadoGeneroUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoRacaGeneroUseCase, ObterSondagemRelatorioConsolidadoRacaGeneroUseCase>();
+        services.TryAddScoped<IObterSondagemRelatorioConsolidadoAnoUseCase, ObterSondagemRelatorioConsolidadoAnoUseCase>();
     }
 
     private static void RegistrarValidadores(IServiceCollection services)
