@@ -1,18 +1,31 @@
+using System.Text.Json.Serialization;
+
 namespace SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 public class RelatorioConsolidadoSondagemDto
 {
     public string Titulo { get; set; } = string.Empty;
-    public IEnumerable<RelatorioConsolidadoQuestaoDto> Questoes { get; set; } = new List<RelatorioConsolidadoQuestaoDto>();
+    public IEnumerable<RelatorioConsolidadoQuestaoDto> Questoes { get; set; } = [];
 }
 
 public class RelatorioConsolidadoQuestaoDto
 {
     public int QuestaoId { get; set; }
     public string QuestaoNome { get; set; } = string.Empty;
-    public IEnumerable<RelatorioConsolidadoRespostaDto> Respostas { get; set; } = new List<RelatorioConsolidadoRespostaDto>();
-    public IEnumerable<RelatorioConsolidadoGeneroDto> TotaisPorGenero { get; set; } = new List<RelatorioConsolidadoGeneroDto>();
-    public IEnumerable<RelatorioConsolidadoRacaDto> TotaisPorRaca { get; set; } = new List<RelatorioConsolidadoRacaDto>();
+    public IEnumerable<RelatorioConsolidadoRespostaDto>? Respostas { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoGeneroDto>? TotaisPorGenero { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoRacaDto>? TotaisPorRaca { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoAnoTurmaDto>? TotaisPorAnoTurma { get; set; }
+
     public int TotalEstudantes { get; set; }
     public double PercentualTotal { get; set; }
 }
@@ -20,9 +33,22 @@ public class RelatorioConsolidadoQuestaoDto
 public class RelatorioConsolidadoRespostaDto
 {
     public string Resposta { get; set; } = string.Empty;
-    public IEnumerable<RelatorioConsolidadoRacaDto> Racas { get; set; } = new List<RelatorioConsolidadoRacaDto>();
-    public IEnumerable<RelatorioConsolidadoGeneroDto> Generos { get; set; } = new List<RelatorioConsolidadoGeneroDto>();
-    public IEnumerable<RelatorioConsolidadoGeneroRacaDto> GenerosComRacas { get; set; } = new List<RelatorioConsolidadoGeneroRacaDto>();
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoRacaDto>? Racas { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoGeneroDto>? Generos { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoGeneroRacaDto>? GenerosComRacas { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoAnoTurmaDto>? AnosTurma { get; set; }
+
     public int Total { get; set; }
     public double Percentual { get; set; }
     public int Ordem { get; set; }
@@ -51,5 +77,12 @@ public class RelatorioConsolidadoGeneroRacaDto
     public string? Sigla { get; set; }
     public int TotalGenero { get; set; }
     public double PercentualGenero { get; set; }
-    public IEnumerable<RelatorioConsolidadoRacaDto> Racas { get; set; } = new List<RelatorioConsolidadoRacaDto>();
+    public IEnumerable<RelatorioConsolidadoRacaDto>? Racas { get; set; }
+}
+
+public class RelatorioConsolidadoAnoTurmaDto
+{
+    public int AnoTurma { get; set; }
+    public int Quantidade { get; set; }
+    public double Percentual { get; set; }
 }
