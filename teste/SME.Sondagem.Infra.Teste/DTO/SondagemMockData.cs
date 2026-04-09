@@ -13,7 +13,7 @@ public static class SondagemMockData
             TurmaId = "1",
             DreId = "2",
             UeId = "3",
-            ModalidadeId = "4",
+            ModalidadeId = 4,
             AnoLetivo = 2026,
             Alunos =
             [
