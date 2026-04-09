@@ -12,5 +12,7 @@ public class FiltroConsolidadoDto
     public int? BimestreId { get; set; }
     public int? GeneroId { get; set; }
     public int? RacaId { get; set; }
-    public int? ProgramaAtendimentoId { get; set; }
+    public bool? Pap { get; set; }
+    public bool? Aee { get; set; }
+    public bool? Deficiente { get; set; }
 }

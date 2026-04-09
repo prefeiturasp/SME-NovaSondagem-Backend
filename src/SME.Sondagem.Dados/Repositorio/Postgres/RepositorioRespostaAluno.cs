@@ -215,6 +215,15 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         if (filtro.AnoTurma != null && filtro.AnoTurma.Any())
             query = query.Where(ra => ra.AnoTurma.HasValue && filtro.AnoTurma.Contains(ra.AnoTurma.Value));
 
+        if (filtro.Pap.HasValue)
+            query = query.Where(ra => ra.Pap == filtro.Pap);
+
+        if (filtro.Aee.HasValue)
+            query = query.Where(ra => ra.Aee == filtro.Aee);
+
+        if (filtro.Deficiente.HasValue)
+            query = query.Where(ra => ra.Deficiente == filtro.Deficiente);
+
         return query;
     }
 }
