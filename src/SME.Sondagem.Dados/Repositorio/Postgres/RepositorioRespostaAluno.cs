@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
@@ -36,7 +36,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 && alunosIds.Contains(ra.AlunoId)
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
-                && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
+                && ra.OpcaoResposta != null
+                && string.Equals(ra.OpcaoResposta!.DescricaoOpcaoResposta, "sim", StringComparison.OrdinalIgnoreCase))
             .Select(ra => ra.AlunoId)
             .Distinct()
             .ToListAsync(cancellationToken);
@@ -79,7 +80,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
-            .Where(ra => !ra.Excluido && ra.OpcaoRespostaId.HasValue)
+            .Where(ra => !ra.Excluido && ra.OpcaoRespostaId.HasValue && ra.Questao.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
             .AsNoTracking();
 
         query = AplicarFiltrosRelatorioConsolidado(query, filtro);
@@ -91,13 +92,14 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             SondagemDescricao = ra.Sondagem.Descricao,
             AlunoId = ra.AlunoId,
             QuestaoId = ra.QuestaoId,
-            QuestaoNome = ra.Questao.Nome,
+            QuestaoNome = $"{ra.Questao.Nome} ({ra.AnoTurma}º ano)",
             OpcaoRespostaId = ra.OpcaoRespostaId,
             OpcaoRespostaDescricao = ra.OpcaoResposta.DescricaoOpcaoResposta,
             OpcaoRespostaLegenda = ra.OpcaoResposta.Legenda,
             DataResposta = ra.DataResposta,
             BimestreId = ra.BimestreId,
             BimestreDescricao = ra.Bimestre != null ? ra.Bimestre.Descricao : null,
+            AnoTurma = ra.AnoTurma,
             TurmaId = ra.TurmaId,
             UeId = ra.UeId,
             DreId = ra.DreId,
@@ -165,7 +167,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
             .Where(ra =>
-                ra.Questao.Questionario.ModalidadeId == modalidadeId &&
+                ra.Questao.Questionario.ModalidadeId.HasValue &&
+                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
                 ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
             .OrderBy(ra => ra.AlunoId)
             .ThenBy(ra => ra.QuestaoId)
@@ -175,7 +178,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 Questao              = ra.Questao.Nome,
                 Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
                 Legenda              = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
-                Bimestre             = ra.BimestreId.ToString(),
+                Bimestre             = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
                 Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
                 ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
@@ -200,6 +203,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             (filtro.Pap.HasValue,                                           ra => ra.Pap == filtro.Pap),
             (filtro.Aee.HasValue,                                           ra => ra.Aee == filtro.Aee),
             (filtro.Deficiente.HasValue,                                    ra => ra.Deficiente == filtro.Deficiente),
+            (filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue,           ra => ra.Questao.Questionario.ParametrosQuestionario.Any(p =>
+                                                                                  p.ParametroSondagem.Tipo == TipoParametroSondagem.PossuiLinguaPortuguesaSegundaLingua &&
+                                                                                  p.Valor != null &&
+                                                                                  filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue &&
+                                                                                  p.Valor.ToLower() == (filtro.PossuiLinguaPortuguesaSegundaLingua.Value ? "true" : "false")))
         };
 
         return filtros

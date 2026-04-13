@@ -52,7 +52,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 
         relatorio.Questoes = [.. respostas
             .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
-            .OrderBy(g => g.Key.QuestaoNome)
+            .OrderBy(g => g.Key.QuestaoId)
             .Select(g => processarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))];
 
         return relatorio;
