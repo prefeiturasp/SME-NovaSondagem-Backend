@@ -106,10 +106,6 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
             turmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turma);
             uesPorCodigo.TryGetValue(aluno.CodigoEscola!, out var ueDre);
 
-            int? anoLetivoInt = null;
-            if (int.TryParse(turma?.AnoTurma, out var anoResult))
-                anoLetivoInt = anoResult;
-
             var dadosAluno = dadosRacaGenero.TryGetValue(aluno.CodigoAluno, out var racaGenero) ? racaGenero : (null, null);
             var racaCor = listagemRacaCor.FirstOrDefault(r => r.CodigoEolRacaCor == dadosAluno.Raca);
 
@@ -119,7 +115,7 @@ public class AtualizarContextosRespostasAlunoUseCase : IAtualizarContextosRespos
                 TurmaId = turma?.CodigoTurma.ToString(),
                 UeId = ueDre?.CodigoEscola,
                 DreId = ueDre?.CodigoDRE,
-                AnoLetivo = anoLetivoInt,
+                AnoLetivo = turma?.AnoLetivo,
                 ModalidadeId = resposta.ModalidadeId,
                 AnoTurma = Convert.ToInt32(turma?.AnoTurma),
                 GeneroId = dadosAluno.Sexo,
