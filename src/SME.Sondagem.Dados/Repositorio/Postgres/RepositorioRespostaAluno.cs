@@ -37,7 +37,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
                 && ra.OpcaoResposta != null
-                && string.Equals(ra.OpcaoResposta!.DescricaoOpcaoResposta, "sim", StringComparison.OrdinalIgnoreCase))
+                && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
             .Select(ra => ra.AlunoId)
             .Distinct()
             .ToListAsync(cancellationToken);
@@ -207,7 +207,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                                                                                   p.ParametroSondagem.Tipo == TipoParametroSondagem.PossuiLinguaPortuguesaSegundaLingua &&
                                                                                   p.Valor != null &&
                                                                                   filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue &&
-                                                                                  p.Valor.ToLower() == (filtro.PossuiLinguaPortuguesaSegundaLingua.Value ? "true" : "false")))
+                                                                                  p.Valor.Equals(filtro.PossuiLinguaPortuguesaSegundaLingua.Value ? "true" : "false", StringComparison.CurrentCultureIgnoreCase)))
         };
 
         return filtros
