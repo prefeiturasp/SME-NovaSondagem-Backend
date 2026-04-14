@@ -192,11 +192,13 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             (filtro.Pap.HasValue,                                           ra => ra.Pap == filtro.Pap),
             (filtro.Aee.HasValue,                                           ra => ra.Aee == filtro.Aee),
             (filtro.Deficiente.HasValue,                                    ra => ra.Deficiente == filtro.Deficiente),
-            (filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue,           ra => ra.Questao.Questionario.ParametrosQuestionario.Any(p =>
-                                                                                  p.ParametroSondagem.Tipo == TipoParametroSondagem.PossuiLinguaPortuguesaSegundaLingua &&
-                                                                                  p.Valor != null &&
-                                                                                  filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue &&
-                                                                                  p.Valor.ToLower() == (filtro.PossuiLinguaPortuguesaSegundaLingua.Value ? "true" : "false")))
+            (filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue,           ra => ra.Sondagem.Respostas.Any(ra2 => 
+                                                                              ra2.AlunoId == ra.AlunoId && 
+                                                                              ra2.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua && 
+                                                                              ra2.OpcaoResposta != null &&
+                                                                              ra2.OpcaoResposta.DescricaoOpcaoResposta != null &&
+                                                                              ra2.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim" &&
+                                                                              !ra2.Excluido) == (filtro.PossuiLinguaPortuguesaSegundaLingua ?? false))
         };
 
         return filtros

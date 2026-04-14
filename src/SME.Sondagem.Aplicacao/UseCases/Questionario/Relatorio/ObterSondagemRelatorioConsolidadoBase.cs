@@ -83,7 +83,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
             .ToList();
 
         questaoDto.Respostas = listaRespostas;
-        questaoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
+        questaoDto.PercentualTotal = Math.Min(Math.Round(listaRespostas.Sum(r => r.Percentual)), 100);
 
         adicionarTotais?.Invoke(questaoDto, respostasQuestao, total);
 
@@ -115,7 +115,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
     }
 
     protected static double CalcularPercentual(int quantidade, int total)
-        => total > 0 ? Math.Round((double)quantidade / total * 100, 2) : 0;
+        => total > 0 ? Math.Min(Math.Round((double)quantidade / total * 100, 2), 100) : 0;
 
     private async Task<List<RelatorioRespostaAlunoDto>> FiltrarPorAnoTurmaAsync(
         List<RelatorioRespostaAlunoDto> respostas,
