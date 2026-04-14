@@ -36,8 +36,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 && alunosIds.Contains(ra.AlunoId)
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
-                && ra.OpcaoResposta != null
-                && string.Equals(ra.OpcaoResposta!.DescricaoOpcaoResposta, "sim", StringComparison.OrdinalIgnoreCase))
+                && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
             .Select(ra => ra.AlunoId)
             .Distinct()
             .ToListAsync(cancellationToken);
