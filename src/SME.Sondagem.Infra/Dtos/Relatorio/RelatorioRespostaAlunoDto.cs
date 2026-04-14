@@ -33,7 +33,6 @@ public class RelatorioRespostaAlunoDto
     public RelatorioRacaCorDto? RacaCor { get; set; }
     public RelatorioGeneroSexoDto? GeneroSexo { get; set; }
     public RelatorioProgramaAtendimentoDto? ProgramaAtendimento { get; set; }
-    public RelatorioBimestreDto? Bimestre { get; set; }
 }
 
 public class RelatorioOpcaoRespostaDto
@@ -61,12 +60,6 @@ public class RelatorioGeneroSexoDto
 }
 
 public class RelatorioProgramaAtendimentoDto
-{
-    public int Id { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-}
-
-public class RelatorioBimestreDto
 {
     public int Id { get; set; }
     public string Descricao { get; set; } = string.Empty;
