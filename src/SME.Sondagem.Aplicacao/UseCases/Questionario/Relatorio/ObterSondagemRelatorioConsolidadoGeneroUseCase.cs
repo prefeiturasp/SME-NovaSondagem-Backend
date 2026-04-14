@@ -26,4 +26,16 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : ObterSondagemRelat
                     (dto, respostasOpcao, totalQ) => dto.Generos = AgruparPorGenero(respostasOpcao, totalQ)),
             adicionarTotais: (dto, respostasQuestao, total) =>
                 dto.TotaisPorGenero = AgruparPorGenero(respostasQuestao, total));
+
+    internal static List<RelatorioConsolidadoGeneroDto> AgruparPorGenero(List<RelatorioRespostaAlunoDto> respostas, int total)
+        => [.. respostas
+            .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
+            .Select(g => new RelatorioConsolidadoGeneroDto
+            {
+                Genero = g.Key,
+                Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
+                Quantidade = g.Count(),
+                Percentual = CalcularPercentual(g.Count(), total)
+            })
+            .OrderBy(g => g.Genero)];
 }

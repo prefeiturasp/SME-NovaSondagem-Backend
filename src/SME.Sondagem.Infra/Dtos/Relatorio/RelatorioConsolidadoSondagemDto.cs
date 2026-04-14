@@ -26,6 +26,9 @@ public class RelatorioConsolidadoQuestaoDto
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<RelatorioConsolidadoAnoTurmaDto>? TotaisPorAnoTurma { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoBimestreDto>? TotaisPorBimestre { get; set; }
+
     public int TotalEstudantes { get; set; }
     public double PercentualTotal { get; set; }
 }
@@ -48,6 +51,9 @@ public class RelatorioConsolidadoRespostaDto
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<RelatorioConsolidadoAnoTurmaDto>? AnosTurma { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoBimestreDto>? Bimestres { get; set; }
 
     public int Total { get; set; }
     public double Percentual { get; set; }
@@ -83,6 +89,13 @@ public class RelatorioConsolidadoGeneroRacaDto
 public class RelatorioConsolidadoAnoTurmaDto
 {
     public int AnoTurma { get; set; }
+    public int Quantidade { get; set; }
+    public double Percentual { get; set; }
+}
+
+public class RelatorioConsolidadoBimestreDto
+{
+    public string Bimestre { get; set; } = string.Empty;
     public int Quantidade { get; set; }
     public double Percentual { get; set; }
 }

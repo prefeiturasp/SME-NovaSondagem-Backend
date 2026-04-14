@@ -41,7 +41,7 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
             Sigla = grupoGenero.FirstOrDefault()?.GeneroSexo?.Sigla,
             TotalGenero = totalGenero,
             PercentualGenero = CalcularPercentual(totalGenero, totalRespostasQuestao),
-            Racas = AgruparPorRaca([.. grupoGenero], totalGenero)
+            Racas = ObterSondagemRelatorioConsolidadoRacaUseCase.AgruparPorRaca([.. grupoGenero], totalGenero)
         };
     }
 }

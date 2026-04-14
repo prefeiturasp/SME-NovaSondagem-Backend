@@ -114,29 +114,6 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         return dto;
     }
 
-    protected static List<RelatorioConsolidadoRacaDto> AgruparPorRaca(List<RelatorioRespostaAlunoDto> respostas, int total)
-        => [.. respostas
-            .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
-            .Select(g => new RelatorioConsolidadoRacaDto
-            {
-                Raca = g.Key,
-                Quantidade = g.Count(),
-                Percentual = CalcularPercentual(g.Count(), total)
-            })
-            .OrderBy(r => r.Raca)];
-
-    protected static List<RelatorioConsolidadoGeneroDto> AgruparPorGenero(List<RelatorioRespostaAlunoDto> respostas, int total)
-        => [.. respostas
-            .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
-            .Select(g => new RelatorioConsolidadoGeneroDto
-            {
-                Genero = g.Key,
-                Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
-                Quantidade = g.Count(),
-                Percentual = CalcularPercentual(g.Count(), total)
-            })
-            .OrderBy(g => g.Genero)];
-
     protected static double CalcularPercentual(int quantidade, int total)
         => total > 0 ? Math.Round((double)quantidade / total * 100, 2) : 0;
 

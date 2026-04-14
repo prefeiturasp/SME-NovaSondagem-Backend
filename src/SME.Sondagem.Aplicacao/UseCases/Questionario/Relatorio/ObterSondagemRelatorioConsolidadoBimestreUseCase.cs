@@ -5,16 +5,16 @@ using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
-public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelatorioConsolidadoBase, IObterSondagemRelatorioConsolidadoRacaUseCase
+public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRelatorioConsolidadoBase, IObterSondagemRelatorioConsolidadoBimestreUseCase
 {
-    public ObterSondagemRelatorioConsolidadoRacaUseCase(
+    public ObterSondagemRelatorioConsolidadoBimestreUseCase(
         RepositoriosSondagem repositorioSondagem,
         IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
     {
     }
 
-    protected override string TituloSemDados => "Relatório Consolidado por Raça - Sem Dados";
-    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Raça - {anoLetivo}";
+    protected override string TituloSemDados => "Relatório Consolidado por Bimestre - Sem Dados";
+    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Bimestre - {anoLetivo}";
 
     protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
         => ConstruirQuestaoDto(
@@ -23,18 +23,18 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelator
             respostas,
             processarOpcao: (opcao, respostasQuestao, total) =>
                 ConstruirRespostaDto(opcao, respostasQuestao, total,
-                    (dto, respostasOpcao, totalQ) => dto.Racas = AgruparPorRaca(respostasOpcao, totalQ)),
+                    (dto, respostasOpcao, totalQ) => dto.Bimestres = AgruparPorBimestre(respostasOpcao, totalQ)),
             adicionarTotais: (dto, respostasQuestao, total) =>
-                dto.TotaisPorRaca = AgruparPorRaca(respostasQuestao, total));
+                dto.TotaisPorBimestre = AgruparPorBimestre(respostasQuestao, total));
 
-    internal static List<RelatorioConsolidadoRacaDto> AgruparPorRaca(List<RelatorioRespostaAlunoDto> respostas, int total)
+    internal static List<RelatorioConsolidadoBimestreDto> AgruparPorBimestre(List<RelatorioRespostaAlunoDto> respostas, int total)
         => [.. respostas
-            .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
-            .Select(g => new RelatorioConsolidadoRacaDto
+            .GroupBy(r => r.Bimestre?.Descricao ?? "Não Informado")
+            .Select(g => new RelatorioConsolidadoBimestreDto
             {
-                Raca = g.Key,
+                Bimestre = g.Key,
                 Quantidade = g.Count(),
                 Percentual = CalcularPercentual(g.Count(), total)
             })
-            .OrderBy(r => r.Raca)];
+            .OrderBy(g => g.Bimestre)];
 }

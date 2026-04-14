@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
@@ -79,6 +79,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
+            .Include(ra => ra.Bimestre)
             .Where(ra => !ra.Excluido && ra.OpcaoRespostaId.HasValue && ra.Questao.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
             .AsNoTracking();
 
@@ -115,6 +116,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 Id = ra.GeneroSexo.Id,
                 Descricao = ra.GeneroSexo.Descricao,
                 Sigla = ra.GeneroSexo.Sigla
+            } : null,
+            Bimestre = ra.Bimestre != null ? new RelatorioBimestreDto
+            {
+                Id = ra.Bimestre.Id,
+                Descricao = ra.Bimestre.Descricao
             } : null,
             OpcoesDisponiveis = ra.Questao.QuestaoOpcoes
                 .OrderBy(qo => qo.Ordem)
