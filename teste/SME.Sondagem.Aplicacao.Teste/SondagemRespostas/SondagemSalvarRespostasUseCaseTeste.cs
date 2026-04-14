@@ -1,4 +1,4 @@
-using Moq;
+ï»¿using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -62,7 +62,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
         _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
-        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object);
+        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object, new Mock<IRepositorioRacaCor>().Object, new Mock<IRepositorioGeneroSexo>().Object);
         _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
 
         _cancellationToken = CancellationToken.None;
@@ -357,7 +357,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         var questao = new Questao(
            questionarioId,
            1,
-           "Língua Portuguesa é Segunda Língua?",
+           "LÃ­ngua Portuguesa Ã© Segunda LÃ­ngua?",
            string.Empty,
            false,
            TipoQuestao.LinguaPortuguesaSegundaLingua,
@@ -374,7 +374,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         };
 
         var opcaoSim = new OpcaoResposta(1, "Sim", "S", null, null) { Id = 1 };
-        var opcaoNao = new OpcaoResposta(2, "Não", "N", null, null) { Id = 2 };
+        var opcaoNao = new OpcaoResposta(2, "NÃ£o", "N", null, null) { Id = 2 };
 
         var questaoOpcaoSim = new QuestaoOpcaoResposta(questao.Id, opcaoSim.Id, 1);
         typeof(QuestaoOpcaoResposta)
@@ -405,3 +405,4 @@ public class SondagemSalvarRespostasUseCaseTeste
         };
     }
 }
+
