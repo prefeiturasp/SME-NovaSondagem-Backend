@@ -80,7 +80,6 @@ public class RelatorioConsolidadoGeneroDto
 public class RelatorioConsolidadoGeneroRacaDto
 {
     public string Genero { get; set; } = string.Empty;
-    public string? Sigla { get; set; }
     public int TotalGenero { get; set; }
     public double PercentualGenero { get; set; }
     public IEnumerable<RelatorioConsolidadoRacaDto>? Racas { get; set; }

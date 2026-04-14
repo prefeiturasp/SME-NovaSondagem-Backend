@@ -29,7 +29,9 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
             new Mock<IRepositorioComponenteCurricular>().Object,
-            new Mock<IRepositorioProficiencia>().Object
+            new Mock<IRepositorioProficiencia>().Object,
+            new Mock<IRepositorioRacaCor>().Object,
+            new Mock<IRepositorioGeneroSexo>().Object
         );
 
         _useCase = new ObterSondagemRelatorioConsolidadoBimestreUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);

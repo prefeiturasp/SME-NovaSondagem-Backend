@@ -212,7 +212,16 @@ public static class RegistraDependencias
     private static void RegistrarAgregadores(IServiceCollection services)
     {
         services.AddScoped<RepositoriosElastic>();
-        services.AddScoped<RepositoriosSondagem>();
+        services.TryAddScoped<RepositoriosSondagem>(sp => new RepositoriosSondagem(
+            sp.GetRequiredService<IRepositorioSondagem>(),
+            sp.GetRequiredService<IRepositorioQuestao>(),
+            sp.GetRequiredService<IRepositorioRespostaAluno>(),
+            sp.GetRequiredService<IRepositorioBimestre>(),
+            sp.GetRequiredService<IRepositorioComponenteCurricular>(),
+            sp.GetRequiredService<IRepositorioProficiencia>(),
+            sp.GetRequiredService<IRepositorioRacaCor>(),
+            sp.GetRequiredService<IRepositorioGeneroSexo>()
+        ));
         services.AddScoped<RepositorioSondagemRelatorioPorTodasTurma>();
     }
 }

@@ -1,4 +1,4 @@
-﻿using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dados.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.Agregadores;
 
@@ -10,7 +10,9 @@ public class RepositoriosSondagem
         IRepositorioRespostaAluno repositorioRespostaAluno,
         IRepositorioBimestre repositorioBimestre,
         IRepositorioComponenteCurricular componenteCurricular,
-        IRepositorioProficiencia repositorioProficiencia)
+        IRepositorioProficiencia repositorioProficiencia,
+        IRepositorioRacaCor repositorioRacaCor,
+        IRepositorioGeneroSexo repositorioGeneroSexo)
     {
         RepositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
         RepositorioQuestao = repositorioQuestao ?? throw new ArgumentNullException(nameof(repositorioQuestao));
@@ -18,6 +20,8 @@ public class RepositoriosSondagem
         RepositorioBimestre = repositorioBimestre ?? throw new ArgumentNullException(nameof(repositorioBimestre));
         RepositorioComponenteCurricular = componenteCurricular ?? throw new ArgumentNullException(nameof(componenteCurricular));
         RepositorioProficiencia = repositorioProficiencia ?? throw new ArgumentNullException(nameof(repositorioProficiencia));
+        RepositorioRacaCor = repositorioRacaCor ?? throw new ArgumentNullException(nameof(repositorioRacaCor));
+        RepositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
     }
 
     public IRepositorioSondagem RepositorioSondagem { get; }
@@ -26,4 +30,6 @@ public class RepositoriosSondagem
     public IRepositorioBimestre RepositorioBimestre { get; }
     public IRepositorioComponenteCurricular RepositorioComponenteCurricular { get; }
     public IRepositorioProficiencia RepositorioProficiencia { get; }
+    public IRepositorioRacaCor RepositorioRacaCor { get; }
+    public IRepositorioGeneroSexo RepositorioGeneroSexo { get; }
 }

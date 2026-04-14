@@ -63,6 +63,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
+    private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
+    private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -83,6 +85,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
         _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
+        _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -93,8 +97,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
             );
     }
 

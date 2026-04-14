@@ -30,8 +30,8 @@ public class RelatorioRespostaAlunoDto
     
     public IEnumerable<RelatorioOpcaoRespostaDto>? OpcoesDisponiveis { get; set; }
     
-    public RelatorioRacaCorDto? RacaCor { get; set; }
-    public RelatorioGeneroSexoDto? GeneroSexo { get; set; }
+    public int? RacaCorId { get; set; }
+    public int? GeneroSexoId { get; set; }
     public RelatorioProgramaAtendimentoDto? ProgramaAtendimento { get; set; }
 }
 
@@ -43,20 +43,6 @@ public class RelatorioOpcaoRespostaDto
     public int Ordem { get; set; }
     public string? CorFundo { get; set; }
     public string? CorTexto { get; set; }
-}
-
-public class RelatorioRacaCorDto
-{
-    public int Id { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-    public int CodigoEol { get; set; }
-}
-
-public class RelatorioGeneroSexoDto
-{
-    public int Id { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-    public string? Sigla { get; set; }
 }
 
 public class RelatorioProgramaAtendimentoDto

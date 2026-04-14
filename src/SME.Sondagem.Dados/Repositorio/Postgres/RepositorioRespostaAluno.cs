@@ -104,18 +104,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             DreId = ra.DreId,
             AnoLetivo = ra.AnoLetivo,
             ModalidadeId = ra.ModalidadeId,
-            RacaCor = ra.RacaCor != null ? new RelatorioRacaCorDto
-            {
-                Id = ra.RacaCor.Id,
-                Descricao = ra.RacaCor.Descricao,
-                CodigoEol = ra.RacaCor.CodigoEolRacaCor
-            } : null,
-            GeneroSexo = ra.GeneroSexo != null ? new RelatorioGeneroSexoDto
-            {
-                Id = ra.GeneroSexo.Id,
-                Descricao = ra.GeneroSexo.Descricao,
-                Sigla = ra.GeneroSexo.Sigla
-            } : null,
+            RacaCorId = ra.RacaCorId,
+            GeneroSexoId = ra.GeneroSexoId,
             OpcoesDisponiveis = ra.Questao.QuestaoOpcoes
                 .OrderBy(qo => qo.Ordem)
                 .Select(qo => new RelatorioOpcaoRespostaDto
