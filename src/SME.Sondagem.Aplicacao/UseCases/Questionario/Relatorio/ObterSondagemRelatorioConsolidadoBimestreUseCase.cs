@@ -48,13 +48,25 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             .GroupBy(r => r.BimestreId ?? 0)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        return [.. bimestresReferencia
+        var lista = bimestresReferencia
             .OrderBy(b => b.Id)
             .Select(b => new RelatorioConsolidadoBimestreDto
             {
                 Bimestre = b.Descricao,
                 Quantidade = grupos.TryGetValue(b.Id, out int qtd) ? qtd : 0,
                 Percentual = CalcularPercentual(grupos.TryGetValue(b.Id, out int q) ? q : 0, total)
-            })];
+            }).ToList();
+
+        if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
+        {
+            lista.Add(new RelatorioConsolidadoBimestreDto
+            {
+                Bimestre = "Não informado",
+                Quantidade = qtdNaoInformado,
+                Percentual = CalcularPercentual(qtdNaoInformado, total)
+            });
+        }
+
+        return lista;
     }
 }

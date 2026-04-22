@@ -48,13 +48,24 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelator
             .GroupBy(r => r.RacaCorId ?? 0)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        return [.. racasReferencia
-            .OrderBy(r => r.Descricao)
+        var lista = racasReferencia
             .Select(r => new RelatorioConsolidadoRacaDto
             {
                 Raca = r.Descricao,
                 Quantidade = grupos.TryGetValue(r.Id, out int qtd) ? qtd : 0,
                 Percentual = CalcularPercentual(grupos.TryGetValue(r.Id, out int q) ? q : 0, total)
-            })];
+            }).ToList();
+
+        if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
+        {
+            lista.Add(new RelatorioConsolidadoRacaDto
+            {
+                Raca = "Não informado",
+                Quantidade = qtdNaoInformado,
+                Percentual = CalcularPercentual(qtdNaoInformado, total)
+            });
+        }
+
+        return [.. lista.OrderBy(r => r.Raca ?? "Não informado")];
     }
 }

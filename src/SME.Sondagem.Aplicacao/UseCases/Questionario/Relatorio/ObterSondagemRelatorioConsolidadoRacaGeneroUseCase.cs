@@ -47,7 +47,13 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
             respostas,
             processarOpcao: (opcao, respostasQuestao, total) =>
                 ConstruirRespostaDto(opcao, respostasQuestao, total,
-                    (dto, respostasOpcao, totalQ) => dto.GenerosComRacas = AgruparGeneroComRacas(respostasOpcao, totalQ, _generosReferencia, _racasReferencia)));
+                    (dto, respostasOpcao, totalQ) => dto.GenerosComRacas = AgruparGeneroComRacas(respostasOpcao, totalQ, _generosReferencia, _racasReferencia)),
+            adicionarTotais: (dto, respostasQuestao, total) =>
+            {
+                dto.TotaisPorGenero = ObterSondagemRelatorioConsolidadoGeneroUseCase.AgruparPorGenero(respostasQuestao, total, _generosReferencia);
+                dto.TotaisPorRaca = ObterSondagemRelatorioConsolidadoRacaUseCase.AgruparPorRaca(respostasQuestao, total, _racasReferencia);
+                dto.TotaisPorGeneroComRacas = AgruparGeneroComRacas(respostasQuestao, total, _generosReferencia, _racasReferencia);
+            });
 
     private static List<RelatorioConsolidadoGeneroRacaDto> AgruparGeneroComRacas(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao, IEnumerable<GeneroDominio> generosReferencia, IEnumerable<RacaDominio> racasReferencia)
     {
@@ -55,9 +61,16 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
             .GroupBy(r => r.GeneroSexoId ?? 0)
             .ToDictionary(g => g.Key, g => g.ToList());
 
-        return [.. generosReferencia
-            .OrderBy(g => g.Descricao)
-            .Select(g => ConstruirGeneroRaca(g.Descricao, grupos.TryGetValue(g.Id, out var resps) ? resps : [], totalRespostasQuestao, racasReferencia))];
+        var lista = generosReferencia
+            .Select(g => ConstruirGeneroRaca(g.Descricao, grupos.TryGetValue(g.Id, out var resps) ? resps : [], totalRespostasQuestao, racasReferencia))
+            .ToList();
+
+        if (grupos.TryGetValue(0, out var respostasNaoInformado) && respostasNaoInformado.Count > 0)
+        {
+            lista.Add(ConstruirGeneroRaca("Não informado", respostasNaoInformado, totalRespostasQuestao, racasReferencia));
+        }
+
+        return [.. lista.OrderBy(g => g.Genero ?? "Não informado")];
     }
 
     private static RelatorioConsolidadoGeneroRacaDto ConstruirGeneroRaca(string generoDescricao, List<RelatorioRespostaAlunoDto> respostasGenero, int totalRespostasQuestao, IEnumerable<RacaDominio> racasReferencia)
