@@ -76,10 +76,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.ComponenteCurricular)
             .Include(ra => ra.Questao)
-            .ThenInclude(q => q.Questionario)
-            .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
-            .Where(ra => !ra.Excluido && ra.OpcaoRespostaId.HasValue && ra.Questao.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
+            .Where(ra => !ra.Excluido && !ra.OpcaoResposta.Excluido && ra.OpcaoRespostaId.HasValue && ra.Questao.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
             .AsNoTracking();
 
         query = AplicarFiltrosRelatorioConsolidado(query, filtro);
