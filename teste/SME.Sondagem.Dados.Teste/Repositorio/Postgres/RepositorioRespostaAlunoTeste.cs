@@ -430,7 +430,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             // Assert
             var dto = resultado.First();
-            Assert.Equal("Indígena", dto.RacaCor!.Descricao);
+            Assert.Equal(5, dto.RacaCorId);
             Assert.Equal("Opcao", dto.OpcaoRespostaDescricao);
         }
 
