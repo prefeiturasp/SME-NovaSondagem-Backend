@@ -3,6 +3,8 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dominio.Entidades;
+using DominioR = SME.Sondagem.Dominio.Entidades.RacaCor;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
@@ -12,6 +14,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 {
     private readonly Mock<IRepositorioRespostaAluno> _mockRepositorioRespostaAluno;
     private readonly Mock<IRepositorioElasticTurma> _mockRepositorioElasticTurma;
+    private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
     private readonly RepositoriosSondagem _repositoriosSondagem;
     private readonly ObterSondagemRelatorioConsolidadoRacaUseCase _useCase;
 
@@ -19,6 +22,7 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
     {
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockRepositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
+        _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
 
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
@@ -26,10 +30,18 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             new Mock<IRepositorioBimestre>().Object,
             new Mock<IRepositorioComponenteCurricular>().Object,
-            new Mock<IRepositorioProficiencia>().Object
+            new Mock<IRepositorioProficiencia>().Object,
+            _mockRepositorioRacaCor.Object,
+            new Mock<IRepositorioGeneroSexo>().Object
         );
 
         _useCase = new ObterSondagemRelatorioConsolidadoRacaUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
+
+        _mockRepositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<DominioR> { 
+                new() { Id = 1, Descricao = "Branca", CodigoEolRacaCor = 1 },
+                new() { Id = 2, Descricao = "Parda",  CodigoEolRacaCor = 2 }
+            }.AsEnumerable());
     }
 
     private static List<RelatorioOpcaoRespostaDto> CriarOpcoes() =>
@@ -42,8 +54,9 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         int alunoId,
         int questaoId,
         string questaoNome,
-        int opcaoRespostaId,
-        string? raca = null,
+        int? opcaoRespostaId = null,
+        int? racaId = null,
+        int? generoId = null,
         IEnumerable<RelatorioOpcaoRespostaDto>? opcoes = null) =>
         new RelatorioRespostaAlunoDto
         {
@@ -51,7 +64,8 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
             QuestaoId = questaoId,
             QuestaoNome = questaoNome,
             OpcaoRespostaId = opcaoRespostaId,
-            RacaCor = raca != null ? new RelatorioRacaCorDto { Descricao = raca } : null,
+            RacaCorId = racaId,
+            GeneroSexoId = generoId,
             OpcoesDisponiveis = opcoes ?? CriarOpcoes()
         };
 
@@ -81,9 +95,9 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
-            CriarResposta(101, 1, "Produção", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
-            CriarResposta(102, 1, "Produção", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes),
-            CriarResposta(103, 1, "Produção", opcaoRespostaId: 2, raca: "Parda",  opcoes: opcoes)
+            CriarResposta(101, 1, "Produção", opcaoRespostaId: 1, racaId: 1),
+            CriarResposta(102, 1, "Produção", opcaoRespostaId: 1, racaId: 2),
+            CriarResposta(103, 1, "Produção", opcaoRespostaId: 2, racaId: 2)
         };
 
         _mockRepositorioRespostaAluno
@@ -152,10 +166,10 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         // 4 respostas na questão → cada raça tem 2 = 50%
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
-            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
-            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, raca: "Branca", opcoes: opcoes),
-            CriarResposta(3, 1, "Q1", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes),
-            CriarResposta(4, 1, "Q1", opcaoRespostaId: 1, raca: "Parda",  opcoes: opcoes)
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, racaId: 1),
+            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, racaId: 1),
+            CriarResposta(3, 1, "Q1", opcaoRespostaId: 1, racaId: 2),
+            CriarResposta(4, 1, "Q1", opcaoRespostaId: 1, racaId: 2)
         };
 
         _mockRepositorioRespostaAluno
@@ -171,17 +185,53 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterSondagemRelatorio_DeveTratarRacaNulaComoNaoInformado()
+    public async Task ObterSondagemRelatorio_DeveTratarRacaNulaComoNaoInformado_SendoExaustivo()
     {
         // Arrange
         var filtro = new FiltroConsolidadoDto();
-        var opcoes = new List<RelatorioOpcaoRespostaDto>
+        var racasReferencia = new List<DominioR>
         {
-            new RelatorioOpcaoRespostaDto { Id = 1, Descricao = "Op", Ordem = 1 }
+            new() { Id = 1, Descricao = "Branca", CodigoEolRacaCor = 1 }
         };
+        _mockRepositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>())).ReturnsAsync(racasReferencia.AsEnumerable());
+
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
-            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, raca: null, opcoes: opcoes)
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, racaId: null)
+        };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respostas);
+
+        // Act
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        // Assert - racaId null não bate com ID 1 da referência, mas a referência deve aparecer
+        var raca = resultado?.Questoes?.First()?.Respostas?.First()?.Racas?.First();
+        Assert.NotNull(raca);
+        Assert.Equal("Branca", raca.Raca);
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_DeveSerExaustivo_MostrandoRacasSemResposta()
+    {
+        // Arrange
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
+
+        var racasReferencia = new List<DominioR>
+        {
+            new() { Id = 1, Descricao = "Branca", CodigoEolRacaCor = 1 },
+            new() { Id = 2, Descricao = "Parda",  CodigoEolRacaCor = 2 },
+            new() { Id = 3, Descricao = "Preta",  CodigoEolRacaCor = 3 }
+        };
+
+        _mockRepositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>())).ReturnsAsync(racasReferencia.AsEnumerable());
+
+        // Apenas Branca tem resposta
+        var respostas = new List<RelatorioRespostaAlunoDto>
+        {
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, racaId: 1)
         };
 
         _mockRepositorioRespostaAluno
@@ -192,8 +242,12 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        var raca = resultado?.Questoes?.First()?.Respostas?.First()?.Racas?.First();
-        Assert.NotNull(raca);
-        Assert.Equal("Não Informado", raca.Raca);
+        var questao = resultado.Questoes.First();
+        var resposta = questao.Respostas?.First()!;
+
+        Assert.Equal(3, resposta?.Racas?.Count());
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Branca" && r.Quantidade == 1);
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Parda" && r.Quantidade == 0);
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Preta" && r.Quantidade == 0);
     }
 }

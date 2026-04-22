@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
@@ -30,6 +30,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
+    private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
+    private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
     public ObterQuestionarioSondagemUseCaseTeste()
@@ -46,6 +48,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
+        _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
+        _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
 
         // Criar os agregadores com os mocks
         var repositoriosElastic = new RepositoriosElastic(
@@ -59,7 +63,9 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
             _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         _useCase = new ObterQuestionarioSondagemUseCase(
@@ -82,8 +88,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
@@ -127,8 +135,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
@@ -154,8 +164,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
@@ -198,8 +210,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         ));
     }
 
@@ -211,8 +225,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         ));
     }
 
@@ -224,8 +240,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             null!,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         ));
     }
 
@@ -237,8 +255,10 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             null!,
-            null!,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         ));
     }
 
