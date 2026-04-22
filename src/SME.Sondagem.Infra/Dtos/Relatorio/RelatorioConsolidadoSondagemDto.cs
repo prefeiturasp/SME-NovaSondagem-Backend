@@ -22,6 +22,9 @@ public class RelatorioConsolidadoQuestaoDto
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<RelatorioConsolidadoRacaDto>? TotaisPorRaca { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<RelatorioConsolidadoGeneroRacaDto>? TotaisPorGeneroComRacas { get; set; }
+
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<RelatorioConsolidadoAnoTurmaDto>? TotaisPorAnoTurma { get; set; }
@@ -71,7 +74,7 @@ public class RelatorioConsolidadoRacaDto
 
 public class RelatorioConsolidadoGeneroDto
 {
-    public string Genero { get; set; } = string.Empty;
+    public string? Genero { get; set; }
     public string? Sigla { get; set; }
     public int Quantidade { get; set; }
     public double Percentual { get; set; }

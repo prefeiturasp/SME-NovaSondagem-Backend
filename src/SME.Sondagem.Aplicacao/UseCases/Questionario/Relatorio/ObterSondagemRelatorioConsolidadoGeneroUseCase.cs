@@ -1,7 +1,6 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
 
@@ -49,14 +48,26 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : ObterSondagemRelat
             .GroupBy(r => r.GeneroSexoId ?? 0)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        return [.. generosReferencia
-            .OrderBy(g => g.Descricao)
+        var lista = generosReferencia
             .Select(g => new RelatorioConsolidadoGeneroDto
             {
                 Genero = g.Descricao,
                 Sigla = g.Sigla,
                 Quantidade = grupos.TryGetValue(g.Id, out int qtd) ? qtd : 0,
                 Percentual = CalcularPercentual(grupos.TryGetValue(g.Id, out int q) ? q : 0, total)
-            })];
+            }).ToList();
+
+        if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
+        {
+            lista.Add(new RelatorioConsolidadoGeneroDto
+            {
+                Genero = "Não informado",
+                Sigla = "NI",
+                Quantidade = qtdNaoInformado,
+                Percentual = CalcularPercentual(qtdNaoInformado, total)
+            });
+        }
+
+        return [.. lista.OrderBy(g => g.Genero ?? "Não informado")];
     }
 }
