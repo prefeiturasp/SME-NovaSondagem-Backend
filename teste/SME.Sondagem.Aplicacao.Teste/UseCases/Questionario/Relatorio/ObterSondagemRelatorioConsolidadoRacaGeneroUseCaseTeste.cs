@@ -3,11 +3,10 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dominio.Entidades;
-using DominioG = SME.Sondagem.Dominio.Entidades.GeneroSexo;
-using DominioC = SME.Sondagem.Dominio.Entidades.RacaCor;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
+using DominioC = SME.Sondagem.Dominio.Entidades.RacaCor;
+using DominioG = SME.Sondagem.Dominio.Entidades.GeneroSexo;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
 
@@ -85,20 +84,20 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
 
         // Assert
         var questao = resultado.Questoes.First();
-        var resposta = questao.Respostas.First();
+        var resposta = questao?.Respostas?.First();
 
-        Assert.Equal(2, resposta.GenerosComRacas.Count()); // Masculino e Feminino
+        Assert.Equal(2, resposta?.GenerosComRacas?.Count()); // Masculino e Feminino
         
-        var masc = resposta.GenerosComRacas.First(g => g.Genero == "Masculino");
-        Assert.Equal(1, masc.TotalGenero);
-        Assert.Equal(2, masc.Racas.Count());
-        Assert.Contains(masc.Racas, r => r.Raca == "Branca" && r.Quantidade == 1);
-        Assert.Contains(masc.Racas, r => r.Raca == "Parda" && r.Quantidade == 0);
+        var masc = resposta?.GenerosComRacas?.First(g => g.Genero == "Masculino");
+        Assert.Equal(1, masc?.TotalGenero);
+        Assert.Equal(2, masc?.Racas?.Count());
+        Assert.Contains(masc?.Racas ?? Enumerable.Empty<RelatorioConsolidadoRacaDto>(), r => r.Raca == "Branca" && r.Quantidade == 1);
+        Assert.Contains(masc?.Racas ?? Enumerable.Empty<RelatorioConsolidadoRacaDto>(), r => r.Raca == "Parda" && r.Quantidade == 0);
 
-        var fem = resposta.GenerosComRacas.First(g => g.Genero == "Feminino");
-        Assert.Equal(0, fem.TotalGenero);
-        Assert.Equal(2, fem.Racas.Count());
-        Assert.Contains(fem.Racas, r => r.Raca == "Branca" && r.Quantidade == 0);
-        Assert.Contains(fem.Racas, r => r.Raca == "Parda" && r.Quantidade == 0);
+        var fem = resposta?.GenerosComRacas?.First(g => g.Genero == "Feminino");
+        Assert.Equal(0, fem?.TotalGenero);
+        Assert.Equal(2, fem?.Racas?.Count());
+        Assert.Contains(fem?.Racas ?? Enumerable.Empty<RelatorioConsolidadoRacaDto>(), r => r.Raca == "Branca" && r.Quantidade == 0);
+        Assert.Contains(fem?.Racas ?? Enumerable.Empty<RelatorioConsolidadoRacaDto>(), r => r.Raca == "Parda" && r.Quantidade == 0);
     }
 }

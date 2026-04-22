@@ -243,11 +243,11 @@ public class ObterSondagemRelatorioConsolidadoUseCaseTeste
 
         // Assert
         var questao = resultado.Questoes.First();
-        var resposta = questao.Respostas.First();
+        var resposta = questao.Respostas?.First()!;
 
-        Assert.Equal(3, resposta.Racas.Count());
-        Assert.Contains(resposta.Racas, r => r.Raca == "Branca" && r.Quantidade == 1);
-        Assert.Contains(resposta.Racas, r => r.Raca == "Parda" && r.Quantidade == 0);
-        Assert.Contains(resposta.Racas, r => r.Raca == "Preta" && r.Quantidade == 0);
+        Assert.Equal(3, resposta?.Racas?.Count());
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Branca" && r.Quantidade == 1);
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Parda" && r.Quantidade == 0);
+        Assert.Contains(resposta?.Racas ?? [], r => r.Raca == "Preta" && r.Quantidade == 0);
     }
 }

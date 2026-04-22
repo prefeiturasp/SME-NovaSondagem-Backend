@@ -3,10 +3,9 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dominio.Entidades;
-using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
+using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
 
@@ -128,9 +127,6 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCaseTeste
             .ReturnsAsync(new List<RelatorioRespostaAlunoDto>());
 
         // Act
-        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
-
-        // Assert
         // Mesmo sem dados, deve mostrar o header do gênero filtrado
         // Aqui verificamos se a _generosReferencia (usada no processamento) teria apenas 1 item
         // Como o resultado é "Sem Dados" se não houver respostas em NEHUMA questão, 
@@ -145,9 +141,9 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCaseTeste
             .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
             .ReturnsAsync(respostas);
 
-        resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
         
-        var generosExibidos = resultado.Questoes.First().Respostas.First().Generos;
+        var generosExibidos = resultado.Questoes.FirstOrDefault()?.Respostas?.FirstOrDefault()?.Generos ?? [];
         Assert.Single(generosExibidos);
         Assert.Equal("Feminino", generosExibidos.First().Genero);
     }

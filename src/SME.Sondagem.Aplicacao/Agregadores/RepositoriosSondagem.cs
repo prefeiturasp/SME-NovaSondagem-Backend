@@ -2,6 +2,7 @@ using SME.Sondagem.Dados.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.Agregadores;
 
+#pragma warning disable S107 // Methods should not have too many parameters
 public class RepositoriosSondagem
 {
     public RepositoriosSondagem(
@@ -23,6 +24,7 @@ public class RepositoriosSondagem
         RepositorioRacaCor = repositorioRacaCor ?? throw new ArgumentNullException(nameof(repositorioRacaCor));
         RepositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
     }
+#pragma warning restore S107 // Methods should not have too many parameters
 
     public IRepositorioSondagem RepositorioSondagem { get; }
     public IRepositorioQuestao RepositorioQuestao { get; }

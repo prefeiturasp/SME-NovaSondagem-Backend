@@ -49,7 +49,7 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
                 ConstruirRespostaDto(opcao, respostasQuestao, total,
                     (dto, respostasOpcao, totalQ) => dto.GenerosComRacas = AgruparGeneroComRacas(respostasOpcao, totalQ, _generosReferencia, _racasReferencia)));
 
-    private List<RelatorioConsolidadoGeneroRacaDto> AgruparGeneroComRacas(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao, IEnumerable<GeneroDominio> generosReferencia, IEnumerable<RacaDominio> racasReferencia)
+    private static List<RelatorioConsolidadoGeneroRacaDto> AgruparGeneroComRacas(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao, IEnumerable<GeneroDominio> generosReferencia, IEnumerable<RacaDominio> racasReferencia)
     {
         var grupos = respostas
             .GroupBy(r => r.GeneroSexoId ?? 0)
