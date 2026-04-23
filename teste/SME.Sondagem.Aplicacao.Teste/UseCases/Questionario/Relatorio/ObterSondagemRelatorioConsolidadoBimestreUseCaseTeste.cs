@@ -3,9 +3,10 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using BimestreDominio = SME.Sondagem.Dominio.Entidades.Bimestre;
+using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
+using BimestreDominio = SME.Sondagem.Dominio.Entidades.Bimestre;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
 
@@ -35,7 +36,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         );
 
         _useCase = new ObterSondagemRelatorioConsolidadoBimestreUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
-        
+
         // Setup padrão de bimestres para evitar erros de referência nula
         _mockRepositorioBimestre
             .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
@@ -119,10 +120,10 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         // Assert
         var questao = resultado.Questoes.Single();
         var respostaCerta = questao?.Respostas?.First(r => r.Resposta == "Certa");
-        
+
         Assert.NotNull(respostaCerta?.Bimestres);
         Assert.Equal(3, respostaCerta?.Bimestres?.Count()); // 0, 1 e 2
-        
+
         var inicial = respostaCerta?.Bimestres?.First(b => b.Bimestre == "Sondagem inicial");
         Assert.Equal(0, inicial?.Quantidade);
 
@@ -138,12 +139,12 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     {
         // Arrange
         var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
-        
+
         _mockRepositorioBimestre
             .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<BimestreDominio> { 
-                new BimestreDominio(1, "1º") { Id = 1 }, 
-                new BimestreDominio(2, "2º") { Id = 2 } 
+            .ReturnsAsync(new List<BimestreDominio> {
+                new BimestreDominio(1, "1º") { Id = 1 },
+                new BimestreDominio(2, "2º") { Id = 2 }
             });
 
         // 4 respostas no total da questão
@@ -166,5 +167,139 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         var bimestres = resultado?.Questoes?.First()?.Respostas?.First()?.Bimestres?.ToList() ?? [];
         // Cada bimestre tem 2 respostas de um total de 4 -> 50%
         Assert.All(bimestres, b => Assert.Equal(50, b.Percentual));
+    }
+
+    // ─── Testes das Strategies ───────────────────────────────────────────────
+
+    [Fact]
+    public void BimestreModalidadePadraoStrategy_DeveRetornarTodosOsBimestres()
+    {
+        var strategy = new BimestreModalidadePadraoStrategy();
+        var bimestres = new List<BimestreDominio>
+        {
+            new BimestreDominio(1, "1° bimestre") { Id = 2 },
+            new BimestreDominio(2, "2° bimestre") { Id = 3 },
+            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+        };
+
+        var resultado = strategy.AplicarRegras(bimestres, null).ToList();
+
+        Assert.Equal(3, resultado.Count);
+    }
+
+    [Fact]
+    public void BimestreModalidadePadraoStrategy_DeveAplicarFiltroQuandoInformado()
+    {
+        var strategy = new BimestreModalidadePadraoStrategy();
+        var bimestres = new List<BimestreDominio>
+        {
+            new BimestreDominio(1, "1° bimestre") { Id = 2 },
+            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+        };
+
+        var resultado = strategy.AplicarRegras(bimestres, bimestreFiltrado: 2).ToList();
+
+        Assert.Single(resultado);
+        Assert.Equal(2, resultado[0].Id);
+    }
+
+    [Fact]
+    public void BimestreModalidadeEjaStrategy_DeveRetornarApenas1e4Bimestre()
+    {
+        var strategy = new BimestreModalidadeEjaStrategy();
+        var bimestres = new List<BimestreDominio>
+        {
+            new BimestreDominio(0, "Inicial")     { Id = 1 },
+            new BimestreDominio(1, "1° bimestre") { Id = 2 },
+            new BimestreDominio(2, "2° bimestre") { Id = 3 },
+            new BimestreDominio(3, "3° bimestre") { Id = 4 },
+            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+        };
+
+        var resultado = strategy.AplicarRegras(bimestres, null).ToList();
+
+        Assert.Equal(2, resultado.Count);
+        Assert.Contains(resultado, b => b.Id == 2);
+        Assert.Contains(resultado, b => b.Id == 5);
+    }
+
+    [Fact]
+    public void BimestreModalidadeEjaStrategy_DeveRenomearQuartoBimestrePara2Bimestre()
+    {
+        var strategy = new BimestreModalidadeEjaStrategy();
+        var bimestres = new List<BimestreDominio>
+        {
+            new BimestreDominio(1, "1° bimestre") { Id = 2 },
+            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+        };
+
+        var resultado = strategy.AplicarRegras(bimestres, null).ToList();
+
+        Assert.Equal("1° bimestre", resultado.First(b => b.Id == 2).Descricao);
+        Assert.Equal("2° bimestre", resultado.First(b => b.Id == 5).Descricao);
+    }
+
+    [Fact]
+    public void BimestreModalidadeStrategyFactory_DeveRetornarEjaStrategy_QuandoModalidade3()
+    {
+        var strategy = BimestreModalidadeStrategyFactory.ObterPara(3);
+        Assert.IsType<BimestreModalidadeEjaStrategy>(strategy);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(5)]
+    [InlineData(10)]
+    public void BimestreModalidadeStrategyFactory_DeveRetornarPadraoStrategy_QuandoOutrasModalidades(int modalidade)
+    {
+        var strategy = BimestreModalidadeStrategyFactory.ObterPara(modalidade);
+        Assert.IsType<BimestreModalidadePadraoStrategy>(strategy);
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_ModalidadeEja_DeveExibirApenas2Bimestres_Com4RenomeadoPara2()
+    {
+        // Arrange: Modalidade 3 (EJA), todos os bimestres no banco
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3 };
+
+        _mockRepositorioBimestre
+            .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<BimestreDominio>
+            {
+                new BimestreDominio(0, "Inicial")     { Id = 1 },
+                new BimestreDominio(1, "1° bimestre") { Id = 2 },
+                new BimestreDominio(2, "2° bimestre") { Id = 3 },
+                new BimestreDominio(3, "3° bimestre") { Id = 4 },
+                new BimestreDominio(4, "4° bimestre") { Id = 5 }
+            });
+
+        // Alunos responderam no 1° bimestre (Id=2) e no 4° (Id=5)
+        var respostas = new List<RelatorioRespostaAlunoDto>
+        {
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2),
+            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 5),
+        };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respostas);
+
+        // Act
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        // Assert
+        var bimestresExibidos = resultado.Questoes.First().Respostas!.First().Bimestres!.ToList();
+
+        // Só 2 bimestres visíveis para EJA
+        Assert.Equal(2, bimestresExibidos.Count);
+
+        // 4° bimestre NÃO deve aparecer com o nome original
+        Assert.DoesNotContain(bimestresExibidos, b => b.Bimestre == "4° bimestre");
+
+        // 4° bimestre deve aparecer renomeado como "2° bimestre" com 1 resposta
+        Assert.Contains(bimestresExibidos, b => b.Bimestre == "2° bimestre" && b.Quantidade == 1);
+
+        // 1° bimestre mantém nome e tem 1 resposta
+        Assert.Contains(bimestresExibidos, b => b.Bimestre == "1° bimestre" && b.Quantidade == 1);
     }
 }
