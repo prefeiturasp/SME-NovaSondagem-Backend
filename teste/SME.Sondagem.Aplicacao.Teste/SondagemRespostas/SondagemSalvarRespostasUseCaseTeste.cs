@@ -62,7 +62,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
         _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
-        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object, new Mock<IRepositorioRacaCor>().Object, new Mock<IRepositorioGeneroSexo>().Object, new Mock<IRepositorioOpcaoResposta>().Object);
+        _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object, new Mock<IRepositorioRacaCor>().Object, new Mock<IRepositorioGeneroSexo>().Object);
         _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
 
         _cancellationToken = CancellationToken.None;

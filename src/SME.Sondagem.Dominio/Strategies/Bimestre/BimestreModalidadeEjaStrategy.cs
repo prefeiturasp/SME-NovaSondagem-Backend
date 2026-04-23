@@ -1,3 +1,4 @@
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Dominio.ValueObjects;
 
 namespace SME.Sondagem.Dominio.Strategies.Bimestre;
@@ -10,7 +11,7 @@ namespace SME.Sondagem.Dominio.Strategies.Bimestre;
 /// </summary>
 public sealed class BimestreModalidadeEjaStrategy : IBimestreModalidadeStrategy
 {
-    private const int ModalidadeEja = 3;
+    private const int ModalidadeEja = (int)Modalidade.EJA;
 
     /// <summary>
     /// Ids dos bimestres do banco que são válidos para a modalidade EJA.
