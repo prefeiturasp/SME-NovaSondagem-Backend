@@ -61,7 +61,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
         {
             lista.Add(new RelatorioConsolidadoBimestreDto
             {
-                Bimestre = "Não informado",
+                Bimestre = "",
                 Quantidade = qtdNaoInformado,
                 Percentual = CalcularPercentual(qtdNaoInformado, total)
             });

@@ -2,9 +2,8 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
-using SME.Sondagem.Dominio.Entidades;
-using RacaDominio = SME.Sondagem.Dominio.Entidades.RacaCor;
 using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
+using RacaDominio = SME.Sondagem.Dominio.Entidades.RacaCor;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
@@ -67,10 +66,10 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
 
         if (grupos.TryGetValue(0, out var respostasNaoInformado) && respostasNaoInformado.Count > 0)
         {
-            lista.Add(ConstruirGeneroRaca("Não informado", respostasNaoInformado, totalRespostasQuestao, racasReferencia));
+            lista.Add(ConstruirGeneroRaca("", respostasNaoInformado, totalRespostasQuestao, racasReferencia));
         }
 
-        return [.. lista.OrderBy(g => g.Genero ?? "Não informado")];
+        return [.. lista.OrderBy(g => g.Genero ?? "")];
     }
 
     private static RelatorioConsolidadoGeneroRacaDto ConstruirGeneroRaca(string generoDescricao, List<RelatorioRespostaAlunoDto> respostasGenero, int totalRespostasQuestao, IEnumerable<RacaDominio> racasReferencia)
