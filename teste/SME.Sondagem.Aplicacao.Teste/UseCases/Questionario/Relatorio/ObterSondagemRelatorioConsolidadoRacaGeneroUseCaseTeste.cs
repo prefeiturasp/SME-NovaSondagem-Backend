@@ -35,6 +35,7 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
             new Mock<IRepositorioProficiencia>().Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         );
 
         _useCase = new ObterSondagemRelatorioConsolidadoRacaGeneroUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
