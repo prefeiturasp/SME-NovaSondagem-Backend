@@ -4,7 +4,6 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
@@ -92,6 +91,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _repositorioProficiencia.Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
@@ -214,6 +214,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _repositorioProficiencia.Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         ));
     }
 
@@ -229,6 +230,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _repositorioProficiencia.Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         ));
     }
 
@@ -244,6 +246,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _repositorioProficiencia.Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         ));
     }
 
@@ -259,6 +262,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _repositorioProficiencia.Object,
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
+            
         ));
     }
 
