@@ -135,7 +135,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterSondagemRelatorio_DeveCalcularPercentuaisCorretamente()
+    public async Task ObterSondagemRelatorio_DeveCalcularPercentuaisCorretamentePorBimestre()
     {
         // Arrange
         var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
@@ -147,13 +147,15 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
                 new BimestreDominio(2, "2º") { Id = 2 }
             });
 
-        // 4 respostas no total da questão
+        // Bimestre 1: 3 estudantes (2 "Certa" e 1 "Errada")
+        // Bimestre 2: 2 estudantes (1 "Certa" e 1 "Errada")
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
             CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, bimestreId: 1, opcoes: null),
             CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 1, opcoes: null),
-            CriarResposta(3, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2, opcoes: null),
-            CriarResposta(4, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2, opcoes: null)
+            CriarResposta(3, 1, "Q1", opcaoRespostaId: 2, bimestreId: 1, opcoes: null),
+            CriarResposta(4, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2, opcoes: null),
+            CriarResposta(5, 1, "Q1", opcaoRespostaId: 2, bimestreId: 2, opcoes: null)
         };
 
         _mockRepositorioRespostaAluno
@@ -164,9 +166,16 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        var bimestres = resultado?.Questoes?.First()?.Respostas?.First()?.Bimestres?.ToList() ?? [];
-        // Cada bimestre tem 2 respostas de um total de 4 -> 50%
-        Assert.All(bimestres, b => Assert.Equal(50, b.Percentual));
+        var respostaCerta = resultado?.Questoes?.First()?.Respostas?.First(r => r.Resposta == "Certa");
+        var bimestres = respostaCerta?.Bimestres?.ToList() ?? [];
+
+        var bimestre1 = bimestres.First(b => b.Bimestre == "1º");
+        var bimestre2 = bimestres.First(b => b.Bimestre == "2º");
+
+        // "Certa" no 1º bimestre: 2 de 3 estudantes = 66.67%
+        Assert.Equal(66.67, bimestre1.Percentual);
+        // "Certa" no 2º bimestre: 1 de 2 estudantes = 50%
+        Assert.Equal(50, bimestre2.Percentual);
     }
 
     // ─── Testes das Strategies ───────────────────────────────────────────────

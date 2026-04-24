@@ -30,19 +30,23 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
     }
 
     protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
-        => ConstruirQuestaoDto(
+    {
+        var totalPorBimestre = ObterTotaisPorBimestre(respostas);
+
+        return ConstruirQuestaoDto(
             questaoId,
             questaoNome,
             respostas,
             processarOpcao: (opcao, respostasQuestao, total) =>
                 ConstruirRespostaDto(opcao, respostasQuestao, total,
-                    (dto, respostasOpcao, totalQ) => dto.Bimestres = AgruparPorBimestre(respostasOpcao, totalQ, _bimestresReferencia)),
+                    (dto, respostasOpcao, totalQ) => dto.Bimestres = AgruparPorBimestre(respostasOpcao, totalPorBimestre, _bimestresReferencia)),
             adicionarTotais: (dto, respostasQuestao, total) =>
-                dto.TotaisPorBimestre = AgruparPorBimestre(respostasQuestao, total, _bimestresReferencia));
+                dto.TotaisPorBimestre = AgruparPorBimestre(respostasQuestao, totalPorBimestre, _bimestresReferencia));
+    }
 
     internal static List<RelatorioConsolidadoBimestreDto> AgruparPorBimestre(
         List<RelatorioRespostaAlunoDto> respostas,
-        int total,
+        IReadOnlyDictionary<int, int> totalPorBimestre,
         IEnumerable<BimestreExibicao> bimestresReferencia)
     {
         var grupos = respostas
@@ -55,7 +59,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             {
                 Bimestre = b.Descricao,
                 Quantidade = grupos.GetValueOrDefault(b.Id),
-                Percentual = CalcularPercentual(grupos.GetValueOrDefault(b.Id), total)
+                Percentual = CalcularPercentual(grupos.GetValueOrDefault(b.Id), totalPorBimestre.GetValueOrDefault(b.Id))
             }).ToList();
 
         if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
@@ -64,10 +68,15 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             {
                 Bimestre = "",
                 Quantidade = qtdNaoInformado,
-                Percentual = CalcularPercentual(qtdNaoInformado, total)
+                Percentual = CalcularPercentual(qtdNaoInformado, totalPorBimestre.GetValueOrDefault(0))
             });
         }
 
         return lista;
     }
+
+    private static Dictionary<int, int> ObterTotaisPorBimestre(List<RelatorioRespostaAlunoDto> respostas)
+        => respostas
+            .GroupBy(r => r.BimestreId ?? 0)
+            .ToDictionary(g => g.Key, g => g.Count());
 }
