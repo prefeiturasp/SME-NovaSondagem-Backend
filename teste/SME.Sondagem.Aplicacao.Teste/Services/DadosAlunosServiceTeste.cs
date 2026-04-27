@@ -498,12 +498,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             var resultado = await CriarService().ObterDadosRacaGeneroAlunos(1);
 
             Assert.Single(resultado);
-            _logger.Verify(l => l.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<InvalidOperationException>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+            _logger.VerifyLog<DadosAlunosService, InvalidOperationException>(LogLevel.Error, Times.Once());
         }
 
         [Fact]
@@ -528,12 +523,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             var resultado = await CriarService().ObterDadosRacaGeneroAlunos(1);
 
             Assert.Single(resultado);
-            _logger.Verify(l => l.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<InvalidOperationException>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), Times.Once);
+            _logger.VerifyLog<DadosAlunosService, InvalidOperationException>(LogLevel.Error, Times.Once());
         }
     }
 }
