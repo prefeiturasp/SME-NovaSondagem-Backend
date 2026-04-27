@@ -60,12 +60,12 @@ public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelator
         {
             lista.Add(new RelatorioConsolidadoRacaDto
             {
-                Raca = "Não informado",
+                Raca = "NÃO PREENCHIDO",
                 Quantidade = qtdNaoInformado,
                 Percentual = CalcularPercentual(qtdNaoInformado, total)
             });
         }
 
-        return [.. lista.OrderBy(r => r.Raca ?? "Não informado")];
+        return [.. lista.OrderBy(r => r.Raca ?? "NÃO PREENCHIDO")];
     }
 }
