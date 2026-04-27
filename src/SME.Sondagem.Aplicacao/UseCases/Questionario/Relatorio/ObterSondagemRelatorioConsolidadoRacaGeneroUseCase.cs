@@ -66,10 +66,10 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
 
         if (grupos.TryGetValue(0, out var respostasNaoInformado) && respostasNaoInformado.Count > 0)
         {
-            lista.Add(ConstruirGeneroRaca("", respostasNaoInformado, totalRespostasQuestao, racasReferencia));
+            lista.Add(ConstruirGeneroRaca("NÃO PREENCHIDO", respostasNaoInformado, totalRespostasQuestao, racasReferencia));
         }
 
-        return [.. lista.OrderBy(g => g.Genero ?? "")];
+        return [.. lista.OrderBy(g => g.Genero ?? "NÃO PREENCHIDO")];
     }
 
     private static RelatorioConsolidadoGeneroRacaDto ConstruirGeneroRaca(string generoDescricao, List<RelatorioRespostaAlunoDto> respostasGenero, int totalRespostasQuestao, IEnumerable<RacaDominio> racasReferencia)

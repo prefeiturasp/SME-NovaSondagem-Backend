@@ -61,13 +61,13 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCase : ObterSondagemRelat
         {
             lista.Add(new RelatorioConsolidadoGeneroDto
             {
-                Genero = "",
+                Genero = "NÃO PREENCHIDO",
                 Sigla = "NI",
                 Quantidade = qtdNaoInformado,
                 Percentual = CalcularPercentual(qtdNaoInformado, total)
             });
         }
 
-        return [.. lista.OrderBy(g => g.Genero ?? "")];
+        return [.. lista.OrderBy(g => g.Genero ?? "NÃO PREENCHIDO")];
     }
 }
