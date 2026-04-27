@@ -19,7 +19,6 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
     {
         private readonly Mock<IAlunoTurmaService> _alunoTurmaService;
         private readonly Mock<IHttpClientFactory> _httpClientFactory;
-        private readonly Mock<HttpMessageHandler> _httpMessageHandler;
         private readonly Mock<IRepositorioGeneroSexo> _repositorioGeneroSexo;
         private readonly Mock<IRepositorioRacaCor> _repositorioRacaCor;
         private readonly Mock<ILogger<DadosAlunosService>> _logger;
@@ -30,7 +29,6 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             _repositorioRacaCor = new Mock<IRepositorioRacaCor>();
             _repositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
             _httpClientFactory = new Mock<IHttpClientFactory>();
-            _httpMessageHandler = new Mock<HttpMessageHandler>();
             _logger = new Mock<ILogger<DadosAlunosService>>();
         }
 
@@ -191,11 +189,13 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
                     .Returns(httpClient);
 
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
+            using (var cts = new CancellationTokenSource())
+            {
+                await cts.CancelAsync();
 
-            await Assert.ThrowsAsync<OperationCanceledException>(() =>
-                CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, cts.Token));
+                await Assert.ThrowsAsync<OperationCanceledException>(() =>
+                    CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, cts.Token));
+            }
         }
 
 
@@ -445,11 +445,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     new() { CodigoAluno = 101, Raca = "PARDA", Sexo = string.Empty, NomeAluno = "Teste1" },
                     new() { CodigoAluno = 102, Raca = "PARDA", Sexo = null!, NomeAluno = "Teste2" }
                 });
-            _repositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<RacaCor>
-                {
-                    new() { Id = 10, Descricao = "PARDA", CodigoEolRacaCor = 2 }
-                });
+            _repositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>())).ReturnsAsync([]);
             _repositorioGeneroSexo.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
             await CriarService().ObterDadosRacaGeneroAlunos(1);
