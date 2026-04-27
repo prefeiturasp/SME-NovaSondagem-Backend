@@ -74,7 +74,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         {
             QuestaoId = questaoId,
             QuestaoNome = questaoNome,
-            TotalEstudantes = respostasQuestao.Select(r => r.AlunoId).Distinct().Count()
+            TotalEstudantes = respostasQuestao.Count
         };
 
         var opcoes = respostasQuestao

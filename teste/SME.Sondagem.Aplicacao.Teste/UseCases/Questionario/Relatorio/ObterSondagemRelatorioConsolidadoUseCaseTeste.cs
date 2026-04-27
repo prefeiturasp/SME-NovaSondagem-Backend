@@ -3,10 +3,9 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dominio.Entidades;
-using DominioR = SME.Sondagem.Dominio.Entidades.RacaCor;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
+using DominioR = SME.Sondagem.Dominio.Entidades.RacaCor;
 
 namespace SME.Sondagem.Aplicacao.Teste.UseCases.Questionario.Relatorio;
 

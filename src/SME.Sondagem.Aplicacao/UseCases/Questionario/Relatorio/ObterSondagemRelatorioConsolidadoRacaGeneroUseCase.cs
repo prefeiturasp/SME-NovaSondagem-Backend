@@ -2,9 +2,8 @@ using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
-using SME.Sondagem.Dominio.Entidades;
-using RacaDominio = SME.Sondagem.Dominio.Entidades.RacaCor;
 using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
+using RacaDominio = SME.Sondagem.Dominio.Entidades.RacaCor;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 

@@ -1,14 +1,15 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dominio.Strategies.Bimestre;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
-using BimestreDominio = SME.Sondagem.Dominio.Entidades.Bimestre;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
 public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRelatorioConsolidadoBase, IObterSondagemRelatorioConsolidadoBimestreUseCase
 {
-    private IEnumerable<BimestreDominio> _bimestresReferencia = [];
+    private IEnumerable<BimestreExibicao> _bimestresReferencia = [];
 
     public ObterSondagemRelatorioConsolidadoBimestreUseCase(
         RepositoriosSondagem repositorioSondagem,
@@ -21,12 +22,9 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
 
     public new async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
-        var bimestres = await RepositorioSondagem.RepositorioBimestre.ListarAsync(cancellationToken);
+        var bimestresCompletos = await RepositorioSondagem.RepositorioBimestre.ListarAsync(cancellationToken);
 
-        if (filtro.BimestreId.HasValue)
-            _bimestresReferencia = bimestres.Where(b => b.Id == filtro.BimestreId.Value);
-        else
-            _bimestresReferencia = bimestres;
+        _bimestresReferencia = BimestreModalidadeStrategyFactory.AplicarRegras(filtro.Modalidade, bimestresCompletos, filtro.BimestreId);
 
         return await base.ObterSondagemRelatorio(filtro, cancellationToken);
     }
@@ -42,7 +40,10 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             adicionarTotais: (dto, respostasQuestao, total) =>
                 dto.TotaisPorBimestre = AgruparPorBimestre(respostasQuestao, total, _bimestresReferencia));
 
-    internal static List<RelatorioConsolidadoBimestreDto> AgruparPorBimestre(List<RelatorioRespostaAlunoDto> respostas, int total, IEnumerable<BimestreDominio> bimestresReferencia)
+    internal static List<RelatorioConsolidadoBimestreDto> AgruparPorBimestre(
+        List<RelatorioRespostaAlunoDto> respostas,
+        int total,
+        IEnumerable<BimestreExibicao> bimestresReferencia)
     {
         var grupos = respostas
             .GroupBy(r => r.BimestreId ?? 0)
@@ -53,15 +54,15 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             .Select(b => new RelatorioConsolidadoBimestreDto
             {
                 Bimestre = b.Descricao,
-                Quantidade = grupos.TryGetValue(b.Id, out int qtd) ? qtd : 0,
-                Percentual = CalcularPercentual(grupos.TryGetValue(b.Id, out int q) ? q : 0, total)
+                Quantidade = grupos.GetValueOrDefault(b.Id),
+                Percentual = CalcularPercentual(grupos.GetValueOrDefault(b.Id), total)
             }).ToList();
 
         if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
         {
             lista.Add(new RelatorioConsolidadoBimestreDto
             {
-                Bimestre = "Não informado",
+                Bimestre = "",
                 Quantidade = qtdNaoInformado,
                 Percentual = CalcularPercentual(qtdNaoInformado, total)
             });
