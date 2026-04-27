@@ -40,7 +40,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         if (respostas.Count > 0 && filtro.AnoTurma != null && filtro.AnoTurma.Count > 0)
             respostas = await FiltrarPorAnoTurmaAsync(respostas, filtro, cancellationToken);
 
-        return respostas;
+        return [.. respostas.OrderBy(r => r.AnoTurma)];
     }
 
     private static RelatorioConsolidadoSondagemDto ConstruirRelatorio(
@@ -48,12 +48,15 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         List<RelatorioRespostaAlunoDto> respostas,
         Func<int, string, List<RelatorioRespostaAlunoDto>, RelatorioConsolidadoQuestaoDto> processarQuestao)
     {
-        var relatorio = new RelatorioConsolidadoSondagemDto { Titulo = titulo };
-
-        relatorio.Questoes = [.. respostas
-            .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
-            .OrderBy(g => g.Key.QuestaoId)
-            .Select(g => processarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))];
+        var relatorio = new RelatorioConsolidadoSondagemDto
+        {
+            Titulo = titulo,
+            Questoes = [.. respostas
+                .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
+                .OrderBy(g => g.Min(r => r.AnoTurma))
+                .ThenBy(g => g.Key.QuestaoId)
+                .Select(g => processarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))]
+        };
 
         return relatorio;
     }

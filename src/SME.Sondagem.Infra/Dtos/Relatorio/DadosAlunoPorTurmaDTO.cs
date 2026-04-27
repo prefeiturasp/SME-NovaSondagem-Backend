@@ -12,5 +12,6 @@
         public string NomeSocialAluno { get; set; } = string.Empty;
         public string Sexo { get; set; } = string.Empty;
         public string Raca { get; set; } = string.Empty;
+        public int CodigoRaca { get; set; }
     }
 }
