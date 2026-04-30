@@ -1,4 +1,4 @@
-﻿using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
+using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio.Exportacao;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Fila;
@@ -7,9 +7,9 @@ using SME.Sondagem.Infrastructure.Interfaces;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio.Exportacao;
 
-public class ExportarSondagemRelatorioConsolidadoRacaUseCase : ExportarSondagemRelatorioConsolidadoUseCaseBase, IExportarSondagemRelatorioConsolidadoRacaUseCase
+public class ExportarSondagemRelatorioConsolidadoAnoUseCase : ExportarSondagemRelatorioConsolidadoUseCaseBase, IExportarSondagemRelatorioConsolidadoAnoUseCase
 {
-    public ExportarSondagemRelatorioConsolidadoRacaUseCase(
+    public ExportarSondagemRelatorioConsolidadoAnoUseCase(
         ISolicitacaoRelatorioService solicitacaoRelatorioService,
         IServicoLog servicoLog,
         IServicoMensageria servicoMensageria,
@@ -18,7 +18,7 @@ public class ExportarSondagemRelatorioConsolidadoRacaUseCase : ExportarSondagemR
     {
     }
 
-    protected override TipoRelatorio TipoRelatorio => TipoRelatorio.ConsolidadoPorRaca;
+    protected override TipoRelatorio TipoRelatorio => TipoRelatorio.ConsolidadoPorAno;
 
-    protected override string RotaRabbit => RotasRabbit.RelatorioSondagemConsolidadoPorRaca;
+    protected override string RotaRabbit => RotasRabbit.RelatorioSondagemConsolidadoPorAno;
 }

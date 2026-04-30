@@ -46,10 +46,24 @@ public class RelatorioController : ControllerBase
         return Ok(await obterSondagemRelatorioConsolidadoGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
+    [HttpGet("consolidado/genero/exportar")]
+    public async Task<IActionResult> ExportarRelatorioSondagemConsolidadoPorGenero([FromQuery] FiltroRelatorioConsolidado filtro, [FromServices] IExportarSondagemRelatorioConsolidadoGeneroUseCase exportarSondagemRelatorioConsolidadoGeneroUseCase, CancellationToken cancellationToken)
+    {
+        await exportarSondagemRelatorioConsolidadoGeneroUseCase.Exportar(filtro, cancellationToken);
+        return Ok();
+    }
+
     [HttpGet("consolidado/raca-genero")]
     public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorRacaGenero([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoRacaGeneroUseCase obterSondagemRelatorioConsolidadoRacaGeneroUseCase, CancellationToken cancellationToken)
     {
         return Ok(await obterSondagemRelatorioConsolidadoRacaGeneroUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
+
+    [HttpGet("consolidado/raca-genero/exportar")]
+    public async Task<IActionResult> ExportarRelatorioSondagemConsolidadoPorRacaGenero([FromQuery] FiltroRelatorioConsolidado filtro, [FromServices] IExportarSondagemRelatorioConsolidadoRacaGeneroUseCase exportarSondagemRelatorioConsolidadoRacaGeneroUseCase, CancellationToken cancellationToken)
+    {
+        await exportarSondagemRelatorioConsolidadoRacaGeneroUseCase.Exportar(filtro, cancellationToken);
+        return Ok();
     }
 
     [HttpGet("consolidado/ano")]
@@ -58,9 +72,23 @@ public class RelatorioController : ControllerBase
         return Ok(await obterSondagemRelatorioConsolidadoAnoUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
+    [HttpGet("consolidado/ano/exportar")]
+    public async Task<IActionResult> ExportarRelatorioSondagemConsolidadoPorAno([FromQuery] FiltroRelatorioConsolidado filtro, [FromServices] IExportarSondagemRelatorioConsolidadoAnoUseCase exportarSondagemRelatorioConsolidadoAnoUseCase, CancellationToken cancellationToken)
+    {
+        await exportarSondagemRelatorioConsolidadoAnoUseCase.Exportar(filtro, cancellationToken);
+        return Ok();
+    }
+
     [HttpGet("consolidado/bimestre")]
     public async Task<IActionResult> ObterRelatorioSondagemConsolidadoPorBimestre([FromQuery] FiltroConsolidadoDto filtro, [FromServices] IObterSondagemRelatorioConsolidadoBimestreUseCase obterSondagemRelatorioConsolidadoBimestreUseCase, CancellationToken cancellationToken)
     {
         return Ok(await obterSondagemRelatorioConsolidadoBimestreUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
+    }
+
+    [HttpGet("consolidado/bimestre/exportar")]
+    public async Task<IActionResult> ExportarRelatorioSondagemConsolidadoPorBimestre([FromQuery] FiltroRelatorioConsolidado filtro, [FromServices] IExportarSondagemRelatorioConsolidadoBimestreUseCase exportarSondagemRelatorioConsolidadoBimestreUseCase, CancellationToken cancellationToken)
+    {
+        await exportarSondagemRelatorioConsolidadoBimestreUseCase.Exportar(filtro, cancellationToken);
+        return Ok();
     }
 }
