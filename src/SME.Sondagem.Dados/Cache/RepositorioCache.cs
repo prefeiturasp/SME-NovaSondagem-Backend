@@ -2,6 +2,7 @@
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infra.Interfaces;
 using StackExchange.Redis;
+using System.Text.Json;
 
 namespace SME.Sondagem.Dados.Cache
 {
@@ -9,6 +10,12 @@ namespace SME.Sondagem.Dados.Cache
     {
         private readonly IServicoLog servicoLog;
         private readonly IDatabase database;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
 
         public RepositorioCache(IServicoLog servicoLog, IConnectionMultiplexer connectionMultiplexer)
         {
@@ -22,7 +29,13 @@ namespace SME.Sondagem.Dados.Cache
             try
             {
                 if (valor != null)
-                    await database.StringSetAsync(nomeChave, MessagePackSerializer.Serialize(valor), TimeSpan.FromMinutes(minutosParaExpirar));
+                {
+                    var json = JsonSerializer.Serialize(valor, JsonOptions);
+                    await database.StringSetAsync(
+                        nomeChave,
+                        json,
+                        TimeSpan.FromMinutes(minutosParaExpirar));
+                }
             }
             catch (Exception ex)
             {
@@ -72,7 +85,7 @@ namespace SME.Sondagem.Dados.Cache
                 var byteCache = await database.StringGetAsync(nomeChave);
 
                 if (byteCache.HasValue)
-                    return MessagePackSerializer.Deserialize<T>(byteCache);
+                    return JsonSerializer.Deserialize<T>((string)byteCache!, JsonOptions)!;
             }
             catch (Exception ex)
             {

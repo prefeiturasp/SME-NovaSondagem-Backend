@@ -3,6 +3,7 @@ using Moq;
 using SME.Sondagem.Dados.Cache;
 using SME.Sondagem.Infra.Interfaces;
 using StackExchange.Redis;
+using System.Text.Json;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio
@@ -13,6 +14,11 @@ namespace SME.Sondagem.Dados.Teste.Repositorio
         private readonly Mock<IConnectionMultiplexer> connectionMock;
         private readonly Mock<IDatabase> databaseMock;
         private readonly RepositorioCache repositorio;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public RepositorioCacheTeste()
         {
@@ -145,7 +151,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio
         public async Task ObterRedisAsync_SemFallback_ComCache()
         {
             var esperado = "teste";
-            var bytes = MessagePackSerializer.Serialize(esperado);
+            var bytes = JsonSerializer.Serialize(esperado, JsonOptions);
 
             databaseMock
                 .Setup(d => d.StringGetAsync("chave", CommandFlags.None))

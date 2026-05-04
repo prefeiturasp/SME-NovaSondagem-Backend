@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infrastructure.Dtos;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Dados.Repositorio.Postgres;
 
@@ -31,12 +32,12 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         {
             respostas = await _context.RespostasAluno
             .Include(ra => ra.Questao)
-            .Where(ra => ra.AlunoId.HasValue
-                && alunosIds.Contains(ra.AlunoId.Value)
+            .Where(ra => ra.AlunoId > 0
+                && alunosIds.Contains(ra.AlunoId)
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
                 && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
-            .Select(ra => ra.AlunoId ?? 0)
+            .Select(ra => ra.AlunoId)
             .Distinct()
             .ToListAsync(cancellationToken);
         }
@@ -63,11 +64,59 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await _context.RespostasAluno
             .AsNoTracking()
             .Where(ra => !ra.Excluido && ra.SondagemId == sondagemId
-                                  && ra.AlunoId.HasValue && alunosIdsList.Contains(ra.AlunoId.Value)
+                                  && alunosIdsList.Contains(ra.AlunoId)
                                   && questoesIdsList.Contains(ra.QuestaoId))
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<RelatorioRespostaAlunoDto>> ObterRespostasParaRelatorioConsolidadoAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default)
+    {
+        var query = _context.RespostasAluno
+            .Include(ra => ra.Questao)
+            .ThenInclude(q => q.Questionario)
+            .ThenInclude(q2 => q2.ComponenteCurricular)
+            .Include(ra => ra.Questao)
+            .Include(ra => ra.OpcaoResposta)
+            .Where(ra => !ra.Excluido && !ra.OpcaoResposta.Excluido && ra.OpcaoRespostaId.HasValue && ra.Questao.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua)
+            .AsNoTracking();
+
+        query = AplicarFiltrosRelatorioConsolidado(query, filtro);
+
+        return await query.Select(ra => new RelatorioRespostaAlunoDto
+        {
+            Id = ra.Id,
+            SondagemId = ra.SondagemId,
+            SondagemDescricao = ra.Sondagem.Descricao,
+            AlunoId = ra.AlunoId,
+            QuestaoId = ra.QuestaoId,
+            QuestaoNome = $"{ra.Questao.Nome} ({ra.AnoTurma}º ano)",
+            OpcaoRespostaId = ra.OpcaoRespostaId,
+            OpcaoRespostaDescricao = ra.OpcaoResposta.DescricaoOpcaoResposta,
+            OpcaoRespostaLegenda = ra.OpcaoResposta.Legenda,
+            DataResposta = ra.DataResposta,
+            BimestreId = ra.BimestreId,
+            BimestreDescricao = ra.Bimestre != null ? ra.Bimestre.Descricao : null,
+            AnoTurma = ra.AnoTurma,
+            TurmaId = ra.TurmaId,
+            UeId = ra.UeId,
+            DreId = ra.DreId,
+            AnoLetivo = ra.AnoLetivo,
+            ModalidadeId = ra.ModalidadeId,
+            RacaCorId = ra.RacaCorId,
+            GeneroSexoId = ra.GeneroSexoId,
+            OpcoesDisponiveis = ra.Questao.QuestaoOpcoes
+                .OrderBy(qo => qo.Ordem)
+                .Select(qo => new RelatorioOpcaoRespostaDto
+                {
+                    Id = qo.OpcaoRespostaId,
+                    Descricao = qo.OpcaoResposta.DescricaoOpcaoResposta,
+                    Legenda = qo.OpcaoResposta.Legenda,
+                    Ordem = qo.Ordem,
+                    CorFundo = qo.OpcaoResposta.CorFundo,
+                    CorTexto = qo.OpcaoResposta.CorTexto
+                })
+        }).ToListAsync(cancellationToken);
+    }
 
     public async Task<Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>>
         ObterRespostasAlunosPorQuestoesAsync(
@@ -77,15 +126,15 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             CancellationToken cancellationToken = default)
     {
         var respostas = await _context.RespostasAluno
-            .Where(r => r.AlunoId.HasValue
-                        && codigosAlunos.Contains((long)r.AlunoId.Value)
+            .Where(r => r.AlunoId > 0
+                        && codigosAlunos.Contains((long)r.AlunoId)
                         && questoesIds.Contains(r.QuestaoId)
                         && r.SondagemId == sondagemId
                         && !r.Excluido)
             .ToListAsync(cancellationToken);
 
         return respostas.ToDictionary(
-            r => ((long)(r.AlunoId ?? 0), (long)r.QuestaoId, r.BimestreId)
+            r => ((long)(r.AlunoId), (long)r.QuestaoId, r.BimestreId)
         );
     }
     
@@ -105,21 +154,53 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
             .Where(ra =>
-                ra.Questao.Questionario.ModalidadeId == modalidadeId &&
+                ra.Questao.Questionario.ModalidadeId.HasValue &&
+                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
                 ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
             .OrderBy(ra => ra.AlunoId)
             .ThenBy(ra => ra.QuestaoId)
             .Select(ra => new ExtracaoSondagemLpEscritaDto
             {
-                CodigoEolEstudante   = ra.AlunoId.HasValue ? ra.AlunoId.Value.ToString() : null,
+                CodigoEolEstudante   = ra.AlunoId.ToString(),
                 Questao              = ra.Questao.Nome,
                 Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
                 Legenda              = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
-                Bimestre             = ra.BimestreId.ToString(),
+                Bimestre             = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
                 Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
                 ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
             })
             .ToListAsync(cancellationToken);
+    }
+
+    private static IQueryable<RespostaAluno> AplicarFiltrosRelatorioConsolidado(IQueryable<RespostaAluno> query, FiltroConsolidadoDto filtro)
+    {
+        var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
+        {
+            (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
+            (!string.IsNullOrEmpty(filtro.Dre),                             ra => ra.DreId == filtro.Dre),
+            (!string.IsNullOrEmpty(filtro.Ue),                              ra => ra.UeId == filtro.Ue),
+            (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
+            (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
+            (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
+            (filtro.ComponenteCurricularId > 0,                             ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId),
+            (filtro.GeneroId > 0,                                           ra => ra.GeneroSexo != null && ra.GeneroSexo.Id == filtro.GeneroId),
+            (filtro.RacaId > 0,                                             ra => ra.RacaCor != null && ra.RacaCor.Id == filtro.RacaId),
+            (filtro.AnoTurma != null && filtro.AnoTurma.Count != 0,         ra => ra.AnoTurma.HasValue && filtro.AnoTurma!.Contains(ra.AnoTurma.Value)),
+            (filtro.Pap.HasValue,                                           ra => ra.Pap == filtro.Pap),
+            (filtro.Aee.HasValue,                                           ra => ra.Aee == filtro.Aee),
+            (filtro.Deficiente.HasValue,                                    ra => ra.Deficiente == filtro.Deficiente),
+            (filtro.PossuiLinguaPortuguesaSegundaLingua.HasValue,           ra => ra.Sondagem.Respostas.Any(ra2 => 
+                                                                              ra2.AlunoId == ra.AlunoId && 
+                                                                              ra2.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua && 
+                                                                              ra2.OpcaoResposta != null &&
+                                                                              ra2.OpcaoResposta.DescricaoOpcaoResposta != null &&
+                                                                              ra2.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim" &&
+                                                                              !ra2.Excluido) == (filtro.PossuiLinguaPortuguesaSegundaLingua ?? false))
+        };
+
+        return filtros
+            .Where(f => f.Aplicar)
+            .Aggregate(query, (q, f) => q.Where(f.Predicado));
     }
 }

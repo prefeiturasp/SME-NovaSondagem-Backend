@@ -2,11 +2,16 @@
 {
     public class DadosAlunoPorTurmaDto
     {
+        public DadosAlunoPorTurmaDto()
+        {
+            
+        }
         public long NumeroChamada { get; set; }
         public long CodigoAluno { get; set; }
         public required string NomeAluno { get; set; }
         public string NomeSocialAluno { get; set; } = string.Empty;
         public string Sexo { get; set; } = string.Empty;
         public string Raca { get; set; } = string.Empty;
+        public int CodigoRaca { get; set; }
     }
 }

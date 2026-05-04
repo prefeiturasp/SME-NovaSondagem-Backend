@@ -6,6 +6,7 @@
         public string NumeroAlunoChamada { get; set; } = null!;
         public string NomeEstudante { get; set; } = null!;
         public bool LinguaPortuguesaSegundaLingua { get; set; }
+        public int? ProgramaAtendimentoId { get; set; }
         public List<RespostaSondagemDto> Respostas { get; set; } = new();
     }
 }

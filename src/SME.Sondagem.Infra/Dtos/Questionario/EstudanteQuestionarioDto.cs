@@ -1,3 +1,4 @@
+using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SME.Sondagem.Infra.Dtos.Questionario;
@@ -16,4 +17,5 @@ public class EstudanteQuestionarioDto
     public bool Aee { get; set; }
     public bool PossuiDeficiencia { get; set; }
     public IEnumerable<ColunaQuestionarioDto>? Coluna { get; set; }
+    public EstudanteRemanejadoDto? EstudanteRemanejado { get; set; }
 }

@@ -1,12 +1,8 @@
 ﻿using SME.Sondagem.Infra.Dtos.Questionario;
 
-namespace SME.Sondagem.Aplicacao.Interfaces.Base
+namespace SME.Sondagem.Aplicacao.Interfaces.Base;
+
+public interface IQuestionarioSondagemUseCaseBase
 {
-    public interface IQuestionarioSondagemUseCaseBase
-    {
-        Task<object> ExecutarProcessamentoQuestionario(
-            FiltroQuestionario filtro,
-            bool ehRelatorio,
-            CancellationToken cancellationToken);
-    }
+    Task<object> ExecutarProcessamentoQuestionario(FiltroQuestionario filtro, bool ehRelatorio, CancellationToken cancellationToken);
 }
