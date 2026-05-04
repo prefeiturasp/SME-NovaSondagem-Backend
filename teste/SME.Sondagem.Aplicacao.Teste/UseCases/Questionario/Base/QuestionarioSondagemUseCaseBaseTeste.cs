@@ -945,7 +945,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
+    public void ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
