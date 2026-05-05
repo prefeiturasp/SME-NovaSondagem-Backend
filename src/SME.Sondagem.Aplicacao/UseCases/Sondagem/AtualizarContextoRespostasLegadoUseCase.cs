@@ -143,7 +143,27 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
             }
         }
 
-        return await _repositorioRespostaAluno.AtualizarContextoLoteAsync(atualizacoes, cancellationToken);
+        if (atualizacoes.Count > 0)
+        {
+            var comandos = atualizacoes.Select(a =>
+            {
+                var turmaId = !string.IsNullOrEmpty(a.TurmaId) ? $"'{a.TurmaId}'" : "NULL";
+                var ueId = !string.IsNullOrEmpty(a.UeId) ? $"'{a.UeId}'" : "NULL";
+                var dreId = !string.IsNullOrEmpty(a.DreId) ? $"'{a.DreId}'" : "NULL";
+                var anoTurma = a.AnoTurma.HasValue ? a.AnoTurma.Value.ToString() : "NULL";
+                var racaCorId = a.RacaCorId.HasValue ? a.RacaCorId.Value.ToString() : "NULL";
+                var generoSexoId = a.GeneroSexoId.HasValue ? a.GeneroSexoId.Value.ToString() : "NULL";
+                var pap = a.Pap ? "true" : "false";
+                var aee = a.Aee ? "true" : "false";
+                var deficiente = a.Deficiente ? "true" : "false";
+
+                return $"UPDATE resposta_aluno SET turma_id = {turmaId}, ue_id = {ueId}, dre_id = {dreId}, ano_letivo = {a.AnoLetivo}, ano_turma = {anoTurma}, raca_cor_id = {racaCorId}, genero_sexo_id = {generoSexoId}, pap = {pap}, aee = {aee}, deficiente = {deficiente} WHERE id = {a.Id};";
+            });
+
+            await System.IO.File.WriteAllLinesAsync($"{pagina}_lote.txt", comandos, cancellationToken);
+        }
+
+        return atualizacoes.Count;
     }
 
     private async Task<(IEnumerable<AlunoEolDto> Alunos, Dictionary<int, bool> AlunosPap)> ObterAlunos(List<int> codigoAlunos, CancellationToken cancellationToken)
