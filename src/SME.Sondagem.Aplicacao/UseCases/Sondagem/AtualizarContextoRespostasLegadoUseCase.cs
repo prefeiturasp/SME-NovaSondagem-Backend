@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
-using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Sondagem;
+using SME.Sondagem.Infra.Dtos.Questionario;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Sondagem;
 
@@ -12,50 +13,59 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
 {
     private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
     private readonly IRepositorioSondagem _repositorioSondagem;
-    private readonly IRepositorioElasticTurma _repositorioElasticTurma;
     private readonly IDadosAlunosService _dadosAlunosService;
     private readonly IAlunoPapService _alunoPapService;
-    private readonly IRepositorioElasticAluno _repositorioElasticAluno;
     private readonly IUeComDreEolService _ueComDreEolService;
     protected readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
     protected readonly IRepositorioRacaCor _repositorioRacaCor;
     private readonly RepositorioSondagemRelatorioPorTodasTurma _repositorioSondagemRelatorioPorTodasTurma;
     private readonly RepositoriosElastic _repositoriosElastic;
 
-    public AtualizarContextoRespostasLegadoUseCase(
-        IRepositorioRespostaAluno repositorioRespostaAluno,
-        IRepositorioSondagem repositorioSondagem,
-        IRepositorioElasticTurma repositorioElasticTurma,
-        IDadosAlunosService dadosAlunosService,
-        IAlunoPapService alunoPapService,
-        IRepositorioElasticAluno repositorioElasticAluno,
-        IUeComDreEolService ueComDreEolService,
-        RepositorioSondagemRelatorioPorTodasTurma repositorioSondagemRelatorioPorTodasTurma,
-        IRepositorioRacaCor repositorioRacaCor,
-        IRepositorioGeneroSexo repositorioGeneroSexo,
-        RepositoriosElastic repositoriosElastic)
+    public AtualizarContextoRespostasLegadoUseCase(AtualizarContextoRespostasLegadoDependencias dependencias)
     {
-        _repositorioRespostaAluno = repositorioRespostaAluno;
-        _repositorioSondagem = repositorioSondagem;
-        _repositorioElasticTurma = repositorioElasticTurma;
-        _dadosAlunosService = dadosAlunosService;
-        _alunoPapService = alunoPapService;
-        _repositorioElasticAluno = repositorioElasticAluno;
-        _ueComDreEolService = ueComDreEolService;
-        _repositorioSondagemRelatorioPorTodasTurma = repositorioSondagemRelatorioPorTodasTurma;
-        _repositorioRacaCor = repositorioRacaCor;
-        _repositorioGeneroSexo = repositorioGeneroSexo;
-        _repositoriosElastic = repositoriosElastic;
+        _repositorioRespostaAluno = dependencias.RepositorioRespostaAluno;
+        _repositorioSondagem = dependencias.RepositorioSondagem;
+        _dadosAlunosService = dependencias.DadosAlunosService;
+        _alunoPapService = dependencias.AlunoPapService;
+        _ueComDreEolService = dependencias.UeComDreEolService;
+        _repositorioSondagemRelatorioPorTodasTurma = dependencias.RepositorioSondagemRelatorioPorTodasTurma;
+        _repositorioRacaCor = dependencias.RepositorioRacaCor;
+        _repositorioGeneroSexo = dependencias.RepositorioGeneroSexo;
+        _repositoriosElastic = dependencias.RepositoriosElastic;
     }
 
-    public async Task<int> ExecutarAsync(int pagina, int tamanhoLote, CancellationToken cancellationToken)
+    public async Task<int> ExecutarAsync(int respostaIdInicial, int pagina, int tamanhoLote, CancellationToken cancellationToken)
     {
-        var respostasLegadas = await _repositorioRespostaAluno.ObterRespostasSemContextoPaginadoAsync(pagina, tamanhoLote, cancellationToken);
-
-        if (!respostasLegadas.Any())
+        var respostasLegadas = await _repositorioRespostaAluno.ObterRespostasSemContextoPaginadoAsync(respostaIdInicial, pagina, tamanhoLote, cancellationToken);
+        var respostasLista = respostasLegadas.ToList();
+        if (respostasLista.Count == 0)
             return 0;
 
-        var sondagensIds = respostasLegadas.Select(r => r.SondagemId).Distinct().ToList();
+        var sondagensIds = respostasLista.Select(r => r.SondagemId).Distinct().ToList();
+        var sondagens = await CarregarSondagensPorIdsAsync(sondagensIds);
+
+        var listagemRacaCor = (await _repositorioRacaCor.ListarAsync(cancellationToken)).ToList();
+        var lotesAgrupadosAno = respostasLista.GroupBy(r => r.AnoLetivo).ToList();
+        var atualizacoes = new List<AtualizarContextoRespostaAlunoDto>();
+
+        foreach (var grupoAno in lotesAgrupadosAno)
+        {
+            atualizacoes.AddRange(await ProcessarGrupoAnoLetivoAsync(
+                grupoAno,
+                respostasLista,
+                sondagens,
+                listagemRacaCor,
+                cancellationToken));
+        }
+
+        if (atualizacoes.Count > 0)
+            return await _repositorioRespostaAluno.AtualizarContextoLoteAsync(atualizacoes, cancellationToken);
+
+        return atualizacoes.Count;
+    }
+
+    private async Task<Dictionary<int, Dominio.Entidades.Sondagem.Sondagem>> CarregarSondagensPorIdsAsync(List<int> sondagensIds)
+    {
         var sondagens = new Dictionary<int, Dominio.Entidades.Sondagem.Sondagem>();
         foreach (var sId in sondagensIds)
         {
@@ -64,106 +74,126 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
                 sondagens[sId] = sondagem;
         }
 
-        var lotesAgrupadosAno = respostasLegadas.GroupBy(r => r.AnoLetivo);
+        return sondagens;
+    }
+
+    private async Task<ConcurrentDictionary<int, AlunoElasticDto>> CarregarAlunosElasticPorTurmasAsync(
+        IEnumerable<TurmaElasticDto> dadosCompletosTurmas,
+        CancellationToken cancellationToken)
+    {
+        var alunosElasticDict = new ConcurrentDictionary<int, AlunoElasticDto>();
+        await Task.WhenAll(dadosCompletosTurmas.Select(async turma =>
+        {
+            var alunosTurma = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(
+                turma.CodigoTurma, turma.AnoLetivo, cancellationToken);
+            if (alunosTurma == null)
+                return;
+
+            foreach (var aluno in alunosTurma)
+                alunosElasticDict.TryAdd(aluno.CodigoAluno, aluno);
+        }));
+
+        return alunosElasticDict;
+    }
+
+    private async Task<List<AtualizarContextoRespostaAlunoDto>> ProcessarGrupoAnoLetivoAsync(
+        IGrouping<int, RespostaAlunoLegadoDto> grupoAno,
+        IReadOnlyList<RespostaAlunoLegadoDto> respostasLegadas,
+        Dictionary<int, Dominio.Entidades.Sondagem.Sondagem> sondagens,
+        IReadOnlyList<Dominio.Entidades.RacaCor> listagemRacaCor,
+        CancellationToken cancellationToken)
+    {
+        var anoLetivo = grupoAno.Key;
+        var codigoAlunos = respostasLegadas.Select(x => x.AlunoId!).ToList();
+        var (dadosAlunos, alunosPap) = await ObterAlunos(codigoAlunos, cancellationToken);
+
+        var turmasCodigosUnicos = dadosAlunos.Select(x => x.CodigoTurma).Where(c => c > 0).Distinct();
+        var dadosCompletosTurmas = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(turmasCodigosUnicos, cancellationToken);
+
+        var turmasPorCodigo = dadosCompletosTurmas.Where(t => t.CodigoTurma > 0).GroupBy(t => t.CodigoTurma).ToDictionary(g => g.Key, g => g.First());
+        var codigoUes = dadosAlunos.Select(x => x.CodigoEscola!).Where(c => !string.IsNullOrEmpty(c)).Distinct();
+        var uesComDre = await _ueComDreEolService.ObterUesComDrePorCodigosUes(codigoUes);
+        var uesPorCodigo = uesComDre.Where(u => !string.IsNullOrEmpty(u.CodigoEscola)).ToDictionary(u => u.CodigoEscola!, u => u);
+
+        var turmasIdsList = turmasCodigosUnicos.ToList();
+        var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmasIdsList, cancellationToken);
+        var alunosElasticDict = await CarregarAlunosElasticPorTurmasAsync(dadosCompletosTurmas, cancellationToken);
+
+        var contexto = new ContextoMontagemAtualizacaoLegado
+        {
+            AnoLetivo = anoLetivo,
+            DadosAlunos = dadosAlunos,
+            Sondagens = sondagens,
+            ListagemRacaCor = listagemRacaCor,
+            TurmasPorCodigo = turmasPorCodigo,
+            UesPorCodigo = uesPorCodigo,
+            DadosRacaGenero = dadosRacaGenero,
+            AlunosPap = alunosPap,
+            AlunosElasticDict = alunosElasticDict,
+        };
+
         var atualizacoes = new List<AtualizarContextoRespostaAlunoDto>();
-
-        var listagemRacaCor = await _repositorioRacaCor.ListarAsync(cancellationToken);
-
-        foreach (var grupoAno in lotesAgrupadosAno)
+        foreach (var resposta in grupoAno)
         {
-            var anoLetivo = grupoAno.Key;
-
-            var codigoAlunos = respostasLegadas.Select(x => x.AlunoId!).ToList();
-            var (dadosAlunos, alunosPap) = await ObterAlunos(codigoAlunos, cancellationToken);
-
-            var turmasCodigosUnicos = dadosAlunos.Select(x => x.CodigoTurma).Where(c => c > 0).Distinct();
-            var dadosCompletosTurmas = await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(turmasCodigosUnicos, cancellationToken);
-
-            var turmasPorCodigo = dadosCompletosTurmas.Where(t => t.CodigoTurma > 0).GroupBy(t => t.CodigoTurma).ToDictionary(g => g.Key, g => g.First());
-            var codigoUes = dadosAlunos.Select(x => x.CodigoEscola!).Where(c => !string.IsNullOrEmpty(c)).Distinct();
-            var uesComDre = await _ueComDreEolService.ObterUesComDrePorCodigosUes(codigoUes);
-            var uesPorCodigo = uesComDre.Where(u => !string.IsNullOrEmpty(u.CodigoEscola)).ToDictionary(u => u.CodigoEscola!, u => u);
-
-            var turmasIdsList = turmasCodigosUnicos.ToList();
-            var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmasIdsList, cancellationToken);
-
-            var alunosElasticDict = new System.Collections.Concurrent.ConcurrentDictionary<int, SME.Sondagem.Infra.Dtos.Questionario.AlunoElasticDto>();
-            await Task.WhenAll(dadosCompletosTurmas.Select(async turma =>
-            {
-                var alunosTurma = await _repositoriosElastic.RepositorioElasticAluno.ObterAlunosPorIdTurma(turma.CodigoTurma, turma.AnoLetivo, cancellationToken);
-                if (alunosTurma != null)
-                {
-                    foreach (var aluno in alunosTurma)
-                    {
-                        alunosElasticDict.TryAdd(aluno.CodigoAluno, aluno);
-                    }
-                }
-            }));
-
-            foreach (var resposta in grupoAno)
-            {
-                var aluno = dadosAlunos.FirstOrDefault(a => a.CodigoAluno == resposta.AlunoId);
-                if (aluno == null) continue;
-
-                var sondagem = sondagens.GetValueOrDefault(resposta.SondagemId);
-                if (sondagem == null) continue;
-
-                var dataInicioSondagem = sondagem.PeriodosBimestre?.OrderBy(p => p.DataInicio).FirstOrDefault()?.DataInicio ?? sondagem.DataAplicacao;
-
-                if (aluno.DataMatricula.Date > dataInicioSondagem.Date)
-                {
-                    // Estudante remanejado, pular
-                    continue;
-                }
-
-                if (!turmasPorCodigo.TryGetValue((int)aluno.CodigoTurma, out var turmaElastic))
-                    continue;
-
-                uesPorCodigo.TryGetValue(turmaElastic.CodigoEscola, out var ueComDre);
-
-                var dadosAluno = dadosRacaGenero.TryGetValue(aluno.CodigoAluno, out var racaGenero) ? racaGenero : (null, null);
-                var racaCor = listagemRacaCor.FirstOrDefault(r => r.CodigoEolRacaCor == dadosAluno.Raca);
-
-
-                atualizacoes.Add(new AtualizarContextoRespostaAlunoDto
-                {
-                    Id = resposta.Id,
-                    TurmaId = turmaElastic.CodigoTurma.ToString(),
-                    UeId = turmaElastic.CodigoEscola,
-                    DreId = ueComDre?.CodigoDRE ?? string.Empty,
-                    AnoLetivo = anoLetivo,
-                    AnoTurma = int.TryParse(turmaElastic.AnoTurma, out var aTurma) ? aTurma : null,
-                    ModalidadeId = turmaElastic.Modalidade,
-                    RacaCorId = racaCor?.Id,
-                    GeneroSexoId = dadosAluno.Sexo,
-                    Pap = alunosPap.TryGetValue(aluno.CodigoAluno, out var possuiPap) && possuiPap,
-                    Aee = false, // Aee não presente no Elastic/EOL atual
-                    Deficiente = alunosElasticDict.TryGetValue(aluno.CodigoAluno, out var elDto) && elDto.PossuiDeficiencia == 1,
-                });
-            }
+            var atualizacao = MontarAtualizacao(resposta, contexto);
+            if (atualizacao != null)
+                atualizacoes.Add(atualizacao);
         }
 
-        if (atualizacoes.Count > 0)
+        return atualizacoes;
+    }
+
+    private static AtualizarContextoRespostaAlunoDto? MontarAtualizacao(
+        RespostaAlunoLegadoDto resposta,
+        ContextoMontagemAtualizacaoLegado contexto)
+    {
+        var aluno = contexto.DadosAlunos.FirstOrDefault(a => a.CodigoAluno == resposta.AlunoId);
+        if (aluno == null)
+            return null;
+
+        if (!contexto.Sondagens.TryGetValue(resposta.SondagemId, out var sondagem))
+            return null;
+
+        var dataInicioSondagem = sondagem.PeriodosBimestre?.OrderBy(p => p.DataInicio).FirstOrDefault()?.DataInicio ?? sondagem.DataAplicacao;
+        if (aluno.DataMatricula.Date > dataInicioSondagem.Date)
+            return null; // Estudante remanejado, pular
+
+        if (!contexto.TurmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turmaElastic))
+            return null;
+
+        contexto.UesPorCodigo.TryGetValue(turmaElastic.CodigoEscola, out var ueComDre);
+
+        var dadosAluno = contexto.DadosRacaGenero.TryGetValue(aluno.CodigoAluno, out var racaGenero) ? racaGenero : (null, null);
+        var racaCor = contexto.ListagemRacaCor.FirstOrDefault(r => r.CodigoEolRacaCor == dadosAluno.Raca);
+
+        return new AtualizarContextoRespostaAlunoDto
         {
-            var comandos = atualizacoes.Select(a =>
-            {
-                var turmaId = !string.IsNullOrEmpty(a.TurmaId) ? $"'{a.TurmaId}'" : "NULL";
-                var ueId = !string.IsNullOrEmpty(a.UeId) ? $"'{a.UeId}'" : "NULL";
-                var dreId = !string.IsNullOrEmpty(a.DreId) ? $"'{a.DreId}'" : "NULL";
-                var anoTurma = a.AnoTurma.HasValue ? a.AnoTurma.Value.ToString() : "NULL";
-                var racaCorId = a.RacaCorId.HasValue ? a.RacaCorId.Value.ToString() : "NULL";
-                var generoSexoId = a.GeneroSexoId.HasValue ? a.GeneroSexoId.Value.ToString() : "NULL";
-                var pap = a.Pap ? "true" : "false";
-                var aee = a.Aee ? "true" : "false";
-                var deficiente = a.Deficiente ? "true" : "false";
+            Id = resposta.Id,
+            TurmaId = turmaElastic.CodigoTurma.ToString(),
+            UeId = turmaElastic.CodigoEscola,
+            DreId = ueComDre?.CodigoDRE ?? string.Empty,
+            AnoLetivo = contexto.AnoLetivo,
+            AnoTurma = int.TryParse(turmaElastic.AnoTurma, out var aTurma) ? aTurma : null,
+            ModalidadeId = turmaElastic.Modalidade,
+            RacaCorId = racaCor?.Id,
+            GeneroSexoId = dadosAluno.Sexo,
+            Pap = contexto.AlunosPap.TryGetValue(aluno.CodigoAluno, out var possuiPap) && possuiPap,
+            Aee = false,
+            Deficiente = contexto.AlunosElasticDict.TryGetValue(aluno.CodigoAluno, out var elDto) && elDto.PossuiDeficiencia == 1,
+        };
+    }
 
-                return $"UPDATE resposta_aluno SET turma_id = {turmaId}, ue_id = {ueId}, dre_id = {dreId}, ano_letivo = {a.AnoLetivo}, ano_turma = {anoTurma}, raca_cor_id = {racaCorId}, genero_sexo_id = {generoSexoId}, pap = {pap}, aee = {aee}, deficiente = {deficiente} WHERE id = {a.Id};";
-            });
-
-            await System.IO.File.WriteAllLinesAsync($"{pagina}_lote.txt", comandos, cancellationToken);
-        }
-
-        return atualizacoes.Count;
+    private sealed class ContextoMontagemAtualizacaoLegado
+    {
+        public required int AnoLetivo { get; init; }
+        public required IEnumerable<AlunoEolDto> DadosAlunos { get; init; }
+        public required Dictionary<int, Dominio.Entidades.Sondagem.Sondagem> Sondagens { get; init; }
+        public required IReadOnlyList<Dominio.Entidades.RacaCor> ListagemRacaCor { get; init; }
+        public required Dictionary<int, TurmaElasticDto> TurmasPorCodigo { get; init; }
+        public required Dictionary<string, UeComDreEolDto> UesPorCodigo { get; init; }
+        public required Dictionary<long, (int? Raca, int? Sexo)> DadosRacaGenero { get; init; }
+        public required Dictionary<int, bool> AlunosPap { get; init; }
+        public required ConcurrentDictionary<int, AlunoElasticDto> AlunosElasticDict { get; init; }
     }
 
     private async Task<(IEnumerable<AlunoEolDto> Alunos, Dictionary<int, bool> AlunosPap)> ObterAlunos(List<int> codigoAlunos, CancellationToken cancellationToken)

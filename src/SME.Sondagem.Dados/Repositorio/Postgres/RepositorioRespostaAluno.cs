@@ -1,5 +1,6 @@
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
@@ -205,7 +206,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .Aggregate(query, (q, f) => q.Where(f.Predicado));
     }
 
-    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>> ObterRespostasSemContextoPaginadoAsync(int pagina, int tamanhoLote, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>> ObterRespostasSemContextoPaginadoAsync(int respostaId, int pagina, int tamanhoLote, CancellationToken cancellationToken = default)
     {
         var offset = (pagina - 1) * tamanhoLote;
         var query = @"
@@ -216,12 +217,12 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 EXTRACT(YEAR FROM s.data_aplicacao) AS AnoLetivo
             FROM resposta_aluno r
             INNER JOIN sondagem s ON s.id = r.sondagem_id
-            WHERE r.turma_id IS NULL AND r.excluido = false
+            WHERE r.id > @respostaId AND r.turma_id IS NULL AND r.excluido = false
             ORDER BY r.id
             LIMIT @TamanhoLote OFFSET @Offset";
 
         var conexao = _context.Database.GetDbConnection();
-        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>(query, new { TamanhoLote = tamanhoLote, Offset = offset });
+        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>(query, new { respostaId, TamanhoLote = tamanhoLote, Offset = offset });
     }
 
     public async Task<int> AtualizarContextoLoteAsync(IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoRespostaAlunoDto> lote, CancellationToken cancellationToken = default)

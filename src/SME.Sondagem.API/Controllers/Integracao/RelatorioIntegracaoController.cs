@@ -52,12 +52,13 @@ public class RelatorioIntegracaoController : ControllerBase
     [HttpPost("sincronizar-contexto-respostas-legacy")]
     [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
     public async Task<IActionResult> SincronizarContextoRespostasLegacy(
+        [FromQuery] int respostaIdInicial,
         [FromQuery] int pagina = 1,
         [FromQuery] int tamanhoLote = 500,
         [FromServices] IAtualizarContextoRespostasLegadoUseCase useCase = null!,
         CancellationToken cancellationToken = default)
     {
-        var atualizados = await useCase.ExecutarAsync(pagina, tamanhoLote, cancellationToken);
+        var atualizados = await useCase.ExecutarAsync(respostaIdInicial, pagina, tamanhoLote, cancellationToken);
         return Ok(atualizados);
     }
 }

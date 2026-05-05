@@ -161,6 +161,18 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirSondagemUseCase, ExcluirSondagemUseCase>();
         services.TryAddScoped<IObterSondagensUseCase, ObterSondagemUseCase>();
         services.TryAddScoped<IObterSondagemPorIdUseCase, ObterSondagemPorIdUseCase>();
+        services.TryAddScoped(sp => new AtualizarContextoRespostasLegadoDependencias
+        {
+            RepositorioRespostaAluno = sp.GetRequiredService<IRepositorioRespostaAluno>(),
+            RepositorioSondagem = sp.GetRequiredService<IRepositorioSondagem>(),
+            DadosAlunosService = sp.GetRequiredService<IDadosAlunosService>(),
+            AlunoPapService = sp.GetRequiredService<IAlunoPapService>(),
+            UeComDreEolService = sp.GetRequiredService<IUeComDreEolService>(),
+            RepositorioSondagemRelatorioPorTodasTurma = sp.GetRequiredService<RepositorioSondagemRelatorioPorTodasTurma>(),
+            RepositorioRacaCor = sp.GetRequiredService<IRepositorioRacaCor>(),
+            RepositorioGeneroSexo = sp.GetRequiredService<IRepositorioGeneroSexo>(),
+            RepositoriosElastic = sp.GetRequiredService<RepositoriosElastic>(),
+        });
         services.TryAddScoped<IAtualizarContextoRespostasLegadoUseCase, AtualizarContextoRespostasLegadoUseCase>();
         services.TryAddScoped<IObterPermissaoTurmaUseCase, ObterPermissaoTurmaUseCase>();
         services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,ObterProficienciasPorComponenteCurricularUseCase>();
