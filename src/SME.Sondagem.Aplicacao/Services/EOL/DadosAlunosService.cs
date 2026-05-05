@@ -30,7 +30,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             _logger = logger;
         }
 
-        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, int anoLetivo, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<int> codigoAlunos, int anoLetivo, CancellationToken cancellationToken = default)
         {
             var resultado = new List<AlunoEolDto>();
 
