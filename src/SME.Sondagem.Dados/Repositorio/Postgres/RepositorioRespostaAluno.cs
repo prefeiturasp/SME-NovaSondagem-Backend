@@ -154,6 +154,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
             .Where(ra =>
+               !ra.Excluido &&
                 ra.Questao.Questionario.ModalidadeId.HasValue &&
                 ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
                 ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
