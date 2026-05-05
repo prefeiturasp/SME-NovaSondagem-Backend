@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
@@ -144,7 +144,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
         [Fact]
         public async Task DeveRetornarListaVazia_QuandoCodigoAlunosVazio()
         {
-            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string>());
+            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string>(), 2024);
 
             Assert.Empty(resultado);
         }
@@ -162,7 +162,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
                     .Returns(httpClient);
 
-            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" });
+            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, 2024);
 
             Assert.Single(resultado);
         }
@@ -176,7 +176,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                     .Setup(x => x.CreateClient(ServicoEolConstants.SERVICO))
                     .Returns(httpClient);
 
-            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" });
+            var resultado = await CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, 2024);
 
             Assert.Empty(resultado);
         }
@@ -194,7 +194,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 await cts.CancelAsync();
 
                 await Assert.ThrowsAsync<OperationCanceledException>(() =>
-                    CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, cts.Token));
+                    CriarService().ObterDadosAlunosPorCodigoUe(new List<string> { "123" }, 2024, cts.Token));
             }
         }
 

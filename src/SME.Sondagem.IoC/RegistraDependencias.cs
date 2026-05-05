@@ -161,6 +161,7 @@ public static class RegistraDependencias
         services.TryAddScoped<IExcluirSondagemUseCase, ExcluirSondagemUseCase>();
         services.TryAddScoped<IObterSondagensUseCase, ObterSondagemUseCase>();
         services.TryAddScoped<IObterSondagemPorIdUseCase, ObterSondagemPorIdUseCase>();
+        services.TryAddScoped<IAtualizarContextoRespostasLegadoUseCase, AtualizarContextoRespostasLegadoUseCase>();
         services.TryAddScoped<IObterPermissaoTurmaUseCase, ObterPermissaoTurmaUseCase>();
         services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,ObterProficienciasPorComponenteCurricularUseCase>();
         services.TryAddScoped<IObterBimestresPorQuestionarioUseCase, ObterBimestresPorQuestionarioUseCase>();

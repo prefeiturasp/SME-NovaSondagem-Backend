@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using CsvHelper.Configuration.Attributes;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
@@ -200,7 +200,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             if (codigoAlunos.Count == 0)
                 return retorno;
 
-            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
+            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, DateTime.Now.Year, cancellationToken);
             if (dados.Any())
                 retorno.AddRange(dados);
 
