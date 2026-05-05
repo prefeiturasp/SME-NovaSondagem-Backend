@@ -33,6 +33,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly ObterSondagemRelatorioPorTurmaUseCase _useCase;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
+    private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
+    private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
 
 
     public ObterSondagemRelatorioPorTurmaUseCaseTeste()
@@ -49,6 +51,8 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
+        _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
 
 
         var repositoriosElastic = new RepositoriosElastic(
@@ -61,8 +65,10 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         _useCase = new ObterSondagemRelatorioPorTurmaUseCase(
@@ -90,8 +96,10 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
         );
 
         Assert.Throws<ArgumentNullException>(() => new ObterSondagemRelatorioPorTurmaUseCase(

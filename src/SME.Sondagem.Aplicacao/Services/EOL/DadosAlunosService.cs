@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
-using System.Diagnostics.CodeAnalysis;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
@@ -16,15 +17,17 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         private readonly IAlunoTurmaService _alunoTurmaService;
         private readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
         private readonly IRepositorioRacaCor _repositorioRacaCor;
+        private readonly ILogger<DadosAlunosService> _logger;
 
         public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService, IRepositorioGeneroSexo repositorioGeneroSexo
-            , IRepositorioRacaCor repositorioRacaCor)
+            , IRepositorioRacaCor repositorioRacaCor, ILogger<DadosAlunosService> logger)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
             _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
             _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
             _repositorioRacaCor = repositorioRacaCor ?? throw new ArgumentNullException(nameof(repositorioRacaCor));
+            _logger = logger;
         }
 
         public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, CancellationToken cancellationToken = default)
@@ -76,19 +79,70 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (dadosAlunos == null || !dadosAlunos.Any())
                 return [];
 
-            var dadosGeneroSexo = await _repositorioGeneroSexo.ListarAsync(cancellationToken);
-            var dadosRacaCor = await _repositorioRacaCor.ListarAsync(cancellationToken);
+            var dadosGeneroSexo = (await _repositorioGeneroSexo.ListarAsync(cancellationToken)).ToList();
+            var dadosRacaCor = (await _repositorioRacaCor.ListarAsync(cancellationToken)).ToList();
+
+            try
+            {
+                await SincronizarRacaEGeneroAsync(dadosAlunos, dadosRacaCor, dadosGeneroSexo, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao atualizar raça e genero");
+            }
 
             var dados = dadosAlunos.Select(x => new AlunoRacaGeneroDto
             {
                 CodigoAluno = x.CodigoAluno,
                 Raca = ConverterCodigoRacaParaDescricao(x.Raca),
                 Sexo = ConverterCodigoGeneroParaDescricao(x.Sexo),
-                SexoId = ObterIdSexoGenero(x.Sexo, [.. dadosGeneroSexo]),
-                RacaId = ObterIdRaca(x.Raca, [.. dadosRacaCor]),
+                SexoId = ObterIdSexoGenero(x.Sexo, dadosGeneroSexo),
+                RacaId = ObterIdRaca(x.Raca, dadosRacaCor),
             }).ToList();
 
             return dados;
+        }
+
+        private async Task SincronizarRacaEGeneroAsync(IEnumerable<DadosAlunoPorTurmaDto> dadosAlunos, List<RacaCor> dadosRacaCor, List<GeneroSexo> dadosGeneroSexo, CancellationToken cancellationToken)
+        {
+            var racaNovas = dadosAlunos
+                .Where(x => !string.IsNullOrEmpty(x.Raca) && !dadosRacaCor.Any(d => d.Descricao.Equals(x.Raca, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => new { x.Raca, x.CodigoRaca })
+                .DistinctBy(x => x.Raca);
+
+            foreach (var raca in racaNovas)
+            {
+                var novaRaca = new RacaCor
+                {
+                    Descricao = raca.Raca,
+                    CodigoEolRacaCor = raca.CodigoRaca,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "Sistema",
+                    Excluido = false
+                };
+                await _repositorioRacaCor.SalvarAsync(novaRaca, cancellationToken);
+                dadosRacaCor.Add(novaRaca);
+            }
+
+            var generosNovos = dadosAlunos
+                .Where(x => !string.IsNullOrEmpty(x.Sexo) && !dadosGeneroSexo.Any(d => d.Sigla != null && d.Sigla.Equals(x.Sexo, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.Sexo)
+                .Distinct();
+
+            foreach (var sexo in generosNovos)
+            {
+                var novoGenero = new GeneroSexo
+                {
+                    Sigla = sexo,
+                    Descricao = ConverterCodigoGeneroParaDescricao(sexo),
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "Sistema",
+                    CriadoRF = "0",
+                    Excluido = false
+                };
+                await _repositorioGeneroSexo.SalvarAsync(novoGenero, cancellationToken);
+                dadosGeneroSexo.Add(novoGenero);
+            }
         }
 
         private static int? ObterIdRaca(string codigoRaca, List<RacaCor> dadosRacaCor)

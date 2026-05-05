@@ -231,6 +231,11 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var periodoInicioSondagem = ObterDataInicioSondagem(sondagemAtiva);
 
+        if (periodoInicioSondagem.Date == DateTime.MinValue.Date)
+        {
+            periodoInicioSondagem = sondagemAtiva.PeriodosBimestre.OrderBy(p => p.DataInicio).FirstOrDefault()?.DataInicio ?? DateTime.MinValue;
+        }
+
         var alunosComResposta = contexto.RespostasAlunosPorQuestoes.Values
            .Select(r => r.AlunoId)
            .ToHashSet();

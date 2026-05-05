@@ -63,6 +63,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
+    private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
+    private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
 
     private readonly RepositoriosElastic _repositoriosElastic;
     private readonly RepositoriosSondagem _repositoriosSondagem;
@@ -83,6 +85,8 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
         _mockAlunoService = new Mock<IDadosAlunosService>();
         _componenteCurricular = new Mock<IRepositorioComponenteCurricular>();
+        _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
+        _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
 
         _repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
@@ -93,8 +97,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _mockRepositorioQuestao.Object,
             _mockRepositorioRespostaAluno.Object,
             _mockRepositorioBimestre.Object,
-                        _componenteCurricular.Object,
-            _repositorioProficiencia.Object
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
             );
     }
 
@@ -869,7 +875,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     #region ObterColunasOuLancarExcecao - por bimestres
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorBimestre_QuandoNaoHouverSubpergunta()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorBimestre_QuandoNaoHouverSubpergunta()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -886,7 +892,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoBimestresForemExcluidos()
+    public void ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoBimestresForemExcluidos()
     {
         var periodoExcluido = CriarPeriodoBimestre(bimestreId: 1, descricao: "1º Bimestre");
         periodoExcluido.Excluido = true;
@@ -903,7 +909,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoHouverVinculo()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoHouverVinculo()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -921,7 +927,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoBimestreIdForDefinido()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoBimestreIdForDefinido()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -939,7 +945,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
+    public void ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {

@@ -1,96 +1,73 @@
-using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
+using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
 public class ObterSondagemRelatorioConsolidadoGeneroUseCase : ObterSondagemRelatorioConsolidadoBase, IObterSondagemRelatorioConsolidadoGeneroUseCase
 {
+    private IEnumerable<GeneroDominio> _generosReferencia = [];
+
     public ObterSondagemRelatorioConsolidadoGeneroUseCase(
         RepositoriosSondagem repositorioSondagem,
         IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
     {
     }
 
-    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio([FromQuery] FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
+    protected override string TituloSemDados => "Relatório Consolidado por Gênero - Sem Dados";
+    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Gênero - {anoLetivo}";
+
+    public new async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
-        var respostas = await ObterRespostasFiltradasAsync(filtro, cancellationToken);
+        var generos = await RepositorioSondagem.RepositorioGeneroSexo.ListarAsync(cancellationToken);
 
-        if (respostas.Count == 0)
-            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Gênero - Sem Dados" };
+        if (filtro.GeneroId.HasValue)
+            _generosReferencia = generos.Where(g => g.Id == filtro.GeneroId.Value);
+        else
+            _generosReferencia = generos;
 
-        var relatorio = new RelatorioConsolidadoSondagemDto
-        {
-            Titulo = $"Relatório Consolidado de Sondagem por Gênero - {filtro.AnoLetivo}"
-        };
-
-        var agrupamentoPorQuestao = respostas
-            .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
-            .OrderBy(g => g.Key.QuestaoNome);
-
-        relatorio.Questoes = [.. agrupamentoPorQuestao.Select(g => ProcessarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))];
-
-        return relatorio;
+        return await base.ObterSondagemRelatorio(filtro, cancellationToken);
     }
 
-    private static RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostasQuestao)
+    protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
+        => ConstruirQuestaoDto(
+            questaoId,
+            questaoNome,
+            respostas,
+            processarOpcao: (opcao, respostasQuestao, total) =>
+                ConstruirRespostaDto(opcao, respostasQuestao, total,
+                    (dto, respostasOpcao, totalQ) => dto.Generos = AgruparPorGenero(respostasOpcao, totalQ, _generosReferencia)),
+            adicionarTotais: (dto, respostasQuestao, total) =>
+                dto.TotaisPorGenero = AgruparPorGenero(respostasQuestao, total, _generosReferencia));
+
+    internal static List<RelatorioConsolidadoGeneroDto> AgruparPorGenero(List<RelatorioRespostaAlunoDto> respostas, int total, IEnumerable<GeneroDominio> generosReferencia)
     {
-        int totalRespostasQuestao = respostasQuestao.Count;
+        var grupos = respostas
+            .GroupBy(r => r.GeneroSexoId ?? 0)
+            .ToDictionary(g => g.Key, g => g.Count());
 
-        var questaoDto = new RelatorioConsolidadoQuestaoDto
-        {
-            QuestaoId = questaoId,
-            QuestaoNome = questaoNome,
-            TotalEstudantes = respostasQuestao.Select(r => r.AlunoId).Distinct().Count()
-        };
-
-        var primeiraComOpcoes = respostasQuestao.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
-        var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
-                                ?? [];
-
-        var listaRespostas = opcoesDisponiveis
-            .Select(opcao => ProcessarRespostaOpcao(opcao, respostasQuestao, totalRespostasQuestao))
-            .ToList();
-
-        questaoDto.Respostas = listaRespostas;
-        questaoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
-
-        questaoDto.TotaisPorGenero = ObterTotaisPorGenero(respostasQuestao, totalRespostasQuestao);
-
-        return questaoDto;
-    }
-
-    private static RelatorioConsolidadoRespostaDto ProcessarRespostaOpcao(RelatorioOpcaoRespostaDto opcao, List<RelatorioRespostaAlunoDto> respostasQuestao, int totalRespostasQuestao)
-    {
-        var respostasDestaOpcao = respostasQuestao.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
-        int totalOpcao = respostasDestaOpcao.Count;
-
-        return new RelatorioConsolidadoRespostaDto
-        {
-            Resposta = opcao.Descricao,
-            Ordem = opcao.Ordem,
-            CorFundo = opcao.CorFundo,
-            CorTexto = opcao.CorTexto,
-            Total = totalOpcao,
-            Percentual = CalcularPercentual(totalOpcao, totalRespostasQuestao),
-            Generos = ObterTotaisPorGenero(respostasDestaOpcao, totalRespostasQuestao)
-        };
-    }
-
-    private static List<RelatorioConsolidadoGeneroDto> ObterTotaisPorGenero(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao)
-    {
-        return respostas
-            .GroupBy(r => r.GeneroSexo?.Descricao ?? "Não Informado")
+        var lista = generosReferencia
             .Select(g => new RelatorioConsolidadoGeneroDto
             {
-                Genero = g.Key,
-                Sigla = g.FirstOrDefault()?.GeneroSexo?.Sigla,
-                Quantidade = g.Count(),
-                Percentual = CalcularPercentual(g.Count(), totalRespostasQuestao)
-            })
-            .OrderBy(g => g.Genero)
-            .ToList();
+                Genero = g.Descricao,
+                Sigla = g.Sigla,
+                Quantidade = grupos.TryGetValue(g.Id, out int qtd) ? qtd : 0,
+                Percentual = CalcularPercentual(grupos.TryGetValue(g.Id, out int q) ? q : 0, total)
+            }).ToList();
+
+        if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
+        {
+            lista.Add(new RelatorioConsolidadoGeneroDto
+            {
+                Genero = "NÃO PREENCHIDO",
+                Sigla = "NI",
+                Quantidade = qtdNaoInformado,
+                Percentual = CalcularPercentual(qtdNaoInformado, total)
+            });
+        }
+
+        return [.. lista.OrderBy(g => g.Genero ?? "NÃO PREENCHIDO")];
     }
 }

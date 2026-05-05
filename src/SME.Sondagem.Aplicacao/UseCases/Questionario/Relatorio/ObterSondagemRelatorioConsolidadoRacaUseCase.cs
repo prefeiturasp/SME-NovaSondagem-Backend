@@ -1,95 +1,71 @@
-using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
+using RacaDominio = SME.Sondagem.Dominio.Entidades.RacaCor;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 
 public class ObterSondagemRelatorioConsolidadoRacaUseCase : ObterSondagemRelatorioConsolidadoBase, IObterSondagemRelatorioConsolidadoRacaUseCase
 {
+    private IEnumerable<RacaDominio> _racasReferencia = [];
+
     public ObterSondagemRelatorioConsolidadoRacaUseCase(
         RepositoriosSondagem repositorioSondagem,
         IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
     {
     }
 
-    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio([FromQuery] FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
+    protected override string TituloSemDados => "Relatório Consolidado por Raça - Sem Dados";
+    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Raça - {anoLetivo}";
+
+    public new async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
-        var respostas = await ObterRespostasFiltradasAsync(filtro, cancellationToken);
+        var racas = await RepositorioSondagem.RepositorioRacaCor.ListarAsync(cancellationToken) ?? [];
 
-        if (respostas.Count == 0)
-            return new RelatorioConsolidadoSondagemDto { Titulo = "Relatório Consolidado por Raça - Sem Dados" };
+        if (filtro.RacaId.HasValue)
+            _racasReferencia = racas.Where(r => r.Id == filtro.RacaId.Value);
+        else
+            _racasReferencia = racas;
 
-        var relatorio = new RelatorioConsolidadoSondagemDto
-        {
-            Titulo = $"Relatório Consolidado de Sondagem por Raça - {filtro.AnoLetivo}"
-        };
-
-        var agrupamentoPorQuestao = respostas
-            .GroupBy(r => new { r.QuestaoId, r.QuestaoNome })
-            .OrderBy(g => g.Key.QuestaoNome);
-
-        relatorio.Questoes = [.. agrupamentoPorQuestao.Select(g => ProcessarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))];
-
-        return relatorio;
+        return await base.ObterSondagemRelatorio(filtro, cancellationToken);
     }
 
-    private static RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostasQuestao)
+    protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
+        => ConstruirQuestaoDto(
+            questaoId,
+            questaoNome,
+            respostas,
+            processarOpcao: (opcao, respostasQuestao, total) =>
+                ConstruirRespostaDto(opcao, respostasQuestao, total,
+                    (dto, respostasOpcao, totalQ) => dto.Racas = AgruparPorRaca(respostasOpcao, totalQ, _racasReferencia)),
+            adicionarTotais: (dto, respostasQuestao, total) =>
+                dto.TotaisPorRaca = AgruparPorRaca(respostasQuestao, total, _racasReferencia));
+
+    internal static List<RelatorioConsolidadoRacaDto> AgruparPorRaca(List<RelatorioRespostaAlunoDto> respostas, int total, IEnumerable<RacaDominio> racasReferencia)
     {
-        int totalRespostasQuestao = respostasQuestao.Count;
+        var grupos = respostas
+            .GroupBy(r => r.RacaCorId ?? 0)
+            .ToDictionary(g => g.Key, g => g.Count());
 
-        var questaoDto = new RelatorioConsolidadoQuestaoDto
-        {
-            QuestaoId = questaoId,
-            QuestaoNome = questaoNome,
-            TotalEstudantes = respostasQuestao.Select(r => r.AlunoId).Distinct().Count()
-        };
-
-        var primeiraComOpcoes = respostasQuestao.FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any());
-        var opcoesDisponiveis = primeiraComOpcoes?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList()
-                                ?? [];
-
-        var listaRespostas = opcoesDisponiveis
-            .Select(opcao => ProcessarRespostaOpcao(opcao, respostasQuestao, totalRespostasQuestao))
-            .ToList();
-
-        questaoDto.Respostas = listaRespostas;
-        questaoDto.PercentualTotal = listaRespostas.Sum(r => r.Percentual);
-
-        questaoDto.TotaisPorRaca = ObterTotaisPorRaca(respostasQuestao, totalRespostasQuestao);
-
-        return questaoDto;
-    }
-
-    private static RelatorioConsolidadoRespostaDto ProcessarRespostaOpcao(RelatorioOpcaoRespostaDto opcao, List<RelatorioRespostaAlunoDto> respostasQuestao, int totalRespostasQuestao)
-    {
-        var respostasDestaOpcao = respostasQuestao.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
-        int totalOpcao = respostasDestaOpcao.Count;
-
-        return new RelatorioConsolidadoRespostaDto
-        {
-            Resposta = opcao.Descricao,
-            Ordem = opcao.Ordem,
-            CorFundo = opcao.CorFundo,
-            CorTexto = opcao.CorTexto,
-            Total = totalOpcao,
-            Percentual = CalcularPercentual(totalOpcao, totalRespostasQuestao),
-            Racas = ObterTotaisPorRaca(respostasDestaOpcao, totalRespostasQuestao)
-        };
-    }
-
-    private static List<RelatorioConsolidadoRacaDto> ObterTotaisPorRaca(List<RelatorioRespostaAlunoDto> respostas, int totalRespostasQuestao)
-    {
-        return respostas
-            .GroupBy(r => r.RacaCor?.Descricao ?? "Não Informado")
-            .Select(g => new RelatorioConsolidadoRacaDto
+        var lista = racasReferencia
+            .Select(r => new RelatorioConsolidadoRacaDto
             {
-                Raca = g.Key,
-                Quantidade = g.Count(),
-                Percentual = CalcularPercentual(g.Count(), totalRespostasQuestao)
-            })
-            .OrderBy(r => r.Raca)
-            .ToList();
+                Raca = r.Descricao,
+                Quantidade = grupos.TryGetValue(r.Id, out int qtd) ? qtd : 0,
+                Percentual = CalcularPercentual(grupos.TryGetValue(r.Id, out int q) ? q : 0, total)
+            }).ToList();
+
+        if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
+        {
+            lista.Add(new RelatorioConsolidadoRacaDto
+            {
+                Raca = "NÃO PREENCHIDO",
+                Quantidade = qtdNaoInformado,
+                Percentual = CalcularPercentual(qtdNaoInformado, total)
+            });
+        }
+
+        return [.. lista.OrderBy(r => r.Raca ?? "NÃO PREENCHIDO")];
     }
 }
