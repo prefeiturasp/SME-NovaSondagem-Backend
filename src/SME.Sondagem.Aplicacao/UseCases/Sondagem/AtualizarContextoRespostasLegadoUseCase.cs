@@ -154,10 +154,6 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         if (!contexto.Sondagens.TryGetValue(resposta.SondagemId, out var sondagem))
             return null;
 
-        var dataInicioSondagem = sondagem.PeriodosBimestre?.OrderBy(p => p.DataInicio).FirstOrDefault()?.DataInicio ?? sondagem.DataAplicacao;
-        if (aluno.DataMatricula.Date > dataInicioSondagem.Date)
-            return null; // Estudante remanejado, pular
-
         if (!contexto.TurmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turmaElastic))
             return null;
 
