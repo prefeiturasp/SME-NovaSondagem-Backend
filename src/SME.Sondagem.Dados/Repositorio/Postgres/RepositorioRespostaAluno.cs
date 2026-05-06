@@ -218,7 +218,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                 EXTRACT(YEAR FROM s.data_aplicacao) AS AnoLetivo
             FROM resposta_aluno r
             INNER JOIN sondagem s ON s.id = r.sondagem_id
-            WHERE r.id > @respostaId AND r.turma_id IS NULL AND r.excluido = false
+            WHERE r.id > @respostaId AND r.turma_id IS NULL AND r.excluido = false and r.ano_turma IS NULL
             ORDER BY r.id
             LIMIT @TamanhoLote OFFSET @Offset";
 
