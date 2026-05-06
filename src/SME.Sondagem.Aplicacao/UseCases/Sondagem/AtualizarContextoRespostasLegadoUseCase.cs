@@ -112,7 +112,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
 
         var turmasPorCodigo = dadosCompletosTurmas.Where(t => t.CodigoTurma > 0).GroupBy(t => t.CodigoTurma).ToDictionary(g => g.Key, g => g.First());
         var codigoUes = dadosAlunos.Select(x => x.CodigoEscola!).Where(c => !string.IsNullOrEmpty(c)).Distinct();
-        var uesComDre = await _ueComDreEolService.ObterUesComDrePorCodigosUes(codigoUes);
+        var uesComDre = await _ueComDreEolService.ObterUesComDrePorCodigosUes(codigoUes, cancellationToken);
         var uesPorCodigo = uesComDre.Where(u => !string.IsNullOrEmpty(u.CodigoEscola)).ToDictionary(u => u.CodigoEscola!, u => u);
 
         var turmasIdsList = turmasCodigosUnicos.ToList();
