@@ -1,4 +1,6 @@
+using Dapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
@@ -81,6 +83,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .AsNoTracking();
 
         query = AplicarFiltrosRelatorioConsolidado(query, filtro);
+
 
         return await query.Select(ra => new RelatorioRespostaAlunoDto
         {
@@ -202,5 +205,48 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return filtros
             .Where(f => f.Aplicar)
             .Aggregate(query, (q, f) => q.Where(f.Predicado));
+    }
+
+    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>> ObterRespostasSemContextoPaginadoAsync(int respostaId, int pagina, int tamanhoLote, CancellationToken cancellationToken = default)
+    {
+        var offset = (pagina - 1) * tamanhoLote;
+        var query = @"
+            SELECT 
+                r.id AS Id,
+                r.aluno_id AS AlunoId,
+                r.sondagem_id AS SondagemId,
+                EXTRACT(YEAR FROM s.data_aplicacao) AS AnoLetivo
+            FROM resposta_aluno r
+            INNER JOIN sondagem s ON s.id = r.sondagem_id
+            WHERE r.id > @respostaId AND r.turma_id IS NULL AND r.excluido = false
+            ORDER BY r.id
+            LIMIT @TamanhoLote OFFSET @Offset";
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>(query, new { respostaId, TamanhoLote = tamanhoLote, Offset = offset });
+    }
+
+    public async Task<int> AtualizarContextoLoteAsync(IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoRespostaAlunoDto> lote, CancellationToken cancellationToken = default)
+    {
+        if (!lote.Any()) return 0;
+
+        var query = @"
+            UPDATE resposta_aluno
+            SET 
+                turma_id = @TurmaId,
+                modalidade_id = @ModalidadeId,
+                ue_id = @UeId,
+                dre_id = @DreId,
+                ano_letivo = @AnoLetivo,
+                ano_turma = @AnoTurma,
+                raca_cor_id = @RacaCorId,
+                genero_sexo_id = @GeneroSexoId,
+                pap = @Pap,
+                aee = @Aee,
+                deficiente = @Deficiente
+            WHERE id = @Id";
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.ExecuteAsync(query, lote);
     }
 }

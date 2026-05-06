@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Infra.Dtos;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -46,6 +47,19 @@ public class RelatorioIntegracaoController : ControllerBase
     {
             var resultado = await useCase.ExecutarAsync(proficienciaId, cancellationToken);
             return Ok(resultado);
+    }
+
+    [HttpPost("sincronizar-contexto-respostas-legacy")]
+    [ProducesResponseType(typeof(int), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SincronizarContextoRespostasLegacy(
+        [FromQuery] int respostaIdInicial,
+        [FromQuery] int pagina = 1,
+        [FromQuery] int tamanhoLote = 500,
+        [FromServices] IAtualizarContextoRespostasLegadoUseCase useCase = null!,
+        CancellationToken cancellationToken = default)
+    {
+        var atualizados = await useCase.ExecutarAsync(respostaIdInicial, pagina, tamanhoLote, cancellationToken);
+        return Ok(atualizados);
     }
 }
 
