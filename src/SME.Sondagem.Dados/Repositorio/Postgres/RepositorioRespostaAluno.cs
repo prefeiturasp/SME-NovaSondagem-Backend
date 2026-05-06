@@ -84,6 +84,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
 
         query = AplicarFiltrosRelatorioConsolidado(query, filtro);
 
+
         return await query.Select(ra => new RelatorioRespostaAlunoDto
         {
             Id = ra.Id,
@@ -233,6 +234,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             UPDATE resposta_aluno
             SET 
                 turma_id = @TurmaId,
+                modalidade_id = @ModalidadeId,
                 ue_id = @UeId,
                 dre_id = @DreId,
                 ano_letivo = @AnoLetivo,
