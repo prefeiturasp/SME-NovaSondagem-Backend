@@ -151,9 +151,6 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         if (aluno == null)
             return null;
 
-        if (!contexto.Sondagens.TryGetValue(resposta.SondagemId, out var sondagem))
-            return null;
-
         if (!contexto.TurmasPorCodigo.TryGetValue(aluno.CodigoTurma, out var turmaElastic))
             return null;
 
