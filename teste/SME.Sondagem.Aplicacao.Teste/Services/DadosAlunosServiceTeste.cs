@@ -525,5 +525,50 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             Assert.Single(resultado);
             _logger.VerifyLog<DadosAlunosService, InvalidOperationException>(LogLevel.Error, Times.Once());
         }
+
+        [Fact]
+        public async Task ObterDadosRacaGeneroAlunosPorCodigoAluno_DeveRetornarNulo_QuandoInformacoesNulas()
+        {
+            _alunoTurmaService
+                .Setup(x => x.InformacoesPorCodigoAluno(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((AlunoInformacoesEolDto?)null);
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosPorCodigoAluno(6861129);
+
+            Assert.Null(resultado);
+        }
+
+        [Fact]
+        public async Task ObterDadosRacaGeneroAlunosPorCodigoAluno_DeveMapearGrupoEtnicoESexo_AlignTurmaInformacoes()
+        {
+            _alunoTurmaService
+                .Setup(x => x.InformacoesPorCodigoAluno(6861129L, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AlunoInformacoesEolDto
+                {
+                    CodigoAluno = 6861129,
+                    NomeAluno = "MARIA SOPHYA SILVA DA CRUZ",
+                    Sexo = "F",
+                    GrupoEtnico = "PARDA"
+                });
+            _repositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<RacaCor>
+                {
+                    new() { Id = 50, Descricao = "PARDA", CodigoEolRacaCor = 3 }
+                });
+            _repositorioGeneroSexo.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<GeneroSexo>
+                {
+                    new() { Id = 11, Sigla = "F", Descricao = "Feminino" }
+                });
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosPorCodigoAluno(6861129);
+
+            Assert.NotNull(resultado);
+            Assert.Equal(6861129L, resultado.CodigoAluno);
+            Assert.Equal("Parda", resultado.Raca);
+            Assert.Equal("Feminino", resultado.Sexo);
+            Assert.Equal(50, resultado.RacaId);
+            Assert.Equal(11, resultado.SexoId);
+        }
     }
 }

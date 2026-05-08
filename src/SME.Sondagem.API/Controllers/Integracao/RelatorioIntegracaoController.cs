@@ -19,7 +19,7 @@ namespace SME.Sondagem.API.Controllers;
 /// </remarks>
 [Route("api/relatorio-integracao")]
 [ApiController]
-[ApiExplorerSettings(IgnoreApi = true)]
+//[ApiExplorerSettings(IgnoreApi = true)]
 [ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
@@ -60,6 +60,35 @@ public class RelatorioIntegracaoController : ControllerBase
     {
         var atualizados = await useCase.ExecutarAsync(respostaIdInicial, pagina, tamanhoLote, cancellationToken);
         return Ok(atualizados);
+    }
+
+    [HttpPost("atualizar-contexto-resposta-aluno")]
+    [ProducesResponseType(typeof(AtualizacaoContextoRespostaPorTurmaAlunoOutput), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AtualizarContextoRespostaAlunoPorTurmaEAluno(
+        [FromQuery] int codigoTurma,
+        [FromQuery] int codigoAluno,
+        [FromQuery] int? anoLetivo = null,
+        [FromServices] IAtualizarContextoRespostaAlunoPorTurmaAlunoUseCase useCase = null!,
+        CancellationToken cancellationToken = default)
+    {
+        var resultado = await useCase.ExecutarAsync(codigoTurma, codigoAluno, anoLetivo, cancellationToken);
+        if (!resultado.Sucesso)
+            return NotFound();
+
+        return Ok(resultado);
+    }
+
+    [HttpPost("corrigir-ano-turma-respostas")]
+    [ProducesResponseType(typeof(CorrigirAnoTurmaRespostasOutput), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CorrigirAnoTurmaRespostas(
+        [FromQuery] int pagina = 1,
+        [FromQuery] int tamanhoLote = 500,
+        [FromServices] ICorrigirAnoTurmaRespostasUseCase useCase = null!,
+        CancellationToken cancellationToken = default)
+    {
+        var resultado = await useCase.ExecutarAsync(pagina, tamanhoLote, cancellationToken);
+        return Ok(resultado);
     }
 }
 

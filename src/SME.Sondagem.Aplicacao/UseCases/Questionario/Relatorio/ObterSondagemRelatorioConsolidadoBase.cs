@@ -58,6 +58,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
                 .Select(g => processarQuestao(g.Key.QuestaoId, g.Key.QuestaoNome, [.. g]))]
         };
 
+        var teste = respostas.Where(x => x.QuestaoId == 3).ToList();
         return relatorio;
     }
 

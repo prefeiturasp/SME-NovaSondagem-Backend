@@ -12,19 +12,19 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class DadosAlunosService : IDadosAlunosService
     {
-        private const int TamanhoBatch = 100; 
+        private const int TamanhoBatch = 100;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IAlunoTurmaService _alunoTurmaService;
         private readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
         private readonly IRepositorioRacaCor _repositorioRacaCor;
         private readonly ILogger<DadosAlunosService> _logger;
 
-        public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService, IRepositorioGeneroSexo repositorioGeneroSexo
-            , IRepositorioRacaCor repositorioRacaCor, ILogger<DadosAlunosService> logger)
+        public DadosAlunosService(IHttpClientFactory httpClientFactory, IAlunoTurmaService alunoTurmaService,
+            IRepositorioGeneroSexo repositorioGeneroSexo, IRepositorioRacaCor repositorioRacaCor,
+            ILogger<DadosAlunosService> logger)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             _alunoTurmaService = alunoTurmaService ?? throw new ArgumentNullException(nameof(alunoTurmaService));
-            _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
             _repositorioGeneroSexo = repositorioGeneroSexo ?? throw new ArgumentNullException(nameof(repositorioGeneroSexo));
             _repositorioRacaCor = repositorioRacaCor ?? throw new ArgumentNullException(nameof(repositorioRacaCor));
             _logger = logger;
@@ -74,8 +74,26 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         public async Task<IEnumerable<AlunoRacaGeneroDto>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken = default)
         {
             var dadosAlunos = await _alunoTurmaService.InformacoesAlunosPorTurma(turmaId, cancellationToken);
+            return await MontarListaRacaGeneroAsync(dadosAlunos.ToList(), cancellationToken);
+        }
 
-            if (dadosAlunos == null || !dadosAlunos.Any())
+        public async Task<AlunoRacaGeneroDto?> ObterDadosRacaGeneroAlunosPorCodigoAluno(int alunoId,
+            CancellationToken cancellationToken = default)
+        {
+            var informacoes = await _alunoTurmaService.InformacoesPorCodigoAluno(alunoId, cancellationToken);
+            if (informacoes == null)
+                return null;
+
+            var dadosAluno = ConverterInformacoesParaDadosAlunoPorTurma(informacoes);
+            var lista = await MontarListaRacaGeneroAsync([dadosAluno], cancellationToken);
+            return lista.FirstOrDefault();
+        }
+
+        private async Task<List<AlunoRacaGeneroDto>> MontarListaRacaGeneroAsync(
+            IReadOnlyList<DadosAlunoPorTurmaDto> dadosAlunos,
+            CancellationToken cancellationToken)
+        {
+            if (dadosAlunos.Count == 0)
                 return [];
 
             var dadosGeneroSexo = (await _repositorioGeneroSexo.ListarAsync(cancellationToken)).ToList();
@@ -90,7 +108,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 _logger.LogError(ex, "Erro ao atualizar raça e genero");
             }
 
-            var dados = dadosAlunos.Select(x => new AlunoRacaGeneroDto
+            return dadosAlunos.Select(x => new AlunoRacaGeneroDto
             {
                 CodigoAluno = x.CodigoAluno,
                 Raca = ConverterCodigoRacaParaDescricao(x.Raca),
@@ -98,9 +116,19 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 SexoId = ObterIdSexoGenero(x.Sexo, dadosGeneroSexo),
                 RacaId = ObterIdRaca(x.Raca, dadosRacaCor),
             }).ToList();
-
-            return dados;
         }
+
+        private static DadosAlunoPorTurmaDto ConverterInformacoesParaDadosAlunoPorTurma(AlunoInformacoesEolDto informacoes) =>
+            new()
+            {
+                NumeroChamada = 0,
+                CodigoAluno = informacoes.CodigoAluno,
+                NomeAluno = informacoes.NomeAluno ?? string.Empty,
+                NomeSocialAluno = string.Empty,
+                Sexo = informacoes.Sexo ?? string.Empty,
+                Raca = informacoes.GrupoEtnico ?? string.Empty,
+                CodigoRaca = 0
+            };
 
         private async Task SincronizarRacaEGeneroAsync(IEnumerable<DadosAlunoPorTurmaDto> dadosAlunos, List<RacaCor> dadosRacaCor, List<GeneroSexo> dadosGeneroSexo, CancellationToken cancellationToken)
         {
@@ -148,9 +176,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         {
             return dadosRacaCor.FirstOrDefault(g => string.Equals(g.Descricao, codigoRaca, StringComparison.OrdinalIgnoreCase))?.Id;
         }
-        private static int? ObterIdSexoGenero(string codigoGenero,List<GeneroSexo> dadosGeneroSexo)
+        private static int? ObterIdSexoGenero(string codigoGenero, List<GeneroSexo> dadosGeneroSexo)
         {
-           return dadosGeneroSexo.FirstOrDefault(g => string.Equals(g.Sigla, codigoGenero, StringComparison.OrdinalIgnoreCase))?.Id;
+            return dadosGeneroSexo.FirstOrDefault(g => string.Equals(g.Sigla, codigoGenero, StringComparison.OrdinalIgnoreCase))?.Id;
         }
 
         private static string ConverterCodigoGeneroParaDescricao(string codigoGenero)

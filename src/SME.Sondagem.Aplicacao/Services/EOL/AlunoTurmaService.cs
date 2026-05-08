@@ -44,5 +44,32 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             return resultado;
         }
+
+        public async Task<AlunoInformacoesEolDto?> InformacoesPorCodigoAluno(long codigoAluno, CancellationToken cancellationToken = default)
+        {
+            if (codigoAluno <= 0)
+                return null;
+
+            var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
+            var url = string.Format(ServicoEolConstants.URL_ALUNOS_INFORMACOES, codigoAluno);
+
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cts.CancelAfter(TimeSpan.FromSeconds(180));
+
+            var response = await httpClient.GetAsync(url, cts.Token);
+
+            if (!response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await response.Content.ReadAsStringAsync(cancellationToken);
+            if (string.IsNullOrWhiteSpace(json))
+                return null;
+
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+            };
+            return JsonConvert.DeserializeObject<AlunoInformacoesEolDto>(json, settings);
+        }
     }
 }

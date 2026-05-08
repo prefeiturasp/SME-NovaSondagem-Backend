@@ -35,4 +35,11 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
     Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoLegadoDto>> ObterRespostasSemContextoPaginadoAsync(int respostaId, int pagina, int tamanhoLote, CancellationToken cancellationToken = default);
 
     Task<int> AtualizarContextoLoteAsync(IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoRespostaAlunoDto> lote, CancellationToken cancellationToken = default);
+
+    Task<int> AtualizarContextoEducacionalPorAlunoIdAsync(int alunoId, string turmaId, string ueId, string dreId,
+        int? anoTurma, int? racaCorId, int? generoSexoId, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoAnoTurmaDivergenteDto>> ObterRespostasComAnoTurmaDivergentePaginadoAsync(int pagina, int tamanhoLote, CancellationToken cancellationToken = default);
+
+    Task<int> AtualizarContextoTurmaLoteAsync(IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoTurmaRespostaAlunoDto> lote, CancellationToken cancellationToken = default);
 }

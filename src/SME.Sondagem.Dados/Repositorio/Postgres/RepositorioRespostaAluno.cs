@@ -249,4 +249,83 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         var conexao = _context.Database.GetDbConnection();
         return await conexao.ExecuteAsync(query, lote);
     }
+
+    public async Task<int> AtualizarContextoEducacionalPorAlunoIdAsync(int alunoId, string turmaId, string ueId,
+        string dreId, int? anoTurma, int? racaCorId, int? generoSexoId,
+        CancellationToken cancellationToken = default)
+    {
+        const string query = @"
+            UPDATE resposta_aluno
+            SET
+                turma_id = @TurmaId,
+                ue_id = @UeId,
+                dre_id = @DreId,
+                ano_turma = @AnoTurma,
+                raca_cor_id = @RacaCorId,
+                genero_sexo_id = @GeneroSexoId
+            WHERE aluno_id = @AlunoId AND excluido = false";
+
+        var parametros = new
+        {
+            AlunoId = alunoId,
+            TurmaId = turmaId,
+            UeId = ueId,
+            DreId = dreId,
+            AnoTurma = anoTurma,
+            RacaCorId = racaCorId,
+            GeneroSexoId = generoSexoId
+        };
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.ExecuteAsync(new CommandDefinition(query, parametros,
+            cancellationToken: cancellationToken));
+    }
+
+    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoAnoTurmaDivergenteDto>> ObterRespostasComAnoTurmaDivergentePaginadoAsync(
+        int pagina, int tamanhoLote, CancellationToken cancellationToken = default)
+    {
+        var offset = (pagina - 1) * tamanhoLote;
+        const string sql = @"
+            SELECT 
+                ra.id AS Id,
+                ra.aluno_id AS AlunoId,
+                ra.turma_id AS TurmaId,
+                ra.ano_turma AS AnoTurmaAtual,
+                q2.serie_ano AS SerieAnoCorreto,
+                q.nome AS QuestaoNome,
+                COALESCE(ra.ano_letivo, EXTRACT(YEAR FROM s.data_aplicacao)::int) AS AnoLetivo
+            FROM resposta_aluno ra
+            INNER JOIN questao q ON q.id = ra.questao_id
+            INNER JOIN questionario q2 ON q2.id = q.questionario_id
+            INNER JOIN sondagem s ON s.id = ra.sondagem_id
+            WHERE q2.serie_ano IS NOT NULL
+              AND (ra.ano_turma IS NULL OR q2.serie_ano::int <> ra.ano_turma)
+              AND ra.excluido = false
+            ORDER BY ra.id
+            LIMIT @TamanhoLote OFFSET @Offset";
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.RespostaAlunoAnoTurmaDivergenteDto>(
+            new CommandDefinition(sql, new { TamanhoLote = tamanhoLote, Offset = offset }, cancellationToken: cancellationToken));
+    }
+
+    public async Task<int> AtualizarContextoTurmaLoteAsync(
+        IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoTurmaRespostaAlunoDto> lote,
+        CancellationToken cancellationToken = default)
+    {
+        var lista = lote.ToList();
+        if (lista.Count == 0) return 0;
+
+        const string sql = @"
+            UPDATE resposta_aluno
+            SET 
+                turma_id = @TurmaId,
+                ue_id = @UeId,
+                dre_id = @DreId,
+                ano_turma = @AnoTurma
+            WHERE id = @Id";
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.ExecuteAsync(new CommandDefinition(sql, lista, cancellationToken: cancellationToken));
+    }
 }
