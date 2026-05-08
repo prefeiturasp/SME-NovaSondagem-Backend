@@ -2,7 +2,7 @@
 
 public class FiltroSolicitacaoRelatorioIntegracaoSgpDto : FiltroSolicitacaoRelatorioIntegracaoSgpBaseDto
 {
-    public string FiltrosUsados { get; set; }
+    public string? FiltrosUsados { get; set; }
 }
 
 
