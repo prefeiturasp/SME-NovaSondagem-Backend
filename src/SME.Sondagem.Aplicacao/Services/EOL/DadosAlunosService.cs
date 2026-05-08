@@ -30,7 +30,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             _logger = logger;
         }
 
-        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<string> codigoAlunos, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<AlunoEolDto>> ObterDadosAlunosPorCodigoUe(List<int> codigoAlunos, int anoLetivo, CancellationToken cancellationToken = default)
         {
             var resultado = new List<AlunoEolDto>();
 
@@ -45,7 +45,6 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
             var url = "alunos/obter-nomes-alunos";
-            int anoAtual = DateTime.Now.Year;
 
             foreach (var batch in batches)
             {
@@ -54,7 +53,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 var requestBody = new
                 {
                     codigosAlunos = batch,
-                    anoLetivo = anoAtual
+                    anoLetivo
                 };
 
                 var jsonRequest = JsonConvert.SerializeObject(requestBody);

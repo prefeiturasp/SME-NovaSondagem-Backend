@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using CsvHelper.Configuration.Attributes;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
@@ -68,9 +68,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return await _repositoriosElastic.RepositorioElasticTurma.ObterTurmasPorIds(dadosAlunos.Select(x => x.CodigoTurma), cancellationToken);
         }
 
-        private static List<string> ObterCodigosAlunos(IEnumerable<ExtracaoSondagemLpEscritaDto> responstas)
+        private static List<int> ObterCodigosAlunos(IEnumerable<ExtracaoSondagemLpEscritaDto> responstas)
         {
-            return responstas.Select(x => x.CodigoEolEstudante!).ToList() ?? new List<string>();
+            return responstas.Select(x => Convert.ToInt32(x.CodigoEolEstudante)!).ToList() ?? new List<int>();
         }
 
         private async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(int modalidadeIdFundamental, Dominio.Entidades.ComponenteCurricular componenteLp, CancellationToken cancellationToken)
@@ -194,13 +194,13 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return memoryStream;
         }
 
-        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<string> codigoAlunos, CancellationToken cancellationToken)
+        private async Task<IEnumerable<AlunoEolDto>> ObterAlunos(List<int> codigoAlunos, CancellationToken cancellationToken)
         {
             var retorno = new List<AlunoEolDto>();
             if (codigoAlunos.Count == 0)
                 return retorno;
 
-            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, cancellationToken);
+            var dados = await _repositorioSondagemRelatorioPorTodasTurma.DadosAlunosService.ObterDadosAlunosPorCodigoUe(codigoAlunos, DateTime.Now.Year, cancellationToken);
             if (dados.Any())
                 retorno.AddRange(dados);
 
