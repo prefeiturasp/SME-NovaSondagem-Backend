@@ -83,7 +83,7 @@ public class ComponenteCurricularUseCase : IComponenteCurricularUseCase
         var entidadeAtualizada = new Dominio.Entidades.ComponenteCurricular(
             nome: dto.Nome,
             ano: dto.Ano,
-            modalidade: dto.Modalidade,
+            modalidade: dto.Modalidade ?? "",
             codigoEol: dto.CodigoEol
         );
 

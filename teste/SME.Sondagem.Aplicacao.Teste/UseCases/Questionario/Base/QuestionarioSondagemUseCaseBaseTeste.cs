@@ -875,7 +875,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     #region ObterColunasOuLancarExcecao - por bimestres
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorBimestre_QuandoNaoHouverSubpergunta()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorBimestre_QuandoNaoHouverSubpergunta()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -892,7 +892,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoBimestresForemExcluidos()
+    public void ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoBimestresForemExcluidos()
     {
         var periodoExcluido = CriarPeriodoBimestre(bimestreId: 1, descricao: "1º Bimestre");
         periodoExcluido.Excluido = true;
@@ -909,7 +909,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoHouverVinculo()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoHouverVinculo()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -927,7 +927,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoBimestreIdForDefinido()
+    public void ObterColunasOuLancarExcecao_DeveRetornarColunasPorSubperguntas_QuandoBimestreIdForDefinido()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
@@ -945,7 +945,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
-    public async Task ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
+    public void ObterColunasOuLancarExcecao_DeveLancarErroNaoEncontradoException_QuandoPeriodoBimestreNaoEncontrado()
     {
         var periodos = new List<SondagemPeriodoBimestre>
         {
