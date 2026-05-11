@@ -1,11 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Infra.Dtos.Questionario;
-using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 using SME.Sondagem.Infrastructure.Interfaces;
 
@@ -26,7 +24,7 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         ArgumentNullException.ThrowIfNull(alunoService);
     }
 
-    public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio([FromQuery] FiltroQuestionario filtro, CancellationToken cancellationToken)
+    public async Task<QuestionarioSondagemRelatorioDto> ObterSondagemRelatorio(FiltroQuestionario filtro, CancellationToken cancellationToken)
     {
         await ValidarAnoETurmaRelatorio(filtro, cancellationToken);
 

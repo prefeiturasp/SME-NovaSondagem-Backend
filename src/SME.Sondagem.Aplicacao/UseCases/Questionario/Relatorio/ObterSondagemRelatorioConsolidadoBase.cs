@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -22,7 +21,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
     protected abstract string ObterTitulo(int anoLetivo);
     protected abstract RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas);
 
-    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio([FromQuery] FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
+    public async Task<RelatorioConsolidadoSondagemDto> ObterSondagemRelatorio(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
         var respostas = await ObterRespostasFiltradasAsync(filtro, cancellationToken);
 
