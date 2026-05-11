@@ -10,7 +10,8 @@ using System.Text.Json;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio.Exportacao;
 
-public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExportarSondagemRelatorioConsolidadoUseCase
+public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase<TFiltro>
+    where TFiltro : IFiltroRelatorioExportacaoSondagem
 {
     private readonly ISolicitacaoRelatorioService _solicitacaoRelatorioService;
     private readonly IServicoLog _servicoLog;
@@ -37,7 +38,7 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExporta
 
     protected virtual string NomeUseCase => GetType().Name;
 
-    public async Task Exportar(FiltroRelatorioConsolidado filtro, CancellationToken cancellationToken)
+    public async Task Exportar(TFiltro filtro, CancellationToken cancellationToken)
     {
         var codigoCorrelacao = Guid.NewGuid();
         var filtroSgp = MapearParaFiltroSgp(filtro, codigoCorrelacao);
@@ -70,7 +71,7 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExporta
         return (false, solicitacaoRelatorioId);
     }
 
-    private async Task PublicarMensagemExportacao(FiltroRelatorioConsolidado filtro, long solicitacaoRelatorioId, Guid codigoCorrelacao)
+    private async Task PublicarMensagemExportacao(TFiltro filtro, long solicitacaoRelatorioId, Guid codigoCorrelacao)
     {
         var mensagem = new MensagemRabbit(MapearParaFiltroRabbit(filtro, solicitacaoRelatorioId, codigoCorrelacao), codigoCorrelacao)
         {
@@ -80,7 +81,7 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExporta
         await _servicoMensageria.Publicar(mensagem, RotaRabbit, ExchangeRabbitName);
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto MapearParaFiltroRabbit(FiltroRelatorioConsolidado filtroRelatorio, long solicitacaoRelatorioId, Guid codigoCorrelacao)
+    private FiltroSolicitacaoRelatorioIntegracaoRabbitDto MapearParaFiltroRabbit(TFiltro filtroRelatorio, long solicitacaoRelatorioId, Guid codigoCorrelacao)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoRabbitDto
         {
@@ -94,7 +95,7 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExporta
         };
     }
 
-    private FiltroSolicitacaoRelatorioIntegracaoSgpDto MapearParaFiltroSgp(FiltroRelatorioConsolidado filtroRelatorio, Guid codigoCorrelacao)
+    private FiltroSolicitacaoRelatorioIntegracaoSgpDto MapearParaFiltroSgp(TFiltro filtroRelatorio, Guid codigoCorrelacao)
     {
         return new FiltroSolicitacaoRelatorioIntegracaoSgpDto
         {
@@ -105,5 +106,19 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase : IExporta
             StatusSolicitacao = StatusSolicitacao.Solicitado,
             CodigoCorrelacao = codigoCorrelacao
         };
+    }
+}
+
+public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase
+    : ExportarSondagemRelatorioConsolidadoUseCaseBase<FiltroRelatorioConsolidado>,
+      IExportarSondagemRelatorioConsolidadoUseCase
+{
+    protected ExportarSondagemRelatorioConsolidadoUseCaseBase(
+        ISolicitacaoRelatorioService solicitacaoRelatorioService,
+        IServicoLog servicoLog,
+        IServicoMensageria servicoMensageria,
+        IServicoUsuario servicoUsuario)
+        : base(solicitacaoRelatorioService, servicoLog, servicoMensageria, servicoUsuario)
+    {
     }
 }
