@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
 
 [ExcludeFromCodeCoverage]
-public class FiltroRelatorio : FiltroQuestionario
+public class FiltroRelatorio : FiltroQuestionario, IFiltroRelatorioExportacaoSondagem
 {
     public FormatoRelatorio ExtensaoRelatorio { get; set; }
 }
