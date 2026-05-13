@@ -34,22 +34,35 @@ public class ExportarSondagemRelatorioPorTurmaUseCaseTeste
     }
 
     [Fact]
-    public async Task ExportarSondagemRelatorio_RelatorioJaExistente_NaoDevePublicarMensagem()
+    public async Task ExportarSondagemRelatorio_RegistrarRetornaIdJaExistente_DeveRegistrarEPublicarComEsseId()
     {
         // Arrange
         var filtro = new FiltroRelatorio { ExtensaoRelatorio = FormatoRelatorio.Pdf };
         var ct = CancellationToken.None;
+        const long idExistente = 12345;
+        var rfUsuario = "1234567";
+
+        _mockServicoUsuario.Setup(u => u.ObterRFUsuarioLogado()).Returns(rfUsuario);
 
         _mockSolicitacaoRelatorioService
-            .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
-            .ReturnsAsync(12345); // ID diferente de 0 indica que já existe
+            .Setup(s => s.RegistrarSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
+            .ReturnsAsync(idExistente);
 
         // Act
         await _useCase.ExportarSondagemRelatorio(filtro, ct);
 
         // Assert
-        _mockServicoMensageria.Verify(m => m.Publicar(It.IsAny<MensagemRabbit>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        _mockSolicitacaoRelatorioService.Verify(s => s.RegistrarSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct), Times.Never);
+        _mockSolicitacaoRelatorioService.Verify(
+            s => s.RegistrarSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct),
+            Times.Once);
+
+        _mockServicoMensageria.Verify(m => m.Publicar(
+            It.Is<MensagemRabbit>(msg =>
+                msg.UsuarioLogadoRF == rfUsuario &&
+                ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == idExistente),
+            It.IsAny<string>(),
+            It.IsAny<string>()),
+        Times.Once);
     }
 
     [Fact]
@@ -62,10 +75,6 @@ public class ExportarSondagemRelatorioPorTurmaUseCaseTeste
         var novoId = 999;
 
         _mockServicoUsuario.Setup(u => u.ObterRFUsuarioLogado()).Returns(rfUsuario);
-
-        _mockSolicitacaoRelatorioService
-            .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
-            .ReturnsAsync(0); // Não encontrado
 
         _mockSolicitacaoRelatorioService
             .Setup(s => s.RegistrarSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
@@ -81,31 +90,6 @@ public class ExportarSondagemRelatorioPorTurmaUseCaseTeste
             It.Is<MensagemRabbit>(msg =>
                 msg.UsuarioLogadoRF == rfUsuario &&
                 ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == novoId),
-            It.IsAny<string>(),
-            It.IsAny<string>()),
-        Times.Once);
-    }
-
-    [Fact]
-    public async Task ExportarSondagemRelatorio_ErroNoServico_DeveLogarEPublicarComIdZero()
-    {
-        // Arrange
-        var filtro = new FiltroRelatorio { ExtensaoRelatorio = FormatoRelatorio.Xlsx };
-        var ct = CancellationToken.None;
-
-        _mockSolicitacaoRelatorioService
-            .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
-            .ThrowsAsync(new System.Exception("Erro de Banco"));
-
-        // Act
-        await _useCase.ExportarSondagemRelatorio(filtro, ct);
-
-        // Assert
-        _mockServicoLog.Verify(l => l.Registrar(It.Is<string>(s => s.Contains("Falha ao controlar duplicidade")), It.IsAny<Exception>()), Times.Once);
-
-        // Como o catch retorna (false, 0), ele deve tentar publicar a mensagem mesmo assim
-        _mockServicoMensageria.Verify(m => m.Publicar(
-            It.Is<MensagemRabbit>(msg => ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == 0),
             It.IsAny<string>(),
             It.IsAny<string>()),
         Times.Once);
