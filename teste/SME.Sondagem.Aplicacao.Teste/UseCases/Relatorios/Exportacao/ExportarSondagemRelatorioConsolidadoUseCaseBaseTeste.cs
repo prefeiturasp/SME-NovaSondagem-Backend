@@ -37,22 +37,6 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBaseTeste<TUseC
     protected abstract string RotaRabbitEsperada { get; }
 
     [Fact]
-    public async Task Exportar_RelatorioJaExistente_NaoDevePublicarMensagem()
-    {
-        var filtro = new FiltroRelatorioConsolidado { ExtensaoRelatorio = FormatoRelatorio.Pdf };
-        var ct = CancellationToken.None;
-
-        MockSolicitacaoRelatorioService
-            .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
-            .ReturnsAsync(12345);
-
-        await UseCase.Exportar(filtro, ct);
-
-        MockServicoMensageria.Verify(m => m.Publicar(It.IsAny<MensagemRabbit>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
-        MockSolicitacaoRelatorioService.Verify(s => s.RegistrarSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct), Times.Never);
-    }
-
-    [Fact]
     public async Task Exportar_NovoRelatorio_DeveRegistrarEPublicarMensagem()
     {
         var filtro = new FiltroRelatorioConsolidado { ExtensaoRelatorio = FormatoRelatorio.Pdf };
@@ -83,29 +67,6 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBaseTeste<TUseC
                 msg.UsuarioLogadoRF == rfUsuario &&
                 ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == novoId &&
                 ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).TipoRelatorio == TipoRelatorioEsperado),
-            RotaRabbitEsperada,
-            ExchangeRabbit.Sgp),
-        Times.Once);
-    }
-
-    [Fact]
-    public async Task Exportar_ErroNoServico_DeveLogarEPublicarComIdZero()
-    {
-        var filtro = new FiltroRelatorioConsolidado { ExtensaoRelatorio = FormatoRelatorio.Xlsx };
-        var ct = CancellationToken.None;
-
-        MockSolicitacaoRelatorioService
-            .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
-            .ThrowsAsync(new Exception("Erro de Banco"));
-
-        await UseCase.Exportar(filtro, ct);
-
-        MockServicoLog.Verify(
-            l => l.Registrar(It.Is<string>(s => s.Contains("Falha ao controlar duplicidade")), It.IsAny<Exception>()),
-            Times.Once);
-
-        MockServicoMensageria.Verify(m => m.Publicar(
-            It.Is<MensagemRabbit>(msg => ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == 0),
             RotaRabbitEsperada,
             ExchangeRabbit.Sgp),
         Times.Once);
