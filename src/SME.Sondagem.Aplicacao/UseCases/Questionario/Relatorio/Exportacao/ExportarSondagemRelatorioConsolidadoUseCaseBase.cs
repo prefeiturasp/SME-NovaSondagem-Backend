@@ -43,32 +43,14 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase<TFiltro>
         var codigoCorrelacao = Guid.NewGuid();
         var filtroSgp = MapearParaFiltroSgp(filtro, codigoCorrelacao);
 
-        var (jaSolicitado, solicitacaoRelatorioId) = await RelatorioJaSolicitado(filtroSgp, cancellationToken);
-
-        if (jaSolicitado)
-            return;
+        var solicitacaoRelatorioId = await RegistrarSolicitacaoRelatorio(filtroSgp, cancellationToken);
 
         await PublicarMensagemExportacao(filtro, solicitacaoRelatorioId, codigoCorrelacao);
     }
 
-    private async Task<(bool, long)> RelatorioJaSolicitado(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtro, CancellationToken ct)
+    private async Task<long> RegistrarSolicitacaoRelatorio(FiltroSolicitacaoRelatorioIntegracaoSgpDto filtro, CancellationToken ct)
     {
-        long solicitacaoRelatorioId = 0;
-
-        try
-        {
-            solicitacaoRelatorioId = await _solicitacaoRelatorioService.ObterSolicitacaoRelatorioAsync(filtro, ct);
-            if (solicitacaoRelatorioId != 0) return (true, solicitacaoRelatorioId);
-
-            solicitacaoRelatorioId = await _solicitacaoRelatorioService.RegistrarSolicitacaoRelatorioAsync(filtro, ct);
-            return (false, solicitacaoRelatorioId);
-        }
-        catch (Exception ex)
-        {
-            _servicoLog.Registrar($"{NomeUseCase} - Falha ao controlar duplicidade de relatório: {filtro.TipoRelatorio}", ex);
-        }
-
-        return (false, solicitacaoRelatorioId);
+        return await _solicitacaoRelatorioService.RegistrarSolicitacaoRelatorioAsync(filtro, ct);
     }
 
     private async Task PublicarMensagemExportacao(TFiltro filtro, long solicitacaoRelatorioId, Guid codigoCorrelacao)
