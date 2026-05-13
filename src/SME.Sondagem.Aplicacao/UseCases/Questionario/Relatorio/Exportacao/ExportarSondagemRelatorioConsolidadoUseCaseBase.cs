@@ -14,7 +14,6 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase<TFiltro>
     where TFiltro : IFiltroRelatorioExportacaoSondagem
 {
     private readonly ISolicitacaoRelatorioService _solicitacaoRelatorioService;
-    private readonly IServicoLog _servicoLog;
     private readonly IServicoMensageria _servicoMensageria;
     private readonly IServicoUsuario _servicoUsuario;
 
@@ -25,7 +24,6 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase<TFiltro>
         IServicoUsuario servicoUsuario)
     {
         _solicitacaoRelatorioService = solicitacaoRelatorioService;
-        _servicoLog = servicoLog;
         _servicoMensageria = servicoMensageria;
         _servicoUsuario = servicoUsuario;
     }
