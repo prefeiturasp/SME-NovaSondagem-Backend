@@ -13,8 +13,8 @@ public class ObterSondagemRelatorioConsolidadoAnoUseCase : ObterSondagemRelatori
     {
     }
 
-    protected override string TituloSemDados => "Relatório Consolidado por Ano - Sem Dados";
-    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Ano - {anoLetivo}";
+    protected override string TituloSemDados => "Relatório Consolidado por Questões - Sem Dados";
+    protected override string ObterTitulo(int anoLetivo) => $"Relatório Consolidado de Sondagem por Questões - {anoLetivo}";
 
     protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
         => ConstruirQuestaoDto(
