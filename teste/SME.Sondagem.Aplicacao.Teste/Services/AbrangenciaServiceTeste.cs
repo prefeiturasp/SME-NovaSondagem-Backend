@@ -194,7 +194,7 @@ public class AbrangenciaServiceTeste
             turmas = new[] { new { codigo = "TURMA-1" } }
         });
 
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(json);
 
         // Act
@@ -217,7 +217,7 @@ public class AbrangenciaServiceTeste
             turmas = Array.Empty<object>()
         });
 
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(json);
 
         // Act
@@ -231,7 +231,7 @@ public class AbrangenciaServiceTeste
     public async Task ObterAbrangenciaCompletaAsync_CacheMiss_HttpFalha_RetornaVazios()
     {
         // Arrange
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.InternalServerError);
@@ -250,7 +250,7 @@ public class AbrangenciaServiceTeste
     public async Task ObterAbrangenciaCompletaAsync_CacheMiss_HttpNoContent_RetornaVazios()
     {
         // Arrange
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.NoContent);
@@ -276,7 +276,7 @@ public class AbrangenciaServiceTeste
             turmas = Array.Empty<object>()
         });
 
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
         _mockCache.Setup(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
@@ -303,7 +303,7 @@ public class AbrangenciaServiceTeste
             turmas = Array.Empty<object>()
         });
 
-        _mockHttpContextAccessor.Setup(a => a.HttpContext).Returns((HttpContext?)null);
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
         _mockCache.Setup(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
