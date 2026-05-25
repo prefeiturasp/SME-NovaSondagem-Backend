@@ -1,5 +1,6 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using GeneroDominio = SME.Sondagem.Dominio.Entidades.GeneroSexo;
@@ -14,7 +15,8 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCase : ObterSondagemR
 
     public ObterSondagemRelatorioConsolidadoRacaGeneroUseCase(
         RepositoriosSondagem repositorioSondagem,
-        IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
+        IRepositorioElasticTurma repositorioElasticTurma,
+        IAbrangenciaService abrangenciaService) : base(repositorioSondagem, repositorioElasticTurma, abrangenciaService)
     {
     }
 

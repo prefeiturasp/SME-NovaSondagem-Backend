@@ -1,4 +1,5 @@
 using SME.Sondagem.Aplicacao.Agregadores;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
@@ -8,13 +9,16 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 {
     protected readonly RepositoriosSondagem RepositorioSondagem;
     protected readonly IRepositorioElasticTurma RepositorioElasticTurma;
+    private readonly IAbrangenciaService _abrangenciaService;
 
     protected ObterSondagemRelatorioConsolidadoBase(
         RepositoriosSondagem repositorioSondagem,
-        IRepositorioElasticTurma repositorioElasticTurma)
+        IRepositorioElasticTurma repositorioElasticTurma,
+        IAbrangenciaService abrangenciaService)
     {
         RepositorioSondagem = repositorioSondagem ?? throw new ArgumentNullException(nameof(repositorioSondagem));
         RepositorioElasticTurma = repositorioElasticTurma ?? throw new ArgumentNullException(nameof(repositorioElasticTurma));
+        _abrangenciaService = abrangenciaService ?? throw new ArgumentNullException(nameof(abrangenciaService));
     }
 
     protected abstract string TituloSemDados { get; }
@@ -33,6 +37,24 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 
     private async Task<List<RelatorioRespostaAlunoDto>> ObterRespostasFiltradasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(filtro.Dre) || string.IsNullOrEmpty(filtro.Ue))
+        {
+            var ignorarAbrangencia = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(cancellationToken);
+            if (!ignorarAbrangencia)
+            {
+                var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
+                    filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, cancellationToken);
+
+                if (string.IsNullOrEmpty(filtro.Dre))
+                    filtro.DresAbrangencia = dres;
+
+                if (string.IsNullOrEmpty(filtro.Ue))
+                    filtro.UesAbrangencia = ues;
+
+                filtro.TurmasAbrangencia = turmas;
+            }
+        }
+
         var respostasBrutas = await RepositorioSondagem.RepositorioRespostaAluno.ObterRespostasParaRelatorioConsolidadoAsync(filtro, cancellationToken);
         var respostas = respostasBrutas?.ToList() ?? [];
 
