@@ -108,6 +108,7 @@ public static class RegistraDependencias
         services.AddScoped<IAlunoPapService, AlunoPapService>();
         services.AddScoped<IAlunoTurmaService, AlunoTurmaService>();
         services.AddScoped<IControleAcessoService, ControleAcessoService>();
+        services.AddScoped<IAbrangenciaService, AbrangenciaService>();
         services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         services.TryAddScoped<IServicoLog, ServicoLog>();
         services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
