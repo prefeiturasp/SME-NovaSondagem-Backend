@@ -42,7 +42,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         }
 
         public async Task<(List<string> Dres, List<string> Ues, List<string> Turmas)> ObterAbrangenciaCompletaAsync(
-            int anoLetivo, int modalidade, string? codigoDre, int semestre = 0, CancellationToken cancellationToken = default)
+            int anoLetivo, int modalidade, string? codigoDre, string? codigoUe = null, int semestre = 0, CancellationToken cancellationToken = default)
         {
             var (login, perfil) = ObterLoginEPerfil();
 
@@ -55,9 +55,10 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (!string.IsNullOrEmpty(codigoDre))
                 url += $"&codigoDre={codigoDre}";
 
-            if (semestre > 0)
-                url += $"&semestre={semestre}";
+            if (!string.IsNullOrEmpty(codigoUe))
+                url += $"&codigoUe={codigoUe}";
 
+            url += $"&semestre={semestre}";
             url += "&includeTurmas=true";
 
             var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO);
