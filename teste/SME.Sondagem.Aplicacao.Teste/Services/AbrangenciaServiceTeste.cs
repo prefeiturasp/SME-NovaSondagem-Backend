@@ -232,7 +232,7 @@ public class AbrangenciaServiceTeste
     {
         // Arrange
         ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
-        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.InternalServerError);
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
@@ -251,7 +251,7 @@ public class AbrangenciaServiceTeste
     {
         // Arrange
         ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
-        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.NoContent);
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
@@ -277,7 +277,7 @@ public class AbrangenciaServiceTeste
         });
 
         ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
-        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
         _mockCache.Setup(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.OK, json);
@@ -304,7 +304,7 @@ public class AbrangenciaServiceTeste
         });
 
         ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
-        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync((string?)null);
+        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
         _mockCache.Setup(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.CompletedTask);
 
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.OK, json);
