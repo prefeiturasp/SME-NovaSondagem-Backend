@@ -1,5 +1,6 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Dominio.ValueObjects;
@@ -13,7 +14,8 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
 
     public ObterSondagemRelatorioConsolidadoBimestreUseCase(
         RepositoriosSondagem repositorioSondagem,
-        IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
+        IRepositorioElasticTurma repositorioElasticTurma,
+        IAbrangenciaService abrangenciaService) : base(repositorioSondagem, repositorioElasticTurma, abrangenciaService)
     {
     }
 

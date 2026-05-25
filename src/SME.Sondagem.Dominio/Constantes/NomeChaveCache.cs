@@ -3,5 +3,6 @@
     public static class NomeChaveCache
     {
         public const string CONTROLE_ACESSO_USUARIO = "controle-acesso-usuario:{0}-{1}-{2}-{3}";
+        public const string ABRANGENCIA_COMPLETA_USUARIO = "abrangencia-completa:{0}-{1}-{2}-{3}-{4}-{5}";
     }
 }

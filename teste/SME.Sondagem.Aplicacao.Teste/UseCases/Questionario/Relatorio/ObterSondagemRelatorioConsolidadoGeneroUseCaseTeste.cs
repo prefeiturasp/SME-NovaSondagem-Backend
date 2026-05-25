@@ -1,5 +1,6 @@
 using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -14,6 +15,7 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _mockRepositorioRespostaAluno;
     private readonly Mock<IRepositorioElasticTurma> _mockRepositorioElasticTurma;
     private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGenero;
+    private readonly Mock<IAbrangenciaService> _mockAbrangenciaService;
     private readonly RepositoriosSondagem _repositoriosSondagem;
     private readonly ObterSondagemRelatorioConsolidadoGeneroUseCase _useCase;
 
@@ -22,6 +24,8 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCaseTeste
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockRepositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
         _mockRepositorioGenero = new Mock<IRepositorioGeneroSexo>();
+        _mockAbrangenciaService = new Mock<IAbrangenciaService>();
+        _mockAbrangenciaService.Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
 
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
@@ -34,7 +38,7 @@ public class ObterSondagemRelatorioConsolidadoGeneroUseCaseTeste
             _mockRepositorioGenero.Object
         );
 
-        _useCase = new ObterSondagemRelatorioConsolidadoGeneroUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
+        _useCase = new ObterSondagemRelatorioConsolidadoGeneroUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object, _mockAbrangenciaService.Object);
         
         // Setup padrão de gêneros
         _mockRepositorioGenero

@@ -178,11 +178,27 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
 
     private static IQueryable<RespostaAluno> AplicarFiltrosRelatorioConsolidado(IQueryable<RespostaAluno> query, FiltroConsolidadoDto filtro)
     {
+        if (string.IsNullOrEmpty(filtro.Dre) && (filtro.DresAbrangencia == null || filtro.DresAbrangencia.Count == 0))
+            return query.Where(_ => false);
+
+        if (!string.IsNullOrEmpty(filtro.Dre) && string.IsNullOrEmpty(filtro.Ue) && (filtro.UesAbrangencia == null || filtro.UesAbrangencia.Count == 0))
+            return query.Where(_ => false);
+
+        if (filtro.TurmasAbrangencia != null && filtro.TurmasAbrangencia.Count == 0)
+            return query.Where(_ => false);
+
+        var dresAbrangencia = filtro.DresAbrangencia;
+        var uesAbrangencia = filtro.UesAbrangencia;
+        var turmasAbrangencia = filtro.TurmasAbrangencia;
+
         var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
         {
             (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
-            (!string.IsNullOrEmpty(filtro.Dre),                             ra => ra.DreId == filtro.Dre),
-            (!string.IsNullOrEmpty(filtro.Ue),                              ra => ra.UeId == filtro.Ue),
+            (!string.IsNullOrEmpty(filtro.Dre) || dresAbrangencia!.Count > 0,
+                                                                            ra => filtro.Dre != null ? ra.DreId == filtro.Dre : dresAbrangencia!.Contains(ra.DreId)),
+            (!string.IsNullOrEmpty(filtro.Ue) || uesAbrangencia!.Count > 0,
+                                                                            ra => filtro.Ue != null ? ra.UeId == filtro.Ue : uesAbrangencia!.Contains(ra.UeId)),
+            (turmasAbrangencia != null && turmasAbrangencia.Count > 0,      ra => ra.TurmaId != null && turmasAbrangencia.Contains(ra.TurmaId!)),
             (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
             (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
             (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
