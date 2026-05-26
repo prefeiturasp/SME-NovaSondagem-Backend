@@ -195,6 +195,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             (turmasAbrangencia != null && turmasAbrangencia.Count > 0,      ra => ra.TurmaId != null && turmasAbrangencia!.Contains(ra.TurmaId!)),
             (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
             (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
+            (filtro.SemestreId > 0,                                         ra => ra.SemestreId == filtro.SemestreId),
             (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
             (filtro.ComponenteCurricularId > 0,                             ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId),
             (filtro.GeneroId > 0,                                           ra => ra.GeneroSexo != null && ra.GeneroSexo.Id == filtro.GeneroId),

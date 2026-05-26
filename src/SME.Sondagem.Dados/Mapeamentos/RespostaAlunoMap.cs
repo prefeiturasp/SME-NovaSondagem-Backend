@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SME.Sondagem.Dominio.Entidades;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using System.Diagnostics.CodeAnalysis;
 
@@ -78,6 +79,10 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
         builder.Property(x => x.Pap).HasColumnName("pap").HasDefaultValue(false);
         builder.Property(x => x.Deficiente).HasColumnName("deficiente").HasDefaultValue(false);
 
+        builder.Property(x => x.SemestreId)
+            .HasColumnName("semestre_id")
+            .IsRequired(false);
+
 
         ConfigurarAuditoria(builder);
 
@@ -118,6 +123,12 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
                 .WithMany(x => x.RespostaAlunos)
                 .HasForeignKey(x => x.GeneroSexoId)
                 .HasConstraintName("fk_genero_sexo_resposta_aluno");
+
+        builder.HasOne(x => x.Semestre)
+            .WithMany(x => x.RespostaAlunos)
+            .HasForeignKey(x => x.SemestreId)
+            .HasConstraintName("fk_semestre_resposta_aluno")
+            .IsRequired(false);
 
     }
 

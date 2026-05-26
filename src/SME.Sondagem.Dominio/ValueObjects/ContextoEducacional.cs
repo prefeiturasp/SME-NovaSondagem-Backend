@@ -11,6 +11,7 @@
         public int? RacaCorId { get; init; }
         public int? GeneroSexoId { get; init; }
         public int? BimestreId { get; init; }
+        public int? SemestreId { get; init; }
         public bool Aee { get; set; }
         public bool Pap { get; set; }
         public bool Deficiente { get; set; }

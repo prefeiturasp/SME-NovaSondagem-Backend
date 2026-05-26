@@ -277,7 +277,23 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         Pap = dto.Pap,
         Deficiente = dto.Deficiente,
         Aee = dto.Aee,
-        AnoTurma = dto.AnoTurma
+        AnoTurma = dto.AnoTurma,
+        SemestreId = CalcularSemestreId(dto.ModalidadeId)
     };
+
+    private const int PrimeiroSemestreId = 1;
+    private const int SegundoSemestreId = 2;
+    private const int MesInicioSegundoSemestre = 7;
+
+    private static int? CalcularSemestreId(int? modalidadeId)
+    {
+        if (modalidadeId != (int)Modalidade.EJA)
+            return null;
+
+        var agora = DateTimeExtension.HorarioBrasilia();
+        return agora < new DateTime(agora.Year, MesInicioSegundoSemestre, 1)
+            ? PrimeiroSemestreId
+            : SegundoSemestreId;
+    }
 
 }

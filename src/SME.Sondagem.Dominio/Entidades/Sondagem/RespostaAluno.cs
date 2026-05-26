@@ -1,5 +1,6 @@
 ﻿using SME.Sondagem.Dominio.Entidades.Questionario;
 using SME.Sondagem.Dominio.ValueObjects;
+using SME.Sondagem.Dominio.Entidades;
 
 namespace SME.Sondagem.Dominio.Entidades.Sondagem;
 
@@ -26,6 +27,7 @@ public class RespostaAluno : EntidadeBase
         Pap = contexto.Pap;
         Deficiente = contexto.Deficiente;
         ModalidadeId = contexto.ModalidadeId;
+        SemestreId = contexto.SemestreId;
     }
 
     public int SondagemId { get; private set; }
@@ -45,6 +47,7 @@ public class RespostaAluno : EntidadeBase
     public int? AnoLetivo { get; set; }
     public int? AnoTurma { get; set; }
     public int? ModalidadeId { get; set; }
+    public int? SemestreId { get; set; }
 
     public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
     {
@@ -66,6 +69,7 @@ public class RespostaAluno : EntidadeBase
         Deficiente = contexto.Deficiente;
         ModalidadeId ??= contexto.ModalidadeId;
         AnoTurma ??= contexto.AnoTurma;
+        SemestreId ??= contexto.SemestreId;
     }
 
     public virtual Sondagem Sondagem { get; private set; } = null!;
@@ -74,4 +78,5 @@ public class RespostaAluno : EntidadeBase
     public virtual Bimestre? Bimestre { get; private set; } = null!;
     public virtual RacaCor? RacaCor { get; set; }
     public virtual GeneroSexo? GeneroSexo { get; set; }
+    public virtual Semestre? Semestre { get; private set; }
 }
