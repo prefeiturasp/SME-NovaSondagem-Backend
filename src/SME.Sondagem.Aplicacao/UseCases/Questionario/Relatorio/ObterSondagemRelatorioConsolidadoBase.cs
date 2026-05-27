@@ -39,20 +39,16 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
     {
         if (string.IsNullOrEmpty(filtro.Dre) || string.IsNullOrEmpty(filtro.Ue))
         {
-            var ignorarAbrangencia = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(cancellationToken);
-            if (!ignorarAbrangencia)
-            {
-                var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
-                    filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, cancellationToken);
+            var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
+                filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, cancellationToken);
 
-                if (string.IsNullOrEmpty(filtro.Dre))
-                    filtro.DresAbrangencia = dres;
+            if (string.IsNullOrEmpty(filtro.Dre))
+                filtro.DresAbrangencia = dres;
 
-                if (string.IsNullOrEmpty(filtro.Ue))
-                    filtro.UesAbrangencia = ues;
+            if (string.IsNullOrEmpty(filtro.Ue))
+                filtro.UesAbrangencia = ues;
 
-                filtro.TurmasAbrangencia = turmas;
-            }
+            filtro.TurmasAbrangencia = turmas;
         }
 
         var respostasBrutas = await RepositorioSondagem.RepositorioRespostaAluno.ObterRespostasParaRelatorioConsolidadoAsync(filtro, cancellationToken);
