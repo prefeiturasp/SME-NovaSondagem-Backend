@@ -28,7 +28,9 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
         _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
         _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
         _mockAbrangenciaService = new Mock<IAbrangenciaService>();
-        _mockAbrangenciaService.Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<CancellationToken>())).ReturnsAsync(true);
+        _mockAbrangenciaService
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<string>(), new List<string>(), new List<string>()));
 
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
