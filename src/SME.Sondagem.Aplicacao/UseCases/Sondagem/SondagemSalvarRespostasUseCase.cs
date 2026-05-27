@@ -291,7 +291,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             return null;
 
         var agora = DateTimeExtension.HorarioBrasilia();
-        return agora < new DateTime(agora.Year, MesInicioSegundoSemestre, 1)
+        return agora < new DateTime(agora.Year, MesInicioSegundoSemestre, 1, 0, 0, 0, DateTimeKind.Local)
             ? PrimeiroSemestreId
             : SegundoSemestreId;
     }

@@ -78,5 +78,5 @@ public class RespostaAluno : EntidadeBase
     public virtual Bimestre? Bimestre { get; private set; } = null!;
     public virtual RacaCor? RacaCor { get; set; }
     public virtual GeneroSexo? GeneroSexo { get; set; }
-    public virtual Semestre? Semestre { get; private set; }
+    public virtual Semestre? Semestre { get; }
 }
