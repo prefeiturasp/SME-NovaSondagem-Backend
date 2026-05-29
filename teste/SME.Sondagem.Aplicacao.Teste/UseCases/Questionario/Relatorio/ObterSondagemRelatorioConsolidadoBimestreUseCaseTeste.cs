@@ -171,8 +171,8 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
 
         // Assert
         var bimestres = resultado?.Questoes?.First()?.Respostas?.First()?.Bimestres?.ToList() ?? [];
-        // Cada bimestre tem 2 respostas de um total de 4 -> 50%
-        Assert.All(bimestres, b => Assert.Equal(50, b.Percentual));
+        // Cada bimestre tem 2 respostas "Certa" de um total de 2 naquele bimestre -> 100%
+        Assert.All(bimestres, b => Assert.Equal(100, b.Percentual));
     }
 
     // ─── Testes das Strategies ───────────────────────────────────────────────
