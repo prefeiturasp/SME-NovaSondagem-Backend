@@ -188,9 +188,9 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
         {
             (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
-            (!string.IsNullOrEmpty(filtro.Dre) || dresAbrangencia!.Count > 0,
+            (!string.IsNullOrEmpty(filtro.Dre) || (dresAbrangencia != null && dresAbrangencia.Count > 0),
                                                                             ra => filtro.Dre != null ? ra.DreId == filtro.Dre : dresAbrangencia!.Contains(ra.DreId!)),
-            (!string.IsNullOrEmpty(filtro.Ue) || uesAbrangencia!.Count > 0,
+            (!string.IsNullOrEmpty(filtro.Ue) || (uesAbrangencia != null && uesAbrangencia.Count > 0),
                                                                             ra => filtro.Ue != null ? ra.UeId == filtro.Ue : uesAbrangencia!.Contains(ra.UeId!)),
             (turmasAbrangencia != null && turmasAbrangencia.Count > 0,      ra => ra.TurmaId != null && turmasAbrangencia!.Contains(ra.TurmaId!)),
             (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
@@ -214,6 +214,9 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
 
     private static bool AbrangenciaValida(FiltroConsolidadoDto filtro)
     {
+        if (filtro.AcessoIrrestrito)
+            return true;
+
         if (string.IsNullOrEmpty(filtro.Dre) && (filtro.DresAbrangencia == null || filtro.DresAbrangencia.Count == 0))
             return false;
 
