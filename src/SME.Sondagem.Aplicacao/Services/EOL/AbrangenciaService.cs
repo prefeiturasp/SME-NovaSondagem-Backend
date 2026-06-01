@@ -61,10 +61,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             url += $"&semestre={semestre}";
             url += "&includeTurmas=true";
 
-            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO);
-
-            if (json is null)
-                return ([], [], []);
+            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO)
+                ?? throw new InvalidOperationException("Falha ao obter abrangência do SGP. Tente novamente.");
 
             var resultado = JsonConvert.DeserializeObject<dynamic>(json);
 

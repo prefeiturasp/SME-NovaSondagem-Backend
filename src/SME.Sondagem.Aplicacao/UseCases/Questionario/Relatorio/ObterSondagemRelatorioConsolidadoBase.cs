@@ -37,7 +37,12 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 
     private async Task<List<RelatorioRespostaAlunoDto>> ObterRespostasFiltradasAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filtro.Dre) || string.IsNullOrEmpty(filtro.Ue))
+        if (!string.IsNullOrEmpty(filtro.Ue) && string.IsNullOrEmpty(filtro.Dre))
+            throw new ArgumentException("UE informada sem DRE correspondente.");
+
+        filtro.AcessoIrrestrito = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(cancellationToken);
+
+        if (!filtro.AcessoIrrestrito)
         {
             var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
                 filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, cancellationToken);
