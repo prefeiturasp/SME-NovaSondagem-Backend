@@ -228,7 +228,7 @@ public class AbrangenciaServiceTeste
     }
 
     [Fact]
-    public async Task ObterAbrangenciaCompletaAsync_CacheMiss_HttpFalha_RetornaVazios()
+    public async Task ObterAbrangenciaCompletaAsync_CacheMiss_HttpFalha_LancaExcecao()
     {
         // Arrange
         ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
@@ -237,13 +237,11 @@ public class AbrangenciaServiceTeste
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.InternalServerError);
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
-        // Act
-        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+            () => _service.ObterAbrangenciaCompletaAsync(2025, 5, null));
 
-        // Assert
-        Assert.Empty(dres);
-        Assert.Empty(ues);
-        Assert.Empty(turmas);
+        Assert.Equal("Falha ao obter abrangência do SGP. Tente novamente.", ex.Message);
     }
 
     [Fact]
