@@ -61,9 +61,10 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             url += $"&semestre={semestre}";
             url += "&includeTurmas=true";
 
-            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO);
+            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO)
+                ?? throw new InvalidOperationException("Falha ao obter abrangência do SGP. Tente novamente.");
 
-            if (json is null)
+            if (string.IsNullOrWhiteSpace(json))
                 return ([], [], []);
 
             var resultado = JsonConvert.DeserializeObject<dynamic>(json);
@@ -104,8 +105,11 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             var httpClient = _httpClientFactory.CreateClient(serviceName);
             var response = await httpClient.GetAsync(url, cancellationToken);
 
-            if (!response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NoContent)
+            if (!response.IsSuccessStatusCode)
                 return null;
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+                return string.Empty;
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
             if (string.IsNullOrWhiteSpace(json))
