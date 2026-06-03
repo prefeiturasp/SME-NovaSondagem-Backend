@@ -28,9 +28,11 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             _perfilService = perfilService ?? throw new ArgumentNullException(nameof(perfilService));
         }
 
-        public async Task<bool> DeveIgnorarAbrangenciaAsync(CancellationToken cancellationToken = default)
+        public async Task<bool> DeveIgnorarAbrangenciaAsync(string? perfil = null, CancellationToken cancellationToken = default)
         {
-            var perfilIdString = _httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
+            var perfilIdString = !string.IsNullOrWhiteSpace(perfil)
+                ? perfil
+                : _httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
 
             if (!Guid.TryParse(perfilIdString, out var perfilId))
                 return false;
@@ -42,9 +44,11 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         }
 
         public async Task<(List<string> Dres, List<string> Ues, List<string> Turmas)> ObterAbrangenciaCompletaAsync(
-            int anoLetivo, int modalidade, string? codigoDre, string? codigoUe = null, int semestre = 0, CancellationToken cancellationToken = default)
+            int anoLetivo, int modalidade, string? codigoDre, string? codigoUe = null, int semestre = 0, string? rf = null, string? perfil = null, CancellationToken cancellationToken = default)
         {
-            var (login, perfil) = ObterLoginEPerfil();
+            var (loginCtx, perfilCtx) = ObterLoginEPerfil();
+            var login = !string.IsNullOrWhiteSpace(rf) ? rf : loginCtx;
+            perfil = !string.IsNullOrWhiteSpace(perfil) ? perfil : perfilCtx;
 
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
                 return ([], [], []);

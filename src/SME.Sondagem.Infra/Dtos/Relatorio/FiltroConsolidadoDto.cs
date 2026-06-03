@@ -21,4 +21,6 @@ public class FiltroConsolidadoDto
     public List<string>? UesAbrangencia { get; set; }
     public List<string>? TurmasAbrangencia { get; set; }
     public bool AcessoIrrestrito { get; set; }
+    public string? Rf { get; set; }
+    public string? Perfil { get; set; }
 }

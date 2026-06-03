@@ -159,5 +159,6 @@ public class RegistraEntityFrameworkTeste
     {
         public string ObterUsuarioLogado() => "usuario_teste";
         public string ObterRFUsuarioLogado() => "1234567";
+        public string ObterPerfilUsuarioLogado() => string.Empty;
     }
 }

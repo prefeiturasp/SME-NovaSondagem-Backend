@@ -55,7 +55,8 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBase<TFiltro>
     {
         var mensagem = new MensagemRabbit(MapearParaFiltroRabbit(filtro, solicitacaoRelatorioId, codigoCorrelacao), codigoCorrelacao)
         {
-            UsuarioLogadoRF = _servicoUsuario.ObterRFUsuarioLogado()
+            UsuarioLogadoRF = _servicoUsuario.ObterRFUsuarioLogado(),
+            PerfilUsuario = _servicoUsuario.ObterPerfilUsuarioLogado()
         };
 
         await _servicoMensageria.Publicar(mensagem, RotaRabbit, ExchangeRabbitName);

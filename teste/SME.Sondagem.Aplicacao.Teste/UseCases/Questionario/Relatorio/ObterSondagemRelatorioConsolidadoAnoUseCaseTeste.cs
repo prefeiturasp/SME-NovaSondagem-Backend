@@ -20,7 +20,7 @@ public class ObterSondagemRelatorioConsolidadoAnoUseCaseTeste
         _mockRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockAbrangencia = new Mock<IAbrangenciaService>();
         _mockAbrangencia
-            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<string>(), new List<string>(), new List<string>()));
 
         var repos = new RepositoriosSondagem(
