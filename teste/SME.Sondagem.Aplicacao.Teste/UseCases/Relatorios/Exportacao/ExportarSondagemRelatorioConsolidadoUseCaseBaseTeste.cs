@@ -42,9 +42,11 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBaseTeste<TUseC
         var filtro = new FiltroRelatorioConsolidado { ExtensaoRelatorio = FormatoRelatorio.Pdf };
         var ct = CancellationToken.None;
         const string rfUsuario = "1234567";
+        const string perfilUsuario = "Professor";
         const long novoId = 999;
 
         MockServicoUsuario.Setup(u => u.ObterRFUsuarioLogado()).Returns(rfUsuario);
+        MockServicoUsuario.Setup(u => u.ObterPerfilUsuarioLogado()).Returns(perfilUsuario);
 
         MockSolicitacaoRelatorioService
             .Setup(s => s.ObterSolicitacaoRelatorioAsync(It.IsAny<FiltroSolicitacaoRelatorioIntegracaoSgpDto>(), ct))
@@ -65,6 +67,7 @@ public abstract class ExportarSondagemRelatorioConsolidadoUseCaseBaseTeste<TUseC
         MockServicoMensageria.Verify(m => m.Publicar(
             It.Is<MensagemRabbit>(msg =>
                 msg.UsuarioLogadoRF == rfUsuario &&
+                msg.PerfilUsuario == perfilUsuario &&
                 ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).SolicitacaoRelatorioId == novoId &&
                 ((FiltroSolicitacaoRelatorioIntegracaoRabbitDto)msg.Mensagem).TipoRelatorio == TipoRelatorioEsperado),
             RotaRabbitEsperada,

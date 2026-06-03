@@ -28,9 +28,11 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             _perfilService = perfilService ?? throw new ArgumentNullException(nameof(perfilService));
         }
 
-        public async Task<bool> DeveIgnorarAbrangenciaAsync(CancellationToken cancellationToken = default)
+        public async Task<bool> DeveIgnorarAbrangenciaAsync(string? perfil = null, CancellationToken cancellationToken = default)
         {
-            var perfilIdString = _httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
+            var perfilIdString = !string.IsNullOrWhiteSpace(perfil)
+                ? perfil
+                : _httpContextAccessor.HttpContext?.User?.FindFirst("perfil")?.Value;
 
             if (!Guid.TryParse(perfilIdString, out var perfilId))
                 return false;
@@ -42,23 +44,25 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         }
 
         public async Task<(List<string> Dres, List<string> Ues, List<string> Turmas)> ObterAbrangenciaCompletaAsync(
-            int anoLetivo, int modalidade, string? codigoDre, string? codigoUe = null, int semestre = 0, CancellationToken cancellationToken = default)
+            AbrangenciaFiltroQuery filtro, CancellationToken cancellationToken = default)
         {
-            var (login, perfil) = ObterLoginEPerfil();
+            var (loginCtx, perfilCtx) = ObterLoginEPerfil();
+            var login = !string.IsNullOrWhiteSpace(filtro.Rf) ? filtro.Rf : loginCtx;
+            var perfil = !string.IsNullOrWhiteSpace(filtro.Perfil) ? filtro.Perfil : perfilCtx;
 
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
                 return ([], [], []);
 
-            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, anoLetivo, modalidade, codigoDre ?? "all", semestre);
-            var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, anoLetivo, modalidade);
+            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.Semestre);
+            var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, filtro.AnoLetivo, filtro.Modalidade);
 
-            if (!string.IsNullOrEmpty(codigoDre))
-                url += $"&codigoDre={codigoDre}";
+            if (!string.IsNullOrEmpty(filtro.CodigoDre))
+                url += $"&codigoDre={filtro.CodigoDre}";
 
-            if (!string.IsNullOrEmpty(codigoUe))
-                url += $"&codigoUe={codigoUe}";
+            if (!string.IsNullOrEmpty(filtro.CodigoUe))
+                url += $"&codigoUe={filtro.CodigoUe}";
 
-            url += $"&semestre={semestre}";
+            url += $"&semestre={filtro.Semestre}";
             url += "&includeTurmas=true";
 
             var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO)
