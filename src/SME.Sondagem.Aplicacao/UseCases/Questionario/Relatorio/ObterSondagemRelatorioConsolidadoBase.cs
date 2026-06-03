@@ -45,7 +45,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         if (!filtro.AcessoIrrestrito)
         {
             var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
-                filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, filtro.Rf, filtro.Perfil, cancellationToken);
+                new AbrangenciaFiltroQuery(filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, filtro.Rf, filtro.Perfil), cancellationToken);
 
             if (string.IsNullOrEmpty(filtro.Dre))
                 filtro.DresAbrangencia = dres;

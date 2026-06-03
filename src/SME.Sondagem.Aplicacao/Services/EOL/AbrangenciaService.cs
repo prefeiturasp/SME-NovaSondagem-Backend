@@ -44,25 +44,25 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         }
 
         public async Task<(List<string> Dres, List<string> Ues, List<string> Turmas)> ObterAbrangenciaCompletaAsync(
-            int anoLetivo, int modalidade, string? codigoDre, string? codigoUe = null, int semestre = 0, string? rf = null, string? perfil = null, CancellationToken cancellationToken = default)
+            AbrangenciaFiltroQuery filtro, CancellationToken cancellationToken = default)
         {
             var (loginCtx, perfilCtx) = ObterLoginEPerfil();
-            var login = !string.IsNullOrWhiteSpace(rf) ? rf : loginCtx;
-            perfil = !string.IsNullOrWhiteSpace(perfil) ? perfil : perfilCtx;
+            var login = !string.IsNullOrWhiteSpace(filtro.Rf) ? filtro.Rf : loginCtx;
+            var perfil = !string.IsNullOrWhiteSpace(filtro.Perfil) ? filtro.Perfil : perfilCtx;
 
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
                 return ([], [], []);
 
-            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, anoLetivo, modalidade, codigoDre ?? "all", semestre);
-            var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, anoLetivo, modalidade);
+            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.Semestre);
+            var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, filtro.AnoLetivo, filtro.Modalidade);
 
-            if (!string.IsNullOrEmpty(codigoDre))
-                url += $"&codigoDre={codigoDre}";
+            if (!string.IsNullOrEmpty(filtro.CodigoDre))
+                url += $"&codigoDre={filtro.CodigoDre}";
 
-            if (!string.IsNullOrEmpty(codigoUe))
-                url += $"&codigoUe={codigoUe}";
+            if (!string.IsNullOrEmpty(filtro.CodigoUe))
+                url += $"&codigoUe={filtro.CodigoUe}";
 
-            url += $"&semestre={semestre}";
+            url += $"&semestre={filtro.Semestre}";
             url += "&includeTurmas=true";
 
             var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO)

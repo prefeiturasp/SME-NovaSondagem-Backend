@@ -20,7 +20,7 @@ public class ObterSondagemRelatorioConsolidadoAnoUseCaseTeste
         _mockRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockAbrangencia = new Mock<IAbrangenciaService>();
         _mockAbrangencia
-            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<string>(), new List<string>(), new List<string>()));
 
         var repos = new RepositoriosSondagem(
@@ -217,6 +217,6 @@ public class ObterSondagemRelatorioConsolidadoAnoUseCaseTeste
         await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        _mockAbrangencia.Verify(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockAbrangencia.Verify(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
