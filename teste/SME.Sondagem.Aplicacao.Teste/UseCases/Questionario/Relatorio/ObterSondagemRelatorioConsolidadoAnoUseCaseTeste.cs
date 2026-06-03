@@ -217,6 +217,6 @@ public class ObterSondagemRelatorioConsolidadoAnoUseCaseTeste
         await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
         // Assert
-        _mockAbrangencia.Verify(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockAbrangencia.Verify(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }
