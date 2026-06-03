@@ -140,15 +140,26 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             r => ((long)(r.AlunoId), (long)r.QuestaoId, r.BimestreId)
         );
     }
-    
-    
-    public async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
+
+
+    public async Task<IEnumerable<ExtracaoConsultaSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
         int modalidadeId,
         int componenteCurricularId,
+        string dreId,
         CancellationToken cancellationToken = default)
     {
         return await _context.RespostasAluno
             .AsNoTracking()
+            .Where(ra =>
+                ra.Excluido == false &&
+                ra.DreId == dreId &&
+                ra.Questao.Questionario.ModalidadeId.HasValue &&
+                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
+                ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId &&
+                ra.Questao != null &&
+                ra.Questao.Questionario != null &&
+                ra.Questao.Questionario.ComponenteCurricular != null &&
+                ra.Questao.Questionario.Proficiencia != null)
             .Include(ra => ra.Questao)
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.ComponenteCurricular)
@@ -156,22 +167,24 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
-            .Where(ra =>
-                ra.Questao.Questionario.ModalidadeId.HasValue &&
-                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
-                ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
             .OrderBy(ra => ra.AlunoId)
             .ThenBy(ra => ra.QuestaoId)
-            .Select(ra => new ExtracaoSondagemLpEscritaDto
+            .Select(ra => new ExtracaoConsultaSondagemLpEscritaDto
             {
-                CodigoEolEstudante   = ra.AlunoId.ToString(),
-                Questao              = ra.Questao.Nome,
-                Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
-                Legenda              = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
-                Bimestre             = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
+                CodigoEolEstudante = ra.AlunoId.ToString(),
+                Questao = ra.Questao.Nome,
+                Resposta = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
+                Legenda = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
+                Bimestre = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
-                Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
-                ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
+                Proficiencia = ra.Questao.Questionario.Proficiencia.Nome,
+                ModalidadeId = ra.Questao.Questionario.ModalidadeId ?? 0,
+                CodigoEolEscola = ra.UeId,
+                RacaId = ra.RacaCorId,
+                GeneroId = ra.GeneroSexoId,
+                CodigoDre = ra.DreId,
+                TurmaId = ra.TurmaId,
+                AnoTurma = ra.AnoTurma
             })
             .ToListAsync(cancellationToken);
     }

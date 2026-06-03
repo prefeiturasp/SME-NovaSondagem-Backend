@@ -32,13 +32,13 @@ public class RelatorioIntegracaoController : ControllerBase
         return Ok(await obterRelatorioSondagemPorTurmaUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
-    [HttpGet("sondagem-por-todas-turma-lp")]
+    [HttpGet("sondagem-por-todas-turma-lp/{dreId}")]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(MemoryStream), 200)]
-    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma(string dreId,[FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
     {
-       var resultado = await useCase.ObterSondagemRelatorio(cancellationToken);
-        return File(resultado.Content, resultado.ContentType, resultado.FileName);
+       var resultado = await useCase.ObterSondagemRelatorio(dreId, cancellationToken);
+       return File(resultado.Content, resultado.ContentType, resultado.FileName);
     }
 
     [HttpGet("proficiencia/{proficienciaId}")]

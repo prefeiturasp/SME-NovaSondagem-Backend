@@ -342,11 +342,12 @@ public class SondagemSalvarRespostasUseCaseTeste
     {
         var modalidadeId = 1;
         var componenteCurricularId = 1;
+        var dreId = "1";
         _repositorioSondagemResposta
-                .Setup(x => x.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricularId))
+                .Setup(x => x.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricularId, dreId))
                 .ReturnsAsync([]);
 
-        var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(_cancellationToken);
+        var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(dreId, _cancellationToken);
         Assert.NotNull(uc);
         Assert.NotNull(uc.FileName);
 
