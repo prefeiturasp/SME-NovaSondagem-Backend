@@ -567,9 +567,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = contexto.RespostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = contexto.SondagemAtiva.PeriodosBimestre.Any(p =>
-                dataSituacaoMatricula.Date <= p.DataFim.Date && dataSituacaoMatricula.Date >= p.DataInicio.Date)
-            && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+        var alunoAtivo = situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         var bimestrePeriodo = bimestreIdChave.HasValue
             ? contexto.SondagemAtiva.PeriodosBimestre.FirstOrDefault(p => p.BimestreId == bimestreIdChave)
@@ -577,12 +575,6 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var alunoEstavaNoBimestre = bimestrePeriodo == null
             || dataSituacaoMatricula.Date <= bimestrePeriodo.DataFim.Date;
-
-        var bimestreJaIniciou = bimestrePeriodo == null
-            || bimestrePeriodo.DataInicio.Date <= DateTime.Now.Date;
-
-        var periodoAtivoRegraAntiga = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo;
-        var periodoAtivoRegraNova = bimestreJaIniciou && alunoEstavaNoBimestre && periodoAtivoRegraAntiga;
 
         string? descricaoBimestre = string.Empty;
         if (contexto.ExibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
@@ -597,7 +589,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna && !ehEja
                 ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}"
                 : colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = periodoAtivoRegraNova,
+            PeriodoBimestreAtivo = alunoAtivo && alunoEstavaNoBimestre && colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = contexto.EhRelatorio
                 ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
