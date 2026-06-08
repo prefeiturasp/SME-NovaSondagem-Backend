@@ -40,12 +40,12 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         if (!string.IsNullOrEmpty(filtro.Ue) && string.IsNullOrEmpty(filtro.Dre))
             throw new ArgumentException("UE informada sem DRE correspondente.");
 
-        filtro.AcessoIrrestrito = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(cancellationToken);
+        filtro.AcessoIrrestrito = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(filtro.Perfil, cancellationToken);
 
         if (!filtro.AcessoIrrestrito)
         {
             var (dres, ues, turmas) = await _abrangenciaService.ObterAbrangenciaCompletaAsync(
-                filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, cancellationToken);
+                new AbrangenciaFiltroQuery(filtro.AnoLetivo, filtro.Modalidade, filtro.Dre, filtro.Ue, filtro.SemestreId, filtro.Rf, filtro.Perfil), cancellationToken);
 
             if (string.IsNullOrEmpty(filtro.Dre))
                 filtro.DresAbrangencia = dres;

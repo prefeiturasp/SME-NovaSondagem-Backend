@@ -198,7 +198,7 @@ public class AbrangenciaServiceTeste
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(json);
 
         // Act
-        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null));
 
         // Assert
         Assert.Contains("DRE-1", dres);
@@ -221,7 +221,7 @@ public class AbrangenciaServiceTeste
         _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(json);
 
         // Act
-        await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null));
 
         // Assert
         _mockHttpClientFactory.Verify(f => f.CreateClient(It.IsAny<string>()), Times.Never);
@@ -239,7 +239,7 @@ public class AbrangenciaServiceTeste
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(
-            () => _service.ObterAbrangenciaCompletaAsync(2025, 5, null));
+            () => _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null)));
 
         Assert.Equal("Falha ao obter abrangência do SGP. Tente novamente.", ex.Message);
     }
@@ -255,7 +255,7 @@ public class AbrangenciaServiceTeste
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
         // Act
-        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null));
 
         // Assert
         Assert.Empty(dres);
@@ -282,7 +282,7 @@ public class AbrangenciaServiceTeste
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
         // Act
-        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        var (dres, ues, turmas) = await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null));
 
         // Assert
         Assert.Equal(2, dres.Count);
@@ -309,7 +309,7 @@ public class AbrangenciaServiceTeste
         _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(httpClient);
 
         // Act
-        await _service.ObterAbrangenciaCompletaAsync(2025, 5, null);
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2025, 5, null));
 
         // Assert
         _mockCache.Verify(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Once);

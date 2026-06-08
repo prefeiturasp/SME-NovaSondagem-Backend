@@ -26,5 +26,12 @@ namespace SME.Sondagem.Infrastructure.Services
                 ?? _httpContextAccessor.HttpContext?.User?.FindFirst("rf")?.Value
                 ?? "0";
         }
+
+        public string ObterPerfilUsuarioLogado()
+        {
+            return _httpContextAccessor.HttpContext?.User?.Claims
+                ?.FirstOrDefault(x => x.Type.Equals("perfil", StringComparison.OrdinalIgnoreCase))?.Value
+                ?? string.Empty;
+        }
     }
 }
