@@ -16,6 +16,7 @@ public class EstudanteQuestionarioDto
     public bool Pap { get; set; }
     public bool Aee { get; set; }
     public bool PossuiDeficiencia { get; set; }
+    public DateTime DataSituacao { get; set; }
     public IEnumerable<ColunaQuestionarioDto>? Coluna { get; set; }
     public EstudanteRemanejadoDto? EstudanteRemanejado { get; set; }
 }
