@@ -18,7 +18,7 @@ namespace SME.Sondagem.API.Configuracoes
 
                     if (pendingMigrations.Any())
                     {
-                        //await dbContext.Database.MigrateAsync();
+                        await dbContext.Database.MigrateAsync();
                     }
                 }
                 catch (Exception ex)
