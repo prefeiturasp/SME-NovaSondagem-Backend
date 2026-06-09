@@ -20,8 +20,8 @@ namespace SME.Sondagem.API.Controllers;
 /// </remarks>
 [Route("api/relatorio-integracao")]
 [ApiController]
-[ApiExplorerSettings(IgnoreApi = true)]
-[ChaveIntegracaoApiAttribute]
+//[ApiExplorerSettings(IgnoreApi = true)]
+//[ChaveIntegracaoApiAttribute]
 public class RelatorioIntegracaoController : ControllerBase
 {
     [HttpGet("sondagem-por-turma")]
@@ -32,12 +32,16 @@ public class RelatorioIntegracaoController : ControllerBase
         return Ok(await obterRelatorioSondagemPorTurmaUseCase.ObterSondagemRelatorio(filtro, cancellationToken));
     }
 
-    [HttpGet("sondagem-por-todas-turma-lp/{dreId}")]
+    [HttpGet("extracao-dados-sondagem")]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(MemoryStream), 200)]
-    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma(string dreId,[FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromQuery] FiltroExtracaoDadosDTO filtro, [FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
     {
-       var resultado = await useCase.ObterSondagemRelatorio(dreId, cancellationToken);
+       var resultado = await useCase.ObterSondagemRelatorio(filtro, cancellationToken);
+
+       if (resultado == null)
+           return Content("Sem dados disponíveis");
+
        return File(resultado.Content, resultado.ContentType, resultado.FileName);
     }
 

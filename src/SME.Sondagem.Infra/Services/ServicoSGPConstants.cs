@@ -8,4 +8,5 @@ public static class ServicoSgpConstants
     public const string SERVICO = "servicoSGP";
     public const string URL_REGISTRAR_SOLICITACAO_RELATORIO = "v1/solicitacao-relatorio/salvar";
     public const string URL_SOLICITACAO_RELATORIO = "v1/solicitacao-relatorio/obter-solicitacao-relatorio";
+    public const string URL_OBTER_DRES = "v1/dres/integracoes";
 }

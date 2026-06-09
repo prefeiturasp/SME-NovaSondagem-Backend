@@ -7,6 +7,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Extensions;
 using SME.Sondagem.Infrastructure.Dtos;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using System.Reflection;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
@@ -16,64 +17,51 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
         private readonly RepositoriosElastic _repositoriosElastic;
         private readonly RepositoriosSondagem _repositoriosSondagem;
         private readonly RepositorioSondagemRelatorioPorTodasTurma _repositorioSondagemRelatorioPorTodasTurma;
+        private readonly IConsultaDeDresService _consultaDeDresService;
 
 
         public ObterSondagemRelatorioPorTodasTurmaUseCase(IUeComDreEolService ueComDreEolService,
             RepositoriosElastic repositoriosElastic,
             RepositoriosSondagem repositoriosSondagem,
-            RepositorioSondagemRelatorioPorTodasTurma repositorioSondagemRelatorioPorTodasTurma
-            )
+            RepositorioSondagemRelatorioPorTodasTurma repositorioSondagemRelatorioPorTodasTurma,
+            IConsultaDeDresService consultaDeDresService)
         {
             _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
             _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
             _repositorioSondagemRelatorioPorTodasTurma = repositorioSondagemRelatorioPorTodasTurma ?? throw new ArgumentNullException(nameof(repositorioSondagemRelatorioPorTodasTurma));
+            _consultaDeDresService = consultaDeDresService ?? throw new ArgumentNullException(nameof(consultaDeDresService));
         }
 
-        public async Task<FileResultDto?> ObterSondagemRelatorio(string dreId3, CancellationToken cancellationToken = default)
+        public async Task<FileResultDto?> ObterSondagemRelatorio(FiltroExtracaoDadosDTO filtroExtracaoDados, CancellationToken cancellationToken = default)
         {
             var lista = new List<ExtracaoSondagemLpEscritaDto>();
-            var dresIs = new List<string>() {
-                "108100",
-                "108200",
-                "108300",
-                "108400",
-                "108500",
-                "108600",
-                "108700",
-                "108800",
-                "108900",
-                "109000",
-                "109100",
-                "109200",
-                "109300"
-            };
-            const string NOME_COMPONENTE = "Matemática";
-            //string NOME_MODALIDADE = Modalidade.EJA.ObterNome();
-            string NOME_MODALIDADE = Modalidade.Fundamental.ObterNome();
-            //const string NOME_COMPONENTE = "Língua Portuguesa";
-            const int modalidadeId = (int)Modalidade.Fundamental;
-            //const int modalidadeId = (int)Modalidade.EJA;
+            var dres = await _consultaDeDresService.ObterDresSgpAsync(cancellationToken);
+            var dresIs = dres.Select(x => x.CodigoDre);
+            var listaDeComponentes = await ObterComponentesCurriculares(cancellationToken);
+            
+            string NOME_MODALIDADE = filtroExtracaoDados.Modalidade.ObterNome();
+            var modalidadeId = (int)filtroExtracaoDados.Modalidade;
 
-            foreach (var itemDreId in dresIs)
+            foreach (var componente in listaDeComponentes)
             {
-                
+                foreach (var itemDreId in dresIs)
+                {
+                    var respostas = await ObterExtracaoDadosRespostasAsync(itemDreId!, modalidadeId, componente!, cancellationToken);
 
-                var componenteLp = await ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeId.ToString(), cancellationToken);
-                var respostas = await ObterExtracaoDadosRespostasAsync(itemDreId, modalidadeId, componenteLp!, cancellationToken);
+                    var codigoUes = respostas?.Select(c => c.CodigoEolEscola)?.Distinct() ?? new List<string>();
+                    var codigoTurmas = respostas?.Select(c => Convert.ToInt32(c.TurmaId))?.Distinct() ?? new List<int>();
 
-                var codigoUes = respostas?.Select(c => c.CodigoEolEscola)?.Distinct() ?? new List<string>();
-                var codigoTurmas = respostas?.Select(c => Convert.ToInt32(c.TurmaId))?.Distinct() ?? new List<int>();
+                    var codigoAlunos = ObterCodigosAlunos(respostas!);
 
-                var codigoAlunos = ObterCodigosAlunos(respostas!);
+                    var dadosAlunos = await ObterAlunos(codigoAlunos, codigoUes, codigoTurmas, cancellationToken);
+                    var dadosCompletosTurmas = await ObterTurmasPorCodigosNoElastic(codigoTurmas, codigoUes!, cancellationToken);
+                    var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
 
-                var dadosAlunos = await ObterAlunos(codigoAlunos, codigoUes, codigoTurmas, cancellationToken);
-                var dadosCompletosTurmas = await ObterTurmasPorCodigosNoElastic(codigoTurmas, codigoUes!, cancellationToken);
-                var turmasCodigoNome = MapearTurma(dadosCompletosTurmas);
+                    var uesComDre = await BuscarUesDres(codigoUes!);
+                    await MapearAquivo(lista, respostas!, uesComDre, turmasCodigoNome, dadosAlunos);
+                }
 
-                var uesComDre = await BuscarUesDres(codigoUes!);
-                await MapearAquivo(lista, respostas!, uesComDre, turmasCodigoNome, dadosAlunos);
             }
-
 
             if (lista.Count > 0)
             {
@@ -82,12 +70,12 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 return new FileResultDto(
                     xlsxStream,
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    $"sondagem-{NOME_COMPONENTE.Trim()}-escrita-{DateTime.Now:yyyy-MM-dd HH.mm.ss}_{NOME_MODALIDADE.Trim() ?? string.Empty}.xlsx"
+                    $"sondagem-ExtracaoDadosSondagem-escrita-{DateTime.Now:yyyy-MM-dd HH.mm.ss}_{NOME_MODALIDADE.Trim() ?? string.Empty}.xlsx"
                 );
             }
             else
             {
-                return default;
+                return null;
             }
 
         }
@@ -115,9 +103,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             return await _repositoriosSondagem.RepositorioRespostaAluno.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricular!.Id, dreId, cancellationToken) ?? new List<ExtracaoConsultaSondagemLpEscritaDto>();
         }
 
-        private async Task<Dominio.Entidades.ComponenteCurricular?> ObterPorNomeModalidade(string NOME_COMPONENTE, string? modalidadeId, CancellationToken cancellationToken)
+        private async Task<IEnumerable<Dominio.Entidades.ComponenteCurricular>> ObterComponentesCurriculares(CancellationToken cancellationToken)
         {
-            return await _repositoriosSondagem.RepositorioComponenteCurricular.ObterPorNomeModalidade(NOME_COMPONENTE, modalidadeId, cancellationToken);
+            return await _repositoriosSondagem.RepositorioComponenteCurricular.ListarAsync(cancellationToken);
         }
 
 
