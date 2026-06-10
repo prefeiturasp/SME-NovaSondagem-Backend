@@ -1,13 +1,10 @@
 using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
-using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Aplicacao.Services.EOL;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -17,6 +14,7 @@ using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
 using SME.Sondagem.Infra.Teste.DTO;
+using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
 namespace SME.Sondagem.Aplicacao.Teste.SondagemRespostas;
@@ -46,6 +44,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IRepositorioComponenteCurricular> _repositorioComponenteCurricular;
     private readonly Mock<IUeComDreEolService> _ueComDreEolService;
     private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
+    private readonly Mock<IConsultaDeDresService> _consultaDeDresService;
 
 
     public SondagemSalvarRespostasUseCaseTeste()
@@ -61,6 +60,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta = new Mock<IRepositorioRespostaAluno>();
         _repositorioQuestao = new Mock<IRepositorioQuestao>();
         _controleAcessoService = new Mock<IControleAcessoService>();
+        _consultaDeDresService = new Mock<IConsultaDeDresService>();
         _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
         _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object, new Mock<IRepositorioRacaCor>().Object, new Mock<IRepositorioGeneroSexo>().Object);
         _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
@@ -77,7 +77,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         );
 
         _repositorioComponenteCurricular = new Mock<IRepositorioComponenteCurricular>();
-        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_ueComDreEolService.Object, _repositoriosElastic.Object, _repositoriosSondagem.Object, _repositorioSondagemRelatorioPorTodasTurma.Object);
+        _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_ueComDreEolService.Object, _repositoriosElastic.Object, _repositoriosSondagem.Object, _repositorioSondagemRelatorioPorTodasTurma.Object, _consultaDeDresService.Object);
     }
 
     private void ConfigurarMockTurmaSucesso()
@@ -346,8 +346,10 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta
                 .Setup(x => x.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricularId, dreId))
                 .ReturnsAsync([]);
-
-        var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(dreId, _cancellationToken);
+        var filtro = new FiltroExtracaoDadosDTO() {
+            Modalidade = (Modalidade)modalidadeId
+        };
+        var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(filtro, _cancellationToken);
         Assert.NotNull(uc);
         Assert.NotNull(uc.FileName);
 
