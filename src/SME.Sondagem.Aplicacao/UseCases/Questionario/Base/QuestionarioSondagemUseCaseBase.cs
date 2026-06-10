@@ -304,7 +304,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
             DataSituacao = aluno.DataSituacao,
             Coluna = colunasAluno,
-            EstudanteRemanejado = aluno.DataSituacao.Date > periodoInicioSondagem.Date ? new EstudanteRemanejadoDto { Data = aluno.DataSituacao } : null
+            EstudanteRemanejado = aluno.DataSituacao.Date >= periodoInicioSondagem.Date ? new EstudanteRemanejadoDto { Data = aluno.DataSituacao } : null
         };
 
         if (dadosAlunos.DadosRacaGenero?.TryGetValue((long)aluno.CodigoAluno, out var dados) == true)
