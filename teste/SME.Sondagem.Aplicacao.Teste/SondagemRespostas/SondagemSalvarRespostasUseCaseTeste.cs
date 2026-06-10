@@ -5,6 +5,7 @@ using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -27,8 +28,10 @@ public class SondagemSalvarRespostasUseCaseTeste
 
     private readonly Mock<IRepositorioSondagem> _repositorioSondagem;
     private readonly Mock<IRepositorioRespostaAluno> _repositorioSondagemResposta;
+    
     private readonly Mock<IRepositorioQuestao> _repositorioQuestao;
     private readonly Mock<IControleAcessoService> _controleAcessoService;
+    
     private readonly SondagemSalvarRespostasUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
     private readonly Mock<RepositoriosElastic> _repositoriosElastic;
@@ -346,12 +349,16 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioSondagemResposta
                 .Setup(x => x.ObterExtracaoDadosRespostasAsync(modalidadeId, componenteCurricularId, dreId))
                 .ReturnsAsync([]);
+
+        _repositorioComponenteCurricular.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<Dominio.Entidades.ComponenteCurricular> { new Dominio.Entidades.ComponenteCurricular("NomeComponente",1,"Fundamental",2) });
+
         var filtro = new FiltroExtracaoDadosDTO() {
             Modalidade = (Modalidade)modalidadeId
         };
         var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(filtro, _cancellationToken);
-        Assert.NotNull(uc);
-        Assert.NotNull(uc.FileName);
+        Assert.Null(uc);
+        Assert.Null(uc?.FileName);
 
     }
 
