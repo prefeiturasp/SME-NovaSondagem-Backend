@@ -4,5 +4,6 @@
     {
         string ObterUsuarioLogado();
         string ObterRFUsuarioLogado();
+        string ObterPerfilUsuarioLogado();
     }
 }

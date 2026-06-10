@@ -1,5 +1,6 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces.Elastic;
 using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Dominio.ValueObjects;
@@ -13,7 +14,8 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
 
     public ObterSondagemRelatorioConsolidadoBimestreUseCase(
         RepositoriosSondagem repositorioSondagem,
-        IRepositorioElasticTurma repositorioElasticTurma) : base(repositorioSondagem, repositorioElasticTurma)
+        IRepositorioElasticTurma repositorioElasticTurma,
+        IAbrangenciaService abrangenciaService) : base(repositorioSondagem, repositorioElasticTurma, abrangenciaService)
     {
     }
 
@@ -30,19 +32,29 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
     }
 
     protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
-        => ConstruirQuestaoDto(
+    {
+        var totaisPorBimestre = respostas
+            .GroupBy(r => r.BimestreId ?? 0)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        var questaoDto = ConstruirQuestaoDto(
             questaoId,
             questaoNome,
             respostas,
             processarOpcao: (opcao, respostasQuestao, total) =>
                 ConstruirRespostaDto(opcao, respostasQuestao, total,
-                    (dto, respostasOpcao, totalQ) => dto.Bimestres = AgruparPorBimestre(respostasOpcao, totalQ, _bimestresReferencia)),
-            adicionarTotais: (dto, respostasQuestao, total) =>
-                dto.TotaisPorBimestre = AgruparPorBimestre(respostasQuestao, total, _bimestresReferencia));
+                    (dto, respostasOpcao, _) => dto.Bimestres = AgruparPorBimestre(respostasOpcao, totaisPorBimestre, _bimestresReferencia)),
+            adicionarTotais: (dto, _, _) =>
+                dto.TotaisPorBimestre = SomarTotaisPorBimestre(dto.Respostas, _bimestresReferencia));
+
+        AjustarPercentuaisColunaPorBimestre(questaoDto, _bimestresReferencia);
+
+        return questaoDto;
+    }
 
     internal static List<RelatorioConsolidadoBimestreDto> AgruparPorBimestre(
         List<RelatorioRespostaAlunoDto> respostas,
-        int total,
+        Dictionary<int, int> totaisPorBimestre,
         IEnumerable<BimestreExibicao> bimestresReferencia)
     {
         var grupos = respostas
@@ -55,7 +67,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             {
                 Bimestre = b.Descricao,
                 Quantidade = grupos.GetValueOrDefault(b.Id),
-                Percentual = CalcularPercentual(grupos.GetValueOrDefault(b.Id), total)
+                Percentual = CalcularPercentual(grupos.GetValueOrDefault(b.Id), totaisPorBimestre.GetValueOrDefault(b.Id))
             }).ToList();
 
         if (grupos.TryGetValue(0, out int qtdNaoInformado) && qtdNaoInformado > 0)
@@ -64,10 +76,70 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
             {
                 Bimestre = "",
                 Quantidade = qtdNaoInformado,
-                Percentual = CalcularPercentual(qtdNaoInformado, total)
+                Percentual = CalcularPercentual(qtdNaoInformado, totaisPorBimestre.GetValueOrDefault(0))
             });
         }
 
         return lista;
+    }
+
+    private static void AjustarPercentuaisColunaPorBimestre(
+        RelatorioConsolidadoQuestaoDto questao,
+        IEnumerable<BimestreExibicao> bimestresReferencia)
+    {
+        var respostas = (questao.Respostas ?? []).ToList();
+        if (respostas.Count == 0) return;
+
+        foreach (var bimestre in bimestresReferencia.OrderBy(b => b.Id))
+        {
+            var celulas = respostas
+                .Select(r => r.Bimestres?.FirstOrDefault(b => b.Bimestre == bimestre.Descricao))
+                .Where(c => c is not null)
+                .Cast<RelatorioConsolidadoBimestreDto>()
+                .ToList();
+
+            int totalBimestre = celulas.Sum(c => c.Quantidade);
+            if (totalBimestre == 0) continue;
+
+            var exatos = celulas.Select(c => (double)c.Quantidade / totalBimestre * 100).ToList();
+            var pisos = exatos.Select(e => Math.Truncate(e * 100) / 100).ToList();
+
+            int qtdAjustes = (int)Math.Round((100.0 - pisos.Sum()) * 100);
+
+            var indicesAjuste = exatos
+                .Select((e, i) => (frac: e - pisos[i], i))
+                .OrderByDescending(x => x.frac)
+                .ThenBy(x => x.i)
+                .Take(Math.Max(0, qtdAjustes))
+                .Select(x => x.i)
+                .ToHashSet();
+
+            for (int i = 0; i < celulas.Count; i++)
+                celulas[i].Percentual = Math.Round(pisos[i] + (indicesAjuste.Contains(i) ? 0.01 : 0), 2);
+        }
+    }
+
+    private static List<RelatorioConsolidadoBimestreDto> SomarTotaisPorBimestre(
+        IEnumerable<RelatorioConsolidadoRespostaDto>? respostas,
+        IEnumerable<BimestreExibicao> bimestresReferencia)
+    {
+        var respostasList = (respostas ?? []).ToList();
+
+        return bimestresReferencia
+            .OrderBy(b => b.Id)
+            .Select(b =>
+            {
+                var quantidade = respostasList
+                    .SelectMany(r => r.Bimestres ?? [])
+                    .Where(bim => bim.Bimestre == b.Descricao)
+                    .Sum(bim => bim.Quantidade);
+
+                return new RelatorioConsolidadoBimestreDto
+                {
+                    Bimestre = b.Descricao,
+                    Quantidade = quantidade,
+                    Percentual = quantidade > 0 ? 100.0 : 0.0
+                };
+            }).ToList();
     }
 }

@@ -17,4 +17,10 @@ public class FiltroConsolidadoDto
     public bool? Aee { get; set; }
     public bool? Deficiente { get; set; }
     public bool? PossuiLinguaPortuguesaSegundaLingua { get; set; }
+    public List<string>? DresAbrangencia { get; set; }
+    public List<string>? UesAbrangencia { get; set; }
+    public List<string>? TurmasAbrangencia { get; set; }
+    public bool AcessoIrrestrito { get; set; }
+    public string? Rf { get; set; }
+    public string? Perfil { get; set; }
 }

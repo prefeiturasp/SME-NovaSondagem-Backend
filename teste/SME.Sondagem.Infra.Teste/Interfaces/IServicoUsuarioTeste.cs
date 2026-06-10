@@ -16,6 +16,11 @@ namespace SME.Sondagem.Infra.Teste.Interfaces
             {
                 return "1234567";
             }
+
+            public string ObterPerfilUsuarioLogado()
+            {
+                return string.Empty;
+            }
         }
 
         [Fact]

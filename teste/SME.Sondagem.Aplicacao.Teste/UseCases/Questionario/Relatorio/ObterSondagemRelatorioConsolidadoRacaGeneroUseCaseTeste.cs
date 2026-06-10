@@ -1,5 +1,6 @@
 using Moq;
 using SME.Sondagem.Aplicacao.Agregadores;
+using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
@@ -16,6 +17,7 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
     private readonly Mock<IRepositorioElasticTurma> _mockRepositorioElasticTurma;
     private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
     private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
+    private readonly Mock<IAbrangenciaService> _mockAbrangenciaService;
     private readonly RepositoriosSondagem _repositoriosSondagem;
     private readonly ObterSondagemRelatorioConsolidadoRacaGeneroUseCase _useCase;
 
@@ -25,6 +27,10 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
         _mockRepositorioElasticTurma = new Mock<IRepositorioElasticTurma>();
         _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
         _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
+        _mockAbrangenciaService = new Mock<IAbrangenciaService>();
+        _mockAbrangenciaService
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<string>(), new List<string>(), new List<string>()));
 
         _repositoriosSondagem = new RepositoriosSondagem(
             new Mock<IRepositorioSondagem>().Object,
@@ -38,7 +44,7 @@ public class ObterSondagemRelatorioConsolidadoRacaGeneroUseCaseTeste
             
         );
 
-        _useCase = new ObterSondagemRelatorioConsolidadoRacaGeneroUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object);
+        _useCase = new ObterSondagemRelatorioConsolidadoRacaGeneroUseCase(_repositoriosSondagem, _mockRepositorioElasticTurma.Object, _mockAbrangenciaService.Object);
     }
 
     [Fact]

@@ -302,6 +302,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(aluno.CodigoAluno, out var lingua) && lingua,
             Pap = dadosAlunos.AlunosComPap.TryGetValue(aluno.CodigoAluno, out var pap) && pap,
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
+            DataSituacao = aluno.DataSituacao,
             Coluna = colunasAluno,
             EstudanteRemanejado = aluno.DataSituacao.Date > periodoInicioSondagem.Date ? new EstudanteRemanejadoDto { Data = aluno.DataSituacao } : null
         };
@@ -566,9 +567,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = contexto.RespostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
-        var podeLancarSondagem = contexto.SondagemAtiva.PeriodosBimestre.Any(p =>
-                dataSituacaoMatricula <= p.DataFim && dataSituacaoMatricula >= p.DataInicio)
-            && situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+        var alunoAtivo = situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+
+        var bimestrePeriodo = bimestreIdChave.HasValue
+            ? contexto.SondagemAtiva.PeriodosBimestre.FirstOrDefault(p => p.BimestreId == bimestreIdChave)
+            : null;
+
+        var alunoEstavaNoBimestre = bimestrePeriodo == null
+            || dataSituacaoMatricula.Date <= bimestrePeriodo.DataFim.Date;
 
         string? descricaoBimestre = string.Empty;
         if (contexto.ExibirBimestreNaDescricaoColuna && bimestreIdChave.HasValue)
@@ -583,7 +589,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             DescricaoColuna = contexto.ExibirBimestreNaDescricaoColuna && !ehEja
                 ? $"{colunaBase.DescricaoColuna} - {descricaoBimestre}"
                 : colunaBase.DescricaoColuna,
-            PeriodoBimestreAtivo = podeLancarSondagem || colunaBase.PeriodoBimestreAtivo,
+            PeriodoBimestreAtivo = alunoAtivo && alunoEstavaNoBimestre && colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = contexto.EhRelatorio
                 ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)

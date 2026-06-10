@@ -375,7 +375,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var repo = CriarRepositorio(context);
 
             // Act
-            var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026 };
+            var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, DresAbrangencia = ["2"], UesAbrangencia = ["3"] };
             var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(filtro);
 
             // Assert
@@ -426,7 +426,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var repo = CriarRepositorio(context);
 
             // Act
-            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(new FiltroConsolidadoDto());
+            var filtro = new FiltroConsolidadoDto { DresAbrangencia = ["2"], UesAbrangencia = ["3"] };
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(filtro);
 
             // Assert
             var dto = resultado.First();

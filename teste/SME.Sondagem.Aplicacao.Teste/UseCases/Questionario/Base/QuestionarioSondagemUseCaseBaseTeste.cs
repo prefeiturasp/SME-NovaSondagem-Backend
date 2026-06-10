@@ -675,7 +675,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     {
         var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
         var sondagem = CriarSondagemComPeriodo(periodoAtivo);
-        var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: false);
+        var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: true);
         var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: (int)SituacaoMatriculaAluno.Ativo);
         var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
         var useCase = CriarUseCase();
