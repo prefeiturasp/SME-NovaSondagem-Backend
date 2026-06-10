@@ -198,7 +198,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
 
             foreach (var grupo in gruposPorDre)
             {
-                var nomeAba = SanitizarNomeAbaUnico(grupo.Key, nomesAbas);
+                var nomeAba = SanitizarNomeAbaUnico(grupo.Key!, nomesAbas);
                 nomesAbas.Add(nomeAba);
 
                 var worksheet = workbook.Worksheets.Add(nomeAba);
