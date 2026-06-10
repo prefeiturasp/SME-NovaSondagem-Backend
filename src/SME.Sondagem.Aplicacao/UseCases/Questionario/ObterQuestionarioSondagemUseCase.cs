@@ -19,11 +19,12 @@ public class ObterQuestionarioSondagemUseCase : QuestionarioSondagemUseCaseBase,
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
+        IAlunoAeeService alunoAeeService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
         IDadosAlunosService _alunoService
         )
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService,
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, alunoAeeService, controleAcessoService,
             servicoUsuario, _alunoService)
     {
     }
