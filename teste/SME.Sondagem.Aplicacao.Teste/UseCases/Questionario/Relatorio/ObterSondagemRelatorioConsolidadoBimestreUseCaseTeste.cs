@@ -27,7 +27,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAbrangenciaService = new Mock<IAbrangenciaService>();
         _mockAbrangenciaService
-            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((new List<string>(), new List<string>(), new List<string>()));
 
         _repositoriosSondagem = new RepositoriosSondagem(
@@ -210,7 +210,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     }
 
     [Fact]
-    public void BimestreModalidadeEjaStrategy_DeveRetornarApenas1e4Bimestre()
+    public void BimestreModalidadeEjaStrategy_DeveRetornarApenas1e2Bimestre()
     {
         var strategy = new BimestreModalidadeEjaStrategy();
         var bimestres = new List<BimestreDominio>
@@ -226,23 +226,23 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
 
         Assert.Equal(2, resultado.Count);
         Assert.Contains(resultado, b => b.Id == 2);
-        Assert.Contains(resultado, b => b.Id == 5);
+        Assert.Contains(resultado, b => b.Id == 3);
     }
 
     [Fact]
-    public void BimestreModalidadeEjaStrategy_DeveRenomearQuartoBimestrePara2Bimestre()
+    public void BimestreModalidadeEjaStrategy_DeveManterDescricoesOriginais()
     {
         var strategy = new BimestreModalidadeEjaStrategy();
         var bimestres = new List<BimestreDominio>
         {
             new BimestreDominio(1, "1° bimestre") { Id = 2 },
-            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+            new BimestreDominio(2, "2° bimestre") { Id = 3 }
         };
 
         var resultado = strategy.AplicarRegras(bimestres, null).ToList();
 
         Assert.Equal("1° bimestre", resultado.First(b => b.Id == 2).Descricao);
-        Assert.Equal("2° bimestre", resultado.First(b => b.Id == 5).Descricao);
+        Assert.Equal("2° bimestre", resultado.First(b => b.Id == 3).Descricao);
     }
 
     [Fact]
@@ -263,9 +263,8 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     }
 
     [Fact]
-    public async Task ObterSondagemRelatorio_ModalidadeEja_DeveExibirApenas2Bimestres_Com4RenomeadoPara2()
+    public async Task ObterSondagemRelatorio_ModalidadeEja_DeveExibirApenas2Bimestres()
     {
-        // Arrange: Modalidade 3 (EJA), todos os bimestres no banco
         var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3 };
 
         _mockRepositorioBimestre
@@ -279,33 +278,22 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
                 new BimestreDominio(4, "4° bimestre") { Id = 5 }
             });
 
-        // Alunos responderam no 1° bimestre (Id=2) e no 4° (Id=5)
         var respostas = new List<RelatorioRespostaAlunoDto>
         {
             CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2),
-            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 5),
+            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 3),
         };
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
             .ReturnsAsync(respostas);
 
-        // Act
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
 
-        // Assert
         var bimestresExibidos = resultado.Questoes.First().Respostas!.First().Bimestres!.ToList();
 
-        // Só 2 bimestres visíveis para EJA
         Assert.Equal(2, bimestresExibidos.Count);
-
-        // 4° bimestre NÃO deve aparecer com o nome original
-        Assert.DoesNotContain(bimestresExibidos, b => b.Bimestre == "4° bimestre");
-
-        // 4° bimestre deve aparecer renomeado como "2° bimestre" com 1 resposta
-        Assert.Contains(bimestresExibidos, b => b.Bimestre == "2° bimestre" && b.Quantidade == 1);
-
-        // 1° bimestre mantém nome e tem 1 resposta
         Assert.Contains(bimestresExibidos, b => b.Bimestre == "1° bimestre" && b.Quantidade == 1);
+        Assert.Contains(bimestresExibidos, b => b.Bimestre == "2° bimestre" && b.Quantidade == 1);
     }
 }

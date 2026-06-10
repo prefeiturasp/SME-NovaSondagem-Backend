@@ -18,6 +18,7 @@ public class MensagemRabbit
     }
 
     public string? UsuarioLogadoRF { get; set; }
+    public string? PerfilUsuario { get; set; }
     public object Mensagem { get; set; }
     public Guid CodigoCorrelacao { get; set; }
 
