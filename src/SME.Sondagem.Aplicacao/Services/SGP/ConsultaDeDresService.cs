@@ -37,7 +37,6 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
             {
                 _servicoLog.Registrar($"Erro ao buscar DREs no SGP ConsultaDeDresService {e.InnerException} , {e.StackTrace}", e);
                 return [];
-
             }
 
         }
