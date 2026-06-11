@@ -151,7 +151,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await _context.RespostasAluno
             .AsNoTracking()
             .Where(ra =>
-                ra.Excluido == false &&
+                !ra.Excluido &&
                 ra.DreId == dreId &&
                 ra.Questao.Questionario.ModalidadeId.HasValue &&
                 ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
