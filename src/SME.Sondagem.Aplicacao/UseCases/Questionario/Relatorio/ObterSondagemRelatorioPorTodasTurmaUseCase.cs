@@ -241,7 +241,9 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             nomeLimpo = System.Text.RegularExpressions.Regex.Replace(
                 nomeLimpo,
                 @"[:\/\?\*|$$|]",
-                ""
+                "",
+                System.Text.RegularExpressions.RegexOptions.None,
+                TimeSpan.FromMilliseconds(100)
             );
 
             if (nomeLimpo.Length > 31)
