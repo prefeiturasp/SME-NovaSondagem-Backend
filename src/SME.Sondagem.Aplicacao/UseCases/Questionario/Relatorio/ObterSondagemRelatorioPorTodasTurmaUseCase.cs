@@ -257,7 +257,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
                 {
                     var sufixo = $"_{contador}";
                     nomeComNumero = nomeLimpo.Length + sufixo.Length > 31
-                        ? nomeLimpo.Substring(0, 31 - sufixo.Length) + sufixo
+                        ? string.Concat(nomeLimpo.AsSpan(0, 31 - sufixo.Length), sufixo)
                         : nomeLimpo + sufixo;
                     contador++;
                 } while (nomesExistentes.Contains(nomeComNumero));
