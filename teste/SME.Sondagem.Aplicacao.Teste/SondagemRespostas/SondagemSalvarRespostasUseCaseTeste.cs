@@ -353,7 +353,7 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositorioComponenteCurricular.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<Dominio.Entidades.ComponenteCurricular> { new Dominio.Entidades.ComponenteCurricular("NomeComponente",1,"Fundamental",2) });
 
-        var filtro = new FiltroExtracaoDadosDTO() {
+        var filtro = new FiltroExtracaoDadosDto() {
             Modalidade = (Modalidade)modalidadeId
         };
         var uc = await _0bterSondagemRelatorioPorTodasTurmaUseCase.ObterSondagemRelatorio(filtro, _cancellationToken);

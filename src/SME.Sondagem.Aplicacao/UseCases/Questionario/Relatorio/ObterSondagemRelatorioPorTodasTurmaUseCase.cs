@@ -32,7 +32,7 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio
             _consultaDeDresService = consultaDeDresService ?? throw new ArgumentNullException(nameof(consultaDeDresService));
         }
 
-        public async Task<FileResultDto?> ObterSondagemRelatorio(FiltroExtracaoDadosDTO filtroExtracaoDados, CancellationToken cancellationToken = default)
+        public async Task<FileResultDto?> ObterSondagemRelatorio(FiltroExtracaoDadosDto filtroExtracaoDados, CancellationToken cancellationToken = default)
         {
             var lista = new List<ExtracaoSondagemLpEscritaDto>();
             var dres = await _consultaDeDresService.ObterDresSgpAsync(cancellationToken);

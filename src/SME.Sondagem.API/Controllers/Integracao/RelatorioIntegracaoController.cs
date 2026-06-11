@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using SME.Sondagem.API.Middlewares;
 using SME.Sondagem.Aplicacao.Interfaces.Proficiencia;
 using SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio;
-using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Infra.Dtos;
 using SME.Sondagem.Infra.Dtos.Proficiencia;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -35,7 +34,7 @@ public class RelatorioIntegracaoController : ControllerBase
     [HttpGet("extracao-dados-sondagem")]
     [ProducesResponseType(typeof(RetornoBaseDto), 500)]
     [ProducesResponseType(typeof(MemoryStream), 200)]
-    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromQuery] FiltroExtracaoDadosDTO filtro, [FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
+    public async Task<IActionResult> ObterRelatorioSondagemPorTodasTurma([FromQuery] FiltroExtracaoDadosDto filtro, [FromServices] IObterSondagemRelatorioPorTodasTurmaUseCase useCase, CancellationToken cancellationToken)
     {
        var resultado = await useCase.ObterSondagemRelatorio(filtro, cancellationToken);
 

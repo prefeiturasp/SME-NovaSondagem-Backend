@@ -5,6 +5,6 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Questionario.Relatorio
 {
     public interface IObterSondagemRelatorioPorTodasTurmaUseCase
     {
-        Task<FileResultDto?> ObterSondagemRelatorio(FiltroExtracaoDadosDTO filtroExtracaoDados, CancellationToken cancellationToken = default);
+        Task<FileResultDto?> ObterSondagemRelatorio(FiltroExtracaoDadosDto filtroExtracaoDados, CancellationToken cancellationToken = default);
     }
 }
