@@ -54,6 +54,7 @@ public class RegistraDependenciasTeste
         RegistraDependencias.Registrar(services, configuration);
 
         Assert.NotNull(services.FirstOrDefault(d => d.ServiceType == typeof(IAlunoPapService)));
+        Assert.NotNull(services.FirstOrDefault(d => d.ServiceType == typeof(IAlunoAeeService)));
         Assert.NotNull(services.FirstOrDefault(d => d.ServiceType == typeof(IControleAcessoService)));
         Assert.NotNull(services.FirstOrDefault(d => d.ServiceType == typeof(IServicoTelemetria)));
         Assert.NotNull(services.FirstOrDefault(d => d.ServiceType == typeof(IServicoLog)));
@@ -220,6 +221,7 @@ public class RegistraDependenciasTeste
 
         var servicosScoped = services.Where(d => 
             d.ServiceType == typeof(IAlunoPapService) ||
+            d.ServiceType == typeof(IAlunoAeeService) ||
             d.ServiceType == typeof(IServicoUsuario) ||
             d.ServiceType == typeof(IServicoAuditoria));
 

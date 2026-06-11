@@ -18,6 +18,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     protected readonly RepositoriosElastic _repositoriosElastic;
     protected readonly RepositoriosSondagem _repositoriosSondagem;
     protected readonly IAlunoPapService _alunoPapService;
+    protected readonly IAlunoAeeService _alunoAeeService;
     protected readonly IControleAcessoService _controleAcessoService;
     protected readonly IServicoUsuario _servicoUsuario;
     protected readonly IDadosAlunosService _dadosAlunosService;
@@ -26,6 +27,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
+        IAlunoAeeService alunoAeeService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
         IDadosAlunosService dadosAlunosService
@@ -34,6 +36,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         _repositoriosElastic = repositoriosElastic ?? throw new ArgumentNullException(nameof(repositoriosElastic));
         _repositoriosSondagem = repositoriosSondagem ?? throw new ArgumentNullException(nameof(repositoriosSondagem));
         _alunoPapService = alunoPapService ?? throw new ArgumentNullException(nameof(alunoPapService));
+        _alunoAeeService = alunoAeeService ?? throw new ArgumentNullException(nameof(alunoAeeService));
         _controleAcessoService = controleAcessoService ?? throw new ArgumentNullException(nameof(controleAcessoService));
         _servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         _dadosAlunosService = dadosAlunosService ?? throw new ArgumentNullException(nameof(dadosAlunosService));
@@ -90,7 +93,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var contextoProcessamento = await ConstruirContextoProcessamento(filtro, turma, sondagemAtiva, ehRelatorio, cancellationToken);
 
-        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.AnoLetivo, contextoProcessamento, cancellationToken);
+        var dadosAlunos = await ObterDadosAlunos(filtro.TurmaId, turma.CodigoTurma, turma.CodigoEscola, turma.AnoLetivo, contextoProcessamento, cancellationToken);
 
         var linguaPortuguesaSegundaLingua = contextoProcessamento.QuestaoLinguaPortuguesa;
 
@@ -301,6 +304,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             NomeRelatorio = (aluno.NomeAluno + " (" + aluno.CodigoAluno + ")") ?? string.Empty,
             LinguaPortuguesaSegundaLingua = dadosAlunos.AlunosComLinguaPortuguesaSegundaLingua.TryGetValue(aluno.CodigoAluno, out var lingua) && lingua,
             Pap = dadosAlunos.AlunosComPap.TryGetValue(aluno.CodigoAluno, out var pap) && pap,
+            Aee = dadosAlunos.AlunosComAee.TryGetValue(aluno.CodigoAluno, out var aee) && aee,
             PossuiDeficiencia = aluno.PossuiDeficiencia == 1,
             DataSituacao = aluno.DataSituacao,
             Coluna = colunasAluno,
@@ -623,12 +627,24 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             : primeiraQuestao?.Nome ?? string.Empty;
     }
 
-    protected virtual async Task<DadosAlunosDto> ObterDadosAlunos(int turmaId, int anoLetivo, ContextoProcessamentoDto contexto, CancellationToken cancellationToken)
+    protected virtual async Task<DadosAlunosDto> ObterDadosAlunos(
+        int turmaId,
+        int codigoTurma,
+        string codigoUe,
+        int anoLetivo,
+        ContextoProcessamentoDto contexto,
+        CancellationToken cancellationToken)
     {
         var alunosComPap = await _alunoPapService.VerificarAlunosPossuemProgramaPapAsync(
             contexto.CodigosAlunos,
             anoLetivo,
-            cancellationToken);
+            cancellationToken) ?? new Dictionary<int, bool>();
+
+        var alunosComAee = await _alunoAeeService.VerificarAlunosPossuemPlanoAeeAsync(
+            contexto.CodigosAlunos,
+            codigoTurma,
+            codigoUe,
+            cancellationToken) ?? new Dictionary<int, bool>();
 
         var alunosComLinguaPortuguesaSegundaLingua = await _repositoriosSondagem.RepositorioRespostaAluno
             .VerificarAlunosPossuiLinguaPortuguesaAsync(
@@ -641,6 +657,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         return new DadosAlunosDto
         {
             AlunosComPap = alunosComPap,
+            AlunosComAee = alunosComAee,
             AlunosComLinguaPortuguesaSegundaLingua = alunosComLinguaPortuguesaSegundaLingua,
             DadosRacaGenero = dadosRacaGenero
         };

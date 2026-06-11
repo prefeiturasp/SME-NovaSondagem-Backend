@@ -16,10 +16,11 @@ public class ObterSondagemRelatorioPorTurmaUseCase : QuestionarioSondagemUseCase
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
+        IAlunoAeeService alunoAeeService,
         IDadosAlunosService alunoService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, alunoService)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, alunoAeeService, controleAcessoService, servicoUsuario, alunoService)
     {
         ArgumentNullException.ThrowIfNull(alunoService);
     }
