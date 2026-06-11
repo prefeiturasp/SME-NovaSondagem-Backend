@@ -1,6 +1,7 @@
 using Moq;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Services.SGP;
+using SME.Sondagem.Dominio;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Services;
 using System.Net;
@@ -72,7 +73,43 @@ public class AlunoAeeServiceTeste
     }
 
     [Fact]
-    public async Task VerificarAlunosPossuemPlanoAeeAsync_ResponseErro_DeveRetornarTodosFalse()
+    public async Task VerificarAlunosPossuemPlanoAeeAsync_ResponseUnauthorized_DeveLancarRegraNegocioException()
+    {
+        var codigos = new[] { 5, 6 };
+        var httpClient = HttpClientMockHelper.Create(HttpStatusCode.Unauthorized);
+
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(ServicoSgpConstants.SERVICO))
+            .Returns(httpClient);
+
+        var service = new AlunoAeeService(httpClientFactoryMock.Object);
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            service.VerificarAlunosPossuemPlanoAeeAsync(codigos, 10, "123456"));
+
+        Assert.Equal((int)HttpStatusCode.Unauthorized, exception.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerificarAlunosPossuemPlanoAeeAsync_ResponseForbidden_DeveLancarRegraNegocioException()
+    {
+        var codigos = new[] { 5, 6 };
+        var httpClient = HttpClientMockHelper.Create(HttpStatusCode.Forbidden);
+
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(ServicoSgpConstants.SERVICO))
+            .Returns(httpClient);
+
+        var service = new AlunoAeeService(httpClientFactoryMock.Object);
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            service.VerificarAlunosPossuemPlanoAeeAsync(codigos, 10, "123456"));
+
+        Assert.Equal((int)HttpStatusCode.Forbidden, exception.StatusCode);
+    }
+
+    [Fact]
+    public async Task VerificarAlunosPossuemPlanoAeeAsync_ResponseErro_DeveLancarRegraNegocioException()
     {
         var codigos = new[] { 5, 6 };
         var httpClient = HttpClientMockHelper.Create(HttpStatusCode.InternalServerError);
@@ -83,9 +120,10 @@ public class AlunoAeeServiceTeste
 
         var service = new AlunoAeeService(httpClientFactoryMock.Object);
 
-        var result = await service.VerificarAlunosPossuemPlanoAeeAsync(codigos, 10, "123456");
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            service.VerificarAlunosPossuemPlanoAeeAsync(codigos, 10, "123456"));
 
-        Assert.All(result.Values, Assert.False);
+        Assert.Equal((int)HttpStatusCode.BadGateway, exception.StatusCode);
     }
 
     [Fact]

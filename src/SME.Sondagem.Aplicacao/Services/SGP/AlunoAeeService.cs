@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Dominio;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Services;
 using System.Net;
@@ -37,8 +38,10 @@ public class AlunoAeeService : IAlunoAeeService
 
         var response = await httpClient.GetAsync(url, cancellationToken);
 
-        if (!response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NoContent)
+        if (response.StatusCode == HttpStatusCode.NoContent)
             return resultado;
+
+        ValidarRespostaSgp(response);
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
 
@@ -56,5 +59,20 @@ public class AlunoAeeService : IAlunoAeeService
             resultado[codigoAluno] = codigosComAee.Contains(codigoAluno);
 
         return resultado;
+    }
+
+    private static void ValidarRespostaSgp(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+            return;
+
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+            throw new RegraNegocioException(
+                "Falha de autorização ao consultar planos AEE no SGP.",
+                response.StatusCode);
+
+        throw new RegraNegocioException(
+            $"Falha ao consultar planos AEE no SGP. StatusCode: {(int)response.StatusCode}",
+            HttpStatusCode.BadGateway);
     }
 }
