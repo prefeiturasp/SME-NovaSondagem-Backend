@@ -27,7 +27,7 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
                 var resultado = new List<ObterDresSgpDto>();
                 var httpClient = _httpClientFactory.CreateClient(ServicoSgpConstants.SERVICO);
                 var url = ServicoSgpConstants.URL_OBTER_DRES;
-                var response = await httpClient.GetAsync(url);
+                var response = await httpClient.GetAsync(url,cancellationToken);
                 if (!response.IsSuccessStatusCode) return resultado;
                 var json = await response.Content.ReadAsStringAsync(cancellationToken);
                 resultado = JsonConvert.DeserializeObject<List<ObterDresSgpDto>>(json) ?? resultado;
