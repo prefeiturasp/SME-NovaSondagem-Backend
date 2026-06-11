@@ -1,11 +1,13 @@
 using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Aplicacao.Services.SGP;
 using SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
 using SME.Sondagem.Aplicacao.UseCases.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Elastic;
-using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Questionario;
@@ -14,7 +16,9 @@ using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infra.Exceptions;
+using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infra.Teste.DTO;
+using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 using Xunit;
 
@@ -48,6 +52,8 @@ public class SondagemSalvarRespostasUseCaseTeste
     private readonly Mock<IUeComDreEolService> _ueComDreEolService;
     private readonly ObterSondagemRelatorioPorTodasTurmaUseCase _0bterSondagemRelatorioPorTodasTurmaUseCase;
     private readonly Mock<IConsultaDeDresService> _consultaDeDresService;
+    private readonly Mock<IHttpClientFactory> _httpClientFactory;
+    private readonly Mock<IServicoLog> _servicoLog;
 
 
     public SondagemSalvarRespostasUseCaseTeste()
@@ -67,7 +73,8 @@ public class SondagemSalvarRespostasUseCaseTeste
         _repositoriosElastic = new Mock<RepositoriosElastic>(_repositorioElasticTurma.Object, _repositorioElasticAluno.Object);
         _repositoriosSondagem = new Mock<RepositoriosSondagem>(_repositorioSondagem.Object, _repositorioQuestao.Object, _repositorioSondagemResposta.Object, _repositorioBimestre.Object, _repositorioComponenteCurricular.Object, _repositorioProficiencia.Object, new Mock<IRepositorioRacaCor>().Object, new Mock<IRepositorioGeneroSexo>().Object);
         _repositorioSondagemRelatorioPorTodasTurma = new Mock<RepositorioSondagemRelatorioPorTodasTurma>(_dadosAlunosService.Object, _ueComDreEolService.Object);
-
+        _httpClientFactory = new Mock<IHttpClientFactory>();
+        _servicoLog = new Mock<IServicoLog>();
         _cancellationToken = CancellationToken.None;
 
         _useCase = new SondagemSalvarRespostasUseCase(
@@ -360,6 +367,116 @@ public class SondagemSalvarRespostasUseCaseTeste
         Assert.Null(uc);
         Assert.Null(uc?.FileName);
 
+    }
+
+    [Fact]
+    public async Task DeveRetornarListaDresComSucesso()
+    {
+        var dresMock = new List<ObterDresSgpDto>
+    {
+        new() { CodigoDre = "1", Nome = "DRE Centro" },
+        new() { CodigoDre = "2", Nome = "DRE Sul" }
+    };
+
+        var jsonContent = JsonConvert.SerializeObject(dresMock);
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = System.Net.HttpStatusCode.OK,
+            Content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json")
+        };
+
+        var mockHandler = new Mock<HttpMessageHandler>();
+        mockHandler
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        var httpClient = new HttpClient(mockHandler.Object)
+        {
+            BaseAddress = new Uri("http://localhost/")
+        };
+
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(It.IsAny<string>()))
+            .Returns(httpClient);
+
+        var service = new ConsultaDeDresService(httpClientFactoryMock.Object, _servicoLog.Object);
+        var resultado = await service.ObterDresSgpAsync();
+
+        Assert.NotNull(resultado);
+        Assert.Equal(2, resultado.Count());
+        Assert.Equal("1", resultado.First().CodigoDre);
+        Assert.Equal("DRE Centro", resultado.First().Nome);
+    }
+
+    [Fact]
+    public async Task DeveRetornarListaVaziaQuandoRequisicaoFalha()
+    {
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = System.Net.HttpStatusCode.InternalServerError
+        };
+
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(It.IsAny<string>()))
+            .Returns(new HttpClient(new MockHttpMessageHandler(responseMessage)));
+
+        var service = new ConsultaDeDresService(httpClientFactoryMock.Object, _servicoLog.Object);
+        var resultado = await service.ObterDresSgpAsync();
+
+        Assert.Empty(resultado);
+    }
+
+    [Fact]
+    public async Task DeveRetornarListaVaziaQuandoExcecaoOcorre()
+    {
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+        httpClientFactoryMock
+            .Setup(x => x.CreateClient(It.IsAny<string>()))
+            .Throws(new HttpRequestException("Erro de conexão"));
+
+        var service = new ConsultaDeDresService(httpClientFactoryMock.Object, _servicoLog.Object);
+        var resultado = await service.ObterDresSgpAsync();
+
+        Assert.Empty(resultado);
+        _servicoLog.Verify(x => x.Registrar(It.IsAny<string>(), It.IsAny<Exception>()), Times.Once);
+    }
+
+    [Fact]
+    public void DeveThrowArgumentNullExceptionQuandoHttpClientFactoryNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConsultaDeDresService(null!, _servicoLog.Object));
+    }
+
+    [Fact]
+    public void DeveThrowArgumentNullExceptionQuandoServicoLogNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new ConsultaDeDresService(_httpClientFactory.Object, null!));
+    }
+
+    private class MockHttpMessageHandler : HttpMessageHandler
+    {
+        private readonly HttpResponseMessage _response;
+
+        public MockHttpMessageHandler(HttpResponseMessage response)
+        {
+            _response = response;
+        }
+
+        protected override Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken cancellationToken)
+        {
+            return Task.FromResult(_response);
+        }
     }
 
     private static Questao CriarQuestaoLinguaPortuguesaSegundaLingua(int questionarioId)
