@@ -11,18 +11,8 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioComponenteCurricularTeste : RepositorioBaseTeste
     {
-        //private readonly Mock<SondagemDbContext> _contextMock;
-        //private readonly Mock<IServicoAuditoria> _servicoAuditoriaMock;
-        //private readonly Mock<ContextoBase> _contextoBaseMock;
 
-        //public RepositorioComponenteCurricularTeste()
-        //{
-        //    _contextMock = new Mock<SondagemDbContext>();
-        //    _servicoAuditoriaMock = new Mock<IServicoAuditoria>();
-        //    _contextoBaseMock = new Mock<ContextoBase>();
-        //}
-
-        private SondagemDbContext CriarContextoEmMemoria()
+        private static SondagemDbContext CriarContextoEmMemoria()
         {
             var options = new DbContextOptionsBuilder<SondagemDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
