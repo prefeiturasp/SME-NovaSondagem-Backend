@@ -3,9 +3,6 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Infra.Interfaces;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.SGP
 {
