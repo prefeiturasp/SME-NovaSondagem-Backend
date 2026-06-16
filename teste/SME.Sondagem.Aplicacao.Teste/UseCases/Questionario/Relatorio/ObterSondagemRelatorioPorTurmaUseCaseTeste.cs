@@ -27,6 +27,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IRepositorioQuestao> _mockRepositorioQuestao;
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
+    private readonly Mock<IAlunoAeeService> _mockAlunoAeeService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
@@ -46,6 +47,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockRepositorioQuestao = new Mock<IRepositorioQuestao>();
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
+        _mockAlunoAeeService = new Mock<IAlunoAeeService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoService = new Mock<IDadosAlunosService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
@@ -75,6 +77,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockAlunoService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
@@ -106,6 +109,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             null!,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
