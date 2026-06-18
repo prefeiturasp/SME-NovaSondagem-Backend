@@ -50,9 +50,10 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             int alunoId,
             int questaoId,
             int sondagemId = 1,
-            bool excluido = false)
+            bool excluido = false,
+            string turmaId = "1")
         {
-            var contextoEdu = CriarContextoEducacional();
+            var contextoEdu = CriarContextoEducacional() with { TurmaId = turmaId };
 
             var resposta = new RespostaAluno(
                 sondagemId,
@@ -163,12 +164,42 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             var resultado = await repo.VerificarAlunosPossuiLinguaPortuguesaAsync(
                 alunosIds,
                 questao,
+                "1",
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
             Assert.True(resultado[1]);
             Assert.False(resultado[2]);
 
+        }
+
+        [Fact]
+        public async Task VerificarAlunosPossuiLinguaPortuguesaAsync_deve_considerar_apenas_turma_informada()
+        {
+            var context = CriarContexto(
+                nameof(VerificarAlunosPossuiLinguaPortuguesaAsync_deve_considerar_apenas_turma_informada));
+
+            var questao = CriarQuestao(1, TipoQuestao.LinguaPortuguesaSegundaLingua);
+            var opcaoSim = new OpcaoResposta(1, "Sim", null, null, null) { Id = 1 };
+            var respostaOutraTurma = CriarRespostaAluno(1, 1, turmaId: "2");
+
+            typeof(RespostaAluno).GetProperty("Questao")!.SetValue(respostaOutraTurma, questao);
+            typeof(RespostaAluno).GetProperty("OpcaoResposta")!.SetValue(respostaOutraTurma, opcaoSim);
+
+            context.Questoes.Add(questao);
+            context.OpcoesResposta.Add(opcaoSim);
+            context.RespostasAluno.Add(respostaOutraTurma);
+            await context.SaveChangesAsync();
+
+            var repo = CriarRepositorio(context);
+
+            var resultado = await repo.VerificarAlunosPossuiLinguaPortuguesaAsync(
+                [1],
+                questao,
+                "1",
+                CancellationToken.None);
+
+            Assert.False(resultado[1]);
         }
 
         #endregion
@@ -194,6 +225,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 codigosAlunos: new List<long> { 10, 20 },
                 questoesIds: new List<long> { 100, 200 },
                 sondagemId: 1,
+                turmaId: "1",
                 CancellationToken.None);
 
             Assert.Equal(2, resultado.Count);
@@ -219,9 +251,36 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
                 codigosAlunos: new List<long> { 10 },
                 questoesIds: new List<long> { 100 },
                 sondagemId: 1,
+                turmaId: "1",
                 CancellationToken.None);
 
             Assert.Empty(resultado);
+        }
+
+        [Fact]
+        public async Task ObterRespostasAlunosPorQuestoesAsync_deve_retornar_apenas_resposta_da_turma_informada()
+        {
+            var context = CriarContexto(
+                nameof(ObterRespostasAlunosPorQuestoesAsync_deve_retornar_apenas_resposta_da_turma_informada));
+
+            var respostaTurmaAtual = CriarRespostaAluno(10, 100, turmaId: "1");
+            var respostaTurmaAnterior = CriarRespostaAluno(10, 100, turmaId: "2");
+
+            context.RespostasAluno.AddRange(respostaTurmaAtual, respostaTurmaAnterior);
+            await context.SaveChangesAsync();
+
+            var repo = CriarRepositorio(context);
+
+            var resultado = await repo.ObterRespostasAlunosPorQuestoesAsync(
+                [10],
+                [100],
+                1,
+                "1",
+                CancellationToken.None);
+
+            var resposta = Assert.Single(resultado).Value;
+            Assert.Equal(respostaTurmaAtual.Id, resposta.Id);
+            Assert.Equal("1", resposta.TurmaId);
         }
 
         #endregion
@@ -236,6 +295,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
+                turmaId: "1",
                 alunosIds: [],
                 questoesIds: QuestoesIdsPadrao
             );
@@ -254,6 +314,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
+                turmaId: "1",
                 alunosIds: AlunosIdsPadrao,
                 questoesIds: []
             );
@@ -320,6 +381,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             // Act
             var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
                 sondagemId: 1,
+                turmaId: "1",
                 alunosIds: AlunoIdUnico,
                 questoesIds: QuestaoIdUnica
             );
@@ -329,6 +391,31 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             Assert.Single(lista);
             Assert.Equal(respostaValida.Id, lista[0].Id);
+        }
+
+        [Fact]
+        public async Task ObterRespostasPorSondagemEAlunosAsync_DeveRetornarApenasRespostasDaTurmaInformada()
+        {
+            var context = CriarContexto(
+                nameof(ObterRespostasPorSondagemEAlunosAsync_DeveRetornarApenasRespostasDaTurmaInformada));
+
+            var respostaTurmaAtual = CriarRespostaAluno(10, 100, turmaId: "1");
+            var respostaTurmaAnterior = CriarRespostaAluno(10, 100, turmaId: "2");
+
+            context.RespostasAluno.AddRange(respostaTurmaAtual, respostaTurmaAnterior);
+            await context.SaveChangesAsync();
+
+            var repo = CriarRepositorio(context);
+
+            var resultado = await repo.ObterRespostasPorSondagemEAlunosAsync(
+                1,
+                "1",
+                [10],
+                [100]);
+
+            var resposta = Assert.Single(resultado);
+            Assert.Equal(respostaTurmaAtual.Id, resposta.Id);
+            Assert.Equal("1", resposta.TurmaId);
         }
 
         #region ObterRespostasParaRelatorioConsolidadoAsync

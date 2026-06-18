@@ -20,6 +20,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     private readonly IRepositorioQuestao _repositorioQuestao;
     private readonly IControleAcessoService _controleAcessoService;
     private readonly IRepositorioElasticTurma _repositorioElasticTurma;
+    private readonly IRepositorioElasticAluno _repositorioElasticAluno;
     private readonly IDadosAlunosService _dadosAlunosService;
 
     public SondagemSalvarRespostasUseCase(IRepositorioSondagem repositorioSondagem,
@@ -27,6 +28,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         IRepositorioQuestao repositorioQuestao,
         IControleAcessoService controleAcessoService,
         IRepositorioElasticTurma repositorioElasticTurma,
+        IRepositorioElasticAluno repositorioElasticAluno,
         IDadosAlunosService dadosAlunosService)
     {
         _repositorioSondagem = repositorioSondagem;
@@ -34,6 +36,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         _repositorioQuestao = repositorioQuestao;
         _controleAcessoService = controleAcessoService;
         _repositorioElasticTurma = repositorioElasticTurma;
+        _repositorioElasticAluno = repositorioElasticAluno;
         _dadosAlunosService = dadosAlunosService;
     }
 
@@ -41,13 +44,18 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     {
         var turma = await ValidarSalvarSondagemEObterTurma(dto);
         dto.AnoTurma = dto.AnoTurma ?? (!string.IsNullOrEmpty(turma.AnoTurma) ? int.Parse(turma.AnoTurma) : null);
-        var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
+        var alunosParaSalvar = await ObterAlunosAtivosParaSalvar(dto, turma);
+
+        if (alunosParaSalvar.Count == 0)
+            return true;
+
+        var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
 
-        var alunosIds = dto.Alunos.Select(a => a.Codigo);
-        var questoesId = dto.Alunos.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)) ?? [0];
+        var alunosIds = alunosParaSalvar.Select(a => a.Codigo);
+        var questoesId = alunosParaSalvar.SelectMany(a => a.Respostas.Select(r => r.QuestaoId)) ?? [0];
 
         var questoes = await _repositorioQuestao.ObterQuestionarioIdPorQuestoesAsync(questoesId) ?? throw new NegocioException(MensagemNegocioComuns.QUESTOES_NAO_PERTENCEM_A_UM_QUESTIONARIO);
         var primeiroQuestionarioId = questoes.FirstOrDefault()!.QuestionarioId;
@@ -61,11 +69,34 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         }
 
         var repostasAlunos =
-            await _repositorioSondagemResposta.ObterRespostasPorSondagemEAlunosAsync(dto.SondagemId, alunosIds, questoesIdsResposta);
+            await _repositorioSondagemResposta.ObterRespostasPorSondagemEAlunosAsync(
+                dto.SondagemId,
+                dto.TurmaId!,
+                alunosIds,
+                questoesIdsResposta);
 
-        var respostas = ProcessarRespostasAlunos(dto, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero);
+        var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero);
+
+        if (respostas.Count == 0)
+            return true;
 
         return await _repositorioSondagemResposta.SalvarAsync(respostas);
+    }
+
+    private async Task<List<AlunoSondagemDto>> ObterAlunosAtivosParaSalvar(SondagemSalvarDto dto, TurmaElasticDto turma)
+    {
+        var turmaId = Convert.ToInt32(dto.TurmaId);
+        var anoLetivo = dto.AnoLetivo != 0 ? dto.AnoLetivo : turma.AnoLetivo;
+
+        var alunosTurma = await _repositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, anoLetivo, CancellationToken.None);
+        var codigosAlunosAtivos = alunosTurma
+            .Where(a => a.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo)
+            .Select(a => a.CodigoAluno)
+            .ToHashSet();
+
+        return dto.Alunos
+            .Where(a => codigosAlunosAtivos.Contains(a.Codigo))
+            .ToList();
     }
 
     private async Task<TurmaElasticDto> ValidarSalvarSondagemEObterTurma(SondagemSalvarDto dto)
@@ -141,6 +172,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private static List<RespostaAluno> ProcessarRespostasAlunos(
         SondagemSalvarDto dto,
+        IEnumerable<AlunoSondagemDto> alunos,
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
         IEnumerable<RespostaAluno> respostasExistentes,
         Dominio.Entidades.Questionario.Questao? questaoLinguaPortuguesa,
@@ -150,17 +182,21 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var racaGeneroPorAluno = dadosRacaGenero
                         .ToDictionary(d => d.CodigoAluno);
 
-        foreach (var aluno in dto.Alunos)
+        foreach (var aluno in alunos)
         {
             racaGeneroPorAluno.TryGetValue(aluno.Codigo, out var racaGenero);
             var contexto = CriarContexto(dto, racaGenero, aluno);
             if (questaoLinguaPortuguesa is not null)
             {
-                respostas.Add(ProcessarRespostaLinguaPortuguesa(
+                var respostaLinguaPortuguesa = ProcessarRespostaLinguaPortuguesa(
                     dto.SondagemId,
                     aluno,
                     questaoLinguaPortuguesa,
-                    respostasExistentes, contexto));
+                    respostasExistentes,
+                    contexto);
+
+                if (respostaLinguaPortuguesa is not null)
+                    respostas.Add(respostaLinguaPortuguesa);
             }
 
             foreach (var respostaDto in aluno.Respostas)
@@ -180,7 +216,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         return respostas;
     }
 
-    private static RespostaAluno ProcessarRespostaLinguaPortuguesa(
+    private static RespostaAluno? ProcessarRespostaLinguaPortuguesa(
     int sondagemId,
     AlunoSondagemDto aluno,
     Dominio.Entidades.Questionario.Questao questao,
@@ -188,7 +224,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     {
         var respostaExistente = respostasExistentes.FirstOrDefault(r =>
             r.AlunoId == aluno.Codigo &&
-            r.QuestaoId == questao.Id);
+            r.QuestaoId == questao.Id &&
+            r.TurmaId == contexto.TurmaId);
 
         var descricao = aluno.LinguaPortuguesaSegundaLingua ? "sim" : "nao";
 
@@ -199,8 +236,12 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (respostaExistente != null)
         {
-            respostaExistente.AtualizarResposta(opcaoRespostaId, DateTimeExtension.HorarioBrasilia(), contexto);
-            return respostaExistente;
+            return respostaExistente.AtualizarResposta(
+                opcaoRespostaId,
+                DateTimeExtension.HorarioBrasilia(),
+                contexto)
+                ? respostaExistente
+                : null;
         }
 
         return new RespostaAluno(
@@ -226,7 +267,10 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
             return null;
 
         var respostaExistente = repostasAlunos?.FirstOrDefault(r =>
-            r.AlunoId == alunoId && r.QuestaoId == respostaDto.QuestaoId && r.BimestreId == respostaDto.BimestreId);
+            r.AlunoId == alunoId &&
+            r.QuestaoId == respostaDto.QuestaoId &&
+            r.BimestreId == respostaDto.BimestreId &&
+            r.TurmaId == contexto.TurmaId);
 
         return CriarOuAtualizarResposta(
             sondagemId,
@@ -244,13 +288,16 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                periodoBimestreAtivo.DataFim >= DateTime.Now;
     }
 
-    private static RespostaAluno CriarOuAtualizarResposta(
+    private static RespostaAluno? CriarOuAtualizarResposta(
         int sondagemId,
         int alunoId,
         RespostaSondagemDto respostaDto,
         RespostaAluno? respostaExistente, ContextoEducacional contexto
         )
     {
+        if (respostaExistente == null && !respostaDto.OpcaoRespostaId.HasValue)
+            return null;
+
         if (respostaExistente == null)
             return new RespostaAluno(
                 sondagemId,
@@ -260,8 +307,12 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 DateTime.UtcNow,
                 contexto with { BimestreId = respostaDto.BimestreId });
 
-        respostaExistente.AtualizarResposta(respostaDto.OpcaoRespostaId, DateTime.UtcNow, contexto);
-        return respostaExistente;
+        return respostaExistente.AtualizarResposta(
+            respostaDto.OpcaoRespostaId,
+            DateTime.UtcNow,
+            contexto)
+            ? respostaExistente
+            : null;
     }
 
     private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero, AlunoSondagemDto aluno) =>

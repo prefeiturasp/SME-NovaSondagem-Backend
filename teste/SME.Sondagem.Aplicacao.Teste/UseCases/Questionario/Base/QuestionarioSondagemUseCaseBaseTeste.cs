@@ -858,7 +858,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
     public void ProcessarRespostas_DeveExcluirRespostasDeAlunosInativos()
     {
         var alunoAtivo = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(-60));
-        var alunoInativo = CriarAlunoElastic(codigo: 1002, dataSituacao: DateTime.Now.AddDays(1));
+        var alunoInativo = CriarAlunoElastic(
+            codigo: 1002,
+            dataSituacao: DateTime.Now.AddDays(1),
+            situacao: (int)SituacaoMatriculaAluno.Desistente);
         var alunosAtivos = new List<AlunoElasticDto> { alunoAtivo, alunoInativo };
 
         var respostaAtivo = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
@@ -872,6 +875,24 @@ public class QuestionarioSondagemUseCaseBaseTeste
             .ProcessarRespostasPublico(respostas, null!, alunosAtivos, DateTime.Now.AddDays(-30));
 
         Assert.DoesNotContain(resultado.RespostasConvertidas.Keys, k => k.CodigoAluno == 1002);
+    }
+
+    [Fact]
+    public void ProcessarRespostas_DeveConsiderarAlunoAtivoComDataSituacaoPosteriorAoInicioDaSondagem()
+    {
+        var aluno = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(1));
+        var alunosAtivos = new List<AlunoElasticDto> { aluno };
+
+        var resposta = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
+        var respostas = new Dictionary<(long, int?, long), RespostaAluno>
+        {
+            { (1001L, 1, 1L), resposta }
+        };
+
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto
+            .ProcessarRespostasPublico(respostas, null!, alunosAtivos, DateTime.Now.AddDays(-30));
+
+        Assert.Contains(resultado.RespostasConvertidas.Keys, k => k.CodigoAluno == 1001);
     }
 
     [Fact]
@@ -1234,7 +1255,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(respostasDict);
     }
 

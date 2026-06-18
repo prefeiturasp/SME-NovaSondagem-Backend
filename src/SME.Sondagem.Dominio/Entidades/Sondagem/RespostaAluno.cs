@@ -21,6 +21,7 @@ public class RespostaAluno : EntidadeBase
         UeId = contexto.UeId;
         DreId = contexto.DreId;
         AnoLetivo = contexto.AnoLetivo;
+        AnoTurma = contexto.AnoTurma;
         RacaCorId = contexto.RacaCorId;
         GeneroSexoId = contexto.GeneroSexoId;
         Aee = contexto.Aee;
@@ -49,11 +50,32 @@ public class RespostaAluno : EntidadeBase
     public int? ModalidadeId { get; set; }
     public int? SemestreId { get; set; }
 
-    public void AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
+    public bool AtualizarResposta(int? opcaoRespostaId, DateTime dataResposta, ContextoEducacional contexto)
     {
+        if (!PossuiAlteracoes(opcaoRespostaId, contexto))
+            return false;
+
         OpcaoRespostaId = opcaoRespostaId;
         DataResposta = dataResposta;
         AtualizarContextoEducacional(contexto);
+        return true;
+    }
+
+    private bool PossuiAlteracoes(int? opcaoRespostaId, ContextoEducacional contexto)
+    {
+        return OpcaoRespostaId != opcaoRespostaId
+               || (TurmaId is null && contexto.TurmaId is not null)
+               || (UeId is null && contexto.UeId is not null)
+               || (DreId is null && contexto.DreId is not null)
+               || (AnoLetivo is null && contexto.AnoLetivo is not null)
+               || (RacaCorId is null && contexto.RacaCorId is not null)
+               || (GeneroSexoId is null && contexto.GeneroSexoId is not null)
+               || Pap != contexto.Pap
+               || Aee != contexto.Aee
+               || Deficiente != contexto.Deficiente
+               || (ModalidadeId is null && contexto.ModalidadeId is not null)
+               || (AnoTurma is null && contexto.AnoTurma is not null)
+               || (SemestreId is null && contexto.SemestreId is not null);
     }
 
     private void AtualizarContextoEducacional(ContextoEducacional contexto)
