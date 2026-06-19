@@ -87,7 +87,7 @@ public class RespostaAlunoMap : IEntityTypeConfiguration<RespostaAluno>
         ConfigurarAuditoria(builder);
 
 
-        builder.HasIndex(x => new { x.SondagemId, x.AlunoId, x.QuestaoId, x.BimestreId })
+        builder.HasIndex(x => new { x.SondagemId, x.TurmaId, x.AlunoId, x.QuestaoId, x.BimestreId })
                         .HasDatabaseName("uk_resposta_sondagem_aluno_questao")
                         .IsUnique()
                         .HasFilter("excluido = false");

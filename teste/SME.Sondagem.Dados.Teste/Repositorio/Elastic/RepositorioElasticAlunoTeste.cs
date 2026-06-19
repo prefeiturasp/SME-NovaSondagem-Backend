@@ -34,6 +34,7 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
 
         private static readonly DateTime DataSituacaoValida = DateTime.UtcNow.AddDays(-1);
         private static readonly int SituacaoAtivo = (int)SituacaoMatriculaAluno.Ativo;
+        private static readonly int SituacaoRemanejadoSaida = (int)SituacaoMatriculaAluno.RemanejadoSaida;
 
         public RepositorioElasticAlunoTeste()
         {
@@ -265,7 +266,31 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
         }
 
         [Fact]
-        public async Task ObterAlunosPorIdTurma_DeveExcluirAlunos_QuandoSituacaoNaoForAtiva()
+        public async Task ObterAlunosPorIdTurma_DeveRetornarAtivosERemanejados_QuandoSituacaoForPermitida()
+        {
+            var idTurma = 200;
+            int anoLetivo = DateTime.Now.Year;
+            var cancellationToken = CancellationToken.None;
+
+            var alunos = new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, NomeAluno = "Ativo", CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, NomeAluno = "Remanejado", CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoRemanejadoSaida, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 3, CodigoMatricula = 300, NomeAluno = "Inativo", CodigoTurma = idTurma, CodigoSituacaoMatricula = 0, DataSituacao = DataSituacaoValida }
+            };
+
+            ConfigurarMocksParaRetornar(alunos);
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, cancellationToken);
+
+            var listaResultado = resultado.ToList();
+            Assert.Equal(2, listaResultado.Count);
+            Assert.Contains(listaResultado, aluno => aluno.NomeAluno == "Ativo");
+            Assert.Contains(listaResultado, aluno => aluno.NomeAluno == "Remanejado");
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveExcluirAlunos_QuandoSituacaoNaoForAtivaOuRemanejadoSaida()
         {
             var idTurma = 200;
             int anoLetivo = DateTime.Now.Year;
