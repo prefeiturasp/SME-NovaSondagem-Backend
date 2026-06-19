@@ -264,7 +264,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     private static bool DeveConsiderarAlunoNaSondagem(
         AlunoElasticDto aluno,
         DateTime periodoInicioSondagem,
-        IReadOnlySet<int> alunosComResposta)
+        HashSet<int> alunosComResposta)
     {
         if (alunosComResposta.Contains(aluno.CodigoAluno))
             return true;
