@@ -403,6 +403,62 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Fact]
+    public async Task ObterQuestionarioSondagem_DeveRetornarEstudanteRemanejado()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
+        var turma = new TurmaElasticDto { CodigoTurma = 1, Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var sondagem = CriarSondagemMock();
+        var questoes = CriarQuestoesMock();
+        var alunos = new List<AlunoElasticDto>
+        {
+            new()
+            {
+                CodigoAluno = 1001,
+                NumeroAlunoChamada = "1",
+                NomeAluno = "Aluno Remanejado",
+                DataSituacao = DateTime.Now,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.RemanejadoSaida
+            }
+        };
+
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos);
+
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var estudante = Assert.Single(resultado.Estudantes!);
+        Assert.Equal(1001, estudante.Codigo);
+        Assert.NotNull(estudante.EstudanteRemanejado);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveRetornarEstudanteAtivoComDataSituacaoPosteriorAoInicioDaSondagem()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
+        var turma = new TurmaElasticDto { CodigoTurma = 1, Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var sondagem = CriarSondagemMock();
+        var questoes = CriarQuestoesMock();
+        var alunos = new List<AlunoElasticDto>
+        {
+            new()
+            {
+                CodigoAluno = 1001,
+                NumeroAlunoChamada = "1",
+                NomeAluno = "Aluno Ativo Remanejado Entrada",
+                DataSituacao = DateTime.Now,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
+            }
+        };
+
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos);
+
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var estudante = Assert.Single(resultado.Estudantes!);
+        Assert.Equal(1001, estudante.Codigo);
+        Assert.Null(estudante.EstudanteRemanejado);
+    }
+
+    [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarEstudantesComPap_QuandoAlunosEstiveremNoProgramaPap()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
@@ -421,11 +477,11 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .ReturnsAsync(alunosComPap);
 
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
@@ -449,7 +505,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
 
         var alunosComLingua = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunosComLingua);
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
@@ -457,7 +513,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
@@ -481,14 +537,16 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 CodigoAluno = 1001,
                 NumeroAlunoChamada = "1",
                 NomeAluno = "João Silva",
-                PossuiDeficiencia = 1
+                PossuiDeficiencia = 1,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             },
             new AlunoElasticDto
             {
                 CodigoAluno = 1002,
                 NumeroAlunoChamada = "2",
                 NomeAluno = "Maria Santos",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             }
         };
 
@@ -524,7 +582,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 CodigoAluno = 1001,
                 NomeAluno = "Aluno Teste",
                 NumeroAlunoChamada = "1",
-                PossuiDeficiencia = 0
+                PossuiDeficiencia = 0,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo
             }
             });
 
@@ -546,6 +605,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.IsAny<List<long>>(),
                 It.IsAny<List<long>>(),
                 It.IsAny<long>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long CodigoAluno, long QuestaoId, int? BimestreId), RespostaAluno>
             {
@@ -556,6 +616,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             .Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
                 It.IsAny<List<int>>(),
                 It.IsAny<Dominio.Entidades.Questionario.Questao>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
@@ -627,6 +688,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
                 It.IsAny<List<long>>(),
                 It.Is<List<long>>(ids => ids.Count == 3),
                 It.IsAny<long>(),
+                It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -997,16 +1059,24 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private void ConfigurarMocksComplementares()
     {
         _mockRepositorioRespostaAluno.Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockAlunoPapService.Setup(x => x.VerificarAlunosPossuemProgramaPapAsync(
             It.IsAny<List<int>>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
+        _mockAlunoAeeService.Setup(x => x.VerificarAlunosPossuemPlanoAeeAsync(
+            It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<int, bool>());
+
         _mockRepositorioRespostaAluno.Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
+
+        _mockAlunoService.Setup(x => x.ObterDadosRacaGeneroAlunos(
+            It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
     }
 
     private void ConfigurarMocksCompleto(
