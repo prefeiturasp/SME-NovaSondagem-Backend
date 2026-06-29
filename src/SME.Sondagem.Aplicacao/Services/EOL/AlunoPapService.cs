@@ -1,18 +1,25 @@
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
+using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class AlunoPapService : IAlunoPapService
     {
-        private readonly IHttpClientFactory httpClientFactory;
+        private const int CacheTtlMinutos = 15;
 
-        public AlunoPapService(IHttpClientFactory httpClientFactory)
+        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IRepositorioCache repositorioCache;
+
+        public AlunoPapService(IHttpClientFactory httpClientFactory, IRepositorioCache repositorioCache)
         {
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<Dictionary<int, bool>> VerificarAlunosPossuemProgramaPapAsync(IEnumerable<int> codigosAlunos, int anoLetivo, CancellationToken cancellationToken = default)
@@ -21,6 +28,13 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 
             if (codigosAlunos == null || !codigosAlunos.Any())
                 return resultado;
+
+            var codigosOrdenados = codigosAlunos.OrderBy(x => x).ToList();
+            var codigosHash = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(string.Join(",", codigosOrdenados))));
+            var chave = $"sondagem-alunos-pap:{anoLetivo}:{codigosHash}";
+
+            var cached = await repositorioCache.ObterRedisAsync<Dictionary<int, bool>>(chave);
+            if (cached != null) return cached;
 
             var httpClient = httpClientFactory.CreateClient(ServicoEolConstants.SERVICO);
 
@@ -46,11 +60,12 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                         resultado[codigoAluno] = codigosComPap.Contains(codigoAluno);
                     }
 
+                    await repositorioCache.SalvarRedisAsync(chave, resultado, CacheTtlMinutos);
                     return resultado;
                 }
             }
 
-            // Se não houver resposta ou erro, inicializa todos como false
+            // Se nï¿½o houver resposta ou erro, inicializa todos como false
             foreach (var codigoAluno in codigosAlunos)
             {
                 resultado[codigoAluno] = false;
