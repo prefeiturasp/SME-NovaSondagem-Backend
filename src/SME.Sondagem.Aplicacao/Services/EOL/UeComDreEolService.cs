@@ -36,7 +36,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                     return resultado;
 
                 var codigosOrdenados = codigosUes.OrderBy(x => x).ToList();
-                var codigosHash = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(string.Join(",", codigosOrdenados))));
+                var codigosHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join(",", codigosOrdenados))))[..16];
                 var chave = $"sondagem-ues-com-dre:{codigosHash}";
 
                 var cached = await _repositorioCache.ObterRedisAsync<List<UeComDreEolDto>>(chave);
