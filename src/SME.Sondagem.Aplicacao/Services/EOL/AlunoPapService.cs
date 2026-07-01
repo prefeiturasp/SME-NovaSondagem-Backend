@@ -30,7 +30,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 return resultado;
 
             var codigosOrdenados = codigosAlunos.OrderBy(x => x).ToList();
-            var codigosHash = Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(string.Join(",", codigosOrdenados))));
+            var codigosHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join(",", codigosOrdenados))))[..16];
             var chave = $"sondagem-alunos-pap:{anoLetivo}:{codigosHash}";
 
             var cached = await repositorioCache.ObterRedisAsync<Dictionary<int, bool>>(chave);
