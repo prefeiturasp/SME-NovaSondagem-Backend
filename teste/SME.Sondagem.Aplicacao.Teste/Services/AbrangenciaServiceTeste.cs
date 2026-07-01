@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
-using SME.Sondagem.Aplicacao.Services.EOL;
+using SME.Sondagem.Aplicacao.Services.SGP;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Infrastructure.Dtos;
 using System.Net;
