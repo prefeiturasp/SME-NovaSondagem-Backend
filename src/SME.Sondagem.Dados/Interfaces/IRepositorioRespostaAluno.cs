@@ -25,9 +25,10 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
         long sondagemId,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
+    Task<IEnumerable<ExtracaoConsultaSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
         int modalidadeId,
         int componenteCurricularId,
+        string dreId,
         CancellationToken cancellationToken = default);
 
     Task<IEnumerable<RelatorioRespostaAlunoDto>> ObterRespostasParaRelatorioConsolidadoAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default);
