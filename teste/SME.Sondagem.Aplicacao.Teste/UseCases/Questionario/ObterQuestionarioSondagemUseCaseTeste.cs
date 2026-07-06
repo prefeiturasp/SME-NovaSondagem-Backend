@@ -24,6 +24,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioQuestao> _mockRepositorioQuestao;
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
+    private readonly Mock<IAlunoAeeService> _mockAlunoAeeService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IRepositorioProficiencia> _repositorioProficiencia;
@@ -42,6 +43,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockRepositorioQuestao = new Mock<IRepositorioQuestao>();
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
+        _mockAlunoAeeService = new Mock<IAlunoAeeService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
         _mockAlunoService = new Mock<IDadosAlunosService>();
@@ -71,6 +73,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
             _mockAlunoService.Object
@@ -98,6 +101,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             null!,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
               _mockAlunoService.Object
@@ -116,6 +120,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             null!,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
               _mockAlunoService.Object
@@ -145,6 +150,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             null!,
+            _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
             _mockAlunoService.Object
@@ -174,6 +180,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             null!,
             _mockServicoUsuario.Object,
             _mockAlunoService.Object
