@@ -1,11 +1,249 @@
-﻿using SME.Sondagem.Dados.Repositorio.Postgres;
+﻿using Microsoft.EntityFrameworkCore;
+using Moq;
+using SME.Sondagem.Dados.Contexto;
+using SME.Sondagem.Dados.Interfaces.Auditoria;
+using SME.Sondagem.Dados.Repositorio.Postgres;
 using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Infra.Contexto;
 using Xunit;
 
 namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 {
     public class RepositorioComponenteCurricularTeste : RepositorioBaseTeste
     {
+
+        private static SondagemDbContext CriarContextoEmMemoria()
+        {
+            var options = new DbContextOptionsBuilder<SondagemDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            return new SondagemDbContext(options);
+        }
+
+        [Fact]
+        public async Task DeveObterComponentePorCodigoEolComSucesso()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Matemática", 2024, "Fundamental", 123);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorCodigoEolAsync(123);
+
+            Assert.NotNull(resultado);
+            Assert.Equal("Matemática", resultado.Nome);
+            Assert.Equal(123, resultado.CodigoEol);
+        }
+
+        [Fact]
+        public async Task DeveRetornarNuloQuandoComponenteNaoEncontrado()
+        {
+            using var context = CriarContextoEmMemoria();
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorCodigoEolAsync(999);
+
+            Assert.Null(resultado);
+        }
+
+        [Fact]
+        public async Task DeveObterComponentePorNomeEModalidade()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Português", 2024, "EJA", 456);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorNomeModalidade("Português", "EJA");
+
+            Assert.NotNull(resultado);
+            Assert.Equal("EJA", resultado.Modalidade);
+            Assert.Equal("Português", resultado.Nome);
+        }
+
+        [Fact]
+        public async Task DeveObterComponentePorNomeQuandoModalidadeNula()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Português", 2024, string.Empty, 789);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorNomeModalidade("Português", null);
+
+            Assert.NotNull(resultado);
+            Assert.Equal("Português", resultado.Nome);
+        }
+
+        [Fact]
+        public async Task DeveListarComponentesPorModalidade()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componentes = new List<ComponenteCurricular>
+        {
+            new("Matemática", 2024, "Regular", 101),
+            new("Português", 2024, "Regular", 102),
+            new("História", 2024, "EJA", 103)
+        };
+
+            context.Set<ComponenteCurricular>().AddRange(componentes);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorModalidadeAsync("Regular");
+
+            Assert.NotEmpty(resultado);
+            Assert.Equal(2, resultado.Count());
+            Assert.All(resultado, c => Assert.Equal("Regular", c.Modalidade));
+        }
+
+        [Fact]
+        public async Task DeveListarComponentesPorAno()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componentes = new List<ComponenteCurricular>
+            {
+                new("Matemática", 2024, "Fundamental", 201),
+                new("Português", 2024, "Fundamental", 202),
+                new("História", 2023, "Fundamental", 203)
+            };
+
+            context.Set<ComponenteCurricular>().AddRange(componentes);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ObterPorAnoAsync(2024);
+
+            Assert.NotEmpty(resultado);
+            Assert.Equal(2, resultado.Count());
+            Assert.All(resultado, c => Assert.Equal(2024, c.Ano));
+        }
+
+        [Fact]
+        public async Task DeveVerificarSeExisteComponenteComCodigoEol()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Matemática", 2024, "Fundamental", 301);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var existe = await repositorio.ExisteComCodigoEolAsync(301);
+
+            Assert.True(existe);
+        }
+
+        [Fact]
+        public async Task DeveRetornarFalsoQuandoComponenteNaoExiste()
+        {
+            using var context = CriarContextoEmMemoria();
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var existe = await repositorio.ExisteComCodigoEolAsync(999);
+
+            Assert.False(existe);
+        }
+
+        [Fact]
+        public async Task DeveIgnorarIdAoVerificarSeExisteComponente()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Matemática", 2024, "Fundamental", 401);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+
+            // Obtém o ID do componente inserido
+            var componenteInserido = context.Set<ComponenteCurricular>().First();
+            var existe = await repositorio.ExisteComCodigoEolAsync(401, idIgnorar: componenteInserido.Id);
+
+            Assert.False(existe);
+        }
+
+        [Fact]
+        public async Task DeveListarTodosComponentesOrdenados()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componentes = new List<ComponenteCurricular>
+            {
+                new("Português", 2024, "Fundamental", 501),
+                new("Matemática", 2024, "Fundamental", 502),
+                new("História", 2024, "Fundamental", 503)
+            };
+
+            context.Set<ComponenteCurricular>().AddRange(componentes);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ListarAsync();
+
+            Assert.NotEmpty(resultado);
+            var lista = resultado.ToList();
+
+            // Verifica se está ordenado por nome
+            Assert.Equal("História", lista[0].Nome);
+            Assert.Equal("Matemática", lista[1].Nome);
+            Assert.Equal("Português", lista[2].Nome);
+        }
+
+        [Fact]
+        public async Task DeveCarregarModalidadeComponenteCurricularAoListar()
+        {
+            using var context = CriarContextoEmMemoria();
+            var componente = new ComponenteCurricular("Matemática", 2024, "Fundamental", 601);
+
+            context.Set<ComponenteCurricular>().Add(componente);
+            await context.SaveChangesAsync();
+
+            var servicoAuditoriaMock = new Mock<IServicoAuditoria>();
+            var contextoBaseMock = new Mock<ContextoBase>();
+
+            var repositorio = new RepositorioComponenteCurricular(context, servicoAuditoriaMock.Object, contextoBaseMock.Object);
+            var resultado = await repositorio.ListarAsync();
+
+            Assert.NotEmpty(resultado);
+            var componentes = resultado.ToList();
+            Assert.NotNull(componentes[0].ModalidadeComponenteCurricular);
+        }
+
         [Fact]
         public async Task ObterPorCodigoEolAsync_deve_retornar_componente_quando_existir()
         {
