@@ -26,6 +26,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.Equal(questaoId, respostaAluno.QuestaoId);
             Assert.Equal(opcaoRespostaId, respostaAluno.OpcaoRespostaId);
             Assert.Equal(dataResposta, respostaAluno.DataResposta);
+            Assert.Equal(contexto.AnoTurma, respostaAluno.AnoTurma);
             Assert.NotNull(respostaAluno.BimestreId);
         }
 
@@ -118,6 +119,33 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.False(respostaAluno.Excluido);
         }
 
+        [Fact]
+        public void Nao_deve_atualizar_resposta_quando_opcao_e_contexto_nao_mudaram()
+        {
+            var contexto = CriarContextoEducacional();
+            var dataResposta = DateTime.UtcNow.AddDays(-1);
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, dataResposta, contexto);
+
+            var atualizado = respostaAluno.AtualizarResposta(4, DateTime.UtcNow, contexto);
+
+            Assert.False(atualizado);
+            Assert.Equal(dataResposta, respostaAluno.DataResposta);
+        }
+
+        [Fact]
+        public void Deve_atualizar_resposta_quando_opcao_mudar()
+        {
+            var contexto = CriarContextoEducacional();
+            var novaDataResposta = DateTime.UtcNow;
+            var respostaAluno = new RespostaAluno(1, 2, 3, 4, novaDataResposta.AddDays(-1), contexto);
+
+            var atualizado = respostaAluno.AtualizarResposta(5, novaDataResposta, contexto);
+
+            Assert.True(atualizado);
+            Assert.Equal(5, respostaAluno.OpcaoRespostaId);
+            Assert.Equal(novaDataResposta, respostaAluno.DataResposta);
+        }
+
         private static ContextoEducacional CriarContextoEducacional()
         {
             return new ContextoEducacional
@@ -126,6 +154,7 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
                 UeId = "3",
                 DreId = "2",
                 AnoLetivo = 2026,
+                AnoTurma = 3,
                 ModalidadeId = 4,
                 RacaCorId = 1,
                 GeneroSexoId = 1,

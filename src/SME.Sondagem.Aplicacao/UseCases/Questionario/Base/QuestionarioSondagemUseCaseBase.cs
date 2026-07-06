@@ -177,6 +177,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             [.. codigosAlunos.Select(x => (long)x)],
             [.. questoesIds.Select(x => (long)x)],
             sondagemAtiva.Id,
+            turma.CodigoTurma.ToString(),
             cancellationToken);
 
         var questaoIdPrincipal = questoesAtivas.First(x => x.Tipo != TipoQuestao.LinguaPortuguesaSegundaLingua).Id;
@@ -243,11 +244,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
            .Select(r => r.AlunoId)
            .ToHashSet();
 
-        var alunoForaSondagem = contexto.Alunos.Where(a => a.DataSituacao.Date > periodoInicioSondagem.Date && !alunosComResposta.Contains(a.CodigoAluno))?.FirstOrDefault();
-
         foreach (var aluno in contexto.Alunos)
         {
-            if (alunoForaSondagem != null && alunoForaSondagem.CodigoAluno == aluno.CodigoAluno) continue;
+            if (!DeveConsiderarAlunoNaSondagem(aluno, periodoInicioSondagem, alunosComResposta))
+                continue;
 
             var colunasAluno = contexto.Colunas
                 .Select(c => ConstruirColunaAluno(c, aluno, contextoColunaDto, filtro))
@@ -259,6 +259,20 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         }
 
         return estudantes;
+    }
+
+    private static bool DeveConsiderarAlunoNaSondagem(
+        AlunoElasticDto aluno,
+        DateTime periodoInicioSondagem,
+        HashSet<int> alunosComResposta)
+    {
+        if (alunosComResposta.Contains(aluno.CodigoAluno))
+            return true;
+
+        if (aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.RemanejadoSaida)
+            return aluno.DataSituacao.Date >= periodoInicioSondagem.Date;
+
+        return aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
     }
 
     private static List<LegendaQuestionarioDto> ConstruirLegenda(ContextoProcessamentoDto contexto)
@@ -502,14 +516,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             .Select(r => r.AlunoId)
             .ToHashSet();
 
-        var codigosAlunosAtivos = alunosAtivos
-            .Where(a =>
-                a.DataSituacao.Date <= dataInicioSondagem.Date || alunosComResposta.Contains(a.CodigoAluno))
+        var codigosAlunosConsiderados = alunosAtivos
+            .Where(a => DeveConsiderarAlunoNaSondagem(a, dataInicioSondagem, alunosComResposta))
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 
         var respostasAuditoria = respostasAlunosPorQuestoes.Values
-            .Where(r => codigosAlunosAtivos.Contains(r.AlunoId))
+            .Where(r => codigosAlunosConsiderados.Contains(r.AlunoId))
             .ToList();
 
         if (linguaPortuguesaSegundaLingua != null)
@@ -518,7 +531,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var (Insercao, Alteracao) = ObterAuditoria(respostasAuditoria);
 
         var respostasConvertidas = respostasAlunosPorQuestoes
-            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAlunosAtivos.Contains((int)x.Key.CodigoAluno))
+            .Where(x => x.Value?.OpcaoRespostaId is not null && codigosAlunosConsiderados.Contains((int)x.Key.CodigoAluno))
             .GroupBy(x => (
                 CodigoAluno: (int)x.Key.CodigoAluno,
                 x.Key.BimestreId,
@@ -650,6 +663,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             .VerificarAlunosPossuiLinguaPortuguesaAsync(
                 contexto.CodigosAlunos,
                 contexto.QuestaoLinguaPortuguesa,
+                codigoTurma.ToString(),
                 cancellationToken);
 
         var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmaId, cancellationToken);

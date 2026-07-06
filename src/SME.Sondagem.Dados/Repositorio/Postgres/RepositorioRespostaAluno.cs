@@ -25,8 +25,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .AnyAsync(ra => ra.AlunoId == alunoId && ra.Questao.Tipo == tipoQuestao, cancellationToken);
     }
 
-    public async Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(List<int> alunosIds,
-        Dominio.Entidades.Questionario.Questao? questao, CancellationToken cancellationToken)
+    public async Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(
+        List<int> alunosIds,
+        Dominio.Entidades.Questionario.Questao? questao,
+        string turmaId,
+        CancellationToken cancellationToken)
     {
         var respostas = new List<int>();
 
@@ -36,6 +39,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .Include(ra => ra.Questao)
             .Where(ra => ra.AlunoId > 0
                 && alunosIds.Contains(ra.AlunoId)
+                && ra.TurmaId == turmaId
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
                 && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
@@ -53,8 +57,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
     }
 
 
-    public async Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(int sondagemId,
-        IEnumerable<int> alunosIds, IEnumerable<int> questoesIds,
+    public async Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(
+        int sondagemId,
+        string turmaId,
+        IEnumerable<int> alunosIds,
+        IEnumerable<int> questoesIds,
         CancellationToken cancellationToken = default)
     {
         var alunosIdsList = alunosIds.ToList();
@@ -66,6 +73,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await _context.RespostasAluno
             .AsNoTracking()
             .Where(ra => !ra.Excluido && ra.SondagemId == sondagemId
+                                  && ra.TurmaId == turmaId
                                   && alunosIdsList.Contains(ra.AlunoId)
                                   && questoesIdsList.Contains(ra.QuestaoId))
             .ToListAsync(cancellationToken);
@@ -126,6 +134,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             List<long> codigosAlunos,
             List<long> questoesIds,
             long sondagemId,
+            string turmaId,
             CancellationToken cancellationToken = default)
     {
         var respostas = await _context.RespostasAluno
@@ -133,6 +142,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                         && codigosAlunos.Contains((long)r.AlunoId)
                         && questoesIds.Contains(r.QuestaoId)
                         && r.SondagemId == sondagemId
+                        && r.TurmaId == turmaId
                         && !r.Excluido)
             .ToListAsync(cancellationToken);
 
