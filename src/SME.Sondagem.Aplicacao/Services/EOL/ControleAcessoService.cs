@@ -105,7 +105,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                     int codigoTurma,
                     CancellationToken cancellationToken)
         {
-            var chaveCache = $"turma-elastic:{codigoTurma}";
+            var chaveCache = $"sondagem-turma-elastic:{codigoTurma}";
 
             var turmaCached = await repositorioCache.ObterRedisAsync<TurmaElasticDto>(chaveCache);
 
@@ -148,8 +148,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                             NomeChaveCache.CONTROLE_ACESSO_USUARIO,
                             login,
                             perfilInfo.Codigo,
-                            perfilInfo?.Nome?.Trim() ?? string.Empty,
-                            perfilInfo?.AcessoIrrestrito.ToString());
+                            codigoEscola ?? string.Empty,
+                            anoTurma ?? string.Empty);
 
             var cacheRedis = await repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))

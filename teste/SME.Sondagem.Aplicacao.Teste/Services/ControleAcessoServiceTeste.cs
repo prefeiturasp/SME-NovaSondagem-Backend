@@ -735,7 +735,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
                 Times.Once);
 
             _repositorioCacheMock.Verify(
-                r => r.SalvarRedisAsync($"turma-elastic:{TURMA_ID}", turmaElastic, 30),
+                r => r.SalvarRedisAsync($"sondagem-turma-elastic:{TURMA_ID}", turmaElastic, 30),
                 Times.Once);
         }
 
