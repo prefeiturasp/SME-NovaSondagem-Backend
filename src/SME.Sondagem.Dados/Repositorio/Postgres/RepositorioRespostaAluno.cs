@@ -25,8 +25,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .AnyAsync(ra => ra.AlunoId == alunoId && ra.Questao.Tipo == tipoQuestao, cancellationToken);
     }
 
-    public async Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(List<int> alunosIds,
-        Dominio.Entidades.Questionario.Questao? questao, CancellationToken cancellationToken)
+    public async Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(
+        List<int> alunosIds,
+        Dominio.Entidades.Questionario.Questao? questao,
+        string turmaId,
+        CancellationToken cancellationToken)
     {
         var respostas = new List<int>();
 
@@ -36,6 +39,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .Include(ra => ra.Questao)
             .Where(ra => ra.AlunoId > 0
                 && alunosIds.Contains(ra.AlunoId)
+                && ra.TurmaId == turmaId
                 && ra.Questao.Tipo == TipoQuestao.LinguaPortuguesaSegundaLingua
                 && ra.QuestaoId == questao.Id
                 && ra.OpcaoResposta.DescricaoOpcaoResposta.ToLower() == "sim")
@@ -53,8 +57,11 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
     }
 
 
-    public async Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(int sondagemId,
-        IEnumerable<int> alunosIds, IEnumerable<int> questoesIds,
+    public async Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(
+        int sondagemId,
+        string turmaId,
+        IEnumerable<int> alunosIds,
+        IEnumerable<int> questoesIds,
         CancellationToken cancellationToken = default)
     {
         var alunosIdsList = alunosIds.ToList();
@@ -66,6 +73,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await _context.RespostasAluno
             .AsNoTracking()
             .Where(ra => !ra.Excluido && ra.SondagemId == sondagemId
+                                  && ra.TurmaId == turmaId
                                   && alunosIdsList.Contains(ra.AlunoId)
                                   && questoesIdsList.Contains(ra.QuestaoId))
             .ToListAsync(cancellationToken);
@@ -126,6 +134,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             List<long> codigosAlunos,
             List<long> questoesIds,
             long sondagemId,
+            string turmaId,
             CancellationToken cancellationToken = default)
     {
         var respostas = await _context.RespostasAluno
@@ -133,6 +142,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
                         && codigosAlunos.Contains((long)r.AlunoId)
                         && questoesIds.Contains(r.QuestaoId)
                         && r.SondagemId == sondagemId
+                        && r.TurmaId == turmaId
                         && !r.Excluido)
             .ToListAsync(cancellationToken);
 
@@ -140,15 +150,26 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             r => ((long)(r.AlunoId), (long)r.QuestaoId, r.BimestreId)
         );
     }
-    
-    
-    public async Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
+
+
+    public async Task<IEnumerable<ExtracaoConsultaSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
         int modalidadeId,
         int componenteCurricularId,
+        string dreId,
         CancellationToken cancellationToken = default)
     {
         return await _context.RespostasAluno
             .AsNoTracking()
+            .Where(ra =>
+                !ra.Excluido &&
+                ra.DreId == dreId &&
+                ra.Questao.Questionario.ModalidadeId.HasValue &&
+                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
+                ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId &&
+                ra.Questao != null &&
+                ra.Questao.Questionario != null &&
+                ra.Questao.Questionario.ComponenteCurricular != null &&
+                ra.Questao.Questionario.Proficiencia != null)
             .Include(ra => ra.Questao)
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.ComponenteCurricular)
@@ -156,22 +177,24 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             .ThenInclude(q => q.Questionario)
             .ThenInclude(q2 => q2.Proficiencia)
             .Include(ra => ra.OpcaoResposta)
-            .Where(ra =>
-                ra.Questao.Questionario.ModalidadeId.HasValue &&
-                ra.Questao.Questionario.ModalidadeId.Value == modalidadeId &&
-                ra.Questao.Questionario.ComponenteCurricularId == componenteCurricularId)
             .OrderBy(ra => ra.AlunoId)
             .ThenBy(ra => ra.QuestaoId)
-            .Select(ra => new ExtracaoSondagemLpEscritaDto
+            .Select(ra => new ExtracaoConsultaSondagemLpEscritaDto
             {
-                CodigoEolEstudante   = ra.AlunoId.ToString(),
-                Questao              = ra.Questao.Nome,
-                Resposta             = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
-                Legenda              = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
-                Bimestre             = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
+                CodigoEolEstudante = ra.AlunoId.ToString(),
+                Questao = ra.Questao.Nome,
+                Resposta = ra.OpcaoResposta != null ? ra.OpcaoResposta.DescricaoOpcaoResposta : null,
+                Legenda = ra.OpcaoResposta != null ? ra.OpcaoResposta.Legenda : null,
+                Bimestre = ra.BimestreId.HasValue ? ra.BimestreId.Value.ToString() : null,
                 ComponenteCurricular = ra.Questao.Questionario.ComponenteCurricular.Nome,
-                Proficiencia         = ra.Questao.Questionario.Proficiencia.Nome,
-                ModalidadeId         = ra.Questao.Questionario.ModalidadeId ?? 0,
+                Proficiencia = ra.Questao.Questionario.Proficiencia.Nome,
+                ModalidadeId = ra.Questao.Questionario.ModalidadeId ?? 0,
+                CodigoEolEscola = ra.UeId,
+                RacaId = ra.RacaCorId,
+                GeneroId = ra.GeneroSexoId,
+                CodigoDre = ra.DreId,
+                TurmaId = ra.TurmaId,
+                AnoTurma = ra.AnoTurma
             })
             .ToListAsync(cancellationToken);
     }

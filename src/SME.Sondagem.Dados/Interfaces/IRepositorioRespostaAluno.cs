@@ -11,10 +11,15 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
     Task<bool> VerificarAlunoTemRespostaPorTipoQuestaoAsync(int alunoId, TipoQuestao tipoQuestao,
         CancellationToken cancellationToken);
 
-    Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(List<int> alunosIds, Questao? questao, CancellationToken cancellationToken);
+    Task<Dictionary<int, bool>> VerificarAlunosPossuiLinguaPortuguesaAsync(
+        List<int> alunosIds,
+        Questao? questao,
+        string turmaId,
+        CancellationToken cancellationToken);
 
     Task<IEnumerable<RespostaAluno>> ObterRespostasPorSondagemEAlunosAsync(
         int sondagemId,
+        string turmaId,
         IEnumerable<int> alunosIds,
         IEnumerable<int> questoesIds,
         CancellationToken cancellationToken = default);
@@ -23,11 +28,13 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
         List<long> codigosAlunos,
         List<long> questoesIds,
         long sondagemId,
+        string turmaId,
         CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<ExtracaoSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
+    Task<IEnumerable<ExtracaoConsultaSondagemLpEscritaDto>> ObterExtracaoDadosRespostasAsync(
         int modalidadeId,
         int componenteCurricularId,
+        string dreId,
         CancellationToken cancellationToken = default);
 
     Task<IEnumerable<RelatorioRespostaAlunoDto>> ObterRespostasParaRelatorioConsolidadoAsync(FiltroConsolidadoDto filtro, CancellationToken cancellationToken = default);

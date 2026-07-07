@@ -27,6 +27,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
     private readonly Mock<IRepositorioQuestao> _mockRepositorioQuestao;
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
+    private readonly Mock<IAlunoAeeService> _mockAlunoAeeService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
@@ -46,6 +47,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         _mockRepositorioQuestao = new Mock<IRepositorioQuestao>();
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
+        _mockAlunoAeeService = new Mock<IAlunoAeeService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockAlunoService = new Mock<IDadosAlunosService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
@@ -75,6 +77,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockAlunoService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
@@ -106,6 +109,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
             repositoriosElastic,
             repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             null!,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object
@@ -269,7 +273,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -294,7 +298,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -319,7 +323,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -344,7 +348,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -378,7 +382,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -403,7 +407,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -428,7 +432,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -453,7 +457,7 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var questoes = CriarQuestoesMock();
         var alunos = new List<AlunoElasticDto>
         {
-            new AlunoElasticDto { CodigoAluno = 1001, NomeAluno = "Aluno Teste", NumeroAlunoChamada = "1", PossuiDeficiencia = 0 }
+            CriarAlunoTeste()
         };
 
         var dadosAlunos = new List<AlunoRacaGeneroDto>
@@ -501,12 +505,12 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
@@ -543,12 +547,12 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         var alunosComLingua = new Dictionary<int, bool> { { 1001, true }, { 1002, false } };
         _mockRepositorioRespostaAluno
             .Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(alunosComLingua);
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
 
         var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
@@ -651,6 +655,19 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
         };
     }
 
+    private static AlunoElasticDto CriarAlunoTeste()
+    {
+        return new AlunoElasticDto
+        {
+            CodigoAluno = 1001,
+            NomeAluno = "Aluno Teste",
+            NumeroAlunoChamada = "1",
+            PossuiDeficiencia = 0,
+            CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo,
+            DataSituacao = DateTime.Today.AddDays(-30)
+        };
+    }
+
     private static List<AlunoRacaGeneroDto> CriarDadosAlunosPorTurmaMock()
     {
         return new List<AlunoRacaGeneroDto>
@@ -709,12 +726,12 @@ public class ObterSondagemRelatorioPorTurmaUseCaseTeste
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.VerificarAlunosPossuiLinguaPortuguesaAsync(
-                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<int>>(), It.IsAny<Dominio.Entidades.Questionario.Questao>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool>());
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
     }
 

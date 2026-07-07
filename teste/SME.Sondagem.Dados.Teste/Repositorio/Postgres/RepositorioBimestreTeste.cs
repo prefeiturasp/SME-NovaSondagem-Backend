@@ -181,7 +181,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var resultado = await repo.SalvarAsync(bimestre);
 
-            Assert.Equivalent(resultado,0);
+            Assert.Equivalent(0, resultado);
         }
 
         [Fact]
@@ -203,7 +203,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             var resultado = await repo.SalvarAsync(bimestre);
 
-            Assert.Equivalent(resultado, 1);
+            Assert.Equivalent(1, resultado);
         }
 
         #endregion

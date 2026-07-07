@@ -106,6 +106,7 @@ public static class RegistraDependencias
     private static void RegistrarServicos(IServiceCollection services)
     {
         services.AddScoped<IAlunoPapService, AlunoPapService>();
+        services.AddScoped<IAlunoAeeService, AlunoAeeService>();
         services.AddScoped<IAlunoTurmaService, AlunoTurmaService>();
         services.AddScoped<IControleAcessoService, ControleAcessoService>();
         services.AddScoped<IAbrangenciaService, AbrangenciaService>();
@@ -117,6 +118,7 @@ public static class RegistraDependencias
         services.AddScoped<IUeComDreEolService, UeComDreEolService>();
         services.AddScoped<IDadosAlunosService, DadosAlunosService>();
         services.AddScoped<IPerfilService, PerfilService>();
+        services.AddScoped<IConsultaDeDresService, ConsultaDeDresService>();
     }
 
     private static void RegistrarCasosDeUso(IServiceCollection services)

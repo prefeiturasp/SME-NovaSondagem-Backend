@@ -53,7 +53,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
                 return ([], [], []);
 
-            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.Semestre);
+            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.CodigoUe ?? "all", filtro.Semestre);
             var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, filtro.AnoLetivo, filtro.Modalidade);
 
             if (!string.IsNullOrEmpty(filtro.CodigoDre))

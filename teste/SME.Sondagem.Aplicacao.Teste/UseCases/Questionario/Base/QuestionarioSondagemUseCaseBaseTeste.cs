@@ -25,15 +25,17 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
         RepositoriosElastic repositoriosElastic,
         RepositoriosSondagem repositoriosSondagem,
         IAlunoPapService alunoPapService,
+        IAlunoAeeService alunoAeeService,
         IControleAcessoService controleAcessoService,
         IServicoUsuario servicoUsuario,
         IDadosAlunosService _alunoService,
         DadosAlunosDto? dadosAlunos = null)
-        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, controleAcessoService, servicoUsuario, _alunoService)
+        : base(repositoriosElastic, repositoriosSondagem, alunoPapService, alunoAeeService, controleAcessoService, servicoUsuario, _alunoService)
     {
         _dadosAlunos = dadosAlunos ?? new DadosAlunosDto
         {
             AlunosComPap = new Dictionary<int, bool>(),
+            AlunosComAee = new Dictionary<int, bool>(),
             AlunosComLinguaPortuguesaSegundaLingua = new Dictionary<int, bool>(),
             DadosRacaGenero = null
         };
@@ -41,6 +43,8 @@ internal partial class QuestionarioSondagemUseCaseBaseConcreto : QuestionarioSon
 
     protected override Task<DadosAlunosDto> ObterDadosAlunos(
         int turmaId,
+        int codigoTurma,
+        string codigoUe,
         int anoLetivo,
         ContextoProcessamentoDto contexto,
         CancellationToken cancellationToken)
@@ -58,6 +62,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
     private readonly Mock<IRepositorioRespostaAluno> _mockRepositorioRespostaAluno;
     private readonly Mock<IRepositorioBimestre> _mockRepositorioBimestre;
     private readonly Mock<IAlunoPapService> _mockAlunoPapService;
+    private readonly Mock<IAlunoAeeService> _mockAlunoAeeService;
     private readonly Mock<IControleAcessoService> _mockControleAcessoService;
     private readonly Mock<IServicoUsuario> _mockServicoUsuario;
     private readonly Mock<IDadosAlunosService> _mockAlunoService;
@@ -80,6 +85,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
         _mockRepositorioRespostaAluno = new Mock<IRepositorioRespostaAluno>();
         _mockRepositorioBimestre = new Mock<IRepositorioBimestre>();
         _mockAlunoPapService = new Mock<IAlunoPapService>();
+        _mockAlunoAeeService = new Mock<IAlunoAeeService>();
         _mockControleAcessoService = new Mock<IControleAcessoService>();
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _repositorioProficiencia = new Mock<IRepositorioProficiencia>();
@@ -109,6 +115,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
             _repositoriosElastic,
             _repositoriosSondagem,
             _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
             _mockAlunoService.Object,
@@ -124,6 +131,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 null!,
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
+                _mockAlunoAeeService.Object,
                 _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
                 null!
@@ -138,6 +146,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosElastic,
                 null!,
                 _mockAlunoPapService.Object,
+                _mockAlunoAeeService.Object,
                 _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
                 null!
@@ -152,6 +161,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosElastic,
                 _repositoriosSondagem,
                 null!,
+                _mockAlunoAeeService.Object,
                 _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
                 null!
@@ -166,7 +176,23 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosElastic,
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
+                _mockAlunoAeeService.Object,
                 null!,
+                _mockServicoUsuario.Object,
+                null!
+                ));
+    }
+
+    [Fact]
+    public void Construtor_DeveLancarArgumentNullException_QuandoAlunoAeeServiceForNulo()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new QuestionarioSondagemUseCaseBaseConcreto(
+                _repositoriosElastic,
+                _repositoriosSondagem,
+                _mockAlunoPapService.Object,
+                null!,
+                _mockControleAcessoService.Object,
                 _mockServicoUsuario.Object,
                 null!
                 ));
@@ -180,6 +206,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
                 _repositoriosElastic,
                 _repositoriosSondagem,
                 _mockAlunoPapService.Object,
+                _mockAlunoAeeService.Object,
                 _mockControleAcessoService.Object,
                  null!,
                  null!
@@ -831,7 +858,10 @@ public class QuestionarioSondagemUseCaseBaseTeste
     public void ProcessarRespostas_DeveExcluirRespostasDeAlunosInativos()
     {
         var alunoAtivo = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(-60));
-        var alunoInativo = CriarAlunoElastic(codigo: 1002, dataSituacao: DateTime.Now.AddDays(1));
+        var alunoInativo = CriarAlunoElastic(
+            codigo: 1002,
+            dataSituacao: DateTime.Now.AddDays(1),
+            situacao: (int)SituacaoMatriculaAluno.Desistente);
         var alunosAtivos = new List<AlunoElasticDto> { alunoAtivo, alunoInativo };
 
         var respostaAtivo = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
@@ -845,6 +875,24 @@ public class QuestionarioSondagemUseCaseBaseTeste
             .ProcessarRespostasPublico(respostas, null!, alunosAtivos, DateTime.Now.AddDays(-30));
 
         Assert.DoesNotContain(resultado.RespostasConvertidas.Keys, k => k.CodigoAluno == 1002);
+    }
+
+    [Fact]
+    public void ProcessarRespostas_DeveConsiderarAlunoAtivoComDataSituacaoPosteriorAoInicioDaSondagem()
+    {
+        var aluno = CriarAlunoElastic(codigo: 1001, dataSituacao: DateTime.Now.AddDays(1));
+        var alunosAtivos = new List<AlunoElasticDto> { aluno };
+
+        var resposta = CriarRespostaAluno(id: 1, opcaoRespostaId: 2, alunoId: 1001);
+        var respostas = new Dictionary<(long, int?, long), RespostaAluno>
+        {
+            { (1001L, 1, 1L), resposta }
+        };
+
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto
+            .ProcessarRespostasPublico(respostas, null!, alunosAtivos, DateTime.Now.AddDays(-30));
+
+        Assert.Contains(resultado.RespostasConvertidas.Keys, k => k.CodigoAluno == 1001);
     }
 
     [Fact]
@@ -984,6 +1032,30 @@ public class QuestionarioSondagemUseCaseBaseTeste
         var dto = Assert.IsType<SME.Sondagem.Infra.Dtos.Questionario.QuestionarioSondagemDto>(resultado);
         Assert.NotNull(dto.Estudantes);
         Assert.True(dto.PodeSalvar);
+    }
+
+    [Fact]
+    public async Task ExecutarProcessamentoQuestionario_DevePreencherAee_QuandoAlunoPossuiPlanoAee()
+    {
+        ConfigurarMocksCompletos();
+
+        var dadosAlunos = new DadosAlunosDto
+        {
+            AlunosComPap = new Dictionary<int, bool>(),
+            AlunosComAee = new Dictionary<int, bool> { { 1001, true } },
+            AlunosComLinguaPortuguesaSegundaLingua = new Dictionary<int, bool>(),
+            DadosRacaGenero = null
+        };
+
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1 };
+        var useCase = CriarUseCase(dadosAlunos);
+
+        var resultado = await useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None);
+
+        var dto = Assert.IsType<SME.Sondagem.Infra.Dtos.Questionario.QuestionarioSondagemDto>(resultado);
+        var estudante = Assert.Single(dto.Estudantes!, estudante => estudante.Codigo == 1001);
+
+        Assert.True(estudante.Aee);
     }
 
     [Fact]
@@ -1183,7 +1255,7 @@ public class QuestionarioSondagemUseCaseBaseTeste
 
         _mockRepositorioRespostaAluno
             .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
-                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(respostasDict);
     }
 
