@@ -305,4 +305,36 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         var conexao = _context.Database.GetDbConnection();
         return await conexao.ExecuteAsync(query, lote);
     }
+
+    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.LotePendenteAeeDto>> ObterLotePendenteAeeAsync(int ultimoId, int tamanhoLote, CancellationToken cancellationToken = default)
+    {
+        var query = @"
+            SELECT id AS Id, aluno_id AS AlunoId, turma_id AS TurmaId, ue_id AS UeId
+            FROM resposta_aluno
+            WHERE id > @UltimoId AND aee = false AND excluido = false AND turma_id IS NOT NULL
+            ORDER BY id
+            LIMIT @TamanhoLote";
+
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.LotePendenteAeeDto>(query, new { UltimoId = ultimoId, TamanhoLote = tamanhoLote });
+    }
+
+    public async Task<int> AtualizarAeeLoteAsync(IEnumerable<int> alunoIds, CancellationToken cancellationToken = default)
+    {
+        var alunoIdsList = alunoIds.ToList();
+        if (alunoIdsList.Count == 0) return 0;
+
+        var parametros = new DynamicParameters();
+        var placeholders = new List<string>(alunoIdsList.Count);
+        for (var i = 0; i < alunoIdsList.Count; i++)
+        {
+            var nomeParametro = $"AlunoId{i}";
+            placeholders.Add($"@{nomeParametro}");
+            parametros.Add(nomeParametro, alunoIdsList[i]);
+        }
+
+        var query = $"UPDATE resposta_aluno SET aee = true WHERE aee = false AND excluido = false AND aluno_id IN ({string.Join(",", placeholders)})";
+        var conexao = _context.Database.GetDbConnection();
+        return await conexao.ExecuteAsync(query, parametros);
+    }
 }

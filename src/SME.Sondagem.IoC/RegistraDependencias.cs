@@ -177,6 +177,7 @@ public static class RegistraDependencias
             RepositoriosElastic = sp.GetRequiredService<RepositoriosElastic>(),
         });
         services.TryAddScoped<IAtualizarContextoRespostasLegadoUseCase, AtualizarContextoRespostasLegadoUseCase>();
+        services.TryAddScoped<IAtualizarAeeRespostaAlunoUseCase, AtualizarAeeRespostaAlunoUseCase>();
         services.TryAddScoped<IObterPermissaoTurmaUseCase, ObterPermissaoTurmaUseCase>();
         services.TryAddScoped<IObterProficienciasPorComponenteCurricularUseCase,ObterProficienciasPorComponenteCurricularUseCase>();
         services.TryAddScoped<IObterBimestresPorQuestionarioUseCase, ObterBimestresPorQuestionarioUseCase>();
