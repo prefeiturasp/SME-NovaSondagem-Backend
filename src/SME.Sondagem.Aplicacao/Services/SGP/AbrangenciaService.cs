@@ -7,7 +7,7 @@ using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Services;
 using System.Net;
 
-namespace SME.Sondagem.Aplicacao.Services.EOL
+namespace SME.Sondagem.Aplicacao.Services.SGP
 {
     public class AbrangenciaService : IAbrangenciaService
     {
@@ -65,7 +65,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             url += $"&semestre={filtro.Semestre}";
             url += "&includeTurmas=true";
 
-            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken, ServicoSgpConstants.SERVICO)
+            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken)
                 ?? throw new InvalidOperationException("Falha ao obter abrangência do SGP. Tente novamente.");
 
             if (string.IsNullOrWhiteSpace(json))
@@ -99,14 +99,13 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
         private async Task<string?> ObterJsonComCacheAsync(
             string chave,
             string url,
-            CancellationToken cancellationToken,
-            string serviceName = ServicoEolConstants.SERVICO)
+            CancellationToken cancellationToken)
         {
             var cacheRedis = await _repositorioCache.ObterRedisToJsonAsync(chave);
             if (!string.IsNullOrEmpty(cacheRedis))
                 return cacheRedis;
 
-            var httpClient = _httpClientFactory.CreateClient(serviceName);
+            var httpClient = _httpClientFactory.CreateClient(ServicoSgpConstants.SERVICO);
             var response = await httpClient.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)

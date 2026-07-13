@@ -584,6 +584,13 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         var chave = (CodigoAluno: codigoAluno, BimestreId: bimestreIdChave, QuestaoId: questaoIdChave);
         var possuiResposta = contexto.RespostasAlunosPorQuestoes.TryGetValue(chave, out var resposta);
 
+        if (possuiResposta && resposta is not null &&
+            colunaBase.OpcaoResposta?.Any(op => op.Id == resposta.OpcaoRespostaId && EhOpcaoSemPreenchimento(op)) == true)
+        {
+            possuiResposta = false;
+            resposta = null;
+        }
+
         var alunoAtivo = situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
 
         var bimestrePeriodo = bimestreIdChave.HasValue
@@ -609,13 +616,16 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             PeriodoBimestreAtivo = alunoAtivo && alunoEstavaNoBimestre && colunaBase.PeriodoBimestreAtivo,
             QuestaoSubrespostaId = colunaBase.QuestaoSubrespostaId,
             OpcaoResposta = contexto.EhRelatorio
-                ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId)
-                : colunaBase.OpcaoResposta,
+                ? colunaBase.OpcaoResposta?.Where(op => op.Id == resposta?.OpcaoRespostaId && !EhOpcaoSemPreenchimento(op))
+                : colunaBase.OpcaoResposta?.Where(op => !EhOpcaoSemPreenchimento(op)),
             Resposta = ConstruirResposta(possuiResposta, resposta)
         };
 
         return retorno;
     }
+
+    private static bool EhOpcaoSemPreenchimento(OpcaoRespostaDto op) =>
+        string.Equals(op.DescricaoOpcaoResposta, "Sem preenchimento", StringComparison.OrdinalIgnoreCase);
 
     protected static RespostaDto ConstruirResposta(bool possuiResposta, RespostaAluno? resposta)
     {

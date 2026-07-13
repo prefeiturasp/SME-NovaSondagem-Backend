@@ -34,6 +34,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
     protected override RelatorioConsolidadoQuestaoDto ProcessarQuestao(int questaoId, string questaoNome, List<RelatorioRespostaAlunoDto> respostas)
     {
         var totaisPorBimestre = respostas
+            .Where(r => !string.Equals(r.OpcaoRespostaDescricao, "Sem preenchimento", StringComparison.OrdinalIgnoreCase))
             .GroupBy(r => r.BimestreId ?? 0)
             .ToDictionary(g => g.Key, g => g.Count());
 
