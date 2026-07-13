@@ -30,6 +30,19 @@ public class AlunoAeeService : IAlunoAeeService
         foreach (var codigoAluno in codigosAlunos)
             resultado[codigoAluno] = false;
 
+        var codigosComAee = await ObterAlunosComPlanoAeeAsync(codigoTurma, codigoUe, cancellationToken);
+
+        foreach (var codigoAluno in codigosAlunos)
+            resultado[codigoAluno] = codigosComAee.Contains(codigoAluno);
+
+        return resultado;
+    }
+
+    public async Task<HashSet<int>> ObterAlunosComPlanoAeeAsync(
+        int codigoTurma,
+        string? codigoUe,
+        CancellationToken cancellationToken = default)
+    {
         var httpClient = httpClientFactory.CreateClient(ServicoSgpConstants.SERVICO);
         var url = string.Format(ServicoSgpConstants.URL_PLANO_AEE_TURMA_EXISTE, codigoTurma);
 
@@ -39,26 +52,22 @@ public class AlunoAeeService : IAlunoAeeService
         var response = await httpClient.GetAsync(url, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.NoContent)
-            return resultado;
+            return new HashSet<int>();
 
         ValidarRespostaSgp(response);
 
         var json = await response.Content.ReadAsStringAsync(cancellationToken);
 
         if (string.IsNullOrWhiteSpace(json))
-            return resultado;
+            return new HashSet<int>();
 
         var planosAee = JsonConvert.DeserializeObject<IEnumerable<PlanoAEEResumoIntegracaoDto>>(json);
-        var codigosComAee = planosAee?
+
+        return planosAee?
             .Select(plano => int.TryParse(plano.CodigoAluno, out var codigoAluno) ? codigoAluno : (int?)null)
             .Where(codigoAluno => codigoAluno.HasValue)
             .Select(codigoAluno => codigoAluno!.Value)
             .ToHashSet() ?? new HashSet<int>();
-
-        foreach (var codigoAluno in codigosAlunos)
-            resultado[codigoAluno] = codigosComAee.Contains(codigoAluno);
-
-        return resultado;
     }
 
     private static void ValidarRespostaSgp(HttpResponseMessage response)

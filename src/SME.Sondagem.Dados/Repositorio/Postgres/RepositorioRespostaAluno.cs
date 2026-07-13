@@ -306,17 +306,18 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return await conexao.ExecuteAsync(query, lote);
     }
 
-    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.LotePendenteAeeDto>> ObterLotePendenteAeeAsync(int ultimoId, int tamanhoLote, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.TurmaPendenteAeeDto>> ObterTurmasPendentesAeeAsync(int ultimoId, int tamanhoLote, CancellationToken cancellationToken = default)
     {
         var query = @"
-            SELECT id AS Id, aluno_id AS AlunoId, turma_id AS TurmaId, ue_id AS UeId
+            SELECT turma_id AS TurmaId, MAX(ue_id) AS UeId, MAX(id) AS UltimoId
             FROM resposta_aluno
             WHERE id > @UltimoId AND aee = false AND excluido = false AND turma_id IS NOT NULL
-            ORDER BY id
+            GROUP BY turma_id
+            ORDER BY MAX(id)
             LIMIT @TamanhoLote";
 
         var conexao = _context.Database.GetDbConnection();
-        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.LotePendenteAeeDto>(query, new { UltimoId = ultimoId, TamanhoLote = tamanhoLote });
+        return await conexao.QueryAsync<SME.Sondagem.Infrastructure.Dtos.Sondagem.TurmaPendenteAeeDto>(query, new { UltimoId = ultimoId, TamanhoLote = tamanhoLote });
     }
 
     public async Task<int> AtualizarAeeLoteAsync(IEnumerable<int> alunoIds, CancellationToken cancellationToken = default)

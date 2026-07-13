@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Interfaces.Sondagem;
 using SME.Sondagem.Dados.Interfaces;
@@ -9,57 +10,58 @@ public class AtualizarAeeRespostaAlunoUseCase : IAtualizarAeeRespostaAlunoUseCas
 {
     private readonly IRepositorioRespostaAluno _repositorioRespostaAluno;
     private readonly IAlunoAeeService _alunoAeeService;
+    private readonly ILogger<AtualizarAeeRespostaAlunoUseCase> _logger;
 
-    public AtualizarAeeRespostaAlunoUseCase(IRepositorioRespostaAluno repositorioRespostaAluno, IAlunoAeeService alunoAeeService)
+    public AtualizarAeeRespostaAlunoUseCase(
+        IRepositorioRespostaAluno repositorioRespostaAluno,
+        IAlunoAeeService alunoAeeService,
+        ILogger<AtualizarAeeRespostaAlunoUseCase> logger)
     {
         _repositorioRespostaAluno = repositorioRespostaAluno;
         _alunoAeeService = alunoAeeService;
+        _logger = logger;
     }
 
-    public async Task<int> ExecutarAsync(CancellationToken cancellationToken)
+    public async Task<(int UltimoId, int TotalAtualizado)> ExecutarAsync(int ultimoIdInicial, CancellationToken cancellationToken)
     {
-        var ultimoId = 0;
+        var ultimoId = ultimoIdInicial;
         var totalAtualizado = 0;
 
-        try
+        while (true)
         {
-            while (true)
+            var turmas = (await _repositorioRespostaAluno.ObterTurmasPendentesAeeAsync(ultimoId, 100, cancellationToken)).ToList();
+            if (turmas.Count == 0)
             {
-                var lote = (await _repositorioRespostaAluno.ObterLotePendenteAeeAsync(ultimoId, 1000, cancellationToken)).ToList();
-                if (lote.Count == 0)
-                    break;
+                _logger.LogInformation("Atualização de aee finalizada. UltimoId: {UltimoId}. TotalAtualizado: {TotalAtualizado}", ultimoId, totalAtualizado);
+                break;
+            }
 
-                var alunoIdsParaAtualizar = new HashSet<int>();
-
-                foreach (var grupoTurma in lote.GroupBy(x => x.TurmaId))
+            foreach (var turma in turmas)
+            {
+                try
                 {
-                    if (!int.TryParse(grupoTurma.Key, out var codigoTurma))
-                        continue;
+                    if (int.TryParse(turma.TurmaId, out var codigoTurma))
+                    {
+                        var codigosComAee = await _alunoAeeService.ObterAlunosComPlanoAeeAsync(codigoTurma, turma.UeId, cancellationToken);
 
-                    var alunoIds = grupoTurma.Select(x => x.AlunoId).Distinct().ToList();
-                    var ueId = grupoTurma.First().UeId;
+                        await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
-                    var resultadoAee = await _alunoAeeService.VerificarAlunosPossuemPlanoAeeAsync(alunoIds, codigoTurma, ueId, cancellationToken);
+                        if (codigosComAee.Count > 0)
+                            totalAtualizado += await _repositorioRespostaAluno.AtualizarAeeLoteAsync(codigosComAee, cancellationToken);
+                    }
 
-                    await Task.Delay(TimeSpan.FromSeconds(7), cancellationToken);
-
-                    foreach (var alunoId in alunoIds.Where(id => resultadoAee.TryGetValue(id, out var aee) && aee))
-                        alunoIdsParaAtualizar.Add(alunoId);
+                    ultimoId = turma.UltimoId;
+                    _logger.LogInformation("Turma processada. UltimoId: {UltimoId}. TotalAtualizado até agora: {TotalAtualizado}", ultimoId, totalAtualizado);
                 }
-
-                if (alunoIdsParaAtualizar.Count > 0)
-                    totalAtualizado += await _repositorioRespostaAluno.AtualizarAeeLoteAsync(alunoIdsParaAtualizar, cancellationToken);
-
-                ultimoId = lote.Max(x => x.Id);
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    throw new RegraNegocioException(
+                        $"Falha ao atualizar aee. Último id processado com sucesso: {ultimoId}. Total atualizado até a falha: {totalAtualizado}. Erro: {ex.Message}",
+                        System.Net.HttpStatusCode.InternalServerError);
+                }
             }
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            throw new RegraNegocioException(
-                $"Falha ao atualizar aee. Último id processado com sucesso: {ultimoId}. Total atualizado até a falha: {totalAtualizado}. Erro: {ex.Message}",
-                System.Net.HttpStatusCode.InternalServerError);
-        }
 
-        return totalAtualizado;
+        return (ultimoId, totalAtualizado);
     }
 }

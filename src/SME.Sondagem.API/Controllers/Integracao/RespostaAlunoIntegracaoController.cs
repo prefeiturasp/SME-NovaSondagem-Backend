@@ -18,9 +18,9 @@ public class RespostaAlunoIntegracaoController : ControllerBase
 
     [HttpPatch("aee")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
-    public async Task<IActionResult> AtualizarAee(CancellationToken cancellationToken)
+    public async Task<IActionResult> AtualizarAee([FromQuery] int ultimoId, CancellationToken cancellationToken)
     {
-        var total = await atualizarAeeRespostaAlunoUseCase.ExecutarAsync(cancellationToken);
-        return Ok(new { TotalAtualizados = total });
+        var resultado = await atualizarAeeRespostaAlunoUseCase.ExecutarAsync(ultimoId, cancellationToken);
+        return Ok(new { resultado.UltimoId, TotalAtualizados = resultado.TotalAtualizado });
     }
 }

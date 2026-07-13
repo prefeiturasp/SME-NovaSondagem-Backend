@@ -43,7 +43,7 @@ public interface IRepositorioRespostaAluno : IRepositorioBase<RespostaAluno>
 
     Task<int> AtualizarContextoLoteAsync(IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.AtualizarContextoRespostaAlunoDto> lote, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.LotePendenteAeeDto>> ObterLotePendenteAeeAsync(int ultimoId, int tamanhoLote, CancellationToken cancellationToken = default);
+    Task<IEnumerable<SME.Sondagem.Infrastructure.Dtos.Sondagem.TurmaPendenteAeeDto>> ObterTurmasPendentesAeeAsync(int ultimoId, int tamanhoLote, CancellationToken cancellationToken = default);
 
     Task<int> AtualizarAeeLoteAsync(IEnumerable<int> alunoIds, CancellationToken cancellationToken = default);
 }

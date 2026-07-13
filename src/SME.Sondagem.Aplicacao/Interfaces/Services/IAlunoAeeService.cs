@@ -7,4 +7,9 @@ public interface IAlunoAeeService
         int codigoTurma,
         string? codigoUe,
         CancellationToken cancellationToken = default);
+
+    Task<HashSet<int>> ObterAlunosComPlanoAeeAsync(
+        int codigoTurma,
+        string? codigoUe,
+        CancellationToken cancellationToken = default);
 }
