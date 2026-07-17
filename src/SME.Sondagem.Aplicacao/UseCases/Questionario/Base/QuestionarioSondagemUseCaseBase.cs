@@ -279,7 +279,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
     {
         var descricoesExcluidas = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Sim", "Não", "Nao"
+            "Sim", "Não", "Nao", "Sem preenchimento"
         };
 
         var todasOpcoesResposta = contexto.QuestoesAtivas
