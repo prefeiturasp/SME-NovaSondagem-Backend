@@ -90,33 +90,27 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         Func<RelatorioOpcaoRespostaDto, List<RelatorioRespostaAlunoDto>, int, RelatorioConsolidadoRespostaDto> processarOpcao,
         Action<RelatorioConsolidadoQuestaoDto, List<RelatorioRespostaAlunoDto>, int>? adicionarTotais = null)
     {
-        var respostasFiltradas = respostasQuestao
-            .Where(r => !string.Equals(r.OpcaoRespostaDescricao, "Sem preenchimento", StringComparison.OrdinalIgnoreCase))
-            .ToList();
-
-        int total = respostasFiltradas.Count;
+        int total = respostasQuestao.Count;
 
         var questaoDto = new RelatorioConsolidadoQuestaoDto
         {
             QuestaoId = questaoId,
             QuestaoNome = questaoNome,
-            TotalEstudantes = respostasFiltradas.Count
+            TotalEstudantes = respostasQuestao.Count
         };
 
         var opcoes = respostasQuestao
             .FirstOrDefault(r => r.OpcoesDisponiveis != null && r.OpcoesDisponiveis.Any())
-            ?.OpcoesDisponiveis?
-            .Where(o => !string.Equals(o.Descricao, "Sem preenchimento", StringComparison.OrdinalIgnoreCase))
-            .OrderBy(o => o.Ordem).ToList() ?? [];
+            ?.OpcoesDisponiveis?.OrderBy(o => o.Ordem).ToList() ?? [];
 
         var listaRespostas = opcoes
-            .Select(opcao => processarOpcao(opcao, respostasFiltradas, total))
+            .Select(opcao => processarOpcao(opcao, respostasQuestao, total))
             .ToList();
 
         questaoDto.Respostas = listaRespostas;
         questaoDto.PercentualTotal = Math.Min(Math.Round(listaRespostas.Sum(r => r.Percentual)), 100);
 
-        adicionarTotais?.Invoke(questaoDto, respostasFiltradas, total);
+        adicionarTotais?.Invoke(questaoDto, respostasQuestao, total);
 
         return questaoDto;
     }
