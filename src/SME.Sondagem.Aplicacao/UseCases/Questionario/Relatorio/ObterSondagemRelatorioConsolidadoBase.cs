@@ -121,7 +121,10 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
         int totalRespostasQuestao,
         Action<RelatorioConsolidadoRespostaDto, List<RelatorioRespostaAlunoDto>, int>? adicionarAgrupamento = null)
     {
-        var respostasDestaOpcao = respostasQuestao.Where(r => r.OpcaoRespostaId == opcao.Id).ToList();
+        var respostasDestaOpcao = respostasQuestao
+            .Where(r => r.OpcaoRespostaId == opcao.Id
+                || (r.OpcaoRespostaId == null && EhOpcaoSemPreenchimento(opcao)))
+            .ToList();
         int totalOpcao = respostasDestaOpcao.Count;
 
         var dto = new RelatorioConsolidadoRespostaDto
@@ -141,6 +144,9 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 
     protected static double CalcularPercentual(int quantidade, int total)
         => total > 0 ? Math.Min(Math.Round((double)quantidade / total * 100, 2), 100) : 0;
+
+    private static bool EhOpcaoSemPreenchimento(RelatorioOpcaoRespostaDto opcao) =>
+        string.Equals(opcao.Descricao, "Sem preenchimento", StringComparison.OrdinalIgnoreCase);
 
     private async Task<List<RelatorioRespostaAlunoDto>> FiltrarPorAnoTurmaAsync(
         List<RelatorioRespostaAlunoDto> respostas,
