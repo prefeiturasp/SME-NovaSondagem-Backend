@@ -129,7 +129,7 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
 
         var dto = new RelatorioConsolidadoRespostaDto
         {
-            Resposta = opcao.Descricao,
+            Resposta = EhOpcaoSemPreenchimento(opcao) ? "Vazio" : opcao.Descricao,
             Ordem = opcao.Ordem,
             CorFundo = opcao.CorFundo,
             CorTexto = opcao.CorTexto,
