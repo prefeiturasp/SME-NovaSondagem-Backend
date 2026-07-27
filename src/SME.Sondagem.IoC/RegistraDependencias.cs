@@ -170,6 +170,7 @@ public static class RegistraDependencias
             RepositorioSondagem = sp.GetRequiredService<IRepositorioSondagem>(),
             DadosAlunosService = sp.GetRequiredService<IDadosAlunosService>(),
             AlunoPapService = sp.GetRequiredService<IAlunoPapService>(),
+            AlunoAeeService = sp.GetRequiredService<IAlunoAeeService>(),
             UeComDreEolService = sp.GetRequiredService<IUeComDreEolService>(),
             RepositorioSondagemRelatorioPorTodasTurma = sp.GetRequiredService<RepositorioSondagemRelatorioPorTodasTurma>(),
             RepositorioRacaCor = sp.GetRequiredService<IRepositorioRacaCor>(),

@@ -15,6 +15,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
     private readonly IRepositorioSondagem _repositorioSondagem;
     private readonly IDadosAlunosService _dadosAlunosService;
     private readonly IAlunoPapService _alunoPapService;
+    private readonly IAlunoAeeService _alunoAeeService;
     private readonly IUeComDreEolService _ueComDreEolService;
     protected readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
     protected readonly IRepositorioRacaCor _repositorioRacaCor;
@@ -27,6 +28,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         _repositorioSondagem = dependencias.RepositorioSondagem;
         _dadosAlunosService = dependencias.DadosAlunosService;
         _alunoPapService = dependencias.AlunoPapService;
+        _alunoAeeService = dependencias.AlunoAeeService;
         _ueComDreEolService = dependencias.UeComDreEolService;
         _repositorioSondagemRelatorioPorTodasTurma = dependencias.RepositorioSondagemRelatorioPorTodasTurma;
         _repositorioRacaCor = dependencias.RepositorioRacaCor;
@@ -96,6 +98,35 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         return alunosElasticDict;
     }
 
+    private async Task<Dictionary<int, bool>> CarregarAeePorTurmasAsync(
+        IEnumerable<AlunoEolDto> dadosAlunos,
+        Dictionary<int, TurmaElasticDto> turmasPorCodigo,
+        CancellationToken cancellationToken)
+    {
+        var alunosAeeDict = new Dictionary<int, bool>();
+
+        var alunosPorTurma = dadosAlunos
+            .Where(a => a.CodigoTurma > 0 && turmasPorCodigo.ContainsKey(a.CodigoTurma))
+            .GroupBy(a => a.CodigoTurma);
+
+        foreach (var grupo in alunosPorTurma)
+        {
+            var turma = turmasPorCodigo[grupo.Key];
+            var codigosAlunosTurma = grupo.Select(a => a.CodigoAluno).ToList();
+
+            var alunosComAee = await _alunoAeeService.VerificarAlunosPossuemPlanoAeeAsync(
+                codigosAlunosTurma,
+                grupo.Key,
+                turma.CodigoEscola,
+                cancellationToken) ?? [];
+
+            foreach (var (codigoAluno, possuiAee) in alunosComAee)
+                alunosAeeDict[codigoAluno] = possuiAee;
+        }
+
+        return alunosAeeDict;
+    }
+
     private async Task<List<AtualizarContextoRespostaAlunoDto>> ProcessarGrupoAnoLetivoAsync(
         IGrouping<int, RespostaAlunoLegadoDto> grupoAno,
         IReadOnlyList<RespostaAlunoLegadoDto> respostasLegadas,
@@ -118,6 +149,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         var turmasIdsList = turmasCodigosUnicos.ToList();
         var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmasIdsList, cancellationToken);
         var alunosElasticDict = await CarregarAlunosElasticPorTurmasAsync(dadosCompletosTurmas, cancellationToken);
+        var alunosAee = await CarregarAeePorTurmasAsync(dadosAlunos, turmasPorCodigo, cancellationToken);
 
         var contexto = new ContextoMontagemAtualizacaoLegado
         {
@@ -130,6 +162,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
             DadosRacaGenero = dadosRacaGenero,
             AlunosPap = alunosPap,
             AlunosElasticDict = alunosElasticDict,
+            AlunosAee = alunosAee,
         };
 
         var atualizacoes = new List<AtualizarContextoRespostaAlunoDto>();
@@ -171,7 +204,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
             RacaCorId = racaCor?.Id,
             GeneroSexoId = dadosAluno.Sexo,
             Pap = contexto.AlunosPap.TryGetValue(aluno.CodigoAluno, out var possuiPap) && possuiPap,
-            Aee = false,
+            Aee = contexto.AlunosAee.TryGetValue(aluno.CodigoAluno, out var possuiAee) && possuiAee,
             Deficiente = contexto.AlunosElasticDict.TryGetValue(aluno.CodigoAluno, out var elDto) && elDto.PossuiDeficiencia == 1,
         };
     }
@@ -186,6 +219,7 @@ public class AtualizarContextoRespostasLegadoUseCase : IAtualizarContextoRespost
         public required Dictionary<string, UeComDreEolDto> UesPorCodigo { get; init; }
         public required Dictionary<long, (int? Raca, int? Sexo)> DadosRacaGenero { get; init; }
         public required Dictionary<int, bool> AlunosPap { get; init; }
+        public required Dictionary<int, bool> AlunosAee { get; init; }
         public required ConcurrentDictionary<int, AlunoElasticDto> AlunosElasticDict { get; init; }
     }
 
