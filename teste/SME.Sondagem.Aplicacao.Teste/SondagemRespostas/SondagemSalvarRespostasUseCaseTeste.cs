@@ -492,6 +492,162 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
+    public async Task DeveRetornarErro_QuandoIncluirRespostaForaDoPeriodo()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 4);
+        var questao = CriarQuestaoSondagem(1, 3);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, []);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var excecao = await Assert.ThrowsAsync<NegocioException>(
+            () => _useCase.SalvarOuAtualizarSondagemAsync(dto));
+
+        Assert.Equal(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO, excecao.Message);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRetornarErro_QuandoAlterarRespostaForaDoPeriodo()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 4);
+        var questao = CriarQuestaoSondagem(1, 3);
+        var respostaExistente = CriarRespostaExistente(dto, questao.Id, opcaoRespostaId: 2);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var excecao = await Assert.ThrowsAsync<NegocioException>(
+            () => _useCase.SalvarOuAtualizarSondagemAsync(dto));
+
+        Assert.Equal(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO, excecao.Message);
+        Assert.Equal(2, respostaExistente.OpcaoRespostaId);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRetornarErro_QuandoLimparRespostaForaDoPeriodo()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: null);
+        var questao = CriarQuestaoSondagem(1, 3);
+        var respostaExistente = CriarRespostaExistente(dto, questao.Id, opcaoRespostaId: 2);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var excecao = await Assert.ThrowsAsync<NegocioException>(
+            () => _useCase.SalvarOuAtualizarSondagemAsync(dto));
+
+        Assert.Equal(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO, excecao.Message);
+        Assert.Equal(2, respostaExistente.OpcaoRespostaId);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaForaDoPeriodoNaoTiverAlteracao()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        var questao = CriarQuestaoSondagem(1, 3);
+        var respostaExistente = CriarRespostaExistente(dto, questao.Id, opcaoRespostaId: 2);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.True(resultado);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaVaziaForaDoPeriodoNaoExistir()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: null);
+        var questao = CriarQuestaoSondagem(1, 3);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, []);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.True(resultado);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRejeitarPayloadMistoSemSalvarParcialmente()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 4);
+        dto.Alunos[0].Respostas =
+        [
+            new RespostaSondagemDto
+            {
+                BimestreId = 2,
+                QuestaoId = 3,
+                OpcaoRespostaId = 4
+            },
+            new RespostaSondagemDto
+            {
+                BimestreId = 1,
+                QuestaoId = 3,
+                OpcaoRespostaId = 4
+            }
+        ];
+        var questao = CriarQuestaoSondagem(1, 3);
+        var sondagem = new Dominio.Entidades.Sondagem.Sondagem("SondagemAtiva", DateTime.Now)
+        {
+            Id = dto.SondagemId
+        };
+        sondagem.PeriodosBimestre.Add(
+            new SondagemPeriodoBimestre(
+                dto.SondagemId,
+                2,
+                DateTime.Now.AddDays(-1),
+                DateTime.Now.AddDays(1)));
+        sondagem.PeriodosBimestre.Add(
+            new SondagemPeriodoBimestre(
+                dto.SondagemId,
+                1,
+                DateTime.Now.AddDays(-2),
+                DateTime.Now.AddDays(-1)));
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, []);
+        _repositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(sondagem);
+
+        var excecao = await Assert.ThrowsAsync<NegocioException>(
+            () => _useCase.SalvarOuAtualizarSondagemAsync(dto));
+
+        Assert.Equal(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO, excecao.Message);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task DeveConsultarRespostasPelaTurmaInformada()
     {
         var dto = SondagemMockData.ObterSondagemMock();
@@ -863,6 +1019,60 @@ public class SondagemSalvarRespostasUseCaseTeste
             GeneroSexoId = 1,
             BimestreId = 2
         };
+    }
+
+    private static SondagemSalvarDto CriarDtoComUmaResposta(int? opcaoRespostaId)
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+        dto.Alunos = [dto.Alunos.First()];
+        dto.Alunos[0].Respostas =
+        [
+            new RespostaSondagemDto
+            {
+                BimestreId = 1,
+                QuestaoId = 3,
+                OpcaoRespostaId = opcaoRespostaId
+            }
+        ];
+        return dto;
+    }
+
+    private static RespostaAluno CriarRespostaExistente(
+        SondagemSalvarDto dto,
+        int questaoId,
+        int? opcaoRespostaId) =>
+        new(
+            dto.SondagemId,
+            dto.Alunos[0].Codigo,
+            questaoId,
+            opcaoRespostaId,
+            DateTime.UtcNow.AddDays(-1),
+            CriarContextoEducacional() with
+            {
+                TurmaId = dto.TurmaId,
+                BimestreId = 1
+            })
+        {
+            Id = 99
+        };
+
+    private void ConfigurarSondagemComPeriodoEncerrado(int sondagemId, int bimestreId)
+    {
+        var sondagem = new Dominio.Entidades.Sondagem.Sondagem("SondagemAtiva", DateTime.Now)
+        {
+            Id = sondagemId
+        };
+        sondagem.PeriodosBimestre.Add(
+            new SondagemPeriodoBimestre(
+                sondagemId,
+                bimestreId,
+                DateTime.Now.AddDays(-2),
+                DateTime.Now.AddDays(-1)));
+
+        _repositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(sondagem);
     }
 }
 
