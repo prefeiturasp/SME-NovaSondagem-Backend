@@ -43,7 +43,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
     public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
         var turma = await ValidarSalvarSondagemEObterTurma(dto);
-        dto.AnoTurma = dto.AnoTurma ?? (!string.IsNullOrEmpty(turma.AnoTurma) ? int.Parse(turma.AnoTurma) : null);
+        dto.AnoTurma ??= int.TryParse(turma.AnoTurma, out var anoTurmaElastic) ? anoTurmaElastic : null;
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var alunosParaSalvar = await ObterAlunosAtivosParaSalvar(dto, turma);

@@ -182,6 +182,12 @@ public class AtualizarContextoRespostasLegadoUseCaseTeste
                 It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new Dictionary<int, bool> { { 100, true } });
 
+        var alunoAee = new Mock<IAlunoAeeService>();
+        alunoAee
+            .Setup(a => a.VerificarAlunosPossuemPlanoAeeAsync(
+                It.IsAny<IEnumerable<int>>(), 50, "UE1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<int, bool> { { 100, true } });
+
         IEnumerable<AtualizarContextoRespostaAlunoDto>? loteCapturado = null;
         repositorioResposta
             .Setup(r => r.AtualizarContextoLoteAsync(It.IsAny<IEnumerable<AtualizarContextoRespostaAlunoDto>>(), It.IsAny<CancellationToken>()))
@@ -198,6 +204,7 @@ public class AtualizarContextoRespostasLegadoUseCaseTeste
             ElasticTurma = elasticTurma,
             ElasticAluno = elasticAluno,
             RepositorioRacaCor = repositorioRacaCor,
+            AlunoAee = alunoAee,
         });
 
         var retorno = await sut.ExecutarAsync(0, 1, 50, CancellationToken.None);
@@ -215,7 +222,7 @@ public class AtualizarContextoRespostasLegadoUseCaseTeste
         Assert.Equal(7, dto.RacaCorId);
         Assert.Equal(3, dto.GeneroSexoId);
         Assert.True(dto.Pap);
-        Assert.False(dto.Aee);
+        Assert.True(dto.Aee);
         Assert.True(dto.Deficiente);
 
         repositorioResposta.Verify(
@@ -300,6 +307,7 @@ public class AtualizarContextoRespostasLegadoUseCaseTeste
         public required Mock<IRepositorioElasticAluno> ElasticAluno { get; init; }
         public Mock<IRepositorioRacaCor>? RepositorioRacaCor { get; init; }
         public Mock<IRepositorioGeneroSexo>? RepositorioGeneroSexo { get; init; }
+        public Mock<IAlunoAeeService>? AlunoAee { get; init; }
     }
 
     private static AtualizarContextoRespostasLegadoUseCase CriarUseCase(AmbienteAtualizarContextoLegado ambiente)
@@ -308,12 +316,19 @@ public class AtualizarContextoRespostasLegadoUseCaseTeste
         if (ambiente.RepositorioRacaCor == null)
             racaCorMock.Setup(r => r.ListarAsync(It.IsAny<CancellationToken>())).ReturnsAsync(new List<RacaCorEntidade>());
         var repositorioGeneroSexo = ambiente.RepositorioGeneroSexo ?? new Mock<IRepositorioGeneroSexo>();
+        var alunoAeeMock = ambiente.AlunoAee ?? new Mock<IAlunoAeeService>();
+        if (ambiente.AlunoAee == null)
+            alunoAeeMock
+                .Setup(a => a.VerificarAlunosPossuemPlanoAeeAsync(
+                    It.IsAny<IEnumerable<int>>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new Dictionary<int, bool>());
         var dependencias = new AtualizarContextoRespostasLegadoDependencias
         {
             RepositorioRespostaAluno = ambiente.RepositorioResposta.Object,
             RepositorioSondagem = ambiente.RepositorioSondagem.Object,
             DadosAlunosService = ambiente.DadosAlunosService.Object,
             AlunoPapService = ambiente.AlunoPap.Object,
+            AlunoAeeService = alunoAeeMock.Object,
             UeComDreEolService = ambiente.UeService.Object,
             RepositorioSondagemRelatorioPorTodasTurma = new RepositorioSondagemRelatorioPorTodasTurma(ambiente.DadosAlunosService.Object, ambiente.UeService.Object),
             RepositorioRacaCor = racaCorMock.Object,

@@ -10,6 +10,7 @@ public sealed class AtualizarContextoRespostasLegadoDependencias
     public required IRepositorioSondagem RepositorioSondagem { get; init; }
     public required IDadosAlunosService DadosAlunosService { get; init; }
     public required IAlunoPapService AlunoPapService { get; init; }
+    public required IAlunoAeeService AlunoAeeService { get; init; }
     public required IUeComDreEolService UeComDreEolService { get; init; }
     public required RepositorioSondagemRelatorioPorTodasTurma RepositorioSondagemRelatorioPorTodasTurma { get; init; }
     public required IRepositorioRacaCor RepositorioRacaCor { get; init; }
