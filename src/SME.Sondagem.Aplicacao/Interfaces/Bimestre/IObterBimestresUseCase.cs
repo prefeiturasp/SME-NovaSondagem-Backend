@@ -4,5 +4,5 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Bimestre;
 
 public interface IObterBimestresUseCase
 {
-    Task<IEnumerable<BimestreDto>> ExecutarAsync(int modalidade, CancellationToken cancellationToken = default);
+    Task<IEnumerable<BimestreDto>> ExecutarAsync(int modalidade, int? semestre, CancellationToken cancellationToken = default);
 }

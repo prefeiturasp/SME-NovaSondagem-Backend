@@ -1,6 +1,7 @@
 ﻿using Moq;
 using SME.Sondagem.Aplicacao.UseCases.Bimestre;
 using SME.Sondagem.Dados.Interfaces;
+using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Enums;
 using Xunit;
 
@@ -48,7 +49,7 @@ public class ObterBimestresUseCaseTeste
             .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(bimestres);
 
-        var resultado = await _useCase.ExecutarAsync(modalidade, _cancellationToken);
+        var resultado = await _useCase.ExecutarAsync(modalidade, null, _cancellationToken);
 
         Assert.NotNull(resultado);
         var resultadoList = resultado.ToList();
@@ -76,57 +77,54 @@ public class ObterBimestresUseCaseTeste
     }
 
 
-    [Fact]
-    public async Task ExecutarAsync_DeveFiltrarBimestres_QuandoModalidadeForEJA()
-    {
-        var entidades = new List<Dominio.Entidades.Bimestre>
-        {
-            new(1, "Bimestre 1")
-            {
-                Id = 1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = "Usuario1",
-                CriadoRF = "RF001"
-            },
-            new(2, "Bimestre 2")
-            {
-                Id = 2,
-                CriadoEm = DateTime.Now.AddDays(-1),
-                CriadoPor = "Usuario2",
-                CriadoRF = "RF002",
-                AlteradoEm = DateTime.Now,
-                AlteradoPor = "Usuario3",
-                AlteradoRF = "RF003"
-            },
-            new(2, "Bimestre 3")
-            {
-                Id = 3,
-                CriadoEm = DateTime.Now.AddDays(-1),
-                CriadoPor = "Usuario3",
-                CriadoRF = "RF002",
-                AlteradoEm = DateTime.Now,
-                AlteradoPor = "Usuario3",
-                AlteradoRF = "RF003"
-            },
-            new(2, "Bimestre 4")
-            {
-                Id = 4,
-                CriadoEm = DateTime.Now.AddDays(-1),
-                CriadoPor = "Usuario2",
-                CriadoRF = "RF002",
-                AlteradoEm = DateTime.Now,
-                AlteradoPor = "Usuario3",
-                AlteradoRF = "RF003"
-            }
-        };
+    private static List<Dominio.Entidades.Bimestre> CriarCatalogoBimestres() =>
+    [
+        new(0, "Inicial") { Id = 1 },
+        new(1, "1° bimestre") { Id = 2 },
+        new(2, "2° bimestre") { Id = 3 },
+        new(3, "3° bimestre") { Id = 4 },
+        new(4, "4° bimestre") { Id = 5 },
+    ];
 
+    [Fact]
+    public async Task ExecutarAsync_DeveFiltrarBimestres_QuandoModalidadeForEJA_PrimeiroSemestre()
+    {
         _repositorioBimestreMock
             .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(entidades);
+            .ReturnsAsync(CriarCatalogoBimestres());
 
-        var resultado = await _useCase.ExecutarAsync((int)Modalidade.EJA, _cancellationToken);
+        var resultado = (await _useCase.ExecutarAsync((int)Modalidade.EJA, 1, _cancellationToken)).ToList();
 
-        Assert.Equal(2, resultado.Count());
+        Assert.Equal(2, resultado.Count);
+        Assert.Equal(new[] { 2, 3 }, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
+        Assert.Equal("1° bimestre", resultado.Single(r => r.Id == 2).Descricao);
+        Assert.Equal("2° bimestre", resultado.Single(r => r.Id == 3).Descricao);
+    }
+
+    [Fact]
+    public async Task ExecutarAsync_DeveFiltrarBimestres_QuandoModalidadeForEJA_SegundoSemestre()
+    {
+        _repositorioBimestreMock
+            .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CriarCatalogoBimestres());
+
+        var resultado = (await _useCase.ExecutarAsync((int)Modalidade.EJA, 2, _cancellationToken)).ToList();
+
+        Assert.Equal(2, resultado.Count);
+        Assert.Equal(new[] { 4, 5 }, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
+        Assert.Equal("1° bimestre", resultado.Single(r => r.Id == 4).Descricao);
+        Assert.Equal("2° bimestre", resultado.Single(r => r.Id == 5).Descricao);
+    }
+
+    [Fact]
+    public async Task ExecutarAsync_DeveLancarExcecao_QuandoModalidadeForEJASemSemestre()
+    {
+        _repositorioBimestreMock
+            .Setup(r => r.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CriarCatalogoBimestres());
+
+        await Assert.ThrowsAsync<RegraNegocioException>(
+            () => _useCase.ExecutarAsync((int)Modalidade.EJA, null, _cancellationToken));
     }
 
     [Fact]
@@ -138,7 +136,7 @@ public class ObterBimestresUseCaseTeste
             .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(bimestresVazias);
 
-        var resultado = await _useCase.ExecutarAsync(modalidade, _cancellationToken);
+        var resultado = await _useCase.ExecutarAsync(modalidade, null, _cancellationToken);
 
         Assert.NotNull(resultado);
         Assert.Empty(resultado);
@@ -156,7 +154,7 @@ public class ObterBimestresUseCaseTeste
             .ThrowsAsync(new OperationCanceledException());
 
         await Assert.ThrowsAsync<OperationCanceledException>(
-            () => _useCase.ExecutarAsync(modalidade, cancellationTokenCancelado));
+            () => _useCase.ExecutarAsync(modalidade, null, cancellationTokenCancelado));
 
         _repositorioBimestreMock.Verify(x => x.ListarAsync(cancellationTokenCancelado), Times.Once);
     }
@@ -171,7 +169,7 @@ public class ObterBimestresUseCaseTeste
             .Setup(x => x.ListarAsync(cancellationTokenCustom))
             .ReturnsAsync(bimestres);
 
-        await _useCase.ExecutarAsync(modalidade, cancellationTokenCustom);
+        await _useCase.ExecutarAsync(modalidade, null, cancellationTokenCustom);
 
         _repositorioBimestreMock.Verify(x => x.ListarAsync(cancellationTokenCustom), Times.Once);
     }
@@ -184,7 +182,7 @@ public class ObterBimestresUseCaseTeste
             .ThrowsAsync(new InvalidOperationException("Erro do repositório"));
 
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
-            () => _useCase.ExecutarAsync(modalidade, _cancellationToken));
+            () => _useCase.ExecutarAsync(modalidade, null, _cancellationToken));
 
         Assert.Equal("Erro do repositório", exception.Message);
         _repositorioBimestreMock.Verify(x => x.ListarAsync(_cancellationToken), Times.Once);
@@ -214,7 +212,7 @@ public class ObterBimestresUseCaseTeste
             .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(bimestres);
 
-        var resultado = await _useCase.ExecutarAsync(modalidade, _cancellationToken);
+        var resultado = await _useCase.ExecutarAsync(modalidade, null, _cancellationToken);
 
         var dto = resultado.Single();
         Assert.Equal(100, dto.Id);
@@ -248,7 +246,7 @@ public class ObterBimestresUseCaseTeste
             .Setup(x => x.ListarAsync(_cancellationToken))
             .ReturnsAsync(bimestres);
 
-        var resultado = await _useCase.ExecutarAsync(modalidade, _cancellationToken);
+        var resultado = await _useCase.ExecutarAsync(modalidade, null, _cancellationToken);
 
         var resultadoList = resultado.ToList();
         Assert.Equal(1000, resultadoList.Count);

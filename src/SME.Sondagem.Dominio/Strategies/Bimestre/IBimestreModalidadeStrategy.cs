@@ -16,5 +16,5 @@ public interface IBimestreModalidadeStrategy
     /// Retorna os bimestres válidos para a modalidade, com descrições já
     /// adaptadas para exibição. Aplica o filtro por bimestreId quando informado.
     /// </summary>
-    IEnumerable<ValueObjects.BimestreExibicao> AplicarRegras(IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado);
+    IEnumerable<ValueObjects.BimestreExibicao> AplicarRegras(IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado, int? semestre = null);
 }

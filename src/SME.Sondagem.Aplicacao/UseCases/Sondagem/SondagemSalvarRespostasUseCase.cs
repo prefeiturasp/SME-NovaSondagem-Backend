@@ -332,19 +332,12 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         SemestreId = CalcularSemestreId(dto.ModalidadeId)
     };
 
-    private const int PrimeiroSemestreId = 1;
-    private const int SegundoSemestreId = 2;
-    private const int MesInicioSegundoSemestre = 7;
-
     private static int? CalcularSemestreId(int? modalidadeId)
     {
         if (modalidadeId != (int)Modalidade.EJA)
             return null;
 
-        var agora = DateTimeExtension.HorarioBrasilia();
-        return agora < new DateTime(agora.Year, MesInicioSegundoSemestre, 1, 0, 0, 0, DateTimeKind.Local)
-            ? PrimeiroSemestreId
-            : SegundoSemestreId;
+        return DateTimeExtension.HorarioBrasilia().Semestre();
     }
 
 }

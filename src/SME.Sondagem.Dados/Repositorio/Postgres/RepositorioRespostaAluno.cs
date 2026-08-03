@@ -208,6 +208,16 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         var uesAbrangencia = filtro.UesAbrangencia;
         var turmasAbrangencia = filtro.TurmasAbrangencia;
 
+        var ehEjaSemBimestreInformado = filtro.Modalidade == (int)Modalidade.EJA && !filtro.BimestreId.HasValue;
+        int[]? bimestresEjaPorSemestre = ehEjaSemBimestreInformado
+            ? filtro.SemestreId switch
+            {
+                1 => [2, 3],
+                2 => [4, 5],
+                _ => null
+            }
+            : null;
+
         var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
         {
             (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
@@ -218,6 +228,7 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
             (turmasAbrangencia != null && turmasAbrangencia.Count > 0,      ra => ra.TurmaId != null && turmasAbrangencia!.Contains(ra.TurmaId!)),
             (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
             (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
+            (bimestresEjaPorSemestre != null,                               ra => ra.BimestreId.HasValue && bimestresEjaPorSemestre!.Contains(ra.BimestreId.Value)),
             (filtro.SemestreId > 0,                                         ra => ra.SemestreId == filtro.SemestreId),
             (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
             (filtro.ComponenteCurricularId > 0,                             ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId),
