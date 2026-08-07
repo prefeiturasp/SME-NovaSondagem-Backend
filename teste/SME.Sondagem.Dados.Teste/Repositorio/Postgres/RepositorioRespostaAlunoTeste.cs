@@ -21,6 +21,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         private static readonly int[] AlunosIdsPadrao = [10, 20];
         private static readonly int[] AlunoIdUnico = [10];
         private static readonly int[] QuestaoIdUnica = [100];
+        private static readonly int[] BimestresEjaCatalogo = [2, 3, 4, 5];
 
         #endregion
 
@@ -539,6 +540,75 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
 
             // Assert
             Assert.Empty(resultado);
+        }
+
+        [Theory]
+        [InlineData(1, new[] { 2, 3 })]
+        [InlineData(2, new[] { 4, 5 })]
+        public async Task ObterRespostasParaRelatorioConsolidadoAsync_Eja_SemBimestreInformado_DeveFiltrarPorSemestre(int semestre, int[] bimestresEsperados)
+        {
+            // Arrange
+            var context = CriarContexto($"{nameof(ObterRespostasParaRelatorioConsolidadoAsync_Eja_SemBimestreInformado_DeveFiltrarPorSemestre)}_{semestre}");
+
+            var compCurricular = new ComponenteCurricular("Português", null, "1", 1);
+            typeof(ComponenteCurricular).GetProperty("Id")!.SetValue(compCurricular, 1);
+            context.ComponentesCurriculares.Add(compCurricular);
+
+            var proficiencia = new SME.Sondagem.Dominio.Entidades.Proficiencia("Leitura", 1, 1);
+            typeof(SME.Sondagem.Dominio.Entidades.Proficiencia).GetProperty("Id")!.SetValue(proficiencia, 1);
+            context.Proficiencias.Add(proficiencia);
+
+            var sondagem = new Dominio.Entidades.Sondagem.Sondagem("Sondagem", DateTime.Now);
+            typeof(Dominio.Entidades.Sondagem.Sondagem).GetProperty("Id")!.SetValue(sondagem, 1);
+            context.Sondagens.Add(sondagem);
+
+            var questionario = new Questionario("Questionario", TipoQuestionario.SondagemLeitura, 2026, 1, 1, 1);
+            typeof(Questionario).GetProperty("Id")!.SetValue(questionario, 1);
+            context.Questionarios.Add(questionario);
+
+            var questao = new Questao(1, 1, "Questao", "", true, TipoQuestao.Combo, "{}", false, 12);
+            typeof(Questao).GetProperty("Id")!.SetValue(questao, 1);
+            context.Questoes.Add(questao);
+
+            var opcao = new OpcaoResposta(1, "Desc", "L", null, null);
+            typeof(OpcaoResposta).GetProperty("Id")!.SetValue(opcao, 1);
+            context.OpcoesResposta.Add(opcao);
+
+            const int modalidadeEja = 3;
+            var respostasPorBimestre = BimestresEjaCatalogo.Select((bimestreId, i) =>
+            {
+                var semestreDaResposta = bimestreId <= 3 ? 1 : 2;
+                var contexto = new ContextoEducacional
+                {
+                    TurmaId = "1",
+                    UeId = "3",
+                    DreId = "2",
+                    AnoLetivo = 2026,
+                    ModalidadeId = modalidadeEja,
+                    BimestreId = bimestreId,
+                    SemestreId = semestreDaResposta
+                };
+                return new RespostaAluno(1, i + 1, 1, 1, DateTime.Now, contexto);
+            }).ToList();
+
+            context.RespostasAluno.AddRange(respostasPorBimestre);
+            await context.SaveChangesAsync();
+            var repo = CriarRepositorio(context);
+
+            // Act
+            var filtro = new FiltroConsolidadoDto
+            {
+                AnoLetivo = 2026,
+                Modalidade = modalidadeEja,
+                SemestreId = semestre,
+                DresAbrangencia = ["2"],
+                UesAbrangencia = ["3"]
+            };
+            var resultado = await repo.ObterRespostasParaRelatorioConsolidadoAsync(filtro);
+
+            // Assert
+            var bimestresRetornados = resultado.Select(r => r.BimestreId!.Value).OrderBy(x => x).ToList();
+            Assert.Equal(bimestresEsperados.OrderBy(x => x), bimestresRetornados);
         }
 
         #endregion

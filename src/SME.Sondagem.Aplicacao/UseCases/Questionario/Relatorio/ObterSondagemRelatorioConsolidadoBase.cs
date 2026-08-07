@@ -1,6 +1,9 @@
 using SME.Sondagem.Aplicacao.Agregadores;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dominio;
+using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
+using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
 
 namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Relatorio;
@@ -39,6 +42,9 @@ public abstract class ObterSondagemRelatorioConsolidadoBase
     {
         if (!string.IsNullOrWhiteSpace(filtro.Ue) && string.IsNullOrWhiteSpace(filtro.Dre))
             throw new ArgumentException("UE informada sem DRE correspondente.");
+
+        if (filtro.Modalidade == (int)Modalidade.EJA && !filtro.BimestreId.HasValue && filtro.SemestreId is not 1 and not 2)
+            throw new RegraNegocioException(MensagemNegocioComuns.SEMESTRE_OBRIGATORIO_EJA, 400);
 
         filtro.AcessoIrrestrito = await _abrangenciaService.DeveIgnorarAbrangenciaAsync(filtro.Perfil, cancellationToken);
 

@@ -6,6 +6,7 @@ using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Constantes.MensagensNegocio;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Infra.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario;
 using SME.Sondagem.Infrastructure.Dtos.Questionario.Relatorio;
@@ -15,6 +16,15 @@ namespace SME.Sondagem.Aplicacao.UseCases.Questionario.Base;
 
 public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUseCaseBase
 {
+    /// <summary>
+    /// Proficiência 9 (Escrita EJA, questionário 17) e 10 (Leitura EJA, questionário 13) — únicos
+    /// questionários EJA com exatamente 2 bimestres por semestre (confirmado em `questionario_bimestre`
+    /// de produção: só eles têm somente bimestre_id 2/3 vinculados, sem 4/5). Outros questionários EJA
+    /// (ex: proficiência 6, "Capacidade Leitora EJA") já têm os 4 bimestres vinculados de propósito e
+    /// não devem ser filtrados por semestre aqui.
+    /// </summary>
+    private static readonly int[] ProficienciasComBimestrePorSemestreEja = [9, 10];
+
     protected readonly RepositoriosElastic _repositoriosElastic;
     protected readonly RepositoriosSondagem _repositoriosSondagem;
     protected readonly IAlunoPapService _alunoPapService;
@@ -161,6 +171,19 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var periodosBimestre = bimestresForaDoPadrao?.Count > 0 ? bimestresForaDoPadrao : sondagemAtiva.PeriodosBimestre;
 
+        var ehEjaComBimestrePorSemestre = modalidade == (int)Modalidade.EJA && ProficienciasComBimestrePorSemestreEja.Contains(filtro.ProficienciaId);
+        var ehSegundoSemestreEja = false;
+
+        if (ehEjaComBimestrePorSemestre)
+        {
+            if (filtro.SemestreId is not 1 and not 2)
+                throw new RegraNegocioException(MensagemNegocioComuns.SEMESTRE_OBRIGATORIO_EJA, 400);
+
+            ehSegundoSemestreEja = filtro.SemestreId == 2;
+            var bimestresPermitidos = BimestreModalidadeEjaStrategy.BimestresPermitidosParaSemestre(filtro.SemestreId);
+            periodosBimestre = [.. periodosBimestre.Where(p => bimestresPermitidos.Contains(p.BimestreId))];
+        }
+
         var colunas = ObterColunas(
             ehRelatorio && filtro.BimestreId.HasValue
                 ? periodosBimestre.Where(p => p.BimestreId == filtro.BimestreId.Value).ToList()
@@ -168,6 +191,12 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             questoesAtivas,
             filtro.BimestreId
         );
+
+        if (ehSegundoSemestreEja)
+        {
+            foreach (var coluna in colunas)
+                coluna.DescricaoColuna = BimestreModalidadeEjaStrategy.RenomearSegundoSemestre(coluna.IdCiclo, coluna.DescricaoColuna);
+        }
 
         var alunos = await ObterAlunos(filtro.TurmaId, anoLetivo, cancellationToken);
 
