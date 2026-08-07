@@ -13,6 +13,8 @@ public class ObterBimestresUseCaseTeste
     private readonly ObterBimestresUseCase _useCase;
     private readonly CancellationToken _cancellationToken;
     private readonly int modalidade = 0;
+    private static readonly int[] BimestresPrimeiroSemestre = [2, 3];
+    private static readonly int[] BimestresSegundoSemestre = [4, 5];
 
     public ObterBimestresUseCaseTeste()
     {
@@ -96,7 +98,7 @@ public class ObterBimestresUseCaseTeste
         var resultado = (await _useCase.ExecutarAsync((int)Modalidade.EJA, 1, _cancellationToken)).ToList();
 
         Assert.Equal(2, resultado.Count);
-        Assert.Equal(new[] { 2, 3 }, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
+        Assert.Equal(BimestresPrimeiroSemestre, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
         Assert.Equal("1° bimestre", resultado.Single(r => r.Id == 2).Descricao);
         Assert.Equal("2° bimestre", resultado.Single(r => r.Id == 3).Descricao);
     }
@@ -111,7 +113,7 @@ public class ObterBimestresUseCaseTeste
         var resultado = (await _useCase.ExecutarAsync((int)Modalidade.EJA, 2, _cancellationToken)).ToList();
 
         Assert.Equal(2, resultado.Count);
-        Assert.Equal(new[] { 4, 5 }, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
+        Assert.Equal(BimestresSegundoSemestre, resultado.Select(r => r.Id!.Value).OrderBy(x => x));
         Assert.Equal("1° bimestre", resultado.Single(r => r.Id == 4).Descricao);
         Assert.Equal("2° bimestre", resultado.Single(r => r.Id == 5).Descricao);
     }

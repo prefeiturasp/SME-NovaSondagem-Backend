@@ -21,6 +21,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
         private static readonly int[] AlunosIdsPadrao = [10, 20];
         private static readonly int[] AlunoIdUnico = [10];
         private static readonly int[] QuestaoIdUnica = [100];
+        private static readonly int[] BimestresEjaCatalogo = [2, 3, 4, 5];
 
         #endregion
 
@@ -574,7 +575,7 @@ namespace SME.Sondagem.Dados.Teste.Repositorio.Postgres
             context.OpcoesResposta.Add(opcao);
 
             const int modalidadeEja = 3;
-            var respostasPorBimestre = new[] { 2, 3, 4, 5 }.Select((bimestreId, i) =>
+            var respostasPorBimestre = BimestresEjaCatalogo.Select((bimestreId, i) =>
             {
                 var semestreDaResposta = bimestreId <= 3 ? 1 : 2;
                 var contexto = new ContextoEducacional
