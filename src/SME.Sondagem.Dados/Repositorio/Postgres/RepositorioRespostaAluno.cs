@@ -6,6 +6,7 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -209,13 +210,8 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         var turmasAbrangencia = filtro.TurmasAbrangencia;
 
         var ehEjaSemBimestreInformado = filtro.Modalidade == (int)Modalidade.EJA && !filtro.BimestreId.HasValue;
-        int[]? bimestresEjaPorSemestre = ehEjaSemBimestreInformado
-            ? filtro.SemestreId switch
-            {
-                1 => [2, 3],
-                2 => [4, 5],
-                _ => null
-            }
+        int[]? bimestresEjaPorSemestre = ehEjaSemBimestreInformado && filtro.SemestreId is 1 or 2
+            ? BimestreModalidadeEjaStrategy.BimestresPermitidosParaSemestre(filtro.SemestreId)
             : null;
 
         var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>

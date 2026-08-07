@@ -30,7 +30,7 @@ public class ObterBimestresUseCase : IObterBimestresUseCase
 
         if (ehEja)
         {
-            int[] bimestresEja = ehSegundoSemestreEja ? [4, 5] : [2, 3];
+            var bimestresEja = BimestreModalidadeEjaStrategy.BimestresPermitidosParaSemestre(semestre);
             bimestres = [.. bimestres.Where(b => bimestresEja.Contains(b.Id))];
         }
 

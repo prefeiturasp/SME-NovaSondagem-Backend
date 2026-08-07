@@ -1073,6 +1073,93 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
+    public async Task ExecutarProcessamentoQuestionario_EjaProficiencia9_DeveFiltrarColunasPorSemestre()
+    {
+        var turma = CriarTurmaElasticDto(modalidade: (int)Modalidade.EJA);
+        var sondagem = new Dominio.Entidades.Sondagem.Sondagem("Sondagem Teste", DateTime.Now.AddMonths(-1));
+        sondagem.GetType().GetProperty("Id")?.SetValue(sondagem, 1);
+
+        var periodos = new List<SondagemPeriodoBimestre>
+        {
+            CriarPeriodoBimestre(bimestreId: 2, descricao: "1º bimestre"),
+            CriarPeriodoBimestre(bimestreId: 3, descricao: "2º bimestre"),
+            CriarPeriodoBimestre(bimestreId: 4, descricao: "3º bimestre"),
+        };
+        sondagem.GetType().GetProperty("PeriodosBimestre")!.SetValue(sondagem, periodos);
+
+        var questoes = new List<Dominio.Entidades.Questionario.Questao> { CriarQuestaoComOpcoes(id: 1) };
+        var alunos = CriarAlunosElastic();
+
+        _mockRepositorioElasticTurma
+            .Setup(x => x.ObterTurmaPorId(It.IsAny<FiltroQuestionario>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(turma);
+        _mockRepositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(sondagem);
+        _mockRepositorioQuestao
+            .Setup(x => x.ObterQuestoesAtivasPorFiltroAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(questoes);
+        _mockRepositorioElasticAluno
+            .Setup(x => x.ObterAlunosPorIdTurma(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(alunos);
+        _mockRepositorioBimestre
+            .Setup(x => x.ObterBimestresPorQuestionarioIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ICollection<SondagemPeriodoBimestre>?)null!);
+        _mockControleAcessoService
+            .Setup(x => x.ValidarPermissaoAcessoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(false);
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasAlunosPorQuestoesAsync(
+                It.IsAny<List<long>>(), It.IsAny<List<long>>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Dictionary<(long, long, int?), RespostaAluno>());
+
+        // proficiência 9 (Escrita EJA) + semestre 2 -> só bimestre 4/5 deveriam sobrar (só existe 4 nos períodos)
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 9, SemestreId = 2 };
+        var useCase = CriarUseCase();
+
+        var resultado = await useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None);
+
+        var dto = Assert.IsType<SME.Sondagem.Infra.Dtos.Questionario.QuestionarioSondagemDto>(resultado);
+        var colunas = dto.Estudantes!.First().Coluna!.ToList();
+
+        Assert.Single(colunas);
+        Assert.Equal(4, colunas[0].IdCiclo);
+        Assert.Equal("1° bimestre", colunas[0].DescricaoColuna);
+    }
+
+    [Fact]
+    public async Task ExecutarProcessamentoQuestionario_EjaProficiencia9SemSemestre_DeveLancarExcecao()
+    {
+        var turma = CriarTurmaElasticDto(modalidade: (int)Modalidade.EJA);
+        var sondagem = new Dominio.Entidades.Sondagem.Sondagem("Sondagem Teste", DateTime.Now.AddMonths(-1));
+        sondagem.GetType().GetProperty("Id")?.SetValue(sondagem, 1);
+
+        var periodos = new List<SondagemPeriodoBimestre> { CriarPeriodoBimestre(bimestreId: 2) };
+        sondagem.GetType().GetProperty("PeriodosBimestre")!.SetValue(sondagem, periodos);
+
+        var questoes = new List<Dominio.Entidades.Questionario.Questao> { CriarQuestaoComOpcoes(id: 1) };
+
+        _mockRepositorioElasticTurma
+            .Setup(x => x.ObterTurmaPorId(It.IsAny<FiltroQuestionario>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(turma);
+        _mockRepositorioSondagem
+            .Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(sondagem);
+        _mockRepositorioQuestao
+            .Setup(x => x.ObterQuestoesAtivasPorFiltroAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(questoes);
+        _mockRepositorioBimestre
+            .Setup(x => x.ObterBimestresPorQuestionarioIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((ICollection<SondagemPeriodoBimestre>?)null!);
+
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 9 };
+        var useCase = CriarUseCase();
+
+        await Assert.ThrowsAsync<RegraNegocioException>(
+            () => useCase.ExecutarProcessamentoQuestionario(filtro, false, CancellationToken.None));
+    }
+
+    [Fact]
     public async Task ExecutarProcessamentoQuestionario_DeveUsarAnoLetivoDeFiltro_QuandoDefinido()
     {
         ConfigurarMocksCompletos(anoLetivo: 2025);

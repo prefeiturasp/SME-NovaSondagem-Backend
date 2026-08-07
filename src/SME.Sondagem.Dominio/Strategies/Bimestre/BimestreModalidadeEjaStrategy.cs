@@ -12,15 +12,15 @@ public sealed class BimestreModalidadeEjaStrategy : IBimestreModalidadeStrategy
 {
     private const int ModalidadeEja = (int)Modalidade.EJA;
 
-    private static readonly HashSet<int> BimestresPrimeiroSemestre = [2, 3];
-    private static readonly HashSet<int> BimestresSegundoSemestre = [4, 5];
+    private static readonly int[] BimestresPrimeiroSemestre = [2, 3];
+    private static readonly int[] BimestresSegundoSemestre = [4, 5];
 
     public bool Aplicavel(int modalidade) => modalidade == ModalidadeEja;
 
     public IEnumerable<BimestreExibicao> AplicarRegras(IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado, int? semestre = null)
     {
         var ehSegundoSemestre = semestre == 2;
-        var bimestresPermitidos = ehSegundoSemestre ? BimestresSegundoSemestre : BimestresPrimeiroSemestre;
+        var bimestresPermitidos = BimestresPermitidosParaSemestre(semestre);
 
         var lista = bimestresCompletos
             .Where(b => bimestresPermitidos.Contains(b.Id))
@@ -30,6 +30,14 @@ public sealed class BimestreModalidadeEjaStrategy : IBimestreModalidadeStrategy
             ? lista.Where(b => b.Id == bimestreFiltrado.Value)
             : lista;
     }
+
+    /// <summary>
+    /// Ids de `bimestre` válidos pro semestre EJA informado — fonte única desse par,
+    /// reusada por `ObterBimestresUseCase`, `RepositorioRespostaAluno` e
+    /// `QuestionarioSondagemUseCaseBase` em vez de cada um hardcodar `[2,3]`/`[4,5]` de novo.
+    /// </summary>
+    public static int[] BimestresPermitidosParaSemestre(int? semestre)
+        => semestre == 2 ? BimestresSegundoSemestre : BimestresPrimeiroSemestre;
 
     /// <summary>
     /// Rótulo de exibição pro 2° semestre EJA — reaproveita os ids 4/5 (3°/4° bimestre do
