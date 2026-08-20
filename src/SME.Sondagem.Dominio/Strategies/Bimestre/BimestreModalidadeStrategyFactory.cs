@@ -24,6 +24,6 @@ public static class BimestreModalidadeStrategyFactory
     /// <summary>
     /// Atalho: aplica diretamente a estratégia e devolve os bimestres adaptados.
     /// </summary>
-    public static IEnumerable<BimestreExibicao> AplicarRegras(int modalidade, IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado = null)
-        => ObterPara(modalidade).AplicarRegras(bimestresCompletos, bimestreFiltrado);
+    public static IEnumerable<BimestreExibicao> AplicarRegras(int modalidade, IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado = null, int? semestre = null)
+        => ObterPara(modalidade).AplicarRegras(bimestresCompletos, bimestreFiltrado, semestre);
 }

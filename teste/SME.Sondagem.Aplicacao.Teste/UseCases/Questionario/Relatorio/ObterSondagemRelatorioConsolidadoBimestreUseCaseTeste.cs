@@ -92,6 +92,29 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     }
 
     [Fact]
+    public async Task ObterSondagemRelatorio_ModalidadeEjaSemSemestre_DeveLancarExcecao()
+    {
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3 };
+
+        await Assert.ThrowsAsync<SME.Sondagem.Dominio.RegraNegocioException>(
+            () => _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_ModalidadeEjaComBimestreIdSemSemestre_NaoDeveLancarExcecao()
+    {
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3, BimestreId = 4 };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<RelatorioRespostaAlunoDto>());
+
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        Assert.Contains("Sem Dados", resultado.Titulo);
+    }
+
+    [Fact]
     public async Task ObterSondagemRelatorio_DeveAgruparPorBimestreUtilizandoTabelaBimestre()
     {
         // Arrange
@@ -246,6 +269,26 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     }
 
     [Fact]
+    public void BimestreModalidadeEjaStrategy_SegundoSemestre_DeveRetornarBimestre4e5RenomeadosPara1e2()
+    {
+        var strategy = new BimestreModalidadeEjaStrategy();
+        var bimestres = new List<BimestreDominio>
+        {
+            new BimestreDominio(0, "Inicial")     { Id = 1 },
+            new BimestreDominio(1, "1° bimestre") { Id = 2 },
+            new BimestreDominio(2, "2° bimestre") { Id = 3 },
+            new BimestreDominio(3, "3° bimestre") { Id = 4 },
+            new BimestreDominio(4, "4° bimestre") { Id = 5 }
+        };
+
+        var resultado = strategy.AplicarRegras(bimestres, null, semestre: 2).ToList();
+
+        Assert.Equal(2, resultado.Count);
+        Assert.Equal("1° bimestre", resultado.Single(b => b.Id == 4).Descricao);
+        Assert.Equal("2° bimestre", resultado.Single(b => b.Id == 5).Descricao);
+    }
+
+    [Fact]
     public void BimestreModalidadeStrategyFactory_DeveRetornarEjaStrategy_QuandoModalidade3()
     {
         var strategy = BimestreModalidadeStrategyFactory.ObterPara(3);
@@ -265,7 +308,7 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
     [Fact]
     public async Task ObterSondagemRelatorio_ModalidadeEja_DeveExibirApenas2Bimestres()
     {
-        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3 };
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3, SemestreId = 1 };
 
         _mockRepositorioBimestre
             .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
@@ -282,6 +325,41 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCaseTeste
         {
             CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, bimestreId: 2),
             CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 3),
+        };
+
+        _mockRepositorioRespostaAluno
+            .Setup(x => x.ObterRespostasParaRelatorioConsolidadoAsync(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(respostas);
+
+        var resultado = await _useCase.ObterSondagemRelatorio(filtro, CancellationToken.None);
+
+        var bimestresExibidos = resultado.Questoes.First().Respostas!.First().Bimestres!.ToList();
+
+        Assert.Equal(2, bimestresExibidos.Count);
+        Assert.Contains(bimestresExibidos, b => b.Bimestre == "1° bimestre" && b.Quantidade == 1);
+        Assert.Contains(bimestresExibidos, b => b.Bimestre == "2° bimestre" && b.Quantidade == 1);
+    }
+
+    [Fact]
+    public async Task ObterSondagemRelatorio_ModalidadeEjaSegundoSemestre_DeveExibirBimestres4e5Renomeados()
+    {
+        var filtro = new FiltroConsolidadoDto { AnoLetivo = 2026, Modalidade = 3, SemestreId = 2 };
+
+        _mockRepositorioBimestre
+            .Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<BimestreDominio>
+            {
+                new BimestreDominio(0, "Inicial")     { Id = 1 },
+                new BimestreDominio(1, "1° bimestre") { Id = 2 },
+                new BimestreDominio(2, "2° bimestre") { Id = 3 },
+                new BimestreDominio(3, "3° bimestre") { Id = 4 },
+                new BimestreDominio(4, "4° bimestre") { Id = 5 }
+            });
+
+        var respostas = new List<RelatorioRespostaAlunoDto>
+        {
+            CriarResposta(1, 1, "Q1", opcaoRespostaId: 1, bimestreId: 4),
+            CriarResposta(2, 1, "Q1", opcaoRespostaId: 1, bimestreId: 5),
         };
 
         _mockRepositorioRespostaAluno

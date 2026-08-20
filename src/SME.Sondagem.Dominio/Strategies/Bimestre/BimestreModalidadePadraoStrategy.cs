@@ -10,7 +10,7 @@ public sealed class BimestreModalidadePadraoStrategy : IBimestreModalidadeStrate
 {
     public bool Aplicavel(int modalidade) => true;
 
-    public IEnumerable<BimestreExibicao> AplicarRegras(IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado)
+    public IEnumerable<BimestreExibicao> AplicarRegras(IEnumerable<Entidades.Bimestre> bimestresCompletos, int? bimestreFiltrado, int? semestre = null)
     {
         var lista = bimestresCompletos
             .Select(b => new BimestreExibicao(b.Id, b.Descricao));

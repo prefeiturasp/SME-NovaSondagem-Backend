@@ -8,6 +8,7 @@ public static class MensagemNegocioComuns
     public const string REQUISICAO_CANCELADA = "Requisição cancelada pelo cliente"; 
     public const string BIMESTRE_NAO_ENCONTRADO = "Bimestre com ID {0} não encontrado";
     public const string BIMESTRE_OBRIGATORIO = "Informe o bimestre.";
+    public const string SEMESTRE_OBRIGATORIO_EJA = "Informe o semestre para consultar bimestres da modalidade EJA.";
     public const string COMPONENTE_CURRICULAR_NAO_ENCONTRADO = "Componente curricular com ID {0} não encontrado";
     public const string COMPONENTE_CURRICULAR_EOL_NAO_ENCONTRADO = "Componente curricular com código EOL {0} não encontrado";
     public const string COMPONENTE_CURRICULAR_MODALIDADE_NAO_ENCONTRADO = "Componente curricular com MODALIDADE {0} não encontrado";
