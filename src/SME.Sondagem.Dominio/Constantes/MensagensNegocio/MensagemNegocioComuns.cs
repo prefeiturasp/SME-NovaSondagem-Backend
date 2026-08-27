@@ -46,6 +46,7 @@ public static class MensagemNegocioComuns
     public const string QUESTOES_ATIVAS_NAO_ENCONTRADAS = "Não há questões ativas para o questionário com os filtros informados";
     public const string ALUNOS_NAO_CADASTRADOS_TURMA = "Não há alunos cadastrados para a turma informada";
     public const string PERIODO_BIMESTRE_NAO_ENCONTRADO = "Período do bimestre não encontrado.";
+    public const string PERIODO_BIMESTRE_ENCERRADO = "Não foi possível salvar as respostas, pois o período para preenchimento está encerrado.";
     public const string COLUNAS_SUBPERGUNTAS_NAO_OBTIDAS = "Não foi possível obter as colunas das subperguntas";
     public const string QUESTAO_PRINCIPAL_NAO_ENCONTRADA = "Questão principal não encontrada";
     public const string COLUNAS_CICLOS_NAO_OBTIDAS = "Não foi possível obter as colunas dos ciclos";

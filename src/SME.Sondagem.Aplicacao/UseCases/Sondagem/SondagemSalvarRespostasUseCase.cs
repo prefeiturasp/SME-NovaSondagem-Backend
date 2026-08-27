@@ -263,14 +263,19 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var periodoBimestreAtivo = periodosBimestresAtivos
             .FirstOrDefault(pb => pb.BimestreId == respostaDto.BimestreId);
 
-        if (!ValidarPeriodoBimestre(periodoBimestreAtivo))
-            return null;
-
         var respostaExistente = repostasAlunos?.FirstOrDefault(r =>
             r.AlunoId == alunoId &&
             r.QuestaoId == respostaDto.QuestaoId &&
             r.BimestreId == respostaDto.BimestreId &&
             r.TurmaId == contexto.TurmaId);
+
+        if (!ValidarPeriodoBimestre(periodoBimestreAtivo))
+        {
+            if (PossuiAlteracao(respostaDto, respostaExistente))
+                throw new NegocioException(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO);
+
+            return null;
+        }
 
         return CriarOuAtualizarResposta(
             sondagemId,
@@ -286,6 +291,16 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         return periodoBimestreAtivo.DataInicio <= DateTime.Now &&
                periodoBimestreAtivo.DataFim >= DateTime.Now;
+    }
+
+    private static bool PossuiAlteracao(
+        RespostaSondagemDto respostaDto,
+        RespostaAluno? respostaExistente)
+    {
+        if (respostaExistente is null)
+            return respostaDto.OpcaoRespostaId.HasValue;
+
+        return respostaExistente.OpcaoRespostaId != respostaDto.OpcaoRespostaId;
     }
 
     private static RespostaAluno? CriarOuAtualizarResposta(
