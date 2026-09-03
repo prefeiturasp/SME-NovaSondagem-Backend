@@ -1,0 +1,4 @@
+2026-08-27T03:10:34.3012999Z	contexto=turma	alunoId=8569356	motivo=raça não reconhecida: ''
+2026-08-31T06:24:57.3280482Z	contexto=aluno	alunoId=8376726	motivo=sem retorno do EOL na fase aluno
+2026-08-31T06:27:13.4267051Z	contexto=aluno	alunoId=8386568	motivo=sem retorno do EOL na fase aluno
+2026-08-31T06:59:10.7298515Z	contexto=aluno	alunoId=8540610	motivo=sem retorno do EOL na fase aluno

@@ -1,0 +1,3551 @@
+//3028778
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7915210,
+        "nomeAluno": "ADRIANA LOPES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 8128679,
+        "nomeAluno": "ANA HELOIZA DA CUNHA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7535823,
+        "nomeAluno": "ANDRE DE SOUSA NASCIMENTO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7417847,
+        "nomeAluno": "ARTHUR LUIS DE SOUZA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7443356,
+        "nomeAluno": "BEATRIZ BISPO CANDIDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 8134059,
+        "nomeAluno": "CARLOS EDUARDO MONTEIRO SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7710576,
+        "nomeAluno": "CECILIA ALVES FERREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7705897,
+        "nomeAluno": "DAVI NICOLAS DE PAULA CAMPOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7354347,
+        "nomeAluno": "EMILLY CALDEIRA RODRIGUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7558059,
+        "nomeAluno": "GABRIEL ANJOS CABRAL DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 34,
+        "codigoAluno": 8042241,
+        "nomeAluno": "GEOVANNA CRISTINA GONCALVES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7724239,
+        "nomeAluno": "HEITOR OLIVIERI DE MATOS SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7538777,
+        "nomeAluno": "HELENA PEREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 32,
+        "codigoAluno": 7363444,
+        "nomeAluno": "HEVERTON VIEIRA LEMOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7546763,
+        "nomeAluno": "ISADORA SOUSA MELO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7432974,
+        "nomeAluno": "JEAN JUNIOR OTAVIANO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 8136130,
+        "nomeAluno": "KEVEN RIBEIRO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7650714,
+        "nomeAluno": "LORENA MORENO DOMINGUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7745927,
+        "nomeAluno": "LUCAS SILVA CORTEZ",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 35,
+        "codigoAluno": 7338920,
+        "nomeAluno": "LUCIANO RIBEIRO DA SILVA JUNIOR",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7665853,
+        "nomeAluno": "LUIZA DUARTE OZEDA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7507150,
+        "nomeAluno": "MARIA ALICE MARCELINO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7681773,
+        "nomeAluno": "MARIA VITORIA RAYMUNDO PEREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7720530,
+        "nomeAluno": "MATHEUS DA SILVA E SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7774380,
+        "nomeAluno": "MELISSA NUNES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7501157,
+        "nomeAluno": "NOAH GABRIEL ALVES SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7451240,
+        "nomeAluno": "PIETRA XAVIER SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 33,
+        "codigoAluno": 8610362,
+        "nomeAluno": "VALENTINA LETICIA LEITE VELOSO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7557141,
+        "nomeAluno": "VICTOR HUGO DE ANDRADE GUARNIERE",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7819332,
+        "nomeAluno": "VICTOR HUGO SILVA MAXIMIANO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    }
+]
+
+//3029221
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7534207,
+        "nomeAluno": "AGATHA LORRANI MANOEL FREITAS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 8075089,
+        "nomeAluno": "AMANDA OLIVEIRA SIMAO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7514700,
+        "nomeAluno": "ANA LUIZA OLIVEIRA DE JESUS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7898996,
+        "nomeAluno": "APOLO GIANGIARDI DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7663256,
+        "nomeAluno": "BENICIO OLIVEIRA NUNES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7758406,
+        "nomeAluno": "CAYO BERNARDO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7534563,
+        "nomeAluno": "DAVI HENRIQUE SILVA LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7658551,
+        "nomeAluno": "DERICK DAMASCENO SILVA GOMES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7954885,
+        "nomeAluno": "EDUARDA FERREIRA SOARES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7559985,
+        "nomeAluno": "GABRIEL MENEZES DA SILVA BORROMEU",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7677950,
+        "nomeAluno": "HEITOR MIGUEL MATOS DA SILVA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7449000,
+        "nomeAluno": "HELENA DE AGUIAR LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7758147,
+        "nomeAluno": "HELENA VITORIA DIAS DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7575395,
+        "nomeAluno": "ISAAC MURILO OLIVEIRA VERISSIMO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7588875,
+        "nomeAluno": "ISABELLA SANTANA SOARES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7783455,
+        "nomeAluno": "KATARINA DE OLIVEIRA FRANCA OLIVATO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7438584,
+        "nomeAluno": "LARA VALENTINA ESPANIE DE CASTILHO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7891477,
+        "nomeAluno": "LORENNA VITORIA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7676977,
+        "nomeAluno": "LORENZO KELVIN DA SILVA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 8207197,
+        "nomeAluno": "LUNA DE SILVA OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7398157,
+        "nomeAluno": "MANUELLA MOREIRA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7794942,
+        "nomeAluno": "MARIA EDUARDA MENEZES PASSOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 8092423,
+        "nomeAluno": "MARIANA RODRIGUES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7695143,
+        "nomeAluno": "PEDRO HENRIQUE MARCELLINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7543858,
+        "nomeAluno": "ROBSON LARANJEIRA BASTOS JUNIOR",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7373858,
+        "nomeAluno": "SARAH MACIEL VALENTIM",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7594658,
+        "nomeAluno": "THIAGO CORREIA VIEIRA DE SOUZA COSTA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7530549,
+        "nomeAluno": "VALENTINA FRANCO TEIXEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7512917,
+        "nomeAluno": "VICTORIA SAPHIRA CONCEICAO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7961863,
+        "nomeAluno": "VITORIA DAS GRACAS SIQUEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    }
+]
+//3029296
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7436361,
+        "nomeAluno": "ALICIA MANUELLA OLIVEIRA CONCEICAO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7792754,
+        "nomeAluno": "ANDREI EMANUEL DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7426981,
+        "nomeAluno": "ARTHUR HENRIQUE VASCONCELOS SANTIAGO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 8658535,
+        "nomeAluno": "AYLA GABRIELLY DA SILVA AZEVEDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7675024,
+        "nomeAluno": "BENJAMIN JOSE DA SILVA GORATO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7672138,
+        "nomeAluno": "DAVI HENRIQUE PEREIRA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 8330999,
+        "nomeAluno": "ELOAH VITORIA BARBOSA DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7631764,
+        "nomeAluno": "HEITOR RODRIGUES FERREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7486452,
+        "nomeAluno": "HELENA DIAS CRUZ",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 8315884,
+        "nomeAluno": "HELOISA FERREIRA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 8718663,
+        "nomeAluno": "JADEN LEONEL HERRERA MARIN",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 8410214,
+        "nomeAluno": "JOAO MIGUEL LIMA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7514143,
+        "nomeAluno": "JULIA MOURA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7680086,
+        "nomeAluno": "KATHARINA DIAS DA SILVA VIVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7202655,
+        "nomeAluno": "LAURA EMANUELLE EGYDIO PEREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 8193894,
+        "nomeAluno": "LAURA LIMA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7612115,
+        "nomeAluno": "LIVIA PAULINO RODRIGUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7421939,
+        "nomeAluno": "LORENZZO SANTOS CALDEIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7671935,
+        "nomeAluno": "LORRANY NOVAIS OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7662598,
+        "nomeAluno": "LUIZA MANUELLY OLIVEIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7552530,
+        "nomeAluno": "MANASSES RIBEIRO MAFRA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7837175,
+        "nomeAluno": "MANUELA DA SILVA SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7687479,
+        "nomeAluno": "MANUELLA OLIVEIRA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7847949,
+        "nomeAluno": "MARIA ISIS VIEIRA ROCHA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7666966,
+        "nomeAluno": "MATHEUS LOPES CHAVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7336055,
+        "nomeAluno": "MILENA SOUZA DOS SANTOS MACHADO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7581852,
+        "nomeAluno": "MOISES ROCHA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7548173,
+        "nomeAluno": "NICOLAS OLIVEIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7547973,
+        "nomeAluno": "RENATO XAVIER DE GOES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7634623,
+        "nomeAluno": "WESLLEY DIAS DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3029310
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7496890,
+        "nomeAluno": "ANA CLARA DE OLIVEIRA PEREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7689837,
+        "nomeAluno": "ANA KLARA BARBOSA DE LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7559803,
+        "nomeAluno": "ARTHUR LAMEU DA SILVA CRUZ",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 8712801,
+        "nomeAluno": "DAVI ALVINO DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7443348,
+        "nomeAluno": "DAVI LUCCA SANTANA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7382278,
+        "nomeAluno": "EDUARDO DE SOUZA NASCIMENTO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7438454,
+        "nomeAluno": "EMANUELLY CRISTINA DA SILVA RAMIRO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7594329,
+        "nomeAluno": "ENZO JERONIMO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7810171,
+        "nomeAluno": "GUILHERME DOS SANTOS SERRANO ROSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7971118,
+        "nomeAluno": "HELOISA NASCIMENTO DE AZEVEDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7409000,
+        "nomeAluno": "ISABELLA BEZERRA DE JESUS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7664122,
+        "nomeAluno": "KELVIN KAUAN OLIVEIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7649313,
+        "nomeAluno": "LAURA LIMA MARTINS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7353711,
+        "nomeAluno": "LIVIA TAVARES BARBOSA DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7557106,
+        "nomeAluno": "LORENA LIZ DIAS PROCOPIO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7636140,
+        "nomeAluno": "LORENZO BATISTA ANTUNES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7862171,
+        "nomeAluno": "LUAN BERNARDO OTONI ROCHA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7865109,
+        "nomeAluno": "LUCAS HENRIQUE RAMOS MENDES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7395654,
+        "nomeAluno": "LUIZA AUGUSTA DE LELIS SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7493757,
+        "nomeAluno": "MANUELLA VILALTA MOREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 8861426,
+        "nomeAluno": "MARIA ELOAH QUEIROZ MIRANDA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 8030287,
+        "nomeAluno": "MATHEUS BERNARDO SIQUEIRA OLIVEIRA CORDEIRO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7439675,
+        "nomeAluno": "MYLLENA CECILIA HENRIQUE DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7585962,
+        "nomeAluno": "NOAH AUGUSTO COSTA DE MELLO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 32,
+        "codigoAluno": 7434793,
+        "nomeAluno": "PEDRO LEONARDO COSTA DO NASCIMENTO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7390171,
+        "nomeAluno": "PEDRO LUCCA FRANCISCO BASILIO ALVES SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 33,
+        "codigoAluno": 7547545,
+        "nomeAluno": "PEDRO LUIZ MORAIS DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7790098,
+        "nomeAluno": "SOPHIA NASCIMENTO LOPES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7585485,
+        "nomeAluno": "THEO FIDELIS DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7727113,
+        "nomeAluno": "YASMIN MIRANDA DIAS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3029341
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7656550,
+        "nomeAluno": "AGATA MARIA DA COSTA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7263268,
+        "nomeAluno": "ALEF EDUARDO DA SILVA DE FARIAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7443560,
+        "nomeAluno": "ALICE FELICIO LIMA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7280691,
+        "nomeAluno": "ALICE LIBARINO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7093103,
+        "nomeAluno": "ARTHUR SILVA DE LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7424346,
+        "nomeAluno": "BERNARDO ARAUJO DE FREITAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7749646,
+        "nomeAluno": "BRYAN LUCAS SANTOS BARRETO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 8384408,
+        "nomeAluno": "DAVI LUCAS ERCULANO DELFINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7196296,
+        "nomeAluno": "ELIAS HENRIQUE DA SILVA FELIX",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7644237,
+        "nomeAluno": "GABRIELLA REIS DE SIQUEIRA BERNARDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7138900,
+        "nomeAluno": "GREGORY MEIRELES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7491178,
+        "nomeAluno": "GUILHERME DE MOURA GALDINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7168931,
+        "nomeAluno": "HEITOR SANTOS DA SILVA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7399500,
+        "nomeAluno": "IGOR EMANUEL PEREIRA SARAMBELI",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7302754,
+        "nomeAluno": "ISABELLA MOTA DO NASCIMENTO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7221030,
+        "nomeAluno": "ISABELLA ROSA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7242168,
+        "nomeAluno": "KAIO ALEXANDRE RUFINO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7360477,
+        "nomeAluno": "KAUE JESUS XAVIER GOMES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 8127693,
+        "nomeAluno": "LAIS LILIANE MORAES SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7216068,
+        "nomeAluno": "LAURA FERREIRA SANTOS SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 8176945,
+        "nomeAluno": "LAVINIA EMANUELLA MACIEL DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7684289,
+        "nomeAluno": "LUIZ MIGUEL DA SILVA LOCATELI",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7199229,
+        "nomeAluno": "MANUELLA ARAUJO LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7639528,
+        "nomeAluno": "MIGUEL DE OLIVEIRA TEIXEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7494991,
+        "nomeAluno": "MIGUEL LUCAS PEREIRA BORGES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7738969,
+        "nomeAluno": "SAMUEL DE SOUZA SANTIAGO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7773447,
+        "nomeAluno": "THAIS CAMARGO RODRIGUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7438204,
+        "nomeAluno": "THALYSON MATHEUS MIRELES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7185701,
+        "nomeAluno": "VALENTINO CHIMAIJEM IKECHUKWU",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7162054,
+        "nomeAluno": "VITOR HUGO DOMINGOS LOPES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    }
+]
+//3029406
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7936440,
+        "nomeAluno": "AGATHA MANUELLA OLIVEIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7516973,
+        "nomeAluno": "ALICE GALVAO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7817245,
+        "nomeAluno": "ANA LAURA LINS PINHEIRO BRAGA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7373514,
+        "nomeAluno": "ARTHUR CARLOS GAMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7336285,
+        "nomeAluno": "BENICIO FERREIRA BRITO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7347177,
+        "nomeAluno": "BRYAN SILVA PEREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 8348794,
+        "nomeAluno": "DANNA FERNANDA TAPIA QUENTA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "AMARELA",
+        "codigoRaca": 4
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7177665,
+        "nomeAluno": "DAVI LUCCA DA SILVA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7913613,
+        "nomeAluno": "DAVI LUCCA DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7173389,
+        "nomeAluno": "EMANUEL SOARES SANTANA DE AZEVEDO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7159214,
+        "nomeAluno": "GABRIELLY DOS SANTOS TEIXEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7500037,
+        "nomeAluno": "HELENA DE MELO ABREU",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7725294,
+        "nomeAluno": "HIAGO HENRIQUE MARTINS BATISTA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7695181,
+        "nomeAluno": "JHUNIOR COBARRUBIA RAMIREZ",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7533794,
+        "nomeAluno": "JOAQUIM SARAMBELI FERNANDES LUQUESI",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7523362,
+        "nomeAluno": "JOSE FELIPE DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7424643,
+        "nomeAluno": "KAILLAYNNE LORRAINNY DE AZEVEDO PAULINO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7360471,
+        "nomeAluno": "KEVIN HENRIQUE XAVIER GOMES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7365749,
+        "nomeAluno": "LORENZO FERREIRA LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7277846,
+        "nomeAluno": "LORENZO GABRIEL TENORIO DE SANTANA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7434490,
+        "nomeAluno": "LUANE NASCIMENTO SANTOS DE AQUINO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7873560,
+        "nomeAluno": "LUCAS LESSA DE ARAUJO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7507409,
+        "nomeAluno": "LUIZ GUSTAVO DE JESUS RODRIGUES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7442493,
+        "nomeAluno": "MANUELLA OLIVEIRA BARBOSA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7133667,
+        "nomeAluno": "MARIA VALENTINA DE SOUZA REGO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7440013,
+        "nomeAluno": "MARIANA SANTOS SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 8709286,
+        "nomeAluno": "MATEUS ALVINO DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7257352,
+        "nomeAluno": "PAULO HENRIQUE LIMA ALEXANDRINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7408415,
+        "nomeAluno": "THAYLLA GEOVANA SANTOS DO AMARAL",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7364186,
+        "nomeAluno": "YURI MAIA DE PAIVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    }
+]
+//3029419
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7217885,
+        "nomeAluno": "ALICE MARIA ALVES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7305625,
+        "nomeAluno": "ARTHUR HENRIQUE ALMEIDA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7821126,
+        "nomeAluno": "ASHLEY VALENTINA LOPES HONORINDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7143509,
+        "nomeAluno": "BEATRIZ GALVAO LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7932191,
+        "nomeAluno": "BRYAN LEANDRO DE SENA MACEDO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7304119,
+        "nomeAluno": "BRYAN MIRANDA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 8150220,
+        "nomeAluno": "CHRISTOPHER SOARES CAMARGO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7952933,
+        "nomeAluno": "DAVI MELO SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7125077,
+        "nomeAluno": "EMANUELLA NERIS DE ALMEIDA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7327910,
+        "nomeAluno": "ENZO GABRIEL DOS SANTOS LUCIO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 8116180,
+        "nomeAluno": "GABRIEL OLIVEIRA FREITAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7241575,
+        "nomeAluno": "HEITOR BRITO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7889456,
+        "nomeAluno": "HELOISA CLAIRE SILVA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7647224,
+        "nomeAluno": "HUGO SAMUEL KALID CARLOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7840317,
+        "nomeAluno": "ISABELLY SANTOS GODOI",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7281392,
+        "nomeAluno": "JOAQUIM DA SILVA COQUEIRO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7274845,
+        "nomeAluno": "KAUA DA SILVA RAMOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7500071,
+        "nomeAluno": "KELVYN RIAN PEREIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7626245,
+        "nomeAluno": "LAURA FURLANIS DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7430028,
+        "nomeAluno": "LORENNA MIRELLY DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 8038687,
+        "nomeAluno": "LUCCA MENESES SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7119731,
+        "nomeAluno": "LUIZ MIGUEL ARAUJO AGUADO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 8161162,
+        "nomeAluno": "MARIA CECILIA INACIO VIEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7424673,
+        "nomeAluno": "MARIANA VALE DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7671895,
+        "nomeAluno": "MELISSA PEREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7505502,
+        "nomeAluno": "NOAH COELHO SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7154341,
+        "nomeAluno": "PAOLLA FERNANDES GUEDES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 8689813,
+        "nomeAluno": "PEDRO ALVES VILAS BOAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7167738,
+        "nomeAluno": "VALENTINA SANTOS VIEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7226810,
+        "nomeAluno": "YURI SANTIAGO DUTRA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3029435
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7294589,
+        "nomeAluno": "ARTHUR MIGUEL PAIVA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7571187,
+        "nomeAluno": "BEATRIZ SANTOS CARVALHO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7275476,
+        "nomeAluno": "BRYAN LINO MARTINS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7233966,
+        "nomeAluno": "DERICK GABRIEL ALVES DE ASSIS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7658249,
+        "nomeAluno": "EDUARDO MIGUEL SOBRAL RODRIGUES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7490628,
+        "nomeAluno": "GABRIEL RIBEIRO DE MATOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7368179,
+        "nomeAluno": "HELOISA SAMPAIO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7700641,
+        "nomeAluno": "HENRY LINO RAMALHO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7871579,
+        "nomeAluno": "ISADORA FONSECA PAIVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 8839334,
+        "nomeAluno": "JOAO FABIO MOTA SOARES DE CAMPOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 8224651,
+        "nomeAluno": "JONATHAS GABRIEL BATISTA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7281156,
+        "nomeAluno": "LAURA FERNANDES DE OLIVEIRA MARTINS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7816869,
+        "nomeAluno": "LAURA SANTOS SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7392288,
+        "nomeAluno": "LORENZO DANIEL SENA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 8210394,
+        "nomeAluno": "LOUISE BARBOSA FIGUEIREDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7838985,
+        "nomeAluno": "LUCCA DONATO VICENTE",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7246644,
+        "nomeAluno": "LUIS RAPHAEL SANTIAGO LUNA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7424248,
+        "nomeAluno": "MANUELA SOUSA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7226575,
+        "nomeAluno": "MARIA CLARA DE OLIVEIRA CARDOSO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7215557,
+        "nomeAluno": "MARIA LUIZA MARCIONILA QUEIROS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7223981,
+        "nomeAluno": "MIGUEL LOPES VELOZO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7145591,
+        "nomeAluno": "PEDRO GABRIEL ALVES DO NASCIMENTO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7101590,
+        "nomeAluno": "PIETRO SANTOS PORTO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7939538,
+        "nomeAluno": "RODRIGO OLIVEIRA PEREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7142965,
+        "nomeAluno": "THEO SOUZA CESARIO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7547577,
+        "nomeAluno": "THEODORO MORAIS DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7537832,
+        "nomeAluno": "THOMAS BELARMINO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7837420,
+        "nomeAluno": "VITOR GABRIEL MARTINS PAIXAO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7323736,
+        "nomeAluno": "YASMIM BENTO DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7489490,
+        "nomeAluno": "YOHANNA PIETRA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    }
+]
+//3030588
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7164298,
+        "nomeAluno": "ALICE EMANUELLY ALVES VIANA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7525695,
+        "nomeAluno": "ALLYCE SOFIA FERREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 6892038,
+        "nomeAluno": "ANNA CAROLYNE MENDES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7263752,
+        "nomeAluno": "AYLLA RODRIGUES CORREA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7078806,
+        "nomeAluno": "BENICIO AIRES VIEIRA GOMES PINHO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7000887,
+        "nomeAluno": "DANILLO HENRIQUE GARCIA SIMOES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 6905696,
+        "nomeAluno": "DAVI LUIZ DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7075101,
+        "nomeAluno": "DOMINYQUE JERONIMO MARCOLINO LOURENCO MARCELINO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7292325,
+        "nomeAluno": "ELOAH CAROLINA NASCIMENTO DOMINGUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7313969,
+        "nomeAluno": "EMANUELLY SOPHIA SANTOS CARDOSO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7071852,
+        "nomeAluno": "ENZO GABRIEL NETTO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7009943,
+        "nomeAluno": "HEITOR CASSIANO DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 6896513,
+        "nomeAluno": "HEITOR DOS SANTOS VIEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7073301,
+        "nomeAluno": "HELLENA BOMFIM ROCHA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 6926624,
+        "nomeAluno": "HELOISA FARIAS DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7340759,
+        "nomeAluno": "HENRY GUSTAVO DA SILVA FERREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7013969,
+        "nomeAluno": "JOAO MIGUEL NUNES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7056163,
+        "nomeAluno": "KEMILLY BEATRIZ ALEXSANDRA DOS SANTOS MARQUES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7517029,
+        "nomeAluno": "LAURA MARIA FRANCA DE CASTRO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7915633,
+        "nomeAluno": "LIVIA RODRIGUES LUCENA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 6979172,
+        "nomeAluno": "LORENNA YASMIN DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7081501,
+        "nomeAluno": "MARIA JULIA MELO PIZZAIA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7742232,
+        "nomeAluno": "MAYTE MOTA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7016784,
+        "nomeAluno": "MIRELLA ANTONELLA PRADO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 6902769,
+        "nomeAluno": "MURILO DE SOUZA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "AMARELA",
+        "codigoRaca": 4
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7084783,
+        "nomeAluno": "NICOLAS CARTAXO DE AQUINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7503403,
+        "nomeAluno": "NICOLLY ARCANJO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7048046,
+        "nomeAluno": "OLIVER FERREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7825385,
+        "nomeAluno": "PEDRO DAVI HENSEL",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7057784,
+        "nomeAluno": "VITORIA CINTRA DE AZEVEDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3030622
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7873308,
+        "nomeAluno": "ALICE RODRIGUES ISQUERDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 6910351,
+        "nomeAluno": "ANA KASSIA DE JESUS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7305748,
+        "nomeAluno": "ARTHUR MANOEL DA PENHA ALMEIDA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7394125,
+        "nomeAluno": "BENJAMIN RODRIGUES BARBOSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 6914425,
+        "nomeAluno": "DAVI DE SOUZA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 6934361,
+        "nomeAluno": "DAVY PEDRO REIS DE ANDRADE",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 8484147,
+        "nomeAluno": "EDUARDO REIS DAINEZE",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7528424,
+        "nomeAluno": "EMILLE SAORY UMEDA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7119397,
+        "nomeAluno": "EMILLY GABRIELLA FAUSTINO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 6948095,
+        "nomeAluno": "FELIPE FERREIRA MOURA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7824287,
+        "nomeAluno": "GABRIEL FERREIRA DUARTE",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7008341,
+        "nomeAluno": "HELOISA ROSA DE CASTRO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7012314,
+        "nomeAluno": "HIAGO DAVI DA SILVA TENORIO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7182749,
+        "nomeAluno": "LUCAS GOUVEA DOS SANTOS TAVARES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 6895526,
+        "nomeAluno": "LUIZ MIGUEL MIRANDA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 6962239,
+        "nomeAluno": "MAITE PIETRA MARIA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7564816,
+        "nomeAluno": "MANUELLA SOUTO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7530966,
+        "nomeAluno": "MARIA EDUARDA CUBA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 6896500,
+        "nomeAluno": "MATHEUS DOS SANTOS VIEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7063082,
+        "nomeAluno": "MICHELLY SOUZA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7231099,
+        "nomeAluno": "MIGUEL DA SILVA SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7532903,
+        "nomeAluno": "MIGUEL SOUZA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7088365,
+        "nomeAluno": "MYLLENA DA SILVA DOMINGOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7510845,
+        "nomeAluno": "OTAVIO PEREIRA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7252640,
+        "nomeAluno": "PEDRO HENRIQUE ALVES AGASSI",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7305803,
+        "nomeAluno": "RODRIGO RABELO ROSA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 32,
+        "codigoAluno": 7623638,
+        "nomeAluno": "SOPHIA HELLENA OLIVEIRA FERNANDES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7008236,
+        "nomeAluno": "THIFFANY VICTORIA GONCALVES FARIAS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7038220,
+        "nomeAluno": "VALENTINA MOURA SOARES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7059503,
+        "nomeAluno": "VITOR FRANCISCO DE MEDEIROS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3030754
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7885581,
+        "nomeAluno": "ANA LUIZA RODRIGUES DOS SANTOS COSTA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7029037,
+        "nomeAluno": "ANDERSON LUCCA SILVA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 6871992,
+        "nomeAluno": "ARTHUR RIKELMY DOS SANTOS ASCENCIO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7985166,
+        "nomeAluno": "BRAYAN NATHAN CARDOSO DE LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7224852,
+        "nomeAluno": "BRUNO HENRIQUE PIRES BRAGA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 6925591,
+        "nomeAluno": "DAVI GUILHERME DA SILVA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7045563,
+        "nomeAluno": "ELLOA VITORIA DA SILVA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7245613,
+        "nomeAluno": "EMANUELLE CRISTINA SANTANA DE JESUS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 6996811,
+        "nomeAluno": "EMILLY BELMIRO DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7025906,
+        "nomeAluno": "ENZO BUENO VIDAL",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7210787,
+        "nomeAluno": "ESTHER JOUGUET CANTUARIO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7260949,
+        "nomeAluno": "HEITOR FERRARESI DE LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 6892125,
+        "nomeAluno": "HENRIQUE GOMES NOGUEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 6981969,
+        "nomeAluno": "ISABELLA BARBOSA ROCHA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7095941,
+        "nomeAluno": "LAYS EMANUELLY SILVA LIRAS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 7742184,
+        "nomeAluno": "LIAM NELSON LEE GUTIERREZ PEREZ",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 6905628,
+        "nomeAluno": "LORENA RAMOS SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7194344,
+        "nomeAluno": "LORENZO SILVA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7134655,
+        "nomeAluno": "MANUELLA CASSIMIRO SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7089916,
+        "nomeAluno": "MANUELLA MARTINES MOREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 22,
+        "codigoAluno": 7350583,
+        "nomeAluno": "MARIA CECILIA VIANA OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7088275,
+        "nomeAluno": "MARIANA CONCEICAO DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7574207,
+        "nomeAluno": "MARIANA MACIEL GONCALVES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7185117,
+        "nomeAluno": "MATHEUS PEREIRA RIBEIRO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7178358,
+        "nomeAluno": "MIGUEL SANTOS XAVIER",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7176829,
+        "nomeAluno": "OLIVER JOAQUIM SILVA DE AQUINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 7119515,
+        "nomeAluno": "SAMUEL SOARES FERREIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7174997,
+        "nomeAluno": "SOPHIA CARRER DA FONSECA DELLA TORRE",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7052458,
+        "nomeAluno": "SOPHIA MARTINS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 6862796,
+        "nomeAluno": "SOPHIA VIDAL FERRAZ",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    }
+]
+//3030811
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 7263013,
+        "nomeAluno": "ARTHUR RODRIGUES CAIRES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 7052367,
+        "nomeAluno": "BRYAN COSTA RONDOM",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7013694,
+        "nomeAluno": "DAVI LUIZ ALMEIDA SPESSOTTI",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7317173,
+        "nomeAluno": "ELOA VIANA TEIXEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 7078934,
+        "nomeAluno": "ESTHER GOMES OLIVEIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 6930306,
+        "nomeAluno": "GABRIEL FLORIANO RIBEIRO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 6966103,
+        "nomeAluno": "GAEL GOMES DE FREITAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 6921153,
+        "nomeAluno": "HEITOR SILVA MUITIM",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7158670,
+        "nomeAluno": "HELENA DOMINGOS FIGUEIREDO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 6956541,
+        "nomeAluno": "HENRIQUE PEREIRA LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7287269,
+        "nomeAluno": "ISABELLY MARCELINO CARDOSO DE MELO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7075003,
+        "nomeAluno": "LAURA RIBEIRO ASCENCIO GOIS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7986892,
+        "nomeAluno": "LORENA DUARTE ANASTACIO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7165159,
+        "nomeAluno": "LORENA SILVA DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 15,
+        "codigoAluno": 7305240,
+        "nomeAluno": "LORENZO ARAUJO DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 7284254,
+        "nomeAluno": "LUIZ FERNANDO SANTOS DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 6973661,
+        "nomeAluno": "LUIZ MIGUEL SANTOS DE ARAUJO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 7080350,
+        "nomeAluno": "MANUELLA BEATRIZ DOS SANTOS LIMA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 7089542,
+        "nomeAluno": "MARIA EDUARDA ANDRADE DE SOUSA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 6900260,
+        "nomeAluno": "MARIA EDUARDA CARNEIRO",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7022347,
+        "nomeAluno": "MIGUEL ANDRADE DE CARVALHO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7391482,
+        "nomeAluno": "MIGUEL GARBULHA LOPES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7420590,
+        "nomeAluno": "NATHALIA AIMORES MANTOVANI",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7146223,
+        "nomeAluno": "OTAVIO DOS SANTOS OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 7257381,
+        "nomeAluno": "PEDRO HENRIQUE LIMA ALEXANDRINO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7426841,
+        "nomeAluno": "RAFAELLA OHARA LEITE",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 6936270,
+        "nomeAluno": "SABRINA VITORIA MACIEL SCHIMIDT DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 8151535,
+        "nomeAluno": "THIAGO SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7269763,
+        "nomeAluno": "VICTOR EDUARDO PRADO DE CARVALHO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 6946686,
+        "nomeAluno": "YURI DAVI DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+//3030829
+[
+    {
+        "numeroChamada": 1,
+        "codigoAluno": 6948586,
+        "nomeAluno": "ANA ALICE CARDOSO XAVIER",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 2,
+        "codigoAluno": 6882343,
+        "nomeAluno": "ANA BEATRIZ MAGALHAES SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 3,
+        "codigoAluno": 7280761,
+        "nomeAluno": "ANDREW VINICIUS DOS SANTOS DIAS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 4,
+        "codigoAluno": 7232136,
+        "nomeAluno": "ARTHUR RIBEIRO DE SOUZA SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 5,
+        "codigoAluno": 6936674,
+        "nomeAluno": "BRUNA NASCIMENTO DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 6,
+        "codigoAluno": 7310432,
+        "nomeAluno": "DANIEL NUNES LACERDA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 7,
+        "codigoAluno": 7161464,
+        "nomeAluno": "DAVI LUCCA FRAGANO SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 8,
+        "codigoAluno": 7155421,
+        "nomeAluno": "EDUARDO SALIRROSAS DE CASTRO",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 9,
+        "codigoAluno": 7192340,
+        "nomeAluno": "ELOAH DE SOUSA REIS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 10,
+        "codigoAluno": 7110748,
+        "nomeAluno": "FABRICIO DE LIMA ROSENDO MEDEIROS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 11,
+        "codigoAluno": 7032296,
+        "nomeAluno": "GEOVANNA MARIA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 12,
+        "codigoAluno": 7274374,
+        "nomeAluno": "HEITOR DIAS MENDES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 31,
+        "codigoAluno": 7218220,
+        "nomeAluno": "HEITOR FERREIRA DANTAS DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 13,
+        "codigoAluno": 7068105,
+        "nomeAluno": "HELENA ISABELLY WITJES DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 14,
+        "codigoAluno": 7082762,
+        "nomeAluno": "HELOISA ROCHA REIS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 16,
+        "codigoAluno": 6890276,
+        "nomeAluno": "ISADORA ALMEIDA ALVES",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 17,
+        "codigoAluno": 8134268,
+        "nomeAluno": "JHULYA VICTORIA TORRES LOPES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 18,
+        "codigoAluno": 6950966,
+        "nomeAluno": "KAUA VITAL INHUMA DE OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 19,
+        "codigoAluno": 6934060,
+        "nomeAluno": "LAURA HELENA AMORIM DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PRETA",
+        "codigoRaca": 2
+    },
+    {
+        "numeroChamada": 20,
+        "codigoAluno": 7732878,
+        "nomeAluno": "LETICIA DE SOUZA FERREIRA DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 21,
+        "codigoAluno": 7350415,
+        "nomeAluno": "LORENA CRISTINA DA SILVA OLIVEIRA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 23,
+        "codigoAluno": 7098730,
+        "nomeAluno": "MATHIAS LEVY SOUZA MARQUES DAS NEVES",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 24,
+        "codigoAluno": 7163418,
+        "nomeAluno": "MAYA COCIELO DE SOUZA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 25,
+        "codigoAluno": 6914394,
+        "nomeAluno": "MIGUEL FELIPE DE MEIRA FONSECA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 26,
+        "codigoAluno": 7159097,
+        "nomeAluno": "RAYAN AGOSTINHO DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 27,
+        "codigoAluno": 7374936,
+        "nomeAluno": "SOFIA DE MOURA CUTRIN",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    },
+    {
+        "numeroChamada": 28,
+        "codigoAluno": 6942794,
+        "nomeAluno": "SOPHIA REIS DOS SANTOS",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 29,
+        "codigoAluno": 7017359,
+        "nomeAluno": "SOPHIA TOUPITZEN MOREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "F",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 32,
+        "codigoAluno": 7091132,
+        "nomeAluno": "WESLLEY BUENO GHERMACOSKI AMURIM",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "PARDA",
+        "codigoRaca": 3
+    },
+    {
+        "numeroChamada": 30,
+        "codigoAluno": 7120747,
+        "nomeAluno": "WILLYAN PIETRO PEREIRA DA SILVA",
+        "nomeSocialAluno": null,
+        "sexo": "M",
+        "raca": "BRANCA",
+        "codigoRaca": 1
+    }
+]
+
