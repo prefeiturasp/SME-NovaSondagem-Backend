@@ -26,7 +26,11 @@ public class ObterSondagemRelatorioConsolidadoBimestreUseCase : ObterSondagemRel
     {
         var bimestresCompletos = await RepositorioSondagem.RepositorioBimestre.ListarAsync(cancellationToken);
 
-        _bimestresReferencia = BimestreModalidadeStrategyFactory.AplicarRegras(filtro.Modalidade, bimestresCompletos, filtro.BimestreId);
+        _bimestresReferencia = BimestreModalidadeStrategyFactory.AplicarRegras(
+            filtro.Modalidade,
+            bimestresCompletos,
+            filtro.BimestreId,
+            filtro.SemestreId > 0 ? filtro.SemestreId : null);
 
         return await base.ObterSondagemRelatorio(filtro, cancellationToken);
     }
