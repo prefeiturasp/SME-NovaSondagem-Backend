@@ -6,6 +6,7 @@ using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dados.Interfaces.Auditoria;
 using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Dominio.Enums;
+using SME.Sondagem.Dominio.Strategies.Bimestre;
 using SME.Sondagem.Infra.Contexto;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -204,20 +205,17 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         if (!AbrangenciaValida(filtro))
             return query.Where(_ => false);
 
-        var dresAbrangencia = filtro.DresAbrangencia;
-        var uesAbrangencia = filtro.UesAbrangencia;
         var turmasAbrangencia = filtro.TurmasAbrangencia;
 
         var filtros = new List<(bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado)>
         {
             (filtro.AnoLetivo > 0,                                          ra => ra.AnoLetivo == filtro.AnoLetivo),
-            (!string.IsNullOrEmpty(filtro.Dre) || (dresAbrangencia != null && dresAbrangencia.Count > 0),
-                                                                            ra => filtro.Dre != null ? ra.DreId == filtro.Dre : dresAbrangencia!.Contains(ra.DreId!)),
-            (!string.IsNullOrEmpty(filtro.Ue) || (uesAbrangencia != null && uesAbrangencia.Count > 0),
-                                                                            ra => filtro.Ue != null ? ra.UeId == filtro.Ue : uesAbrangencia!.Contains(ra.UeId!)),
+            FiltroDre(filtro),
+            FiltroUe(filtro),
             (turmasAbrangencia != null && turmasAbrangencia.Count > 0,      ra => ra.TurmaId != null && turmasAbrangencia!.Contains(ra.TurmaId!)),
             (filtro.Modalidade > 0,                                         ra => ra.ModalidadeId == filtro.Modalidade),
             (filtro.BimestreId.HasValue,                                    ra => ra.BimestreId == filtro.BimestreId),
+            FiltroBimestreEjaPorSemestre(filtro),
             (filtro.SemestreId > 0,                                         ra => ra.SemestreId == filtro.SemestreId),
             (filtro.ProficienciaId > 0,                                     ra => ra.Questao.Questionario.ProficienciaId == filtro.ProficienciaId),
             (filtro.ComponenteCurricularId > 0,                             ra => ra.Questao.Questionario.ComponenteCurricularId == filtro.ComponenteCurricularId),
@@ -233,6 +231,30 @@ public class RepositorioRespostaAluno : RepositorioBase<RespostaAluno>, IReposit
         return filtros
             .Where(f => f.Aplicar)
             .Aggregate(query, (q, f) => q.Where(f.Predicado));
+    }
+
+    private static (bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado) FiltroDre(FiltroConsolidadoDto filtro)
+    {
+        var dresAbrangencia = filtro.DresAbrangencia;
+        var aplicar = !string.IsNullOrEmpty(filtro.Dre) || (dresAbrangencia != null && dresAbrangencia.Count > 0);
+        return (aplicar, ra => filtro.Dre != null ? ra.DreId == filtro.Dre : dresAbrangencia!.Contains(ra.DreId!));
+    }
+
+    private static (bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado) FiltroUe(FiltroConsolidadoDto filtro)
+    {
+        var uesAbrangencia = filtro.UesAbrangencia;
+        var aplicar = !string.IsNullOrEmpty(filtro.Ue) || (uesAbrangencia != null && uesAbrangencia.Count > 0);
+        return (aplicar, ra => filtro.Ue != null ? ra.UeId == filtro.Ue : uesAbrangencia!.Contains(ra.UeId!));
+    }
+
+    private static (bool Aplicar, System.Linq.Expressions.Expression<Func<RespostaAluno, bool>> Predicado) FiltroBimestreEjaPorSemestre(FiltroConsolidadoDto filtro)
+    {
+        var ehEjaSemBimestreInformado = filtro.Modalidade == (int)Modalidade.EJA && !filtro.BimestreId.HasValue;
+        int[]? bimestresPermitidos = ehEjaSemBimestreInformado && filtro.SemestreId is 1 or 2
+            ? BimestreModalidadeEjaStrategy.BimestresPermitidosParaSemestre(filtro.SemestreId)
+            : null;
+
+        return (bimestresPermitidos != null, ra => ra.BimestreId.HasValue && bimestresPermitidos!.Contains(ra.BimestreId.Value));
     }
 
     private static bool AbrangenciaValida(FiltroConsolidadoDto filtro)

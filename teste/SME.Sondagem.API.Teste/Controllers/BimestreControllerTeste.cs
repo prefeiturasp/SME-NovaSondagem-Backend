@@ -52,10 +52,10 @@ public class BimestreControllerTeste
         };
 
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, null, _cancellationToken))
             .ReturnsAsync(bimestres);
 
-        var result = await _controller.Listar(modalidade, _cancellationToken);
+        var result = await _controller.Listar(modalidade, null, _cancellationToken);
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
@@ -66,10 +66,10 @@ public class BimestreControllerTeste
     public async Task Listar_OperationCanceledException_DeveRetornarStatus499()
     {
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, null, _cancellationToken))
             .ThrowsAsync(new OperationCanceledException());
 
-        var result = await _controller.Listar(modalidade, _cancellationToken);
+        var result = await _controller.Listar(modalidade, null, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(499, statusCodeResult.StatusCode);
@@ -80,14 +80,27 @@ public class BimestreControllerTeste
     }
 
     [Fact]
+    public async Task Listar_RegraNegocioException_DeveRetornarStatusDaExcecao()
+    {
+        _obterBimestresUseCaseMock
+            .Setup(x => x.ExecutarAsync(modalidade, null, _cancellationToken))
+            .ThrowsAsync(new RegraNegocioException("Informe o semestre para consultar bimestres da modalidade EJA.", 400));
+
+        var result = await _controller.Listar(modalidade, null, _cancellationToken);
+
+        var statusCodeResult = Assert.IsType<ObjectResult>(result);
+        Assert.Equal(400, statusCodeResult.StatusCode);
+    }
+
+    [Fact]
     public async Task Listar_Exception_DeveRetornarStatus500()
     {
         var exception = new Exception("Erro interno");
         _obterBimestresUseCaseMock
-            .Setup(x => x.ExecutarAsync(modalidade, _cancellationToken))
+            .Setup(x => x.ExecutarAsync(modalidade, null, _cancellationToken))
             .ThrowsAsync(exception);
 
-        var result = await _controller.Listar(modalidade, _cancellationToken);
+        var result = await _controller.Listar(modalidade, null, _cancellationToken);
 
         var statusCodeResult = Assert.IsType<ObjectResult>(result);
         Assert.Equal(StatusCodes.Status500InternalServerError, statusCodeResult.StatusCode);
