@@ -595,6 +595,48 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
+    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaForaDoPeriodoEstiverGravadaComoSemPreenchimentoEPayloadVazio()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: null);
+        var questao = CriarQuestaoSondagemComOpcaoSemPreenchimento(1, 3, opcaoSemPreenchimentoId: 77);
+        var respostaExistente = CriarRespostaExistente(dto, questao.Id, opcaoRespostaId: 77);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.True(resultado);
+        Assert.Equal(77, respostaExistente.OpcaoRespostaId);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task DeveRetornarErro_QuandoInformarOpcaoRealSobreSemPreenchimentoForaDoPeriodo()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 5);
+        var questao = CriarQuestaoSondagemComOpcaoSemPreenchimento(1, 3, opcaoSemPreenchimentoId: 77);
+        var respostaExistente = CriarRespostaExistente(dto, questao.Id, opcaoRespostaId: 77);
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+        ConfigurarSondagemComPeriodoEncerrado(dto.SondagemId, bimestreId: 1);
+
+        var excecao = await Assert.ThrowsAsync<NegocioException>(
+            () => _useCase.SalvarOuAtualizarSondagemAsync(dto));
+
+        Assert.Equal(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO, excecao.Message);
+        _repositorioSondagemResposta.Verify(
+            x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
     public async Task DeveRejeitarPayloadMistoSemSalvarParcialmente()
     {
         var dto = CriarDtoComUmaResposta(opcaoRespostaId: 4);
@@ -884,6 +926,21 @@ public class SondagemSalvarRespostasUseCaseTeste
         {
             Id = questaoId
         };
+
+    private static Questao CriarQuestaoSondagemComOpcaoSemPreenchimento(
+        int questionarioId,
+        int questaoId,
+        int opcaoSemPreenchimentoId)
+    {
+        var questao = CriarQuestaoSondagem(questionarioId, questaoId);
+        var opcao = new OpcaoResposta(1, "Sem preenchimento", null, null, null) { Id = opcaoSemPreenchimentoId };
+        var questaoOpcao = new QuestaoOpcaoResposta(questao.Id, opcao.Id, 1);
+        typeof(QuestaoOpcaoResposta)
+            .GetProperty("OpcaoResposta")!
+            .SetValue(questaoOpcao, opcao, null);
+        questao.QuestaoOpcoes.Add(questaoOpcao);
+        return questao;
+    }
 
     private static Questao CriarQuestaoLinguaPortuguesaSegundaLingua(int questionarioId)
     {
