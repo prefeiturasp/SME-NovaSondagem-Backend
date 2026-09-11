@@ -61,6 +61,12 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var primeiroQuestionarioId = questoes.FirstOrDefault()!.QuestionarioId;
         var questaoLinguaPortuguesaSegundaLingua = await _repositorioQuestao.ObterQuestaoPorQuestionarioETipoNaoExcluidaAsync(primeiroQuestionarioId, TipoQuestao.LinguaPortuguesaSegundaLingua);
 
+        var opcoesSemPreenchimentoIds = questoes
+            .SelectMany(q => q.QuestaoOpcoes)
+            .Where(qo => qo.OpcaoResposta is not null && EhOpcaoSemPreenchimento(qo.OpcaoResposta.DescricaoOpcaoResposta))
+            .Select(qo => qo.OpcaoRespostaId)
+            .ToHashSet();
+
         var questoesIdsResposta = questoesId.ToList();
 
         if (questaoLinguaPortuguesaSegundaLingua is not null)
@@ -75,7 +81,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 alunosIds,
                 questoesIdsResposta);
 
-        var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero);
+        var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero, opcoesSemPreenchimentoIds);
 
         if (respostas.Count == 0)
             return true;
@@ -176,7 +182,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
         IEnumerable<RespostaAluno> respostasExistentes,
         Dominio.Entidades.Questionario.Questao? questaoLinguaPortuguesa,
-        IEnumerable<Infrastructure.Dtos.AlunoRacaGeneroDto> dadosRacaGenero)
+        IEnumerable<Infrastructure.Dtos.AlunoRacaGeneroDto> dadosRacaGenero,
+        IReadOnlySet<int> opcoesSemPreenchimentoIds)
     {
         var respostas = new List<RespostaAluno>();
         var racaGeneroPorAluno = dadosRacaGenero
@@ -206,7 +213,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                     aluno.Codigo,
                     respostaDto,
                     periodosBimestresAtivos,
-                    respostasExistentes, contexto);
+                    respostasExistentes, contexto, opcoesSemPreenchimentoIds);
 
                 if (resposta != null)
                     respostas.Add(resposta);
@@ -257,7 +264,8 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         int alunoId,
         RespostaSondagemDto respostaDto,
         IEnumerable<SondagemPeriodoBimestre> periodosBimestresAtivos,
-        IEnumerable<RespostaAluno> repostasAlunos, ContextoEducacional contexto
+        IEnumerable<RespostaAluno> repostasAlunos, ContextoEducacional contexto,
+        IReadOnlySet<int> opcoesSemPreenchimentoIds
         )
     {
         var periodoBimestreAtivo = periodosBimestresAtivos
@@ -271,7 +279,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (!ValidarPeriodoBimestre(periodoBimestreAtivo))
         {
-            if (PossuiAlteracao(respostaDto, respostaExistente))
+            if (PossuiAlteracao(respostaDto, respostaExistente, opcoesSemPreenchimentoIds))
                 throw new NegocioException(MensagemNegocioComuns.PERIODO_BIMESTRE_ENCERRADO);
 
             return null;
@@ -295,13 +303,22 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
     private static bool PossuiAlteracao(
         RespostaSondagemDto respostaDto,
-        RespostaAluno? respostaExistente)
+        RespostaAluno? respostaExistente,
+        IReadOnlySet<int> opcoesSemPreenchimentoIds)
     {
         if (respostaExistente is null)
             return respostaDto.OpcaoRespostaId.HasValue;
 
+        if (!respostaDto.OpcaoRespostaId.HasValue
+            && respostaExistente.OpcaoRespostaId.HasValue
+            && opcoesSemPreenchimentoIds.Contains(respostaExistente.OpcaoRespostaId.Value))
+            return false;
+
         return respostaExistente.OpcaoRespostaId != respostaDto.OpcaoRespostaId;
     }
+
+    private static bool EhOpcaoSemPreenchimento(string? descricaoOpcaoResposta) =>
+        string.Equals(descricaoOpcaoResposta, "Sem preenchimento", StringComparison.OrdinalIgnoreCase);
 
     private static RespostaAluno? CriarOuAtualizarResposta(
         int sondagemId,
