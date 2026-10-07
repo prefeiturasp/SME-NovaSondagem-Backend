@@ -27,7 +27,7 @@ public class SondagemControllerTeste
     {
         // Arrange
         var dto = SondagemMockData.ObterSondagemMock();
-        var resultadoEsperado = true;
+        var resultadoEsperado = new ResultadoSalvamentoSondagemDto { Resultado = ResultadoSalvamentoSondagem.Gravado };
 
         _sondagemSalvarRespostasUseCase
             .Setup(s => s.SalvarOuAtualizarSondagemAsync(It.Is<SondagemSalvarDto>(d => 
@@ -44,7 +44,7 @@ public class SondagemControllerTeste
         Assert.Equal(StatusCodes.Status200OK, okResult.StatusCode);
         Assert.NotNull(okResult.Value);
         Assert.Equal(resultadoEsperado, okResult.Value);
-        Assert.IsType<bool>(okResult.Value);
+        Assert.IsType<ResultadoSalvamentoSondagemDto>(okResult.Value);
 
         _sondagemSalvarRespostasUseCase.Verify(
             s => s.SalvarOuAtualizarSondagemAsync(It.Is<SondagemSalvarDto>(d => 
@@ -54,6 +54,40 @@ public class SondagemControllerTeste
         _sondagemSalvarRespostasUseCase.VerifyNoOtherCalls();
     }
     
+    [Theory]
+    [InlineData(ResultadoSalvamentoSondagem.Gravado)]
+    [InlineData(ResultadoSalvamentoSondagem.SemAlteracoes)]
+    [InlineData(ResultadoSalvamentoSondagem.NaoProcessado)]
+    public async Task DeveRetornarResultadoDoProcessamento(ResultadoSalvamentoSondagem resultado)
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        var resposta = new ResultadoSalvamentoSondagemDto
+        {
+            Resultado = resultado,
+            QuantidadeEstudantesNaoProcessados = 1
+        };
+        _sondagemSalvarRespostasUseCase.Setup(s => s.SalvarOuAtualizarSondagemAsync(dto))
+            .ReturnsAsync(resposta);
+
+        var retorno = Assert.IsType<OkObjectResult>(await _controller.Post(dto));
+        Assert.Same(resposta, retorno.Value);
+        var json = System.Text.Json.JsonSerializer.Serialize(resposta,
+            new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+        Assert.Contains($"\"resultado\":\"{resultado}\"", json);
+        Assert.Contains("\"quantidadeEstudantesNaoProcessados\":1", json);
+    }
+
+    [Fact]
+    public async Task DeveRetornarErroQuandoPersistenciaFalhar()
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        _sondagemSalvarRespostasUseCase.Setup(s => s.SalvarOuAtualizarSondagemAsync(dto))
+            .ThrowsAsync(new InvalidOperationException());
+
+        var retorno = Assert.IsType<ObjectResult>(await _controller.Post(dto));
+        Assert.Equal(StatusCodes.Status500InternalServerError, retorno.StatusCode);
+    }
+
     [Fact(DisplayName = "Deve retornar erro quando sondagem ativa for null")]
     public async Task Deve_retornar_erro_quando_sondagem_ativa_null()
     {
