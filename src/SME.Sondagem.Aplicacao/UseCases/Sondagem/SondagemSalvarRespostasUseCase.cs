@@ -259,12 +259,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (respostaExistente != null)
         {
-            return respostaExistente.AtualizarResposta(
+            respostaExistente.AtualizarResposta(
                 opcaoRespostaId,
                 DateTimeExtension.HorarioBrasilia(),
-                contexto)
-                ? respostaExistente
-                : null;
+                contexto);
+            return respostaExistente;
         }
 
         return new RespostaAluno(
@@ -343,9 +342,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         RespostaAluno? respostaExistente, ContextoEducacional contexto
         )
     {
-        if (respostaExistente == null && !respostaDto.OpcaoRespostaId.HasValue)
-            return null;
-
         if (respostaExistente == null)
             return new RespostaAluno(
                 sondagemId,
@@ -355,12 +351,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 DateTime.UtcNow,
                 contexto with { BimestreId = respostaDto.BimestreId });
 
-        return respostaExistente.AtualizarResposta(
+        respostaExistente.AtualizarResposta(
             respostaDto.OpcaoRespostaId,
             DateTime.UtcNow,
-            contexto)
-            ? respostaExistente
-            : null;
+            contexto);
+        return respostaExistente;
     }
 
     private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero, AlunoSondagemDto aluno) =>

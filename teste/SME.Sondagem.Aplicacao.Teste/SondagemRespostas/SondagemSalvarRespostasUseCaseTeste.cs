@@ -417,7 +417,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
-    public async Task DeveRetornarSemAlteracoes_QuandoRespostaNaoTiverAlteracoes()
+    public async Task DeveGravarLinguaPortuguesa_QuandoRespostaNaoTiverAlteracoes()
     {
         var dto = SondagemMockData.ObterSondagemMock();
         dto.TurmaId = "1";
@@ -449,16 +449,20 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         ConfigurarCenarioSalvar(questaoLP, [respostaExistente]);
 
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.Equal(ResultadoSalvamentoSondagem.SemAlteracoes, resultado.Resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
-    public async Task DeveIgnorarRespostaSemOpcao_QuandoNaoExistirRespostaAnterior()
+    public async Task DeveInserirRespostaSemOpcao_QuandoNaoExistirRespostaAnterior()
     {
         var dto = SondagemMockData.ObterSondagemMock();
         dto.TurmaId = "1";
@@ -477,12 +481,16 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, []);
 
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.Equal(ResultadoSalvamentoSondagem.SemAlteracoes, resultado.Resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
@@ -529,6 +537,55 @@ public class SondagemSalvarRespostasUseCaseTeste
         var respostaSalva = Assert.Single(respostasSalvas!);
         Assert.Equal(99, respostaSalva.Id);
         Assert.Null(respostaSalva.OpcaoRespostaId);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(4)]
+    public async Task DeveAtualizarRespostaExistente_QuandoOpcaoNaoMudar(int? opcao)
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+        dto.Alunos = [dto.Alunos.First()];
+        dto.Alunos[0].Respostas =
+        [
+            new RespostaSondagemDto
+            {
+                BimestreId = 1,
+                QuestaoId = 3,
+                OpcaoRespostaId = opcao
+            }
+        ];
+
+        var questao = CriarQuestaoSondagem(1, 3);
+        var respostaExistente = new RespostaAluno(
+            1,
+            dto.Alunos[0].Codigo,
+            questao.Id,
+            opcao,
+            DateTime.UtcNow.AddDays(-1),
+            CriarContextoEducacional() with { TurmaId = dto.TurmaId, BimestreId = 1 })
+        {
+            Id = 99
+        };
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
+        var respostaSalva = Assert.Single(respostasSalvas!);
+        Assert.Equal(99, respostaSalva.Id);
+        Assert.Equal(opcao, respostaSalva.OpcaoRespostaId);
+        Assert.True(respostaSalva.DataResposta > DateTime.UtcNow.AddMinutes(-1));
     }
 
     [Fact]
