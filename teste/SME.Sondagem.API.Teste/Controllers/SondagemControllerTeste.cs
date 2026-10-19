@@ -13,6 +13,9 @@ namespace SME.Sondagem.API.Teste.Controllers;
 
 public class SondagemControllerTeste
 {
+    private static readonly System.Text.Json.JsonSerializerOptions OpcoesSerializacao =
+        new(System.Text.Json.JsonSerializerDefaults.Web);
+
     private readonly Mock<ISondagemSalvarRespostasUseCase> _sondagemSalvarRespostasUseCase;
     private readonly SondagemController _controller;
 
@@ -72,7 +75,7 @@ public class SondagemControllerTeste
         var retorno = Assert.IsType<OkObjectResult>(await _controller.Post(dto));
         Assert.Same(resposta, retorno.Value);
         var json = System.Text.Json.JsonSerializer.Serialize(resposta,
-            new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+            OpcoesSerializacao);
         Assert.Contains($"\"resultado\":\"{resultado}\"", json);
         Assert.Contains("\"quantidadeEstudantesNaoProcessados\":1", json);
     }

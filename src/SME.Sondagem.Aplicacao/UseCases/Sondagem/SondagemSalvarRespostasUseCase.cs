@@ -47,7 +47,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var alunosParaSalvar = await ObterAlunosAtivosParaSalvar(dto, turma);
-        var quantidadeEstudantesNaoProcessados = dto.Alunos.Count() - alunosParaSalvar.Count;
+        var quantidadeEstudantesNaoProcessados = dto.Alunos.Count - alunosParaSalvar.Count;
 
         if (alunosParaSalvar.Count == 0)
             return new ResultadoSalvamentoSondagemDto
