@@ -1,4 +1,4 @@
-ï»¿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using SME.Sondagem.Dados.Contexto;
 using SME.Sondagem.Dados.Interceptors;
