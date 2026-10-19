@@ -40,16 +40,21 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         _dadosAlunosService = dadosAlunosService;
     }
 
-    public async Task<bool> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
+    public async Task<ResultadoSalvamentoSondagemDto> SalvarOuAtualizarSondagemAsync(SondagemSalvarDto dto)
     {
         var turma = await ValidarSalvarSondagemEObterTurma(dto);
         dto.AnoTurma ??= int.TryParse(turma.AnoTurma, out var anoTurmaElastic) ? anoTurmaElastic : null;
 
         var sondagemAtiva = await ObterEValidarSondagemAtiva(dto.SondagemId);
         var alunosParaSalvar = await ObterAlunosAtivosParaSalvar(dto, turma);
+        var quantidadeEstudantesNaoProcessados = dto.Alunos.Count - alunosParaSalvar.Count;
 
         if (alunosParaSalvar.Count == 0)
-            return true;
+            return new ResultadoSalvamentoSondagemDto
+            {
+                Resultado = ResultadoSalvamentoSondagem.NaoProcessado,
+                QuantidadeEstudantesNaoProcessados = quantidadeEstudantesNaoProcessados
+            };
 
         var dadosRacaGenero = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(Convert.ToInt32(dto.TurmaId));
         var periodosBimestresAtivos = sondagemAtiva.PeriodosBimestre.Where(x => !x.Excluido);
@@ -84,9 +89,20 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero, opcoesSemPreenchimentoIds);
 
         if (respostas.Count == 0)
-            return true;
+            return new ResultadoSalvamentoSondagemDto
+            {
+                Resultado = ResultadoSalvamentoSondagem.SemAlteracoes,
+                QuantidadeEstudantesNaoProcessados = quantidadeEstudantesNaoProcessados
+            };
 
-        return await _repositorioSondagemResposta.SalvarAsync(respostas);
+        if (!await _repositorioSondagemResposta.SalvarAsync(respostas))
+            throw new InvalidOperationException("Não foi possível confirmar o salvamento da sondagem.");
+
+        return new ResultadoSalvamentoSondagemDto
+        {
+            Resultado = ResultadoSalvamentoSondagem.Gravado,
+            QuantidadeEstudantesNaoProcessados = quantidadeEstudantesNaoProcessados
+        };
     }
 
     private async Task<List<AlunoSondagemDto>> ObterAlunosAtivosParaSalvar(SondagemSalvarDto dto, TurmaElasticDto turma)
@@ -243,12 +259,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         if (respostaExistente != null)
         {
-            return respostaExistente.AtualizarResposta(
+            respostaExistente.AtualizarResposta(
                 opcaoRespostaId,
                 DateTimeExtension.HorarioBrasilia(),
-                contexto)
-                ? respostaExistente
-                : null;
+                contexto);
+            return respostaExistente;
         }
 
         return new RespostaAluno(
@@ -327,9 +342,6 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         RespostaAluno? respostaExistente, ContextoEducacional contexto
         )
     {
-        if (respostaExistente == null && !respostaDto.OpcaoRespostaId.HasValue)
-            return null;
-
         if (respostaExistente == null)
             return new RespostaAluno(
                 sondagemId,
@@ -339,12 +351,11 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 DateTime.UtcNow,
                 contexto with { BimestreId = respostaDto.BimestreId });
 
-        return respostaExistente.AtualizarResposta(
+        respostaExistente.AtualizarResposta(
             respostaDto.OpcaoRespostaId,
             DateTime.UtcNow,
-            contexto)
-            ? respostaExistente
-            : null;
+            contexto);
+        return respostaExistente;
     }
 
     private static ContextoEducacional CriarContexto(SondagemSalvarDto dto, Infrastructure.Dtos.AlunoRacaGeneroDto? racaGenero, AlunoSondagemDto aluno) =>
