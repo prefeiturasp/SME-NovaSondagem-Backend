@@ -93,6 +93,46 @@ public class SondagemSalvarRespostasUseCaseTeste
         _0bterSondagemRelatorioPorTodasTurmaUseCase = new ObterSondagemRelatorioPorTodasTurmaUseCase(_ueComDreEolService.Object, _repositoriosElastic.Object, _repositoriosSondagem.Object, _repositorioSondagemRelatorioPorTodasTurma.Object, _consultaDeDresService.Object);
     }
 
+    [Fact]
+    public async Task DeveRetornarNaoProcessado_QuandoNaoHouverAlunosAtivos()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        ConfigurarMockAlunosTurma([]);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.Equal(ResultadoSalvamentoSondagem.NaoProcessado, resultado.Resultado);
+        Assert.Equal(dto.Alunos.Count, resultado.QuantidadeEstudantesNaoProcessados);
+        _repositorioSondagemResposta.Verify(x => x.SalvarAsync(
+            It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task NaoDeveConfirmarGravacao_QuandoRepositorioRetornarFalse()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        _repositorioSondagemResposta.Setup(x => x.SalvarAsync(
+            It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>())).ReturnsAsync(false);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _useCase.SalvarOuAtualizarSondagemAsync(dto));
+    }
+
+    [Fact]
+    public async Task NaoDeveConfirmarGravacao_QuandoPersistenciaFalhar()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        _repositorioSondagemResposta.Setup(x => x.SalvarAsync(
+            It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Falha de persistência"));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _useCase.SalvarOuAtualizarSondagemAsync(dto));
+    }
+
     private void ConfigurarMockTurmaSucesso()
     {
         _repositorioElasticTurma
@@ -227,7 +267,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
     }
 
     [Fact]
@@ -274,7 +314,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
     }
 
     [Fact]
@@ -333,7 +373,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
     }
 
     [Fact]
@@ -368,7 +408,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         var novaResposta = Assert.Single(respostasSalvas!);
         Assert.Equal(0, novaResposta.Id);
         Assert.Equal("1", novaResposta.TurmaId);
@@ -377,7 +417,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
-    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaNaoTiverAlteracoes()
+    public async Task DeveGravarLinguaPortuguesa_QuandoRespostaNaoTiverAlteracoes()
     {
         var dto = SondagemMockData.ObterSondagemMock();
         dto.TurmaId = "1";
@@ -409,16 +449,20 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         ConfigurarCenarioSalvar(questaoLP, [respostaExistente]);
 
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
-    public async Task DeveIgnorarRespostaSemOpcao_QuandoNaoExistirRespostaAnterior()
+    public async Task DeveInserirRespostaSemOpcao_QuandoNaoExistirRespostaAnterior()
     {
         var dto = SondagemMockData.ObterSondagemMock();
         dto.TurmaId = "1";
@@ -437,12 +481,16 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, []);
 
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(It.IsAny<List<RespostaAluno>>(), It.IsAny<CancellationToken>()),
-            Times.Never);
+            Times.Once);
     }
 
     [Fact]
@@ -485,10 +533,59 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         var respostaSalva = Assert.Single(respostasSalvas!);
         Assert.Equal(99, respostaSalva.Id);
         Assert.Null(respostaSalva.OpcaoRespostaId);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData(4)]
+    public async Task DeveAtualizarRespostaExistente_QuandoOpcaoNaoMudar(int? opcao)
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+        dto.Alunos = [dto.Alunos.First()];
+        dto.Alunos[0].Respostas =
+        [
+            new RespostaSondagemDto
+            {
+                BimestreId = 1,
+                QuestaoId = 3,
+                OpcaoRespostaId = opcao
+            }
+        ];
+
+        var questao = CriarQuestaoSondagem(1, 3);
+        var respostaExistente = new RespostaAluno(
+            1,
+            dto.Alunos[0].Codigo,
+            questao.Id,
+            opcao,
+            DateTime.UtcNow.AddDays(-1),
+            CriarContextoEducacional() with { TurmaId = dto.TurmaId, BimestreId = 1 })
+        {
+            Id = 99
+        };
+
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(questao, [respostaExistente]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
+        var respostaSalva = Assert.Single(respostasSalvas!);
+        Assert.Equal(99, respostaSalva.Id);
+        Assert.Equal(opcao, respostaSalva.OpcaoRespostaId);
+        Assert.True(respostaSalva.DataResposta > DateTime.UtcNow.AddMinutes(-1));
     }
 
     [Fact]
@@ -556,7 +653,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
-    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaForaDoPeriodoNaoTiverAlteracao()
+    public async Task DeveRetornarSemAlteracoes_QuandoRespostaForaDoPeriodoNaoTiverAlteracao()
     {
         var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
         var questao = CriarQuestaoSondagem(1, 3);
@@ -567,7 +664,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.SemAlteracoes, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(
                 It.IsAny<List<RespostaAluno>>(),
@@ -576,7 +673,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
-    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaVaziaForaDoPeriodoNaoExistir()
+    public async Task DeveRetornarSemAlteracoes_QuandoRespostaVaziaForaDoPeriodoNaoExistir()
     {
         var dto = CriarDtoComUmaResposta(opcaoRespostaId: null);
         var questao = CriarQuestaoSondagem(1, 3);
@@ -586,7 +683,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.SemAlteracoes, resultado.Resultado);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(
                 It.IsAny<List<RespostaAluno>>(),
@@ -595,7 +692,7 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
-    public async Task DeveRetornarSucessoSemSalvar_QuandoRespostaForaDoPeriodoEstiverGravadaComoSemPreenchimentoEPayloadVazio()
+    public async Task DeveRetornarSemAlteracoes_QuandoRespostaForaDoPeriodoEstiverGravadaComoSemPreenchimentoEPayloadVazio()
     {
         var dto = CriarDtoComUmaResposta(opcaoRespostaId: null);
         var questao = CriarQuestaoSondagemComOpcaoSemPreenchimento(1, 3, opcaoSemPreenchimentoId: 77);
@@ -606,7 +703,7 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.SemAlteracoes, resultado.Resultado);
         Assert.Equal(77, respostaExistente.OpcaoRespostaId);
         _repositorioSondagemResposta.Verify(
             x => x.SalvarAsync(
@@ -742,9 +839,10 @@ public class SondagemSalvarRespostasUseCaseTeste
 
         var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
 
-        Assert.True(resultado);
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
         var resposta = Assert.Single(respostasSalvas!);
         Assert.Equal(dto.Alunos[0].Codigo, resposta.AlunoId);
+        Assert.Equal(1, resultado.QuantidadeEstudantesNaoProcessados);
     }
 
     [Fact]

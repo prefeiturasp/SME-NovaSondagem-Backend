@@ -119,17 +119,18 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             Assert.False(respostaAluno.Excluido);
         }
 
-        [Fact]
-        public void Nao_deve_atualizar_resposta_quando_opcao_e_contexto_nao_mudaram()
+        [Theory]
+        [InlineData(null)]
+        [InlineData(4)]
+        public void Deve_atualizar_resposta_quando_opcao_e_contexto_nao_mudaram(int? opcao)
         {
             var contexto = CriarContextoEducacional();
             var dataResposta = DateTime.UtcNow.AddDays(-1);
-            var respostaAluno = new RespostaAluno(1, 2, 3, 4, dataResposta, contexto);
+            var respostaAluno = new RespostaAluno(1, 2, 3, opcao, dataResposta, contexto);
 
-            var atualizado = respostaAluno.AtualizarResposta(4, DateTime.UtcNow, contexto);
+            respostaAluno.AtualizarResposta(opcao, DateTime.UtcNow, contexto);
 
-            Assert.False(atualizado);
-            Assert.Equal(dataResposta, respostaAluno.DataResposta);
+            Assert.True(respostaAluno.DataResposta > dataResposta);
         }
 
         [Fact]
@@ -139,9 +140,8 @@ namespace SME.Sondagem.Dominio.Teste.Entidades
             var novaDataResposta = DateTime.UtcNow;
             var respostaAluno = new RespostaAluno(1, 2, 3, 4, novaDataResposta.AddDays(-1), contexto);
 
-            var atualizado = respostaAluno.AtualizarResposta(5, novaDataResposta, contexto);
+            respostaAluno.AtualizarResposta(5, novaDataResposta, contexto);
 
-            Assert.True(atualizado);
             Assert.Equal(5, respostaAluno.OpcaoRespostaId);
             Assert.Equal(novaDataResposta, respostaAluno.DataResposta);
         }
