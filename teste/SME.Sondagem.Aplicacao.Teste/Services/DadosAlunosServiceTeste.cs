@@ -32,6 +32,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             _repositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
             _httpClientFactory = new Mock<IHttpClientFactory>();
             _logger = new Mock<ILogger<DadosAlunosService>>();
+            _logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         }
 
 
@@ -154,12 +155,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
         private void VerificarAvisosRegistrados(Times vezes)
         {
-            _logger.Verify(x => x.Log(
-                LogLevel.Warning,
-                It.IsAny<EventId>(),
-                It.IsAny<It.IsAnyType>(),
-                It.IsAny<Exception?>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()), vezes);
+            _logger.VerifyLog<DadosAlunosService, Exception>(LogLevel.Warning, vezes);
         }
 
         [Fact]

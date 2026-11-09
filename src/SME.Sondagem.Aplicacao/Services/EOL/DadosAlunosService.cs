@@ -132,19 +132,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 {
                     var dadosEol = await ObterRacaSexoEolSemFalhar(codigoAluno, limiteConsultas, tempoLimite.Token, cancellationToken);
 
-                    if (!racaId.HasValue)
-                    {
-                        racaId = ObterIdRaca(dadosEol?.GrupoEtnico ?? string.Empty, dadosRacaCor);
-                        if (!racaId.HasValue && !string.IsNullOrWhiteSpace(dadosEol?.GrupoEtnico))
-                            _logger.LogWarning("Raça {Raca} retornada pelo EOL não existe em raca_cor", dadosEol.GrupoEtnico);
-                    }
-
-                    if (!sexoId.HasValue)
-                    {
-                        sexoId = ObterIdSexoGenero(dadosEol?.Sexo ?? string.Empty, dadosGeneroSexo);
-                        if (!sexoId.HasValue && !string.IsNullOrWhiteSpace(dadosEol?.Sexo))
-                            _logger.LogWarning("Sexo {Sexo} retornado pelo EOL não existe em genero_sexo", dadosEol.Sexo);
-                    }
+                    racaId ??= ObterIdRacaEol(dadosEol?.GrupoEtnico, dadosRacaCor);
+                    sexoId ??= ObterIdSexoEol(dadosEol?.Sexo, dadosGeneroSexo);
                 }
 
                 return new AlunoRacaGeneroDto
@@ -156,6 +145,26 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                     Sexo = ConverterCodigoGeneroParaDescricao(dadosGeneroSexo.FirstOrDefault(g => g.Id == sexoId)?.Sigla ?? string.Empty)
                 };
             }));
+        }
+
+        private int? ObterIdRacaEol(string? grupoEtnico, List<RacaCor> dadosRacaCor)
+        {
+            var racaId = ObterIdRaca(grupoEtnico ?? string.Empty, dadosRacaCor);
+
+            if (!racaId.HasValue && !string.IsNullOrWhiteSpace(grupoEtnico) && _logger.IsEnabled(LogLevel.Warning))
+                _logger.LogWarning("Raça {Raca} retornada pelo EOL não existe em raca_cor", grupoEtnico);
+
+            return racaId;
+        }
+
+        private int? ObterIdSexoEol(string? sexo, List<GeneroSexo> dadosGeneroSexo)
+        {
+            var sexoId = ObterIdSexoGenero(sexo ?? string.Empty, dadosGeneroSexo);
+
+            if (!sexoId.HasValue && !string.IsNullOrWhiteSpace(sexo) && _logger.IsEnabled(LogLevel.Warning))
+                _logger.LogWarning("Sexo {Sexo} retornado pelo EOL não existe em genero_sexo", sexo);
+
+            return sexoId;
         }
 
         private async Task<AlunoRacaSexoEolDto?> ObterRacaSexoEolSemFalhar(
@@ -178,7 +187,8 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }
             catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
             {
-                _logger.LogWarning(ex, "Não foi possível obter raça e gênero do aluno {CodigoAluno} no EOL", codigoAluno);
+                if (_logger.IsEnabled(LogLevel.Warning))
+                    _logger.LogWarning(ex, "Não foi possível obter raça e gênero do aluno {CodigoAluno} no EOL", codigoAluno);
                 return null;
             }
         }
