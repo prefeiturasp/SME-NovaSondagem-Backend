@@ -11,6 +11,8 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
 {
     public class AbrangenciaService : IAbrangenciaService
     {
+        private const int CACHE_ABRANGENCIA_TURMA_MINUTOS = 15;
+
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IRepositorioCache _repositorioCache;
@@ -53,7 +55,7 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
             if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(perfil))
                 return ([], [], []);
 
-            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.CodigoUe ?? "all", filtro.Semestre);
+            var chave = string.Format(NomeChaveCache.ABRANGENCIA_COMPLETA_USUARIO, login, perfil, filtro.AnoLetivo, filtro.Modalidade, filtro.CodigoDre ?? "all", filtro.CodigoUe ?? "all", filtro.Semestre, filtro.CodigoTurma ?? "all");
             var url = string.Format(ServicoSgpConstants.URL_ABRANGENCIA_COMPLETA, login, perfil, filtro.AnoLetivo, filtro.Modalidade);
 
             if (!string.IsNullOrEmpty(filtro.CodigoDre))
@@ -62,10 +64,17 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
             if (!string.IsNullOrEmpty(filtro.CodigoUe))
                 url += $"&codigoUe={filtro.CodigoUe}";
 
+            if (!string.IsNullOrEmpty(filtro.CodigoTurma))
+                url += $"&codigoTurma={filtro.CodigoTurma}";
+
             url += $"&semestre={filtro.Semestre}";
             url += "&includeTurmas=true";
 
-            var json = await ObterJsonComCacheAsync(chave, url, cancellationToken)
+            int? minutosParaExpirar = string.IsNullOrEmpty(filtro.CodigoTurma)
+                ? null
+                : CACHE_ABRANGENCIA_TURMA_MINUTOS;
+
+            var json = await ObterJsonComCacheAsync(chave, url, minutosParaExpirar, cancellationToken)
                 ?? throw new InvalidOperationException("Falha ao obter abrangência do SGP. Tente novamente.");
 
             if (string.IsNullOrWhiteSpace(json))
@@ -99,6 +108,7 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
         private async Task<string?> ObterJsonComCacheAsync(
             string chave,
             string url,
+            int? minutosParaExpirar,
             CancellationToken cancellationToken)
         {
             var cacheRedis = await _repositorioCache.ObterRedisToJsonAsync(chave);
@@ -118,7 +128,11 @@ namespace SME.Sondagem.Aplicacao.Services.SGP
             if (string.IsNullOrWhiteSpace(json))
                 return null;
 
-            await _repositorioCache.SalvarRedisToJsonAsync(chave, json);
+            if (minutosParaExpirar.HasValue)
+                await _repositorioCache.SalvarRedisToJsonAsync(chave, json, minutosParaExpirar.Value);
+            else
+                await _repositorioCache.SalvarRedisToJsonAsync(chave, json);
+
             return json;
         }
     }

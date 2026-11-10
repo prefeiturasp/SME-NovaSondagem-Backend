@@ -58,10 +58,14 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         var exibirBimestreNaDescricaoColuna = await ExibirBimestreNaDescricaoColuna(filtro);
         var turma = await ValidarFiltroEModalidade(filtro, cancellationToken);
+        await ValidarAcessoTurmaAsync(turma, cancellationToken);
         var sondagemAtiva = await ObterSondagemAtiva(cancellationToken);
 
         return await ProcessarQuestionario(filtro, turma, sondagemAtiva, ehRelatorio, exibirBimestreNaDescricaoColuna, cancellationToken);
     }
+    
+    protected virtual Task ValidarAcessoTurmaAsync(TurmaElasticDto turma, CancellationToken cancellationToken)
+        => Task.CompletedTask;
 
     private async Task<bool> ExibirBimestreNaDescricaoColuna(FiltroQuestionario filtro)
     {
@@ -722,12 +726,10 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
 
         return dadosAlunos.ToDictionary(
             aluno => aluno.CodigoAluno,
-            aluno => (aluno.Raca,
-                 aluno.Sexo
-            )
+            aluno => (aluno.Raca, aluno.Sexo)
         );
     }
-    
+        
 
     private static bool EhBimestreTodos(int? bimestreId)
     {

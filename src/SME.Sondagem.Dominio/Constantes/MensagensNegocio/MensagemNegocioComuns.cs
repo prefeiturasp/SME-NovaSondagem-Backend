@@ -40,6 +40,7 @@ public static class MensagemNegocioComuns
 
     // Questionário
     public const string PROFICIENCIA_OBRIGATORIA_NO_FILTRO = "A proficiência é obrigatória no filtro";
+    public const string SEM_ABRANGENCIA_TURMA_SONDAGEM = "Você não possui abrangência sobre a turma informada.";
     public const string SONDAGEM_ATIVA_NAO_CADASTRADA = "Não há sondagem ativa cadastrada no sistema";
     public const string MODALIDADE_SEM_QUESTIONARIO = "Não há questionário para a modalidade informada";
     public const string SERIE_SEM_QUESTIONARIO = "Não há questionário para a série informada";

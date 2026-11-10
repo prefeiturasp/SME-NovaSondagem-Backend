@@ -32,6 +32,7 @@ public class ObterQuestionarioSondagemUseCaseTeste
     private readonly Mock<IRepositorioComponenteCurricular> _componenteCurricular;
     private readonly Mock<IRepositorioRacaCor> _mockRepositorioRacaCor;
     private readonly Mock<IRepositorioGeneroSexo> _mockRepositorioGeneroSexo;
+    private readonly Mock<IAbrangenciaService> _mockAbrangenciaService;
     private readonly ObterQuestionarioSondagemUseCase _useCase;
 
     public ObterQuestionarioSondagemUseCaseTeste()
@@ -51,8 +52,11 @@ public class ObterQuestionarioSondagemUseCaseTeste
         _mockServicoUsuario = new Mock<IServicoUsuario>();
         _mockRepositorioRacaCor = new Mock<IRepositorioRacaCor>();
         _mockRepositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
+        _mockAbrangenciaService = new Mock<IAbrangenciaService>();
+        _mockAbrangenciaService
+            .Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
-        // Criar os agregadores com os mocks
         var repositoriosElastic = new RepositoriosElastic(
             _mockRepositorioElasticTurma.Object,
             _mockRepositorioElasticAluno.Object
@@ -76,7 +80,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mockAlunoService.Object
+            _mockAlunoService.Object,
+            _mockAbrangenciaService.Object
         );
     }
 
@@ -104,7 +109,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-              _mockAlunoService.Object
+              _mockAlunoService.Object,
+            _mockAbrangenciaService.Object
         ));
     }
 
@@ -123,7 +129,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-              _mockAlunoService.Object
+              _mockAlunoService.Object,
+            _mockAbrangenciaService.Object
         ));
     }
 
@@ -153,7 +160,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoAeeService.Object,
             _mockControleAcessoService.Object,
             _mockServicoUsuario.Object,
-            _mockAlunoService.Object
+            _mockAlunoService.Object,
+            _mockAbrangenciaService.Object
         ));
     }
 
@@ -183,7 +191,8 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockAlunoAeeService.Object,
             null!,
             _mockServicoUsuario.Object,
-            _mockAlunoService.Object
+            _mockAlunoService.Object,
+            _mockAbrangenciaService.Object
         ));
     }
 
@@ -270,6 +279,184 @@ public class ObterQuestionarioSondagemUseCaseTeste
             _mockRepositorioRacaCor.Object,
             _mockRepositorioGeneroSexo.Object
             
+        ));
+    }
+
+    #endregion
+
+    #region Testes de Abrangência da Turma (PBI 158992)
+
+    private const int CodigoTurmaAbrangencia = 3018909;
+
+    private FiltroQuestionario ConfigurarTurmaParaAbrangencia(int modalidade = 5, int semestreTurma = 0)
+    {
+        var filtro = new FiltroQuestionario { TurmaId = CodigoTurmaAbrangencia, ProficienciaId = 1 };
+        var turma = new TurmaElasticDto
+        {
+            CodigoTurma = CodigoTurmaAbrangencia,
+            CodigoEscola = "019715",
+            Modalidade = modalidade,
+            AnoTurma = "1",
+            AnoLetivo = 2026,
+            Semestre = semestreTurma
+        };
+
+        _mockRepositorioElasticTurma.Setup(x => x.ObterTurmaPorId(filtro, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(turma);
+
+        _mockRepositorioSondagem.Setup(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Dominio.Entidades.Sondagem.Sondagem?)null!);
+
+        return filtro;
+    }
+
+    private void ConfigurarAbrangenciaDoUsuario(params string[] turmasComAbrangencia)
+    {
+        _mockAbrangenciaService
+            .Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        _mockAbrangenciaService
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<string>(), new List<string>(), turmasComAbrangencia.ToList()));
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocio403_QuandoUsuarioNaoTemAbrangenciaSobreATurma()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia();
+        ConfigurarAbrangenciaDoUsuario("999", "888");
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        Assert.Equal(403, exception.StatusCode);
+        Assert.Equal(MensagemNegocioComuns.SEM_ABRANGENCIA_TURMA_SONDAGEM, exception.Message);
+        _mockRepositorioSondagem.Verify(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveLancarRegraNegocio403_QuandoAbrangenciaDoUsuarioForVazia()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia();
+        ConfigurarAbrangenciaDoUsuario();
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        Assert.Equal(403, exception.StatusCode);
+        _mockRepositorioSondagem.Verify(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DevePermitirAcessoEConsultarAbrangenciaDaTurma_QuandoUsuarioTemAbrangencia()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia();
+        ConfigurarAbrangenciaDoUsuario("999", CodigoTurmaAbrangencia.ToString());
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
+        _mockAbrangenciaService.Verify(x => x.ObterAbrangenciaCompletaAsync(
+            It.Is<AbrangenciaFiltroQuery>(f =>
+                f.AnoLetivo == 2026 &&
+                f.Modalidade == 5 &&
+                f.CodigoUe == "019715" &&
+                f.CodigoTurma == CodigoTurmaAbrangencia.ToString() &&
+                f.Semestre == 0),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveEnviarSemestreDaTurma_QuandoModalidadeForEja()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia(modalidade: (int)Modalidade.EJA, semestreTurma: 2);
+        ConfigurarAbrangenciaDoUsuario(CodigoTurmaAbrangencia.ToString());
+
+        await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        _mockAbrangenciaService.Verify(x => x.ObterAbrangenciaCompletaAsync(
+            It.Is<AbrangenciaFiltroQuery>(f => f.Modalidade == (int)Modalidade.EJA && f.Semestre == 2),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_NaoDeveEnviarSemestre_QuandoModalidadeNaoForEja()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia(modalidade: 5, semestreTurma: 1);
+        ConfigurarAbrangenciaDoUsuario(CodigoTurmaAbrangencia.ToString());
+
+        await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        _mockAbrangenciaService.Verify(x => x.ObterAbrangenciaCompletaAsync(
+            It.Is<AbrangenciaFiltroQuery>(f => f.Semestre == 0),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_NaoDeveConsultarAbrangencia_QuandoPerfilForIrrestrito()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia();
+        _mockAbrangenciaService
+            .Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var exception = await Assert.ThrowsAsync<RegraNegocioException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        Assert.Equal(MensagemNegocioComuns.SONDAGEM_ATIVA_NAO_CADASTRADA, exception.Message);
+        _mockAbrangenciaService.Verify(x => x.ObterAbrangenciaCompletaAsync(
+            It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_NaoDeveLiberarAcesso_QuandoConsultaDeAbrangenciaFalhar()
+    {
+        var filtro = ConfigurarTurmaParaAbrangencia();
+        _mockAbrangenciaService
+            .Setup(x => x.DeveIgnorarAbrangenciaAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+        _mockAbrangenciaService
+            .Setup(x => x.ObterAbrangenciaCompletaAsync(It.IsAny<AbrangenciaFiltroQuery>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Falha ao obter abrangência do SGP. Tente novamente."));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None));
+
+        _mockRepositorioSondagem.Verify(x => x.ObterSondagemAtiva(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public void Construtor_DeveLancarArgumentNullException_QuandoAbrangenciaServiceForNulo()
+    {
+        var repositoriosElastic = new RepositoriosElastic(
+            _mockRepositorioElasticTurma.Object,
+            _mockRepositorioElasticAluno.Object
+        );
+
+        var repositoriosSondagem = new RepositoriosSondagem(
+            _mockRepositorioSondagem.Object,
+            _mockRepositorioQuestao.Object,
+            _mockRepositorioRespostaAluno.Object,
+            _mockRepositorioBimestre.Object,
+            _componenteCurricular.Object,
+            _repositorioProficiencia.Object,
+            _mockRepositorioRacaCor.Object,
+            _mockRepositorioGeneroSexo.Object
+        );
+
+        Assert.Throws<ArgumentNullException>(() => new ObterQuestionarioSondagemUseCase(
+            repositoriosElastic,
+            repositoriosSondagem,
+            _mockAlunoPapService.Object,
+            _mockAlunoAeeService.Object,
+            _mockControleAcessoService.Object,
+            _mockServicoUsuario.Object,
+            _mockAlunoService.Object,
+            null!
         ));
     }
 
