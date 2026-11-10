@@ -315,5 +315,86 @@ public class AbrangenciaServiceTeste
         _mockCache.Verify(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>()), Times.Once);
     }
 
+    [Fact]
+    public async Task ObterAbrangenciaCompletaAsync_ComCodigoTurma_SalvaNoCacheComPrazoDe15Minutos()
+    {
+        // Arrange
+        ConfigurarHttpCapturandoRequisicao();
+
+        // Act
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2026, 5, null, "019715", 0, null, null, "3018909"));
+
+        // Assert
+        _mockCache.Verify(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), 15), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObterAbrangenciaCompletaAsync_SemCodigoTurma_SalvaNoCacheComPrazoPadrao()
+    {
+        // Arrange
+        ConfigurarHttpCapturandoRequisicao();
+
+        // Act
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2026, 5, null, "019715"));
+
+        // Assert
+        _mockCache.Verify(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), 720), Times.Once);
+    }
+
+    private sealed class CapturaRequisicaoHandler : HttpMessageHandler
+    {
+        public Uri? Uri { get; private set; }
+
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Uri = request.RequestUri;
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("{\"dres\":[],\"ues\":[],\"turmas\":[]}", System.Text.Encoding.UTF8, "application/json")
+            });
+        }
+    }
+
+    private CapturaRequisicaoHandler ConfigurarHttpCapturandoRequisicao()
+    {
+        ConfigurarHttpContextComClaims(new Claim("rf", "12345"), new Claim("perfil", Guid.NewGuid().ToString()));
+        _mockCache.Setup(c => c.ObterRedisToJsonAsync(It.IsAny<string>())).ReturnsAsync(string.Empty);
+        _mockCache.Setup(c => c.SalvarRedisToJsonAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).Returns(Task.CompletedTask);
+
+        var handler = new CapturaRequisicaoHandler();
+        _mockHttpClientFactory.Setup(f => f.CreateClient(It.IsAny<string>()))
+            .Returns(new HttpClient(handler) { BaseAddress = new Uri("http://localhost") });
+        return handler;
+    }
+
+    [Fact]
+    public async Task ObterAbrangenciaCompletaAsync_ComCodigoTurma_EnviaCodigoTurmaNaUrlEUsaNaChaveDoCache()
+    {
+        // Arrange
+        var handler = ConfigurarHttpCapturandoRequisicao();
+
+        // Act
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2026, 5, null, "019715", 0, null, null, "3018909"));
+
+        // Assert
+        Assert.Contains("codigoTurma=3018909", handler.Uri!.Query);
+        Assert.Contains("codigoUe=019715", handler.Uri!.Query);
+        _mockCache.Verify(c => c.ObterRedisToJsonAsync(It.Is<string>(k => k.EndsWith("-3018909"))), Times.Once);
+    }
+
+    [Fact]
+    public async Task ObterAbrangenciaCompletaAsync_SemCodigoTurma_NaoEnviaCodigoTurmaNaUrl()
+    {
+        // Arrange
+        var handler = ConfigurarHttpCapturandoRequisicao();
+
+        // Act
+        await _service.ObterAbrangenciaCompletaAsync(new AbrangenciaFiltroQuery(2026, 5, null));
+
+        // Assert
+        Assert.DoesNotContain("codigoTurma", handler.Uri!.Query);
+        _mockCache.Verify(c => c.ObterRedisToJsonAsync(It.Is<string>(k => k.EndsWith("-all"))), Times.Once);
+    }
+
     #endregion
 }

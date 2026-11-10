@@ -7,5 +7,6 @@ namespace SME.Sondagem.Aplicacao.Interfaces.Services
         string? CodigoUe = null,
         int Semestre = 0,
         string? Rf = null,
-        string? Perfil = null);
+        string? Perfil = null,
+        string? CodigoTurma = null);
 }
