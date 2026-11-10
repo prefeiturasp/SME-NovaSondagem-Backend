@@ -305,7 +305,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         if (aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.RemanejadoSaida)
             return aluno.DataSituacao.Date >= periodoInicioSondagem.Date;
 
-        return aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+        return aluno.CodigoSituacaoMatricula.EhCursandoTurma();
     }
 
     private static List<LegendaQuestionarioDto> ConstruirLegenda(ContextoProcessamentoDto contexto)
@@ -624,7 +624,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
             resposta = null;
         }
 
-        var alunoAtivo = situacaoMatricula == (int)SituacaoMatriculaAluno.Ativo;
+        var alunoAtivo = situacaoMatricula.EhCursandoTurma();
 
         var bimestrePeriodo = bimestreIdChave.HasValue
             ? contexto.SondagemAtiva.PeriodosBimestre.FirstOrDefault(p => p.BimestreId == bimestreIdChave)
@@ -709,7 +709,7 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
                 codigoTurma.ToString(),
                 cancellationToken);
 
-        var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmaId, cancellationToken);
+        var dadosRacaGenero = await ObterDadosRacaGeneroAlunos(turmaId, contexto, cancellationToken);
 
         return new DadosAlunosDto
         {
@@ -720,9 +720,18 @@ public abstract class QuestionarioSondagemUseCaseBase : IQuestionarioSondagemUse
         };
     }
 
-    private async Task<Dictionary<long, (string Raca, string Sexo)>> ObterDadosRacaGeneroAlunos(int turmaId, CancellationToken cancellationToken)
+    private async Task<Dictionary<long, (string Raca, string Sexo)>> ObterDadosRacaGeneroAlunos(int turmaId, ContextoProcessamentoDto contexto, CancellationToken cancellationToken)
     {
-        var dadosAlunos = await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId,cancellationToken);
+        var dadosAlunos = (await _dadosAlunosService.ObterDadosRacaGeneroAlunos(turmaId,cancellationToken)).ToList();
+
+        var codigosNaLista = dadosAlunos.Select(aluno => aluno.CodigoAluno).ToHashSet();
+        var alunosForaDaLista = contexto.CodigosAlunos.Where(codigo => !codigosNaLista.Contains(codigo)).ToList();
+
+        if (alunosForaDaLista.Count > 0)
+            dadosAlunos.AddRange(await _dadosAlunosService.ObterDadosRacaGeneroAlunosForaDaListaTurma(
+                alunosForaDaLista,
+                contexto.RespostasAlunosPorQuestoes.Values,
+                cancellationToken));
 
         return dadosAlunos.ToDictionary(
             aluno => aluno.CodigoAluno,

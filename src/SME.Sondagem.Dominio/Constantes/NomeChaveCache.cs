@@ -4,5 +4,6 @@
     {
         public const string CONTROLE_ACESSO_USUARIO = "sondagem-controle-acesso-usuario:{0}-{1}-{2}-{3}";
         public const string ABRANGENCIA_COMPLETA_USUARIO = "sondagem-abrangencia-completa:{0}-{1}-{2}-{3}-{4}-{5}-{6}-{7}";
+        public const string ALUNO_RACA_SEXO = "sondagem-aluno-raca-sexo:{0}";
     }
 }
