@@ -5,6 +5,8 @@ using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Aplicacao.Services.EOL;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
+using SME.Sondagem.Dominio.ValueObjects;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -30,6 +32,7 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             _repositorioGeneroSexo = new Mock<IRepositorioGeneroSexo>();
             _httpClientFactory = new Mock<IHttpClientFactory>();
             _logger = new Mock<ILogger<DadosAlunosService>>();
+            _logger.Setup(x => x.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
         }
 
 
@@ -38,6 +41,148 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
             return new DadosAlunosService(_httpClientFactory.Object, _alunoTurmaService.Object, _repositorioGeneroSexo.Object, _repositorioRacaCor.Object, _logger.Object);
         }
 
+
+        private void ConfigurarCatalogosRacaGenero()
+        {
+            _repositorioRacaCor.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<RacaCor>
+                {
+                    new() { Id = 2, Descricao = "BRANCA", CodigoEolRacaCor = 1 },
+                    new() { Id = 4, Descricao = "PARDA", CodigoEolRacaCor = 3 }
+                });
+            _repositorioGeneroSexo.Setup(x => x.ListarAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<GeneroSexo>
+                {
+                    new() { Id = 1, Descricao = "Masculino", Sigla = "M" },
+                    new() { Id = 2, Descricao = "Feminino", Sigla = "F" }
+                });
+        }
+
+        private static RespostaAluno CriarRespostaSalva(int alunoId, int? racaCorId, int? generoSexoId) =>
+            new(1, alunoId, 3, 2, DateTime.UtcNow, new ContextoEducacional { RacaCorId = racaCorId, GeneroSexoId = generoSexoId });
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveUsarValoresSalvos_SemConsultarEol()
+        {
+            ConfigurarCatalogosRacaGenero();
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma(
+                [101],
+                [CriarRespostaSalva(101, null, null), CriarRespostaSalva(101, 2, 1)]);
+
+            var item = Assert.Single(resultado);
+            Assert.Equal(101, item.CodigoAluno);
+            Assert.Equal(2, item.RacaId);
+            Assert.Equal(1, item.SexoId);
+            Assert.Equal("Branca", item.Raca);
+            Assert.Equal("Masculino", item.Sexo);
+            _alunoTurmaService.Verify(x => x.ObterRacaSexoAluno(It.IsAny<long>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveConsultarEol_QuandoNaoHouverValoresSalvos()
+        {
+            ConfigurarCatalogosRacaGenero();
+            _alunoTurmaService.Setup(x => x.ObterRacaSexoAluno(101, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AlunoRacaSexoEolDto { Sexo = "M", GrupoEtnico = "BRANCA" });
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([101], []);
+
+            var item = Assert.Single(resultado);
+            Assert.Equal(2, item.RacaId);
+            Assert.Equal(1, item.SexoId);
+            Assert.Equal("Branca", item.Raca);
+            Assert.Equal("Masculino", item.Sexo);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveManterValorSalvo_EBuscarNoEolApenasOQueFalta()
+        {
+            ConfigurarCatalogosRacaGenero();
+            _alunoTurmaService.Setup(x => x.ObterRacaSexoAluno(101, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AlunoRacaSexoEolDto { Sexo = "F", GrupoEtnico = "BRANCA" });
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma(
+                [101],
+                [CriarRespostaSalva(101, 4, null)]);
+
+            var item = Assert.Single(resultado);
+            Assert.Equal(4, item.RacaId);
+            Assert.Equal(2, item.SexoId);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_NaoDeveFalhar_QuandoEolLancarExcecao()
+        {
+            ConfigurarCatalogosRacaGenero();
+            _alunoTurmaService.Setup(x => x.ObterRacaSexoAluno(101, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new HttpRequestException("EOL indisponível"));
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([101], []);
+
+            var item = Assert.Single(resultado);
+            Assert.Null(item.RacaId);
+            Assert.Null(item.SexoId);
+            Assert.Equal(string.Empty, item.Raca);
+            Assert.Equal(string.Empty, item.Sexo);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_NaoDeveFalhar_QuandoConsultaAoEolEstourarTempo()
+        {
+            ConfigurarCatalogosRacaGenero();
+            _alunoTurmaService.Setup(x => x.ObterRacaSexoAluno(101, It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new TaskCanceledException("Tempo esgotado"));
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([101], []);
+
+            var item = Assert.Single(resultado);
+            Assert.Null(item.RacaId);
+            Assert.Null(item.SexoId);
+            VerificarAvisosRegistrados(Times.Once());
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveRepassarCancelamento_QuandoFeitoPorQuemChamou()
+        {
+            ConfigurarCatalogosRacaGenero();
+            using var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([101], [], cts.Token));
+        }
+
+        private void VerificarAvisosRegistrados(Times vezes)
+        {
+            _logger.VerifyLog<DadosAlunosService, Exception>(LogLevel.Warning, vezes);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveDeixarIdNulo_E_NaoCriarCatalogo_QuandoValorNaoExistir()
+        {
+            ConfigurarCatalogosRacaGenero();
+            _alunoTurmaService.Setup(x => x.ObterRacaSexoAluno(101, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new AlunoRacaSexoEolDto { Sexo = "X", GrupoEtnico = "INEXISTENTE" });
+
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([101], []);
+
+            var item = Assert.Single(resultado);
+            Assert.Null(item.RacaId);
+            Assert.Null(item.SexoId);
+            VerificarAvisosRegistrados(Times.Exactly(2));
+            _repositorioRacaCor.Verify(x => x.SalvarAsync(It.IsAny<RacaCor>(), It.IsAny<CancellationToken>()), Times.Never);
+            _repositorioGeneroSexo.Verify(x => x.SalvarAsync(It.IsAny<GeneroSexo>(), It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task ForaDaListaTurma_DeveRetornarVazio_SemConsultas_QuandoNaoHouverAlunos()
+        {
+            var resultado = await CriarService().ObterDadosRacaGeneroAlunosForaDaListaTurma([], []);
+
+            Assert.Empty(resultado);
+            _repositorioRacaCor.Verify(x => x.ListarAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
 
         [Fact]
         public async Task DeveRetornarVazio_QuandoDadosAlunosNulo()
@@ -97,6 +242,26 @@ namespace SME.Sondagem.Aplicacao.Teste.Services
 
             var item = Assert.Single(resultado);
             Assert.Equal(string.Empty, item.Sexo);
+        }
+
+        [Fact]
+        public async Task DeveRetornarAlunoUmaVez_QuandoEolRetornarAlunoDuplicadoNaTurma()
+        {
+            _alunoTurmaService
+                .Setup(x => x.InformacoesAlunosPorTurma(It.IsAny<long>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<DadosAlunoPorTurmaDto>
+                {
+                    new() { CodigoAluno = 101, NumeroChamada = 1, Raca = "PARDA", Sexo = "F", NomeAluno = "Teste" },
+                    new() { CodigoAluno = 101, NumeroChamada = 2, Raca = "PARDA", Sexo = "F", NomeAluno = "Teste" },
+                    new() { CodigoAluno = 102, NumeroChamada = 3, Raca = "BRANCA", Sexo = "M", NomeAluno = "Outro" }
+                });
+
+            var resultado = (await CriarService().ObterDadosRacaGeneroAlunos(1)).ToList();
+
+            Assert.Equal(2, resultado.Count);
+            var aluno = Assert.Single(resultado, r => r.CodigoAluno == 101);
+            Assert.Equal("Parda", aluno.Raca);
+            Assert.Equal("Feminino", aluno.Sexo);
         }
 
         [Theory]

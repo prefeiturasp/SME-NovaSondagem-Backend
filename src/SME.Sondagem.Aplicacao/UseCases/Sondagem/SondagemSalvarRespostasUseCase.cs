@@ -86,7 +86,9 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
                 alunosIds,
                 questoesIdsResposta);
 
-        var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGenero, opcoesSemPreenchimentoIds);
+        var dadosRacaGeneroCompletos = await CompletarDadosRacaGenero(dadosRacaGenero, alunosIds, repostasAlunos);
+
+        var respostas = ProcessarRespostasAlunos(dto, alunosParaSalvar, periodosBimestresAtivos, repostasAlunos, questaoLinguaPortuguesaSegundaLingua, dadosRacaGeneroCompletos, opcoesSemPreenchimentoIds);
 
         if (respostas.Count == 0)
             return new ResultadoSalvamentoSondagemDto
@@ -105,6 +107,21 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
         };
     }
 
+    private async Task<List<Infrastructure.Dtos.AlunoRacaGeneroDto>> CompletarDadosRacaGenero(
+        IEnumerable<Infrastructure.Dtos.AlunoRacaGeneroDto> dadosRacaGenero,
+        IEnumerable<int> alunosIds,
+        IEnumerable<RespostaAluno> respostasSalvas)
+    {
+        var dados = dadosRacaGenero.ToList();
+        var codigosNaLista = dados.Select(d => d.CodigoAluno).ToHashSet();
+        var alunosForaDaLista = alunosIds.Where(codigo => !codigosNaLista.Contains(codigo)).ToList();
+
+        if (alunosForaDaLista.Count > 0)
+            dados.AddRange(await _dadosAlunosService.ObterDadosRacaGeneroAlunosForaDaListaTurma(alunosForaDaLista, respostasSalvas));
+
+        return dados;
+    }
+
     private async Task<List<AlunoSondagemDto>> ObterAlunosAtivosParaSalvar(SondagemSalvarDto dto, TurmaElasticDto turma)
     {
         var turmaId = Convert.ToInt32(dto.TurmaId);
@@ -112,7 +129,7 @@ public class SondagemSalvarRespostasUseCase : ISondagemSalvarRespostasUseCase
 
         var alunosTurma = await _repositorioElasticAluno.ObterAlunosPorIdTurma(turmaId, anoLetivo, CancellationToken.None);
         var codigosAlunosAtivos = alunosTurma
-            .Where(a => a.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo)
+            .Where(a => a.CodigoSituacaoMatricula.EhCursandoTurma())
             .Select(a => a.CodigoAluno)
             .ToHashSet();
 

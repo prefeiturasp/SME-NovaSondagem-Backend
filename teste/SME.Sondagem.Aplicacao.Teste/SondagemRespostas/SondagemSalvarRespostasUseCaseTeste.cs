@@ -846,6 +846,155 @@ public class SondagemSalvarRespostasUseCaseTeste
     }
 
     [Fact]
+    public async Task DeveSalvarRespostaDeAlunoRematriculado_EIgnorarSituacaoForaDaRegra()
+    {
+        var dto = SondagemMockData.ObterSondagemMock();
+        dto.TurmaId = "1";
+        dto.Alunos = [dto.Alunos[0], dto.Alunos[1]];
+        dto.Alunos[0].Respostas = [];
+        dto.Alunos[1].Respostas = [];
+
+        ConfigurarMockAlunosTurma([
+            new AlunoElasticDto { CodigoAluno = dto.Alunos[0].Codigo, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado },
+            new AlunoElasticDto { CodigoAluno = dto.Alunos[1].Codigo, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.SemContinuidade }
+        ]);
+
+        var questaoLP = CriarQuestaoLinguaPortuguesaSegundaLingua(1);
+        ConfigurarCenarioSalvar(questaoLP, []);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
+        var resposta = Assert.Single(respostasSalvas!);
+        Assert.Equal(dto.Alunos[0].Codigo, resposta.AlunoId);
+        Assert.Equal(1, resultado.QuantidadeEstudantesNaoProcessados);
+    }
+
+    [Fact]
+    public async Task DeveSalvarRespostaDeBimestreAberto_QuandoAlunoRematriculado()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        ConfigurarMockAlunosTurma([
+            new AlunoElasticDto { CodigoAluno = dto.Alunos[0].Codigo, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado }
+        ]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        var resultado = await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        Assert.Equal(ResultadoSalvamentoSondagem.Gravado, resultado.Resultado);
+        Assert.Equal(0, resultado.QuantidadeEstudantesNaoProcessados);
+        var resposta = Assert.Single(respostasSalvas!);
+        Assert.Equal(dto.Alunos[0].Codigo, resposta.AlunoId);
+        Assert.Equal(3, resposta.QuestaoId);
+        Assert.Equal(1, resposta.BimestreId);
+        Assert.Equal(2, resposta.OpcaoRespostaId);
+    }
+
+    [Fact]
+    public async Task DeveAtualizarRespostaExistenteDeBimestreAberto_QuandoAlunoRematriculado()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        var respostaExistente = CriarRespostaExistente(dto, 3, 7);
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), [respostaExistente]);
+        ConfigurarMockAlunosTurma([
+            new AlunoElasticDto { CodigoAluno = dto.Alunos[0].Codigo, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado }
+        ]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        var resposta = Assert.Single(respostasSalvas!);
+        Assert.Same(respostaExistente, resposta);
+        Assert.Equal(2, resposta.OpcaoRespostaId);
+    }
+
+    [Fact]
+    public async Task DeveSalvarRacaEGenero_QuandoAlunoRematriculadoNaoEstiverNaListaDaTurma()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        var codigoAluno = dto.Alunos[0].Codigo;
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        ConfigurarMockAlunosTurma([
+            new AlunoElasticDto { CodigoAluno = codigoAluno, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado }
+        ]);
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunosForaDaListaTurma(
+                It.Is<IEnumerable<int>>(c => c.Single() == codigoAluno),
+                It.IsAny<IEnumerable<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new AlunoRacaGeneroDto { CodigoAluno = codigoAluno, RacaId = 2, SexoId = 1 }]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        var resposta = Assert.Single(respostasSalvas!);
+        Assert.Equal(2, resposta.RacaCorId);
+        Assert.Equal(1, resposta.GeneroSexoId);
+    }
+
+    [Fact]
+    public async Task NaoDeveBuscarRacaEGeneroForaDaLista_QuandoAlunoJaEstiverNaListaDaTurma()
+    {
+        var dto = CriarDtoComUmaResposta(opcaoRespostaId: 2);
+        var codigoAluno = dto.Alunos[0].Codigo;
+        ConfigurarCenarioSalvarSemQuestaoLinguaPortuguesa(CriarQuestaoSondagem(1, 3), []);
+        ConfigurarMockAlunosTurma([
+            new AlunoElasticDto { CodigoAluno = codigoAluno, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Ativo }
+        ]);
+        _dadosAlunosService
+            .Setup(x => x.ObterDadosRacaGeneroAlunos(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new AlunoRacaGeneroDto { CodigoAluno = codigoAluno, RacaId = 4, SexoId = 2 }]);
+
+        List<RespostaAluno>? respostasSalvas = null;
+        _repositorioSondagemResposta
+            .Setup(x => x.SalvarAsync(
+                It.IsAny<List<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .Callback<List<RespostaAluno>, CancellationToken>((respostas, _) => respostasSalvas = respostas)
+            .ReturnsAsync(true);
+
+        await _useCase.SalvarOuAtualizarSondagemAsync(dto);
+
+        var resposta = Assert.Single(respostasSalvas!);
+        Assert.Equal(4, resposta.RacaCorId);
+        Assert.Equal(2, resposta.GeneroSexoId);
+        _dadosAlunosService.Verify(x => x.ObterDadosRacaGeneroAlunosForaDaListaTurma(
+            It.IsAny<IEnumerable<int>>(),
+            It.IsAny<IEnumerable<RespostaAluno>>(),
+            It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task DeveRetornarExcecao_QuandoSemPermissao()
     {
         var dto = SondagemMockData.ObterSondagemMock();

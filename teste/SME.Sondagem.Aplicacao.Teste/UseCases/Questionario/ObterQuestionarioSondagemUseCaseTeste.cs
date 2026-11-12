@@ -459,6 +459,66 @@ public class ObterQuestionarioSondagemUseCaseTeste
     }
 
     [Fact]
+    public async Task ObterQuestionarioSondagem_DeveRetornarEstudanteRematriculadoSemResposta()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
+        var turma = new TurmaElasticDto { CodigoTurma = 1, Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var sondagem = CriarSondagemMock();
+        var questoes = CriarQuestoesMock();
+        var alunos = new List<AlunoElasticDto>
+        {
+            new()
+            {
+                CodigoAluno = 1001,
+                NumeroAlunoChamada = "1",
+                NomeAluno = "Aluno Rematriculado",
+                DataSituacao = DateTime.Now,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado
+            }
+        };
+
+        ConfigurarMocksCompleto(filtro, turma, sondagem, questoes, alunos);
+
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var estudante = Assert.Single(resultado.Estudantes!);
+        Assert.Equal(1001, estudante.Codigo);
+        Assert.Null(estudante.EstudanteRemanejado);
+    }
+
+    [Fact]
+    public async Task ObterQuestionarioSondagem_DeveExibirRacaEGenero_QuandoAlunoRematriculadoNaoEstiverNaListaDaTurma()
+    {
+        var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
+        var turma = new TurmaElasticDto { CodigoTurma = 1, Modalidade = 5, AnoTurma = "1", AnoLetivo = 2024 };
+        var alunos = new List<AlunoElasticDto>
+        {
+            new()
+            {
+                CodigoAluno = 1001,
+                NumeroAlunoChamada = "1",
+                NomeAluno = "Aluno Rematriculado",
+                DataSituacao = DateTime.Now,
+                CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado
+            }
+        };
+
+        ConfigurarMocksCompleto(filtro, turma, CriarSondagemMock(), CriarQuestoesMock(), alunos);
+        _mockAlunoService
+            .Setup(x => x.ObterDadosRacaGeneroAlunosForaDaListaTurma(
+                It.Is<IEnumerable<int>>(c => c.Single() == 1001),
+                It.IsAny<IEnumerable<RespostaAluno>>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync([new SME.Sondagem.Infrastructure.Dtos.AlunoRacaGeneroDto { CodigoAluno = 1001, Raca = "Branca", Sexo = "Masculino" }]);
+
+        var resultado = await _useCase.ObterQuestionarioSondagem(filtro, CancellationToken.None);
+
+        var estudante = Assert.Single(resultado.Estudantes!);
+        Assert.Equal("Branca", estudante.Raca);
+        Assert.Equal("Masculino", estudante.Genero);
+    }
+
+    [Fact]
     public async Task ObterQuestionarioSondagem_DeveRetornarEstudantesComPap_QuandoAlunosEstiveremNoProgramaPap()
     {
         var filtro = new FiltroQuestionario { TurmaId = 1, ProficienciaId = 1, Ano = 1 };
