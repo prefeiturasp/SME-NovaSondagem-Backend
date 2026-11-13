@@ -311,6 +311,139 @@ namespace SME.Sondagem.Dados.Testes.Repositorio.Elastic
             Assert.Equal("Ativo", listaResultado.First().NomeAluno);
         }
 
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveRetornarRematriculados_QuandoTodaTurmaForRematriculada()
+        {
+            var idTurma = 300;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 2, CodigoMatricula = 200, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            Assert.Equal(2, resultado.Count());
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveConsiderarSituacaoMaisRecente_QuandoMatriculaVirarRematriculado()
+        {
+            var idTurma = 301;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DataSituacaoValida.AddDays(-10) },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            var aluno = Assert.Single(resultado);
+            Assert.Equal((int)SituacaoMatriculaAluno.Rematriculado, aluno.CodigoSituacaoMatricula);
+        }
+
+        [Theory]
+        [InlineData((int)SituacaoMatriculaAluno.Transferido)]
+        [InlineData((int)SituacaoMatriculaAluno.Desistente)]
+        [InlineData((int)SituacaoMatriculaAluno.NaoCompareceu)]
+        [InlineData((int)SituacaoMatriculaAluno.Deslocamento)]
+        [InlineData((int)SituacaoMatriculaAluno.SemContinuidade)]
+        public async Task ObterAlunosPorIdTurma_DeveContinuarExcluindoSituacoesForaDaRegra(int situacao)
+        {
+            var idTurma = 302;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = situacao, DataSituacao = DataSituacaoValida }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            Assert.Empty(resultado);
+        }
+
+        [Theory]
+        [InlineData(-5)]
+        [InlineData(5)]
+        public async Task ObterAlunosPorIdTurma_DeveManterAtivo_QuandoAlunoTambemTiverMatriculaRematriculada(int diasDiferenca)
+        {
+            var idTurma = 303;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DataSituacaoValida.AddDays(diasDiferenca) }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            var aluno = Assert.Single(resultado);
+            Assert.Equal(101, aluno.CodigoMatricula);
+            Assert.Equal(SituacaoAtivo, aluno.CodigoSituacaoMatricula);
+        }
+
+        [Theory]
+        [InlineData(-5, 100)]
+        [InlineData(5, 101)]
+        [InlineData(0, 101)]
+        public async Task ObterAlunosPorIdTurma_DeveManterRegistroMaisRecente_EntreRematriculadoERemanejado(int diasRemanejado, int matriculaEsperada)
+        {
+            var idTurma = 306;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoRemanejadoSaida, DataSituacao = DataSituacaoValida.AddDays(diasRemanejado) }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            var aluno = Assert.Single(resultado);
+            Assert.Equal(matriculaEsperada, aluno.CodigoMatricula);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveManterMatriculaMaisRecente_QuandoAlunoTiverDuasMatriculasRematriculadas()
+        {
+            var idTurma = 304;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida.AddDays(-5) },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, CodigoTurma = idTurma, CodigoSituacaoMatricula = (int)SituacaoMatriculaAluno.Rematriculado, DataSituacao = DataSituacaoValida }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            var aluno = Assert.Single(resultado);
+            Assert.Equal(101, aluno.CodigoMatricula);
+        }
+
+        [Fact]
+        public async Task ObterAlunosPorIdTurma_DeveManterAtivoERemanejado_QuandoAlunoTiverDuasMatriculasSemRematriculado()
+        {
+            var idTurma = 305;
+            int anoLetivo = DateTime.Now.Year;
+
+            ConfigurarMocksParaRetornar(new List<AlunoElasticDto>
+            {
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 100, CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoAtivo, DataSituacao = DataSituacaoValida },
+                new AlunoElasticDto { CodigoAluno = 1, CodigoMatricula = 101, CodigoTurma = idTurma, CodigoSituacaoMatricula = SituacaoRemanejadoSaida, DataSituacao = DataSituacaoValida }
+            });
+
+            var resultado = await _repositorio.ObterAlunosPorIdTurma(idTurma, anoLetivo, CancellationToken.None);
+
+            Assert.Equal(2, resultado.Count());
+        }
+
         #region Métodos Auxiliares
 
         private void ConfigurarMocksParaRetornar(List<AlunoElasticDto> documentos)

@@ -1,6 +1,7 @@
 ﻿using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using SME.Sondagem.Dados.Interfaces.Elastic;
+using SME.Sondagem.Dominio;
 using SME.Sondagem.Dominio.Entidades.Elastic;
 using SME.Sondagem.Dominio.Enums;
 using SME.Sondagem.Infra.Dtos.Questionario;
@@ -42,11 +43,36 @@ namespace SME.Sondagem.Dados.Repositorio.Elastic
                               .Select(agrupado => agrupado.OrderByDescending(aluno => aluno.DataSituacao)
                                                           .ThenByDescending(aluno => aluno.NumeroAlunoChamada)
                                                           .First())
-                              .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Ativo
-                                           || aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.RemanejadoSaida);
+                              .Where(aluno => aluno.CodigoSituacaoMatricula.EhListadoNaTurma());
 
-            var lista = resultado?.ToList() ?? [];
+            var lista = resultado?.GroupBy(aluno => aluno.CodigoAluno)
+                                  .SelectMany(ManterRematriculadoSemDuplicarAluno)
+                                  .ToList() ?? [];
             return lista;
+        }
+
+        private static IEnumerable<AlunoElasticDto> ManterRematriculadoSemDuplicarAluno(IEnumerable<AlunoElasticDto> registrosAluno)
+        {
+            var registros = registrosAluno.ToList();
+
+            var rematriculado = registros
+                .Where(aluno => aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.Rematriculado)
+                .OrderByDescending(aluno => aluno.DataSituacao)
+                .ThenByDescending(aluno => aluno.NumeroAlunoChamada)
+                .FirstOrDefault();
+
+            var demais = registros
+                .Where(aluno => aluno.CodigoSituacaoMatricula != (int)SituacaoMatriculaAluno.Rematriculado)
+                .ToList();
+
+            if (rematriculado is null)
+                return demais;
+
+            var rematriculadoPrevalece = demais.All(aluno =>
+                aluno.CodigoSituacaoMatricula == (int)SituacaoMatriculaAluno.RemanejadoSaida
+                && aluno.DataSituacao < rematriculado.DataSituacao);
+
+            return rematriculadoPrevalece ? [rematriculado] : demais;
         }
     }
 }

@@ -713,6 +713,50 @@ public class QuestionarioSondagemUseCaseBaseTeste
     }
 
     [Fact]
+    public void ConstruirColunaAluno_DeveSetarPeriodoBimestreAtivo_QuandoAlunoRematriculadoEBimestreAberto()
+    {
+        var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
+        var sondagem = CriarSondagemComPeriodo(periodoAtivo);
+        var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: true);
+        var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: (int)SituacaoMatriculaAluno.Rematriculado);
+        var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+
+        Assert.True(resultado.PeriodoBimestreAtivo);
+    }
+
+    [Fact]
+    public void ConstruirColunaAluno_NaoDeveSetarPeriodoBimestreAtivo_QuandoAlunoRematriculadoAposFimDoBimestre()
+    {
+        var periodoEncerrado = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-30), dataFim: DateTime.Now.AddDays(-10));
+        var sondagem = CriarSondagemComPeriodo(periodoEncerrado);
+        var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: true);
+        var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: (int)SituacaoMatriculaAluno.Rematriculado);
+        var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+
+        Assert.False(resultado.PeriodoBimestreAtivo);
+    }
+
+    [Theory]
+    [InlineData((int)SituacaoMatriculaAluno.RemanejadoSaida)]
+    [InlineData((int)SituacaoMatriculaAluno.SemContinuidade)]
+    public void ConstruirColunaAluno_NaoDeveSetarPeriodoBimestreAtivo_QuandoSituacaoNaoPermiteDigitacao(int situacao)
+    {
+        var periodoAtivo = CriarPeriodoBimestre(dataInicio: DateTime.Now.AddDays(-1), dataFim: DateTime.Now.AddDays(1));
+        var sondagem = CriarSondagemComPeriodo(periodoAtivo);
+        var colunaBase = CriarColunaQuestionario(idCiclo: 1, periodoAtivo: true);
+        var aluno = CriarAlunoElasticAtivo(dataSituacao: DateTime.Now, situacao: situacao);
+        var respostas = new Dictionary<(int, int?, long), RespostaAluno>();
+
+        var resultado = QuestionarioSondagemUseCaseBaseConcreto.ConstruirColunaAlunoPublico(colunaBase, aluno, sondagem, 1L, respostas);
+
+        Assert.False(resultado.PeriodoBimestreAtivo);
+    }
+
+    [Fact]
     public void ConstruirColunaAluno_DeveFiltrarOpcaoResposta_QuandoEhRelatorioForTrue()
     {
         var opcaoRespostaId = 7;

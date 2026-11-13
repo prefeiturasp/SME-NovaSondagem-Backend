@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using SME.Sondagem.Aplicacao.Interfaces.Services;
 using SME.Sondagem.Dados.Interfaces;
 using SME.Sondagem.Dominio.Entidades;
+using SME.Sondagem.Dominio.Entidades.Sondagem;
 using SME.Sondagem.Infra.Services;
 using SME.Sondagem.Infrastructure.Dtos;
 using SME.Sondagem.Infrastructure.Dtos.Relatorio;
@@ -12,7 +13,9 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
 {
     public class DadosAlunosService : IDadosAlunosService
     {
-        private const int TamanhoBatch = 100; 
+        private const int TamanhoBatch = 100;
+        private const int ConsultasEolSimultaneas = 2;
+        private const int TempoLimiteConsultasEolSegundos = 20;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IAlunoTurmaService _alunoTurmaService;
         private readonly IRepositorioGeneroSexo _repositorioGeneroSexo;
@@ -90,7 +93,7 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
                 _logger.LogError(ex, "Erro ao atualizar raça e genero");
             }
 
-            var dados = dadosAlunos.Select(x => new AlunoRacaGeneroDto
+            var dados = dadosAlunos.DistinctBy(x => x.CodigoAluno).Select(x => new AlunoRacaGeneroDto
             {
                 CodigoAluno = x.CodigoAluno,
                 Raca = ConverterCodigoRacaParaDescricao(x.Raca),
@@ -100,6 +103,94 @@ namespace SME.Sondagem.Aplicacao.Services.EOL
             }).ToList();
 
             return dados;
+        }
+
+        public async Task<IEnumerable<AlunoRacaGeneroDto>> ObterDadosRacaGeneroAlunosForaDaListaTurma(
+            IEnumerable<int> codigosAlunos,
+            IEnumerable<RespostaAluno> respostasSalvas,
+            CancellationToken cancellationToken = default)
+        {
+            var codigos = codigosAlunos.Distinct().ToList();
+
+            if (codigos.Count == 0)
+                return [];
+
+            var dadosGeneroSexo = (await _repositorioGeneroSexo.ListarAsync(cancellationToken)).ToList();
+            var dadosRacaCor = (await _repositorioRacaCor.ListarAsync(cancellationToken)).ToList();
+            var respostasPorAluno = respostasSalvas.ToLookup(r => r.AlunoId);
+
+            using var limiteConsultas = new SemaphoreSlim(ConsultasEolSimultaneas);
+            using var tempoLimite = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            tempoLimite.CancelAfter(TimeSpan.FromSeconds(TempoLimiteConsultasEolSegundos));
+
+            return await Task.WhenAll(codigos.Select(async codigoAluno =>
+            {
+                var racaId = respostasPorAluno[codigoAluno].FirstOrDefault(r => r.RacaCorId.HasValue)?.RacaCorId;
+                var sexoId = respostasPorAluno[codigoAluno].FirstOrDefault(r => r.GeneroSexoId.HasValue)?.GeneroSexoId;
+
+                if (!racaId.HasValue || !sexoId.HasValue)
+                {
+                    var dadosEol = await ObterRacaSexoEolSemFalhar(codigoAluno, limiteConsultas, tempoLimite.Token, cancellationToken);
+
+                    racaId ??= ObterIdRacaEol(dadosEol?.GrupoEtnico, dadosRacaCor);
+                    sexoId ??= ObterIdSexoEol(dadosEol?.Sexo, dadosGeneroSexo);
+                }
+
+                return new AlunoRacaGeneroDto
+                {
+                    CodigoAluno = codigoAluno,
+                    RacaId = racaId,
+                    SexoId = sexoId,
+                    Raca = ConverterCodigoRacaParaDescricao(dadosRacaCor.FirstOrDefault(r => r.Id == racaId)?.Descricao ?? string.Empty),
+                    Sexo = ConverterCodigoGeneroParaDescricao(dadosGeneroSexo.FirstOrDefault(g => g.Id == sexoId)?.Sigla ?? string.Empty)
+                };
+            }));
+        }
+
+        private int? ObterIdRacaEol(string? grupoEtnico, List<RacaCor> dadosRacaCor)
+        {
+            var racaId = ObterIdRaca(grupoEtnico ?? string.Empty, dadosRacaCor);
+
+            if (!racaId.HasValue && !string.IsNullOrWhiteSpace(grupoEtnico) && _logger.IsEnabled(LogLevel.Warning))
+                _logger.LogWarning("Raça {Raca} retornada pelo EOL não existe em raca_cor", grupoEtnico);
+
+            return racaId;
+        }
+
+        private int? ObterIdSexoEol(string? sexo, List<GeneroSexo> dadosGeneroSexo)
+        {
+            var sexoId = ObterIdSexoGenero(sexo ?? string.Empty, dadosGeneroSexo);
+
+            if (!sexoId.HasValue && !string.IsNullOrWhiteSpace(sexo) && _logger.IsEnabled(LogLevel.Warning))
+                _logger.LogWarning("Sexo {Sexo} retornado pelo EOL não existe em genero_sexo", sexo);
+
+            return sexoId;
+        }
+
+        private async Task<AlunoRacaSexoEolDto?> ObterRacaSexoEolSemFalhar(
+            int codigoAluno,
+            SemaphoreSlim limiteConsultas,
+            CancellationToken tempoLimite,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                await limiteConsultas.WaitAsync(tempoLimite);
+                try
+                {
+                    return await _alunoTurmaService.ObterRacaSexoAluno(codigoAluno, tempoLimite);
+                }
+                finally
+                {
+                    limiteConsultas.Release();
+                }
+            }
+            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+            {
+                if (_logger.IsEnabled(LogLevel.Warning))
+                    _logger.LogWarning(ex, "Não foi possível obter raça e gênero do aluno {CodigoAluno} no EOL", codigoAluno);
+                return null;
+            }
         }
 
         private async Task SincronizarRacaEGeneroAsync(IEnumerable<DadosAlunoPorTurmaDto> dadosAlunos, List<RacaCor> dadosRacaCor, List<GeneroSexo> dadosGeneroSexo, CancellationToken cancellationToken)
